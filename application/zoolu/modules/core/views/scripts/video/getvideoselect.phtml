@@ -1,0 +1,32 @@
+<?php
+  require_once (dirname(__FILE__).'/../../helpers/VideoHelper.php');
+  $objHelper = new VideoHelper();
+?>
+
+<span class="fieldtitle">Video wählen</span><br/>
+<div id="divVideoSelect" class="divVideoSelect" style="margin:2px 0 0 0; overflow-y:scroll; height: 200px; border:1px solid #666; width:100%;">
+  <?php echo $objHelper->getVideoSelect($this->elements, $this->value, $this->elementId, $this->channelUsers); ?>
+</div>
+
+<?php if(count($this->channelUsers) > 1): ?>
+<div id="divVideoChannelUser_<?php echo $this->elementId; ?>" style="display:none;">
+  <label class="fieldtitle" for="<?php echo $this->elementId; ?>User">Benutzer</label>
+  <br/>
+  <select id="<?php echo $this->elementId; ?>User" name="<?php echo $this->elementId; ?>User" class="select">
+    <option value="">Bitte wählen</option>
+    <?php
+      foreach($this->channelUsers as $channelUser){
+        $strSelected = ($this->channelUserId == $channelUser['id']) ? ' selected="selected"' : '';
+        echo '<option value="'.$channelUser['id'].'"'.$strSelected.'>'.$channelUser['name'].'</option>';
+      }
+    ?>
+   </select>
+</div>
+<script type="text/javascript" language="javascript">//<![CDATA[
+  $('div_<?php echo $this->elementId; ?>_users').update($('divVideoChannelUser_<?php echo $this->elementId; ?>').innerHTML);
+  $('divVideoChannelUser_<?php echo $this->elementId; ?>').remove();
+  myForm.initVideoChannelUserObserver('<?php echo $this->elementId; ?>');
+//]]>
+</script>
+
+<?php endif; ?>
