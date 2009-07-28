@@ -45,6 +45,11 @@ class Model_Pages {
    */
   protected $objPageContactsTable;
 
+    /**
+   * @var Model_Table_Gmaps
+   */
+  protected $objGmapsTable;
+  
   /**
    * @var Core
    */
@@ -59,6 +64,77 @@ class Model_Pages {
     $this->core = Zend_Registry::get('Core');
   }
 
+	/**
+   * loadGmap
+   * @param string $strPageId
+   * @return integer
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadGmap($intElementId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadGmap('.$intElementId.')');
+    
+    $objSelect = $this->getGmapsTable()->select();
+    $objSelect->from($this->objGmapsTable, array('latitude', 'longitude'));
+    $objSelect->join('pages', 'pages.pageId = pageGmaps.pageId AND pages.version = pageGmaps.version', array());
+    $objSelect->where('pages.id = ?', $intElementId)
+              ->where('idLanguages = ?', $this->getLanguageId());
+
+    return $this->objGmapsTable->fetchAll($objSelect);
+  }
+
+  /**
+   * addGmaps
+   * @param  integer $intElementId
+   * @param  mixed $mixedVideoId
+   * @param  integer $intVideoTypeId
+   * @param  string $strVideoUserId
+   * @param  string $strVideoThumb
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function addGmaps($intElementId, $strGmapsLongitude, $strGmapsLatitude){
+    $this->core->logger->debug('cms->models->Model_Pages->addGmap('.$intElementId.','.$strGmapsLongitude.','.$strGmapsLatitude.')');
+
+    $objPageData = $this->loadPage($intElementId);
+
+    if(count($objPageData) > 0){
+      $objPage = $objPageData->current();
+
+      $this->getGmapsTable();
+
+      $strWhere = $this->objGmapsTable->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
+      $strWhere .= 'AND '.$this->objGmapsTable->getAdapter()->quoteInto('version = ?', $objPage->version);
+      $this->objGmapsTable->delete($strWhere);
+
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+        $arrData = array('pageId'       => $objPage->pageId,
+                         'version'      => $objPage->version,
+                         'idLanguages'  => $this->intLanguageId,
+                         'latitude'     => $strGmapsLatitude,
+                         'longitude'    => $strGmapsLongitude,
+                         'creator'      => $intUserId);
+      return $objSelect = $this->objGmapsTable->insert($arrData);
+    }
+  }
+  
+  /**
+   * getGmapsTable
+   * @return objGmapsTable
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getGmapsTable(){
+
+    if($this->objGmapsTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/Gmaps.php';
+      $this->objGmapsTable = new Model_Table_Gmaps();
+    }
+
+    return $this->objGmapsTable;
+  }
+  
   /**
    * loadPage
    * @param integer $intElementId
