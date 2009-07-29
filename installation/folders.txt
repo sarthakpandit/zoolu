@@ -1,0 +1,9 @@
+/tmp
+/tmp/cache
+/tmp/cache/gen_forms
+/tmp/cache/pages
+/tmp/search_index
+/tmp/serach_index/pages
+/tmp/sessions
+
+/log
