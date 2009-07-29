@@ -5,6 +5,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2009-01-20: Thomas Schedler
+ * 1.1, 2009-07-29: Florian Mathis, added fieldtypes to database
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
@@ -163,40 +164,17 @@ class GenericSetup {
   /**
    * field types constants
    */
-	const FIELD_TYPE_SELECT = 'select';
-	const FIELD_TYPE_SELECTTREE = 'selectTree';
-	const FIELD_TYPE_MULTISELECT = 'multiselect';
-	const FIELD_TYPE_TEXTEDITOR = 'texteditor';
-	const FIELD_TYPE_MEDIA = 'media';
-	const FIELD_TYPE_DOCUMENT = 'document';
 	const FIELD_TYPE_TEMPLATE = 'template';
-	const FIELD_TYPE_MULTICHECKBOX = 'multiCheckbox';
-	const FIELD_TYPE_MULTICHECKBOXTREE = 'multiCheckboxTree';
-	const FIELD_TYPE_TAG = 'tag';
-	const FIELD_TYPE_URL = 'url';
-	const FIELD_TYPE_INTERNALLINK = 'internalLink';
-	const FIELD_TYPE_VIDEOSELECT = 'videoSelect';
-	const FIELD_TYPE_CONTACT = 'contact';
-	const FIELD_TYPE_GMAPS = 'gmaps';
-
-	/**
-	 * field arrays
-	 */
-	public static $FIELD_TYPE_FILES          = array(self::FIELD_TYPE_MEDIA,
-	                                                 self::FIELD_TYPE_DOCUMENT);
-	public static $FIELD_TYPE_SELECTS        = array(self::FIELD_TYPE_SELECT,
-	                                                 self::FIELD_TYPE_MULTISELECT,
-	                                                 self::FIELD_TYPE_SELECTTREE,
-	                                                 self::FIELD_TYPE_VIDEOSELECT);
-	public static $FIELD_TYPE_MULTI_FIELDS   = array(self::FIELD_TYPE_MULTISELECT,
-	                                                 self::FIELD_TYPE_MULTICHECKBOX,
-	                                                 self::FIELD_TYPE_MULTICHECKBOXTREE);
-  public static $FIELD_TYPE_SPECIAL_FIELDS = array(self::FIELD_TYPE_TAG,
-                                                   self::FIELD_TYPE_URL,
-                                                   self::FIELD_TYPE_INTERNALLINK,
-                                                   self::FIELD_TYPE_VIDEOSELECT,
-                                                   self::FIELD_TYPE_CONTACT,
-                                                   self::FIELD_TYPE_GMAPS);
+  const FIELD_TYPE_TEXTEDITOR = 'texteditor';
+  const FIELD_TYPE_INTERNALLINK = 'internalLink';
+  
+	/*
+   * FieldTypeGroups
+   */
+  const FIELD_TYPE_FILE_ID = 1;
+  const FIELD_TYPE_SELECT_ID = 2;
+  const FIELD_TYPE_MULTIFIELD_ID = 3;
+  const FIELD_TYPE_SPECIALFIELD_ID = 4;
 
 	/**
 	 * @var Core
@@ -418,17 +396,18 @@ class GenericSetup {
 	          $objGenField->decorator = $objFieldRegionTagData->decorator;
 	          $objGenField->isMultiply = $objFieldRegionTagData->isMultiply;
 	          $objGenField->idSearchFieldTypes = $objFieldRegionTagData->idSearchFieldTypes;
-
+						$objGenField->idFieldTypeGroup = $objFieldRegionTagData->idFieldTypeGroup;
+						
 	  			  /**
 	           * select field container
 	           */
-	          if($objGenField->isSaveField == 1){
+  				if($objGenField->isSaveField == 1){
 	            if($objGenField->isMultiply == 1){
-	              if(in_array($objGenField->type, self::$FIELD_TYPE_SPECIAL_FIELDS)){
+	            	if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SPECIALFIELD_ID) {
 	                $this->getRegion($objFieldRegionTagData->regionId)->addSpecialFieldName($objGenField->name);
-	              }else if(in_array($objGenField->type, self::$FIELD_TYPE_FILES)){
+	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addFileFieldName($objGenField->name);
-	              }else if(in_array($objGenField->type, self::$FIELD_TYPE_MULTI_FIELDS)){
+	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_MULTIFIELD_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addMultiFieldName($objGenField->name);
 	              }else{
 	                $this->getRegion($objFieldRegionTagData->regionId)->addInstanceFieldName($objGenField->name);
@@ -437,13 +416,13 @@ class GenericSetup {
 	              if($objGenField->isCoreField == 1){
 	                $this->arrCoreFields[$objGenField->name] = $objGenField;
 	                $this->arrFieldNames[$objGenField->name] = self::CORE_FIELD;
-	              }else if(in_array($objGenField->type, self::$FIELD_TYPE_SPECIAL_FIELDS)){
+	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SPECIALFIELD_ID){
 	                $this->arrSpecialFields[$objGenField->name] = $objGenField;
 	                $this->arrFieldNames[$objGenField->name] = self::SPECIAL_FIELD;
-	              }else if(in_array($objGenField->type, self::$FIELD_TYPE_FILES)){
+	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_ID){
 	                $this->arrFileFields[$objGenField->name] = $objGenField;
 	                $this->arrFieldNames[$objGenField->name] = self::FILE_FIELD;
-	              }else if(in_array($objGenField->type, self::$FIELD_TYPE_MULTI_FIELDS)){
+	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_MULTIFIELD_ID){
 	                $this->arrMultiFields[$objGenField->name] = $objGenField;
 	                $this->arrFieldNames[$objGenField->name] = self::MULTI_FIELD;
 	              }else{

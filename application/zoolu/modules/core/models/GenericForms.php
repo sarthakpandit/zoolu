@@ -6,6 +6,7 @@
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-24: Cornelius Hansjakob
  * 1.1, 2008-11-04: Thomas Schedler : change structure - add Fields and Regions to the general Model_GenericForms class
+ * 1.2, 2009-07-29: Florian Mathis : Added FieldTypeGroup Column to loadFieldsAndRegionsByFormId()
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
@@ -239,7 +240,7 @@ class Model_GenericForms {
      */
 
     $objSelect->from('fields', array('id', 'idFieldTypes', 'name', 'idSearchFieldTypes', 'idRelationPage', 'idCategory', 'sqlSelect', 'columns', 'isCoreField', 'isKeyField', 'isSaveField', 'isRegionTitle', 'isDependentOn', 'copyValue'));
-    $objSelect->join('fieldTypes', 'fieldTypes.id = fields.idFieldTypes', array('title AS type', 'defaultValue'));
+    $objSelect->join('fieldTypes', 'fieldTypes.id = fields.idFieldTypes', array('title AS type', 'defaultValue', 'idFieldTypeGroup'));
     $objSelect->join('decorators', 'decorators.id = fieldTypes.idDecorator', array('title AS decorator'));
     $objSelect->joinLeft('fieldTitles','fieldTitles.idFields = fields.id AND fieldTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->join('regionFields','regionFields.idFields = fields.id', array('order'));
