@@ -546,6 +546,10 @@
       </vimeo>
     </video_channels>
     
+  	<!-- Application Keys -->
+  	<key>
+    	<gmaps>ABQIAAAAYd6HpKB1Vfqec8cb_5YrlhRtA2_S2kiI47KJ4sJy_X22ETSKqBTcMnbqrvhiPT2Y5ziNW3jseAb6Ig</gmaps>
+  	</key>
   </production>
 
   <!--
@@ -566,10 +570,6 @@
       <page>false</page>
       <generic_form_structure>false</generic_form_structure>
     </cache>
-    
-    <key>
-      <gmaps>ABQIAAAAYd6HpKB1Vfqec8cb_5YrlhRtA2_S2kiI47KJ4sJy_X22ETSKqBTcMnbqrvhiPT2Y5ziNW3jseAb6Ig</gmaps>
-    </key>
   </staging>
 
 </configdata>
