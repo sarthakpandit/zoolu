@@ -139,20 +139,11 @@ class PluginLoader extends Zend_Loader_PluginLoader
 	      default:
 	        $strPrefixField = 'Field_DataHelper';
 	    }
-	    
-     	//Decorator Path has to be included if the type is element
-//      if($this->strType == PluginLoader::TYPE_FORM_ELEMENT)
-//      {
-//        $strPathField = 'library/massiveart/generic/fields/%FIELD%/decorators';
-//        $strNameField = ucfirst($name);
-//        $strPathField = GLOBAL_ROOT_PATH.str_replace('%FIELD%', $strNameField, $strPathField);
-//        $this->addPrefixPath('Field_Form_Decorator', $strPathField);
-//      }
 
       $strPathField = $this->getFieldPath($name);
       $this->addPrefixPath($strPrefixField, $strPathField);
       $strClassName = $this->getPluginLoader()->load($name);
-      Zend_Registry::get('Core')->logger->debug('PluginLoader: Plugin '.$strClassName.' loaded');
+      //Zend_Registry::get('Core')->logger->debug('PluginLoader: Plugin '.$strClassName.' loaded');
       
       $this->removePrefixPath($strPrefixField);
   	}
