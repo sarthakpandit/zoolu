@@ -1,0 +1,6 @@
+imagick
+fileinfo
+pdo
+pdo_mysql
+json
+curl
