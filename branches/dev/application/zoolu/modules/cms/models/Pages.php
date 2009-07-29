@@ -44,11 +44,6 @@ class Model_Pages {
    * @var Model_Table_PageContacts
    */
   protected $objPageContactsTable;
-
-    /**
-   * @var Model_Table_Gmaps
-   */
-  protected $objGmapsTable;
   
   /**
    * @var Core
@@ -63,76 +58,62 @@ class Model_Pages {
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
-
-	/**
-   * loadGmap
-   * @param string $strPageId
-   * @return integer
-   * @author Florian Mathis <flo@massiveart.com>
-   * @version 1.0
-   */
-  public function loadGmap($intElementId){
-    $this->core->logger->debug('cms->models->Model_Pages->loadGmap('.$intElementId.')');
-    
-    $objSelect = $this->getGmapsTable()->select();
-    $objSelect->from($this->objGmapsTable, array('latitude', 'longitude'));
-    $objSelect->join('pages', 'pages.pageId = pageGmaps.pageId AND pages.version = pageGmaps.version', array());
-    $objSelect->where('pages.id = ?', $intElementId)
-              ->where('idLanguages = ?', $this->getLanguageId());
-
-    return $this->objGmapsTable->fetchAll($objSelect);
-  }
-
+  
   /**
-   * addGmaps
-   * @param  integer $intElementId
-   * @param  mixed $mixedVideoId
-   * @param  integer $intVideoTypeId
-   * @param  string $strVideoUserId
-   * @param  string $strVideoThumb
-   * @return Zend_Db_Table_Rowset_Abstract
-   * @author Florian Mathis <flo@massiveart.com>
+   * loadPlugin
+   * @param integer $intElementId
+   * @param array $arrFields
+   * @param string $strType
+   * @return array
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
    * @version 1.0
    */
-  public function addGmaps($intElementId, $strGmapsLongitude, $strGmapsLatitude){
-    $this->core->logger->debug('cms->models->Model_Pages->addGmap('.$intElementId.','.$strGmapsLongitude.','.$strGmapsLatitude.')');
-
-    $objPageData = $this->loadPage($intElementId);
-
-    if(count($objPageData) > 0){
-      $objPage = $objPageData->current();
-
-      $this->getGmapsTable();
-
-      $strWhere = $this->objGmapsTable->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
-      $strWhere .= 'AND '.$this->objGmapsTable->getAdapter()->quoteInto('version = ?', $objPage->version);
-      $this->objGmapsTable->delete($strWhere);
-
-      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
-        $arrData = array('pageId'       => $objPage->pageId,
-                         'version'      => $objPage->version,
-                         'idLanguages'  => $this->intLanguageId,
-                         'latitude'     => $strGmapsLatitude,
-                         'longitude'    => $strGmapsLongitude,
-                         'creator'      => $intUserId);
-      return $objSelect = $this->objGmapsTable->insert($arrData);
-    }
+  public function loadPlugin($intElementId, $arrFields, $strType)
+  {
+  	$this->core->logger->debug('cms->models->Model_Pages->loadPlugin('.$intElementId.', '.$arrFields.', '.$strType.')');
+  	$objPagePluginTable = $this->getPluginTable($strType);
+  	
+  	$objSelect = $objPagePluginTable->select();
+  	$objSelect->from($objPagePluginTable, $arrFields);
+  	$objSelect->join('pages', 'pages.pageId = pageGmaps.pageId AND pages.version = pageGmaps.version', array());
+  	$objSelect->where('pages.id = ?', $intElementId)
+  	          ->where('idLanguages = ?', $this->getLanguageId());
+  	          
+  	return $objPagePluginTable->fetchAll($objSelect);
   }
   
   /**
-   * getGmapsTable
-   * @return objGmapsTable
-   * @author Florian Mathis <flo@massiveart.com>
+   * addPlugin
+   * @param integer $intElementId
+   * @param array $arrValues
+   * @param string $strType
+   * @return mixed
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
    * @version 1.0
    */
-  public function getGmapsTable(){
-
-    if($this->objGmapsTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/Gmaps.php';
-      $this->objGmapsTable = new Model_Table_Gmaps();
-    }
-
-    return $this->objGmapsTable;
+  public function addPlugin($intElementId, $arrValues, $strType)
+  {
+  	$this->core->logger->debug('cms->models->Model_Pages->addPlugin('.$arrValues.','.$strType.')');
+  	
+  	$objPageData = $this->loadPage($intElementId);
+  	
+  	if(count($objPageData) > 0){
+  		$objPage = $objPageData->current();
+  		
+  		$objPagePluginTable = $this->getPluginTable($strType);
+  		
+  		$strWhere = $objPagePluginTable->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
+  		$strWhere .= 'AND '.$objPagePluginTable->getAdapter()->quoteInto('version = ?', $objPage->version);
+  		$objPagePluginTable->delete($strWhere);
+  		
+  		$intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+  		$arrData = array( 'pageId'      =>  $objPage->pageId,
+  		                  'version'     =>  $objPage->version,
+  		                  'idLanguages' =>  $this->intLanguageId,
+  		                  'creator'     =>  $intUserId);
+  		$arrData = array_merge($arrData, $arrValues);
+  		return $objSelect = $objPagePluginTable->insert($arrData);
+  	}
   }
   
   /**
@@ -1213,6 +1194,20 @@ class Model_Pages {
     }
 
     return $this->objPageContactsTable;
+  }
+  
+  /**
+   * Returns a table for a plugin
+   * @param string $type The type of the plugin
+   * @return Zend_Db_Table_Abstract
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function getPluginTable($type)
+  {
+    require_once(GLOBAL_ROOT_PATH.'application/plugins/'.$type.'/data/models/Page'.$type.'.php');
+    $strClass = 'Model_Table_Page'.$type;
+    return new $strClass();
   }
 
   /**

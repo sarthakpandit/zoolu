@@ -10,7 +10,7 @@
  * @version 1.0
  */
 
-class Model_Table_Gmaps extends Zend_Db_Table_Abstract {
+class Model_Table_PageGmaps extends Zend_Db_Table_Abstract {
   
   protected $_name = 'pageGmaps';
   protected $_primary = 'id';

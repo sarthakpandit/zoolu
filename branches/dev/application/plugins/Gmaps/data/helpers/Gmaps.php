@@ -35,7 +35,7 @@ class Plugin_DataHelper_Gmaps extends GenericDataHelperAbstract  {
    */
   public function save($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
-    	$this->core->logger->debug('save Google Map');
+    	$this->core->logger->debug('application->plugins->Gmaps->data->helpers->Plugin_DataHelperGmaps->save('.$intElementId.', '.$strType.', '.$strElementId.', '.$intVersion.')');
       $this->strType = $strType;
 
       $this->getModel();
@@ -51,7 +51,10 @@ class Plugin_DataHelper_Gmaps extends GenericDataHelperAbstract  {
       }
 
       if($strGmapsLongitude != '' && $strGmapsLatitude != ''){
-        $this->objModel->addGmaps($intElementId, $strGmapsLongitude, $strGmapsLatitude);
+      	$arrValues = array('longitude'  =>  $strGmapsLongitude,
+      	                   'latitude' =>  $strGmapsLatitude);
+        //$this->objModel->addGmaps($intElementId, $strGmapsLongitude, $strGmapsLatitude);
+        $this->objModel->addPlugin($intElementId, $arrValues, 'Gmaps');
         $this->load($intElementId, $strType, $strElementId, $intVersion);
       }else{
         //$this->objModel->removeGmaps($intElementId);
@@ -73,13 +76,13 @@ class Plugin_DataHelper_Gmaps extends GenericDataHelperAbstract  {
    */
   public function load($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
-    	$this->core->logger->debug('load Google Map');
+    	$this->core->logger->debug('application->plugins->Gmaps->data->helpers->Plugin_DataHelperGmaps->load('.$intElementId.', '.$strType.', '.$strElementId.', '.$intVersion.')');
       $this->strType = $strType;
       
     	$this->getModel();
     	$elementId = $this->strType.'Id';
     	
-      $objGmap = $this->objModel->loadGmap($intElementId);
+      $objGmap = $this->objModel->loadPlugin($intElementId, array('longitude', 'latitude'), 'Gmaps');
       $this->objElement->setValue($objGmap[0]);
 
     }catch (Exception $exc) {
