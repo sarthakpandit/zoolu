@@ -14,7 +14,7 @@
  * @subpackage Form_Element_InternalLink
  */
 
-class Form_Element_InternalLink extends Zend_Form_Element_Xhtml {
+class Form_Element_InternalLink extends FormElementXhtmlAbstract {
 	
 	public $helper = 'formInternalLink';
 	

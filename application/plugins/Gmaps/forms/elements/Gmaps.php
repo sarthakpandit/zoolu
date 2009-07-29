@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Gmaps
  */
 
-class Form_Element_Gmaps extends Zend_Form_Element_Xhtml {
+class Plugin_FormElement_Gmaps extends Zend_Form_Element_Xhtml {
  
   public $helper = 'formGmaps';
   

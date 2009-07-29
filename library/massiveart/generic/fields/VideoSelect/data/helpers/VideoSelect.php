@@ -16,7 +16,7 @@
  * @subpackage GenericDataHelper_VideoSelect
  */
 
-require_once(dirname(__FILE__).'/Abstract.php');
+require_once(dirname(__FILE__).'/../../../../data/helpers/Abstract.php');
 
 class GenericDataHelper_VideoSelect extends GenericDataHelperAbstract  {
 

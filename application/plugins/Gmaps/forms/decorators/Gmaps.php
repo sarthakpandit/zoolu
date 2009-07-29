@@ -10,7 +10,7 @@
  * @version 1.0
  */
 
-class Form_Decorator_Gmaps extends Zend_Form_Decorator_Abstract {
+class Plugin_FormDecorator_Gmaps extends Zend_Form_Decorator_Abstract {
   
   /**
    * @var Core

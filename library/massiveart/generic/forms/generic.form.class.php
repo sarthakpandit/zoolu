@@ -10,6 +10,7 @@
  * 1.2, 2008-01-19: Thomas Schedler - changed structure and added generic setup object
  * 1.3, 2009-07-22: Florian Mathis, added generic subform and tab content logic
  * 1.4, 2009-07-23: Thomas Schedler
+ * 1.5, 2009-07-28: Daniel Rotter - changed the used plugin loader to our own
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.2
@@ -77,6 +78,15 @@ class GenericForm extends Zend_Form {
 		 * Zend_Form
 		 */
 	  parent::__construct($options);
+	  
+	  /**
+	   * Use our own PluginLoader
+	   */
+	  $objLoader = new PluginLoader();
+		$objLoader->setPluginLoader($this->getPluginLoader(PluginLoader::TYPE_FORM_ELEMENT));
+		$objLoader->setPluginType(PluginLoader::TYPE_FORM_ELEMENT);
+		$this->setPluginLoader($objLoader, PluginLoader::TYPE_FORM_ELEMENT);
+	  
 
 	  /**
 	   * new generic setup object
@@ -103,7 +113,7 @@ class GenericForm extends Zend_Form {
     /**
      * add prefix path for own elements
      */
-    $this->addPrefixPath('Form_Element', dirname(__FILE__).'/elements/', 'element');
+    //$this->addPrefixPath('Form_Element', dirname(__FILE__).'/elements/', 'element');
 
     /**
      * elements prefixes

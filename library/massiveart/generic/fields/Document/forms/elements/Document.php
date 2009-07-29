@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Document
  */
 
-class Form_Element_Document extends Zend_Form_Element_Xhtml {
+class Form_Element_Document extends FormElementXhtmlAbstract {
  
   public $helper = 'formDocument';
   

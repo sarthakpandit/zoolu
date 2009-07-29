@@ -15,7 +15,7 @@
 
 require_once(dirname(__FILE__).'/../../../../../library/massiveart/generic/data/helpers/Abstract.php');
 
-class GenericDataHelper_Gmaps extends GenericDataHelperAbstract  {
+class Plugin_DataHelper_Gmaps extends GenericDataHelperAbstract  {
 
   /**
    * @var Model_Pages

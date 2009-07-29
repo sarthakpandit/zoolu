@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Media
  */
 
-class Form_Element_Media extends Zend_Form_Element_Xhtml {
+class Form_Element_Media extends FormElementXhtmlAbstract {
  
   public $helper = 'formMedia';
   

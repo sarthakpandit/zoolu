@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Dselect
  */
 
-class Form_Element_Dselect extends Zend_Form_Element_Xhtml {
+class Form_Element_Dselect extends FormElementXhtmlAbstract {
  
   public $helper = 'formDselect';
   

@@ -14,7 +14,7 @@
  * @subpackage Form_Element_VideoSelect
  */
 
-class Form_Element_VideoSelect extends Zend_Form_Element_Xhtml {
+class Form_Element_VideoSelect extends FormElementXhtmlAbstract {
 	
 	public $helper = 'formVideoSelect';
 	
