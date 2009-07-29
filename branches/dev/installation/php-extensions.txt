@@ -1,3 +1,5 @@
+These php-extensions are needed for zoolu:
+
 imagick
 fileinfo
 pdo
