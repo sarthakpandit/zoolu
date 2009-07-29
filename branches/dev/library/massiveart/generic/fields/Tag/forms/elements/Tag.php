@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Tag
  */
 
-class Form_Element_Tag extends Zend_Form_Element_Xhtml {
+class Form_Element_Tag extends FormElementXhtmlAbstract {
 	
 	public $helper = 'formTag';
 	

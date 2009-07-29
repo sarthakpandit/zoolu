@@ -14,7 +14,7 @@
  * @subpackage Form_Element_SelectTree
  */
 
-class Form_Element_SelectTree extends Zend_Form_Element_Multi {
+class Form_Element_SelectTree extends FormElementMultiAbstract {
   
   /**
    * Use formSelectTree view helper by default

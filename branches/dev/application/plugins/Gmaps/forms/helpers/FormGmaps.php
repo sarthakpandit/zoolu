@@ -14,7 +14,7 @@
  * @subpackage Form_Helper_FormGmaps
  */
 
-class Form_Helper_FormGmaps extends Zend_View_Helper_FormElement {
+class Plugin_FormHelper_FormGmaps extends Zend_View_Helper_FormElement {
   
   /**
    * formGmaps

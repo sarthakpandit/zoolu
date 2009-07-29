@@ -14,7 +14,7 @@
  * @subpackage Form_Element_MultiCheckboxTree
  */
 
-class Form_Element_MultiCheckboxTree extends Zend_Form_Element_Multi {
+class Form_Element_MultiCheckboxTree extends FormElementMultiAbstract {
 	
   /**
    * Use formMultiCheckbox view helper by default

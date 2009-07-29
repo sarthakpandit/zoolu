@@ -148,7 +148,7 @@ abstract class GenericElementAbstract {
   public static function getPluginLoader(){
     if(null === self::$_pluginLoader){
       require_once 'Zend/Loader/PluginLoader.php';
-      self::$_pluginLoader = new Zend_Loader_PluginLoader(array(
+      self::$_pluginLoader = new PluginLoader(array(
           'GenericDataHelper' => dirname(__FILE__).'/../data/helpers/',
       ));
     }

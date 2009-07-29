@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Url
  */
 
-class Form_Element_Url extends Zend_Form_Element_Xhtml {
+class Form_Element_Url extends FormElementXhtmlAbstract {
 	
 	public $helper = 'formUrl';
 	

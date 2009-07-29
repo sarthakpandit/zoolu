@@ -14,7 +14,7 @@
  * @subpackage Form_Element_Texteditor
  */
 
-class Form_Element_Texteditor extends Zend_Form_Element_Xhtml {
+class Form_Element_Texteditor extends FormElementXhtmlAbstract {
  
   public $helper = 'formTexteditor';
 	

@@ -6,6 +6,7 @@
  * Version history (please keep backward compatible):
  * 1.0, 2009-07-22: Florian Mathis
  * 1.1, 2009-07-23: Thomas Schedler
+ * 1.2, 2009-07-28: Daniel Rotter - changed the used plugin loader to our own
  *
  * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
@@ -59,6 +60,14 @@ class GenericSubForm extends Zend_Form_SubForm {
      * Zend_Form_SubForm
      */
     parent::__construct($options);
+    
+    /**
+     * Use our own PluginLoader
+     */
+    $objLoader = new PluginLoader();
+    $objLoader->setPluginLoader($this->getPluginLoader(PluginLoader::TYPE_FORM_ELEMENT));
+    $objLoader->setPluginType(PluginLoader::TYPE_FORM_ELEMENT);
+    $this->setPluginLoader($objLoader, PluginLoader::TYPE_FORM_ELEMENT);
 
     /**
      * clear all decorators
@@ -74,8 +83,7 @@ class GenericSubForm extends Zend_Form_SubForm {
     /**
      * add prefix path to own elements
      */
-    $this->addPrefixPath('Form_Element', dirname(__FILE__).'/elements/', 'element');
-    $this->addPrefixPath('Form_Element', dirname(__FILE__).'/../../../../application/plugins/elements/', 'element');
+    //$this->addPrefixPath('Form_Element', '', 'element');
 
     /**
      * elements prefixes

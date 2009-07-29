@@ -177,6 +177,7 @@ class GenericSetup {
 	const FIELD_TYPE_INTERNALLINK = 'internalLink';
 	const FIELD_TYPE_VIDEOSELECT = 'videoSelect';
 	const FIELD_TYPE_CONTACT = 'contact';
+	const FIELD_TYPE_GMAPS = 'gmaps';
 
 	/**
 	 * field arrays
@@ -194,7 +195,8 @@ class GenericSetup {
                                                    self::FIELD_TYPE_URL,
                                                    self::FIELD_TYPE_INTERNALLINK,
                                                    self::FIELD_TYPE_VIDEOSELECT,
-                                                   self::FIELD_TYPE_CONTACT);
+                                                   self::FIELD_TYPE_CONTACT,
+                                                   self::FIELD_TYPE_GMAPS);
 
 	/**
 	 * @var Core

@@ -13,7 +13,7 @@
  * @subpackage GenericDataHelper_Url
  */
 
-require_once(dirname(__FILE__).'/Abstract.php');
+require_once(dirname(__FILE__).'/../../../../data/helpers/Abstract.php');
 
 class GenericDataHelper_Url extends GenericDataHelperAbstract  {
 

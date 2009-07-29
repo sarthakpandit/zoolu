@@ -24,7 +24,15 @@ $front->addModuleDirectory('../application/zoolu/modules');
  * add helper path
  */
 $viewRenderer = new Zend_Controller_Action_Helper_ViewRenderer(new Zend_View());
-$viewRenderer->view->addHelperPath('../library/massiveart/generic/forms/helpers', 'Form_Helper');
+/**
+ * Add the own plugin loader
+ */
+$objLoader = new PluginLoader();
+$objLoader->setPluginLoader($viewRenderer->view->getPluginLoader(PluginLoader::TYPE_FORM_HELPER));
+$objLoader->setPluginType(PluginLoader::TYPE_FORM_HELPER);
+$viewRenderer->view->setPluginLoader($objLoader, PluginLoader::TYPE_FORM_HELPER);
+
+//$viewRenderer->view->addHelperPath('../library/massiveart/generic/forms/helpers', 'Form_Helper');
 Zend_Controller_Action_HelperBroker::addHelper($viewRenderer);
 
 /**

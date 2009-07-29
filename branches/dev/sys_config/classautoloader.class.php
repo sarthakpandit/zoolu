@@ -6,6 +6,7 @@
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-09: Cornelius Hansjakob
  * 1.1, 2009-05-05: Cornelius Hansjakob (Zend 1.8 - new Autoloader)
+ * 1.2, 2009-07-28: Daniel Rotter - Added own PluginLoader and abstract FormElement
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
@@ -45,7 +46,10 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'Index'                   => '/library/massiveart/website/index.class.php',
     'DateTimeHelper'          => '/library/massiveart/utilities/datetime.class.php',
     'Replacer'                => '/library/massiveart/utilities/replacer.class.php',
-    'phMagick'                => '/library/phmagick/phMagick.php'
+    'phMagick'                => '/library/phmagick/phMagick.php',
+    'PluginLoader'            => '/library/massiveart/loader/pluginLoader.class.php',
+    'FormElementXhtmlAbstract'=> '/library/massiveart/generic/forms/fields/form.element.xhtml.abstract.class.php',
+    'FormElementMultiAbstract'=> '/library/massiveart/generic/forms/fields/form.element.multi.abstract.class.php'
     //'GuiTexts'              => '/library/massiveart/utilities/guiTexts.class.php'
   );
 
