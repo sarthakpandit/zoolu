@@ -1137,7 +1137,7 @@ function get_events_overview_header($intQuarter = 0, $intYear = 0, $blnReturn = 
 	$year = ($intYear > 0) ? $intYear : date('Y', $timestamp);
 	$quarter = ($intQuarter > 0 && $intQuarter <= 4) ? $intQuarter : ceil(date('m', $timestamp) / 3);
 		
-	$arrQuarterText = array(1 => 'Jänner '.$year.' bis März '.$year,
+	$arrQuarterText = array(1 => 'Jï¿½nner '.$year.' bis Mï¿½rz '.$year,
 	                        2 => 'April '.$year.' bis Juni '.$year,
 	                        3 => 'Juli '.$year.' bis September '.$year,
 	                        4 => 'Oktober '.$year.' bis Dezember '.$year);
