@@ -61,12 +61,12 @@ function get_meta_keywords(){
   $strKeywords = '';
   if(count($objPageTags) > 0){
     $strHtmlOutput .= '<meta name="keywords" content="';
-  	foreach($objPageTags as $objTag){
+    foreach($objPageTags as $objTag){
       $strKeywords .= htmlentities($objTag->title, ENT_COMPAT, getCoreObject()->sysConfig->encoding->default).', ';
     }
     $strHtmlOutput .= trim($strKeywords, ', ').'"></meta>';  
   }
-  echo $strHtmlOutput;	
+  echo $strHtmlOutput;  
 }
 
 /**
@@ -92,21 +92,21 @@ function get_zoolu_header(){
   
   if(Zend_Auth::getInstance()->hasIdentity()){
     $strHtmlOutput .= '<div class="divModusContainer">
-	    <div class="divModusLogo">
-	      <a href="/zoolu/cms" target="_blank">
-	        <img src="/zoolu/images/modus/logo_zoolu_modus.gif" alt="ZOOLU" />
-	      </a>
-	    </div>
-	    <div class="divModusAdvice">Hinweis: Im Moment werden auch Seiten mit dem <strong>Status "Test"</strong> dargestellt.</div>
-	    <div class="divModusLogout"><a href="#">Abmelden</a></div>
-	    <div class="divModusStatus">Test/Live-Modus: 
-	      <select id="selTestMode" name="selTestMode" onchange="myDefault.changeTestMode(this.options[this.selectedIndex].value);">
-	        <option value="on" '.((isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == true) ? ' selected="selected"' : '').'>Aktiv</option>
-	        <option value="off" '.((isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == true) ? '' : ' selected="selected"').'>Inaktiv</option>
-	      </select>
-	    </div>
-	    <div class="clear"></div>
-	  </div>';	
+      <div class="divModusLogo">
+        <a href="/zoolu/cms" target="_blank">
+          <img src="/zoolu/images/modus/logo_zoolu_modus.gif" alt="ZOOLU" />
+        </a>
+      </div>
+      <div class="divModusAdvice">Hinweis: Im Moment werden auch Seiten mit dem <strong>Status "Test"</strong> dargestellt.</div>
+      <div class="divModusLogout"><a href="#">Abmelden</a></div>
+      <div class="divModusStatus">Test/Live-Modus: 
+        <select id="selTestMode" name="selTestMode" onchange="myDefault.changeTestMode(this.options[this.selectedIndex].value);">
+          <option value="on" '.((isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == true) ? ' selected="selected"' : '').'>Aktiv</option>
+          <option value="off" '.((isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == true) ? '' : ' selected="selected"').'>Inaktiv</option>
+        </select>
+      </div>
+      <div class="clear"></div>
+    </div>';  
   }
      
   echo $strHtmlOutput;
@@ -123,7 +123,7 @@ function get_elementId(){
   if(getPageObject()->getElementId() != ''){
     $strHtmlOutput = getPageObject()->getElementId();  
   }
-  echo $strHtmlOutput;	
+  echo $strHtmlOutput;  
 }
 
 /**
@@ -138,12 +138,12 @@ function get_title($strTag = '', $blnTitleFallback = true){
   $strHtmlOutput = '';
   if(getPageObject()->getFieldValue('articletitle') != ''){
     if($strTag != '') $strHtmlOutput .= '<'.$strTag.'>';  
-  	$strHtmlOutput .= htmlentities(getPageObject()->getFieldValue('articletitle'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default); 
+    $strHtmlOutput .= htmlentities(getPageObject()->getFieldValue('articletitle'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default); 
     if($strTag != '') $strHtmlOutput .= '</'.$strTag.'>';
   }
   else if(getPageObject()->getFieldValue('title') != '' && $blnTitleFallback){
     if($strTag != '') $strHtmlOutput .= '<'.$strTag.'>';
-  	$strHtmlOutput .= htmlentities(getPageObject()->getFieldValue('title'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
+    $strHtmlOutput .= htmlentities(getPageObject()->getFieldValue('title'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
     if($strTag != '') $strHtmlOutput .= '</'.$strTag.'>';  
   }
   echo $strHtmlOutput;  
@@ -161,8 +161,8 @@ function get_description($strContainerClass = 'divDescription', $blnContainer = 
   $strHtmlOutput = '';
   if(getPageObject()->getFieldValue('description') != ''){
     if($blnContainer) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
-  	$strHtmlOutput .= getPageObject()->getFieldValue('description');
-  	if($blnContainer) $strHtmlOutput .= '</div>';  
+    $strHtmlOutput .= getPageObject()->getFieldValue('description');
+    if($blnContainer) $strHtmlOutput .= '</div>';  
   }
   echo $strHtmlOutput;
 }
@@ -350,7 +350,13 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
   $strHtmlOutput = '';
     
   $mixedVideoId = getPageObject()->getFieldValue('video');
-  if($mixedVideoId != ''){    
+  $arrFieldProperties = getPageObject()->getField('video')->getProperties();
+
+  if($mixedVideoId != ''){   
+    /*
+     * Vimeo Service
+     */
+    if($arrFieldProperties['intVideoTypeId'] == '1') { 
     $strHtmlOutput .= '
                <div class="divVideoContainer"> 
                  <object width="'.$intVideoWidth.'" height="'.$intVideoHeight.'">
@@ -360,6 +366,24 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
                     <embed width="'.$intVideoWidth.'" height="'.$intVideoHeight.'" allowscriptaccess="always" allowfullscreen="true" type="application/x-shockwave-flash" src="http://vimeo.com/moogaloop.swf?clip_id='.$mixedVideoId.'&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=bf000a&amp;fullscreen=1"></embed>
                   </object>
                 </div>'; 
+    } 
+    /*
+     * Youtube Service
+     */
+    else if($arrFieldProperties['intVideoTypeId'] == '2') {
+      $strHtmlOutput .= '
+        <div class="divVideoContainer"> 
+          <object width="'.$intVideoWidth.'" height="'.$intVideoHeight.'">
+            <param name="movie" value="http://www.youtube.com/v/'.$mixedVideoId.'"></param>
+            <param name="allowFullScreen" value="true"></param>
+              <embed src="http://www.youtube.com/v/'.$mixedVideoId.'"
+                type="application/x-shockwave-flash"
+                width="'.$intVideoWidth.'" height="'.$intVideoHeight.'" 
+                allowfullscreen="true">
+              </embed>
+          </object>
+        </div>';
+    }
   }else if(getPageObject()->getFieldValue('video_embed_code') != ''){
     $strHtmlOutput .= '<div class="divVideoContainer">'.getPageObject()->getFieldValue('video_embed_code').'</div>';  
   } 
@@ -503,8 +527,8 @@ function get_text_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox 
  */
 function get_banner_static($strImageFolder = '80x80', $strContainerClass = 'divAdRight', $strImageContainerClass = 'divAdImgLeft', $strTextContainerClass = 'divAdInfoSmall'){
   $core = getCoreObject();
-	$objPage = getPageObject();
-	
+  $objPage = getPageObject();
+  
   $strBannerTitle = htmlentities($objPage->getFieldValue('banner_title'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
   $strBannerDescription = $objPage->getFieldValue('banner_description');
   
@@ -514,7 +538,7 @@ function get_banner_static($strImageFolder = '80x80', $strContainerClass = 'divA
   if($objBannerFiles != '' && count($objBannerFiles) > 0){   
     foreach($objBannerFiles as $objFile){
       if($counter == 0){
-    	  $strBannerImage .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';  
+        $strBannerImage .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';  
       }
       $counter++;
     }
@@ -524,7 +548,7 @@ function get_banner_static($strImageFolder = '80x80', $strContainerClass = 'divA
                 <div class="'.$strContainerClass.'">';
   if($strBannerImage != ''){
     $strHtmlOutput .= '
-                  <div class="'.$strImageContainerClass.'">'.$strBannerImage.'</div>';	
+                  <div class="'.$strImageContainerClass.'">'.$strBannerImage.'</div>';  
   }
   $strHtmlOutput .= '
                   <div class="'.$strTextContainerClass.'">
@@ -532,7 +556,7 @@ function get_banner_static($strImageFolder = '80x80', $strContainerClass = 'divA
                     <div>'.$strBannerDescription.'</div>
                   </div>
                   <div class="clear"></div>
-                </div>';	
+                </div>';  
  
   echo $strHtmlOutput;
 }
@@ -556,34 +580,34 @@ function get_banner_dynamic($strImageFolder = '80x80', $strContainerClass = 'div
   $strHtmlOutput = '';
   
   if($objMyMultiRegion instanceof GenericElementRegion){
-  	$counter = 0;
+    $counter = 0;
     foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
       
-    	$strBannerImage = '';
-    	$objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
-    	$imgCounter = 0;
+      $strBannerImage = '';
+      $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
+      $imgCounter = 0;
       if($objFiles != '' && count($objFiles) > 0){ 
         foreach($objFiles as $objFile){
           if($imgCounter == 0){
-        	  $strBannerImage = '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';   
+            $strBannerImage = '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';   
           }
           $imgCounter++;  
         }        
       }
-    	
-    	$strHtmlOutput .= '
+      
+      $strHtmlOutput .= '
               <div id="divDynBanner_'.$counter.'" class="'.$strContainerClass.'"';
-    	if($counter > 0){
-    	  $strHtmlOutput .= ' style="left:618px"';
-    	}
-    	$strHtmlOutput .= '>';
-    	if($strBannerImage != ''){
-    	  $strHtmlOutput .= '
+      if($counter > 0){
+        $strHtmlOutput .= ' style="left:618px"';
+      }
+      $strHtmlOutput .= '>';
+      if($strBannerImage != ''){
+        $strHtmlOutput .= '
                 <div class="'.$strImageContainerClass.'">
                   '.$strBannerImage.'
                 </div>';
-    	}
-    	$strHtmlOutput .= '
+      }
+      $strHtmlOutput .= '
                 <div class="'.$strTextContainerClass.'">
                   <h2 class="adblock">'.htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default).'</h2>
                   <div>'.$objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId).'</div>
@@ -591,8 +615,8 @@ function get_banner_dynamic($strImageFolder = '80x80', $strContainerClass = 'div
                 <div class="clear"></div>
               </div>';
 
-    	$counter++;
-    }  	
+      $counter++;
+    }   
   }
   echo $strHtmlOutput;
 }
@@ -753,8 +777,8 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
             break;
             
           case $core->webConfig->viewtypes->col2->id:
-          	
-          	$strHtmlOutput .= '             
+            
+            $strHtmlOutput .= '             
                 <div class="divColContainer">';                
           
             $counter = 0;
@@ -838,7 +862,7 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
             
           case $core->webConfig->viewtypes->list->id:
             
-          	$strHtmlOutput .= '
+            $strHtmlOutput .= '
                 <div class="divListContainer">';
             foreach($arrPageEntries as $objPageEntry){
               $strHtmlOutput .= '
@@ -851,8 +875,8 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
             break;
             
           case $core->webConfig->viewtypes->list_img->id:
-          	
-          	$strHtmlOutput .= '
+            
+            $strHtmlOutput .= '
                 <div class="divListContainer">';
             foreach($arrPageEntries as $objPageEntry){
               $strHtmlOutput .= '
@@ -1012,18 +1036,18 @@ function get_pages_overview($strImageFolder = '80x80', $strThumbImageFolder = '4
     foreach($arrPagesOverview as $key => $objPageContainer){
       if(count($objPageContainer) > 0){
         
-      	$strCssClassPostfix = '';
+        $strCssClassPostfix = '';
         if($key < 2){
           $strCssClassPostfix = ' pright20'; 
         }
         
         if($key < 3){
           
-        	$strHtmlOutput .= '
-				       <div class="col3'.$strCssClassPostfix.'">
-				          <h3>'.htmlentities($objPageContainer->getContainerTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</h3>';
-        	
-        	$arrPageEntries = $objPageContainer->getEntries();
+          $strHtmlOutput .= '
+               <div class="col3'.$strCssClassPostfix.'">
+                  <h3>'.htmlentities($objPageContainer->getContainerTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</h3>';
+          
+          $arrPageEntries = $objPageContainer->getEntries();
           
           $strTopPostHtmlOutput = '';
           $strLinkItemsHtmlOutput = '';
@@ -1033,38 +1057,38 @@ function get_pages_overview($strImageFolder = '80x80', $strThumbImageFolder = '4
             foreach($arrPageEntries as $objPageEntry){
               if($counter == 0){
 
-              	$strTopPostHtmlOutput .= '
+                $strTopPostHtmlOutput .= '
                   <div class="divTopPost">
                     <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
-              	if($objPageEntry->filename != ''){
-              	  $strTopPostHtmlOutput .= '
-              	   <div class="divImgLeft">
-              	     <img alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'"/>
-              	   </div>';	
-              	}
+                if($objPageEntry->filename != ''){
+                  $strTopPostHtmlOutput .= '
+                   <div class="divImgLeft">
+                     <img alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'"/>
+                   </div>'; 
+                }
                 $strTopPostHtmlOutput .= '        
                     '.(($objPageEntry->shortdescription != '') ? '<p>'.htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default).'</p>' : $objPageEntry->description).'
                     <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
                   </div>';
-              	
+                
               }else{
                 $objPage->setCreateDate($objPageEntry->created);
                 
-				        $strLinkItemsHtmlOutput .= '    
-				            <div class="divListItemImg">';
-				        if($objPageEntry->filename != ''){
-				          $strLinkItemsHtmlOutput .= '
+                $strLinkItemsHtmlOutput .= '    
+                    <div class="divListItemImg">';
+                if($objPageEntry->filename != ''){
+                  $strLinkItemsHtmlOutput .= '
                       <div class="divListItemImgLeft">
                         <a href="'.$objPageEntry->url.'"><img title="'.$objPageEntry->filetitle.'" alt="'.$objPageEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objPageEntry->filename.'"/></a>
-                      </div>';	
-				        }				        
-				        $strLinkItemsHtmlOutput .= '
-				              <div class="divListItemImgRight">
-				                <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a><br/>
-				                <span>Erstellt am</span> <span class="black">'.$objPage->getCreateDate().'</span>
-				              </div>
-				              <div class="clear"></div>
-				            </div>';
+                      </div>';  
+                }               
+                $strLinkItemsHtmlOutput .= '
+                      <div class="divListItemImgRight">
+                        <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a><br/>
+                        <span>Erstellt am</span> <span class="black">'.$objPage->getCreateDate().'</span>
+                      </div>
+                      <div class="clear"></div>
+                    </div>';
               }             
               $counter++;
             } 
@@ -1106,19 +1130,19 @@ function get_sidebar_blocks($strContainerClass = 'divSidebarContainer'){
   $strHtmlOutput = '';
   
   if($objMyMultiRegion instanceof GenericElementRegion){
-  	if(count($objMyMultiRegion->RegionInstanceIds()) > 0){
-  		$counter = 0;
-  		foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
-	    	$strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
-	    	$strBlockDescription = $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
+    if(count($objMyMultiRegion->RegionInstanceIds()) > 0){
+      $counter = 0;
+      foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+        $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
+        $strBlockDescription = $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
         $counter++;
-	    	if(!($strBlockTitle == '' && $strBlockDescription == '')){
-	    		if($counter == 1) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
+        if(!($strBlockTitle == '' && $strBlockDescription == '')){
+          if($counter == 1) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
           $strHtmlOutput .= '<h3>'.$strBlockTitle.'</h3>';        
           $strHtmlOutput .= $strBlockDescription;
           if($counter == count($objMyMultiRegion->RegionInstanceIds())) $strHtmlOutput .= '</div>';
-	    	}
-	    }
+        }
+      }
     }
   }  
   echo $strHtmlOutput;   
@@ -1134,20 +1158,20 @@ function get_sidebar_blocks($strContainerClass = 'divSidebarContainer'){
  */
 function get_events_overview_header($intQuarter = 0, $intYear = 0, $blnReturn = false){
   $timestamp = time();
-	$year = ($intYear > 0) ? $intYear : date('Y', $timestamp);
-	$quarter = ($intQuarter > 0 && $intQuarter <= 4) ? $intQuarter : ceil(date('m', $timestamp) / 3);
-		
-	$arrQuarterText = array(1 => 'J�nner '.$year.' bis M�rz '.$year,
-	                        2 => 'April '.$year.' bis Juni '.$year,
-	                        3 => 'Juli '.$year.' bis September '.$year,
-	                        4 => 'Oktober '.$year.' bis Dezember '.$year);
-	
-	$strHtmlOutput = $arrQuarterText[$quarter];
-	if($blnReturn){
-	  return $strHtmlOutput; 	
-	}else{
-	  echo $strHtmlOutput;	
-	}
+  $year = ($intYear > 0) ? $intYear : date('Y', $timestamp);
+  $quarter = ($intQuarter > 0 && $intQuarter <= 4) ? $intQuarter : ceil(date('m', $timestamp) / 3);
+    
+  $arrQuarterText = array(1 => 'J?nner '.$year.' bis M?rz '.$year,
+                          2 => 'April '.$year.' bis Juni '.$year,
+                          3 => 'Juli '.$year.' bis September '.$year,
+                          4 => 'Oktober '.$year.' bis Dezember '.$year);
+  
+  $strHtmlOutput = $arrQuarterText[$quarter];
+  if($blnReturn){
+    return $strHtmlOutput;  
+  }else{
+    echo $strHtmlOutput;  
+  }
 }
 
 /**
@@ -1176,15 +1200,15 @@ function get_events_overview($strImageFolder = '80x80', $intQuarter = 0, $intYea
   
   if(count($arrEvents) > 0){    
     foreach($arrEvents as $key => $objPageContainer){
-    	if(count($objPageContainer) > 0){
-    	  
-    		$arrEventEntries = $objPageContainer->getEntries();
-    		
-    		foreach($arrEventEntries as $objEventEntry){
-    	    $datetime = strtotime($objEventEntry->datetime);
-    			
-    	    $strDescription = '';
-    		  if($objEventEntry->shortdescription != ''){
+      if(count($objPageContainer) > 0){
+        
+        $arrEventEntries = $objPageContainer->getEntries();
+        
+        foreach($arrEventEntries as $objEventEntry){
+          $datetime = strtotime($objEventEntry->datetime);
+          
+          $strDescription = '';
+          if($objEventEntry->shortdescription != ''){
             $strDescription = htmlentities($objEventEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default); 
           }else if($objEventEntry->description != ''){
             if(strlen($objEventEntry->description) > 120){
@@ -1198,17 +1222,17 @@ function get_events_overview($strImageFolder = '80x80', $intQuarter = 0, $intYea
           if($objEventEntry->event_status == $core->webConfig->eventstatus->full->id){
             $strEventStatus = '
                     <div class="divEventCalItemShortInfo smaller">Leider keine Pl&auml;tze mehr verf&uuml;gbar.</div>
-            ';	
+            ';  
           }else if($objEventEntry->event_status == $core->webConfig->eventstatus->rest->id){
             $strEventStatus = '
                     <div class="divEventCalItemShortInfo smaller">Achtung: Nur noch wenige Restpl&auml;tze verf&uuml;gbar.</div>
-                    <a href="'.$objEventEntry->url.'" class="red smaller">Jetzt Anmelden!</a>';	
+                    <a href="'.$objEventEntry->url.'" class="red smaller">Jetzt Anmelden!</a>'; 
           }else{
             $strEventStatus = '
-                    <a href="'.$objEventEntry->url.'" class="red smaller">Jetzt Anmelden!</a>';	
+                    <a href="'.$objEventEntry->url.'" class="red smaller">Jetzt Anmelden!</a>'; 
           }
-    	    
-    	    $strHtmlOutput .= '
+          
+          $strHtmlOutput .= '
                 <div class="divEventCalItem">
                   <div class="divEventCalItemLeft">
                     <div class="divEventCalItemDateBoxTop"></div>
@@ -1225,13 +1249,13 @@ function get_events_overview($strImageFolder = '80x80', $intQuarter = 0, $intYea
                       '.$strDescription.'
                       <div><a href="'.$objEventEntry->url.'">Mehr Informationen</a></div>
                     </div>';
-    		  if($objEventEntry->filename != ''){
+          if($objEventEntry->filename != ''){
             $strHtmlOutput .= '
                       <div class="divEventCalItemImage">
-	                      <a href="'.$objEventEntry->url.'">
-	                        <img title="'.$objEventEntry->filetitle.'" alt="'.$objEventEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objEventEntry->filename.'"/>
-	                      </a>
-	                    </div>';
+                        <a href="'.$objEventEntry->url.'">
+                          <img title="'.$objEventEntry->filetitle.'" alt="'.$objEventEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objEventEntry->filename.'"/>
+                        </a>
+                      </div>';
           }        
           $strHtmlOutput .= '    
                     <div class="clear"></div>
@@ -1241,10 +1265,10 @@ function get_events_overview($strImageFolder = '80x80', $intQuarter = 0, $intYea
                     <div class="clear"></div>
                   </div>
                   <div class="clear"></div>
-                </div>';	
-    	  	
-    	  }	
-    	}
+                </div>';  
+          
+        } 
+      }
     }
   }else{
       $strHtmlOutput .= '<div class="divEventCalListEmpty">In diesem Zeitraum finden keine Veranstaltungen statt.</div>';  
@@ -1278,11 +1302,11 @@ function get_event_datetime($blnDate = true, $blnTime = true){
   $timestamp = strtotime(getPageObject()->getFieldValue('datetime'));
   $strHtmlOutput = '';
   if($blnDate && !$blnTime){
-    $strHtmlOutput = date('d.m.Y', $timestamp);	
+    $strHtmlOutput = date('d.m.Y', $timestamp); 
   }else if($blnTime && !$blnDate){
-    $strHtmlOutput = date('H:i', $timestamp);	
+    $strHtmlOutput = date('H:i', $timestamp); 
   }else if($blnTime && $blnDate){
-    $strHtmlOutput = date('d.m.Y, H:i', $timestamp);	
+    $strHtmlOutput = date('d.m.Y, H:i', $timestamp);  
   }  
   echo $strHtmlOutput;
 }
@@ -1295,9 +1319,9 @@ function get_event_datetime($blnDate = true, $blnTime = true){
  * @version 1.0
  */
 function get_event_date($blnDay = true, $strHeadline = ''){
-	$arrDaysShort = array('So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa');
-	
-	$timestamp = strtotime(getPageObject()->getFieldValue('datetime'));
+  $arrDaysShort = array('So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa');
+  
+  $timestamp = strtotime(getPageObject()->getFieldValue('datetime'));
   $strHtmlOutput = '';
   if($timestamp != ''){
     $strHtmlOutput .= '
@@ -1335,14 +1359,14 @@ function get_event_time($strHeadline = ''){
  */
 function get_event_status(){  
   $core = getCoreObject();
-	$intStatus = getPageObject()->getFieldValue('event_status');
+  $intStatus = getPageObject()->getFieldValue('event_status');
   
-	$strHtmlOutput = '';
+  $strHtmlOutput = '';
   if(isset($intStatus) && $intStatus > 0){
     if($intStatus == $core->webConfig->eventstatus->rest->id){
       $strHtmlOutput .= '
                   <div class="bold smaller padding5">Achtung: Nur noch wenige Restpl&auml;tze verf&uuml;gbar.</div>
-                  <a class="smaller red bold" href="#" onclick="myDefault.toggleElement(\'divEventForm\', 0.5); return false;">Jetzt Anmelden!</a>';	
+                  <a class="smaller red bold" href="#" onclick="myDefault.toggleElement(\'divEventForm\', 0.5); return false;">Jetzt Anmelden!</a>';  
     }else if($intStatus == $core->webConfig->eventstatus->full->id){
       $strHtmlOutput .= '
                   <div class="bold smaller padding5">Leider sind keine Pl&auml;tze mehr verf&uuml;gbar.</div>
@@ -1351,7 +1375,7 @@ function get_event_status(){
                       if($(\'divEventRegisterButton\')) $(\'divEventRegisterButton\').hide();
                     }); 
                     //]]>
-                  </script>';	
+                  </script>'; 
     }
   }
   echo $strHtmlOutput;
@@ -1365,15 +1389,15 @@ function get_event_status(){
  */
 function get_event_max_members($strHeadline = ''){
   $strFieldValue = getPageObject()->getFieldValue('event_max_members');
-	$strHtmlOutput = '';
+  $strHtmlOutput = '';
   if($strFieldValue != ''){
-  	$strHtmlOutput .= '
-  	            <div class="divEventInfoItem">
+    $strHtmlOutput .= '
+                <div class="divEventInfoItem">
                   <h3 class="padding0">'.$strHeadline.'</h3>
                   <div>'.$strFieldValue.' Person'.(($strFieldValue != '1' || $strFieldValue != '01') ? 'en' : '').'</div>
                 </div>';  
   }
-  echo $strHtmlOutput;	
+  echo $strHtmlOutput;  
 }
 
 /**
@@ -1413,7 +1437,7 @@ function get_event_address($strHeadline = ''){
                     //]]>
                   </script>
                 </div>';
-  echo $strHtmlOutput;	
+  echo $strHtmlOutput;  
 }
 
 /**
@@ -1434,7 +1458,7 @@ function get_speakers($strThumbImageFolder = '80x80', $strZoomImageFolder = '420
               <div class="'.$strContainerClass.'">
                 <h3>Vortragende</h3>';
     
-  	foreach($objPageContacts as $objContact){
+    foreach($objPageContacts as $objContact){
       $strHtmlOutput .= '
                 <div class="divPresenterBlock">';
       if($objContact->filename != ''){
@@ -1443,16 +1467,16 @@ function get_speakers($strThumbImageFolder = '80x80', $strZoomImageFolder = '420
                     <a title="'.$objContact->title.'" href="'.$core->sysConfig->media->paths->imgbase.$strZoomImageFolder.'/'.$objContact->filename.'" rel="lightbox[speakers]">
                       <img src="'.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>  
                     </a>
-                  </div>';	
+                  </div>';  
       }
       $strHtmlOutput .= '
                   <div class="divPresenterText">
                     <h2 class="padding10">'.(($objContact->acTitle != '') ? $objContact->acTitle.' ' : '').$objContact->title.'</h2>
                     <div class="divPresenterDescription">';
       if($objContact->website != ''){
-        $strHtmlOutput .= '<div><a href="'.((strpos($objContact->website, 'http://') > -1) ? $objContact->website : 'http://'.$objContact->website).'" target="_blank">'.$objContact->website.'</a></div>';	
+        $strHtmlOutput .= '<div><a href="'.((strpos($objContact->website, 'http://') > -1) ? $objContact->website : 'http://'.$objContact->website).'" target="_blank">'.$objContact->website.'</a></div>'; 
       }
-  	  if($objContact->email != ''){
+      if($objContact->email != ''){
         $strHtmlOutput .= '<div><a href="mailto:'.$objContact->email.'">E-Mail senden</a></div>'; 
       }
       $strHtmlOutput .= '
@@ -1476,12 +1500,12 @@ function get_speakers($strThumbImageFolder = '80x80', $strZoomImageFolder = '420
  */
 function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divContactContainer', $strBigContactImageFolder = '180x'){
   $core = getCoreObject();
-	$objPage = getPageObject();
+  $objPage = getPageObject();
   $objPageContacts = $objPage->getContactsValues('contact');  
   
   $arrContactOptions = array();
   if(is_array($objPage->getFieldValue('contact_option'))){
-    $arrContactOptions = $objPage->getFieldValue('contact_option');	
+    $arrContactOptions = $objPage->getFieldValue('contact_option'); 
   }
   
   $strHtmlOutput = '';
@@ -1508,7 +1532,7 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
                   <div class="clear"></div>
                 </div>
                 <div class="clear"></div>
-              </div>';	
+              </div>';  
       }else{
         $strHtmlOutput .= '
               <div class="'.$strContainerClass.'">
@@ -1535,7 +1559,7 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
                   <div class="clear"></div>
                 </div>
                 <div class="clear"></div>
-              </div>';	
+              </div>';  
       }
     }  
   }
