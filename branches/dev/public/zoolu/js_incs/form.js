@@ -682,7 +682,7 @@ Massiveart.Form = Class.create({
       });
     }
   },
-    
+  
   /**
    * initVideoChannelUserObserver
    */
@@ -694,6 +694,41 @@ Massiveart.Form = Class.create({
         }
       }.bind(this));
     }
+  },
+  
+  /**
+   * getVideoSearchSelect
+   */
+  getVideoSearchSelect: function(elementId, channelId, searchString){
+  	if($('div_'+elementId)){
+  		new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getvideoselect', {
+        parameters: { 
+          elementId: elementId,
+          channelId: channelId,
+          channelUserId: '',
+          searchString: searchString,
+          value: $F(elementId)
+        },
+        evalScripts: true,
+        onComplete: function() {
+          myCore.removeBusyClass('div_'+elementId);
+          // TODO: scroll to element
+        }.bind(this)
+      });
+  	}
+  },
+  
+  /**
+   * initVideoSearch
+   */
+  initVideoSearch: function(elementId) {
+	  if($(elementId+'Search')){
+      $(elementId+'Search').observe('change', function(event){
+        if(Event.element(event).value != ''){
+        	this.getVideoSearchSelect(elementId, $F(elementId+'TypeId'), Event.element(event).value);
+        }
+      }.bind(this));
+	  }
   },
   
   /**
