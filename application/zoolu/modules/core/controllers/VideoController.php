@@ -5,6 +5,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-14: Thomas Schedler
+ * 1.1, 2009-07-30: Florian Mathis, Youtube Service
  *
  * @author Thomas Schedler <ths@massiveart.com>
  * @version 1.0
@@ -32,7 +33,6 @@ class Core_VideoController extends AuthControllerAction {
     try{
 
       $arrVideos = array();
-       $arrChannelUser = $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
 
       $objRequest = $this->getRequest();
       $intChannelId = $objRequest->getParam('channelId');
@@ -41,12 +41,17 @@ class Core_VideoController extends AuthControllerAction {
       $strValue = $objRequest->getParam('value');
 
       switch($intChannelId){
+      	/*
+      	 * Vimeo Controller
+      	 */
         case $this->core->sysConfig->video_channels->vimeo->id :
           /**
            * Requires simplevimeo base class
            */
           require_once(GLOBAL_ROOT_PATH.'library/vimeo/vimeo.class.php');
 
+          $arrChannelUser = $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
+          
           if(array_key_exists('id', $arrChannelUser)){
             // Now lets do the user search query. We will get an response object containing everything we need
             $objResponse = VimeoVideosRequest::getList($this->core->sysConfig->video_channels->vimeo->users->user->id);
@@ -54,17 +59,45 @@ class Core_VideoController extends AuthControllerAction {
             // We want the result videos as an array of objects
             $arrVideos = $objResponse->getVideos();
           }else if($strChannelUserId !== ''){
-            // Now lets do the user search query. We will get an response object containing everything we need
-            $objResponse = VimeoVideosRequest::getList($strChannelUserId);
-
-            // We want the result videos as an array of objects
-            $arrVideos = $objResponse->getVideos();
+          	if(is_array($arrChannelUser)) {
+	          	foreach($arrChannelUser AS $chUser){
+	          		if($chUser['id'] == $strChannelUserId) {
+	          			// Now lets do the user search query. We will get an response object containing everything we need
+			            $objResponse = VimeoVideosRequest::getList($strChannelUserId);
+			
+			            // We want the result videos as an array of objects
+			            $arrVideos = $objResponse->getVideos();
+	          		}
+	          	}      
+          	}      
           }
-          break;
+          
+          // Set Channel Users
+          $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array() : $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
+      	break;
+      	
+      	/**
+      	 * Youtube Controller
+      	 */
+      	case $this->core->sysConfig->video_channels->youtube->id :
+      		$arrChannelUser = $this->core->sysConfig->video_channels->youtube->users->user->toArray();
+          	
+          $objResponse = new Zend_Gdata_YouTube();
+				  $objResponse->setMajorProtocolVersion(2);
+					  
+				  if(array_key_exists('id', $arrChannelUser)){
+				  	$arrVideos = $objResponse->getuserUploads($this->core->sysConfig->video_channels->youtube->users->user->id);
+				  }else if($strChannelUserId !== ''){
+				  	$arrVideos = $objResponse->getuserUploads($strChannelUserId);
+				  }
+					  
+				  // Set Channel Users
+				  $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array() : $this->core->sysConfig->video_channels->youtube->users->user->toArray();
+      	break;
+          
       }
-
+      
       $this->view->elements = $arrVideos;
-      $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array() : $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
       $this->view->channelUserId = $strChannelUserId;
       $this->view->value = $strValue;
       $this->view->elementId = $strElementId;
