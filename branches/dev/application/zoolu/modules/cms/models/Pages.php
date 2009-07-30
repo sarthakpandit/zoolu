@@ -68,8 +68,7 @@ class Model_Pages {
    * @author Daniel Rotter <daniel.rotter@massiveart.com>
    * @version 1.0
    */
-  public function loadPlugin($intElementId, $arrFields, $strType)
-  {
+  public function loadPlugin($intElementId, $arrFields, $strType) {
   	$this->core->logger->debug('cms->models->Model_Pages->loadPlugin('.$intElementId.', '.$arrFields.', '.$strType.')');
   	$objPagePluginTable = $this->getPluginTable($strType);
   	
@@ -91,8 +90,7 @@ class Model_Pages {
    * @author Daniel Rotter <daniel.rotter@massiveart.com>
    * @version 1.0
    */
-  public function addPlugin($intElementId, $arrValues, $strType)
-  {
+  public function addPlugin($intElementId, $arrValues, $strType) {
   	$this->core->logger->debug('cms->models->Model_Pages->addPlugin('.$arrValues.','.$strType.')');
   	
   	$objPageData = $this->loadPage($intElementId);
@@ -780,7 +778,7 @@ class Model_Pages {
       $strWhere .= 'AND '.$this->objPageVideosTable->getAdapter()->quoteInto('version = ?', $objPage->version);
       $this->objPageVideosTable->delete($strWhere);
 
-      if($mixedVideoId > 0 && $mixedVideoId != ''){
+      if($mixedVideoId != ''){
         $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
         $arrData = array('pageId'       => $objPage->pageId,
                          'version'      => $objPage->version,
@@ -1203,8 +1201,7 @@ class Model_Pages {
    * @author Daniel Rotter <daniel.rotter@massiveart.com>
    * @version 1.0
    */
-  public function getPluginTable($type)
-  {
+  public function getPluginTable($type) {
     require_once(GLOBAL_ROOT_PATH.'application/plugins/'.$type.'/data/models/Page'.$type.'.php');
     $strClass = 'Model_Table_Page'.$type;
     return new $strClass();
