@@ -22,23 +22,44 @@
 	      }
 	    ?>
 	   </select>
+	   <?php 
+	   /*
+	    * Display Search, if Youtube Service is selected
+	    */
+	   if($this->idVideoType == 2) {?>
+		   <br/><br/>
+		   <label class="fieldtitle" for="<?php echo $this->elementId; ?>Search">Video suchen</label><br/>
+			 <input type="text" id="<?php echo $this->elementId; ?>Search" name="<?php echo $this->elementId; ?>Search"/>
+		 <?php } ?>
 	</div>
 </div>
 <script type="text/javascript" language="javascript">//<![CDATA[
   $('div_<?php echo $this->elementId; ?>_users').update($('divVideoChannelUser_<?php echo $this->elementId; ?>').innerHTML);
   $('divVideoChannelUser_<?php echo $this->elementId; ?>').remove();
   myForm.initVideoChannelUserObserver('<?php echo $this->elementId; ?>');
+  myForm.initVideoSearch('<?php echo $this->elementId; ?>');
 //]]>
 </script>
 
 <?php else : ?>
 <div id="divVideoChannelDisplay">
-	<div id="divVideoChannelUser_<?php echo $this->elementId; ?>" style="display:none;"></div>
+	<div id="divVideoChannelUser_<?php echo $this->elementId; ?>" style="display:none;">
+	<?php 
+   /*
+    * Display Search, if Youtube Service is selected
+    */
+  if($this->idVideoType == 2) {
+   	?>
+	   <label class="fieldtitle" for="<?php echo $this->elementId; ?>Search">Video suchen</label><br/>
+		 <input type="text" id="<?php echo $this->elementId; ?>Search" name="<?php echo $this->elementId; ?>Search"/>
+	 <?php } ?>
+	</div>
 </div>
 <script type="text/javascript" language="javascript">//<![CDATA[
   $('div_<?php echo $this->elementId; ?>_users').update($('divVideoChannelUser_<?php echo $this->elementId; ?>').innerHTML);
   $('divVideoChannelUser_<?php echo $this->elementId; ?>').remove();
   myForm.initVideoChannelUserObserver('<?php echo $this->elementId; ?>');
+  myForm.initVideoSearch('<?php echo $this->elementId; ?>');
 //]]>
 </script>
 <?php  endif; ?>
