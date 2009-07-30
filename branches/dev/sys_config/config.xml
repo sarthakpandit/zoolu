@@ -544,11 +544,20 @@
           </user>
         </users>
       </vimeo>
+      <youtube>
+      	<id>2</id>
+				<users>
+      		<user>
+      			<id>GoogleDevelopers</id>
+      			<name>GoogleDevelopers</name>
+      		</user>
+      	</users>
+      </youtube>
     </video_channels>
     
   	<!-- Application Keys -->
   	<key>
-    	<gmaps>ABQIAAAAYd6HpKB1Vfqec8cb_5YrlhRtA2_S2kiI47KJ4sJy_X22ETSKqBTcMnbqrvhiPT2Y5ziNW3jseAb6Ig</gmaps>
+    	<gmaps>ABQIAAAA-HDjFpqTqvSFv3M3yKNuPhSJMtSQ88rRPHL8RT8y4VKghHIOYRSrWth16V7exTP5KN9Rrf5OKhKRIg</gmaps>
   	</key>
   </production>
 
