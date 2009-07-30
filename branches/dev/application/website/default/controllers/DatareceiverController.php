@@ -1,4 +1,34 @@
 <?php
+/**
+ * ZOOLU - Content Management System
+ * Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
+ *
+ * LICENSE
+ *
+ * This file is part of ZOOLU.
+ *
+ * ZOOLU is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ZOOLU is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
+ *
+ * For further information visit our website www.getzoolu.org 
+ * or contact us at zoolu@getzoolu.org
+ *
+ * @category   ZOOLU
+ * @package    application.website.default.controllers
+ * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
+ * @version    $Id: version.php
+ */
 
 /**
  * DatareceiverController
@@ -235,15 +265,15 @@ class DatareceiverController extends Zend_Controller_Action {
                     <tr>
                        <td>
                          <h2>Sehr geehrte(r) '.$this->strUserFName.' '.$this->strUserSName.'</h2>
-                         Vielen Dank für Ihre Anmeldung. Diese ist bei uns eingelangt und wir haben
-                         Ihren Namen auf die Teilnehmerliste gesetzt. Bei Rückfragen oder etwaigen Änderungen
-                         wird sich der/die zuständige Mitarbeiter/in in den nächsten Tagen mit Ihnen in
+                         Vielen Dank fï¿½r Ihre Anmeldung. Diese ist bei uns eingelangt und wir haben
+                         Ihren Namen auf die Teilnehmerliste gesetzt. Bei Rï¿½ckfragen oder etwaigen ï¿½nderungen
+                         wird sich der/die zustï¿½ndige Mitarbeiter/in in den nï¿½chsten Tagen mit Ihnen in
                          Verbindung setzen.<br/>
-                         Ansonsten stehen wir Ihnen auch gerne telefonisch unter 05572/24465-400 für
-                         weitere Auskünfte zur Verfügung.<br/><br/>
-                         Mit freundlichen Grüßen<br/>
+                         Ansonsten stehen wir Ihnen auch gerne telefonisch unter 05572/24465-400 fï¿½r
+                         weitere Auskï¿½nfte zur Verfï¿½gung.<br/><br/>
+                         Mit freundlichen Grï¿½ï¿½en<br/>
                          Ihr Sportservice-Team<br/><br/><br/>
-                         <strong>Sportservice Vorarlberg</strong>, Höchsterstraße 82, 6850 Dornbirn<br/>
+                         <strong>Sportservice Vorarlberg</strong>, Hï¿½chsterstraï¿½e 82, 6850 Dornbirn<br/>
                          <a href="http://www.sportservice-v.at">www.sportservice-v.at</a>, <a href="mailto:info@sportservice-v.at">info@sportservice-v.at</a>, +43 (0)5572 / 244 65 - 400
                        </td>
                     </tr>
