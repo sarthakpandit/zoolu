@@ -38,10 +38,8 @@ class PluginLoader extends Zend_Loader_PluginLoader
 	 * Returns the internal PluginLoader
 	 * @return Zend_Loader_PluginLoader
 	 */
-	public function getPluginLoader()
-	{
-		if(!($this->objPluginLoader instanceof Zend_Loader_PluginLoader))
-		{
+	public function getPluginLoader(){
+		if(!($this->objPluginLoader instanceof Zend_Loader_PluginLoader)){
 			$this->objPluginLoader = new Zend_Loader_PluginLoader();
 		}
 		return $this->objPluginLoader;
@@ -51,8 +49,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
 	 * Sets the internal PluginLoader
 	 * @param Zend_Loader_PluginLoader $objPluginLoader
 	 */
-	public function setPluginLoader(Zend_Loader_PluginLoader &$objPluginLoader)
-	{
+	public function setPluginLoader(Zend_Loader_PluginLoader &$objPluginLoader){
 		$this->objPluginLoader = $objPluginLoader;
 	}
 	
@@ -60,8 +57,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
 	 * Sets the type of the PluginLoader
 	 * @param $strType
 	 */
-	public function setPluginType($strType)
-	{
+	public function setPluginType($strType){
 		$this->strType = $strType;
 	}
 	
@@ -72,8 +68,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param string $path
    * @return Zend_Loader_PluginLoader
    */
-  public function addPrefixPath($prefix, $path)
-  {
+  public function addPrefixPath($prefix, $path){
   	return $this->getPluginLoader()->addPrefixPath($prefix, $path);
   }
   
@@ -85,8 +80,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param string $path OPTIONAL
    * @return Zend_Loader_PluginLoader
    */
-  public function removePrefixPath($prefix, $path = null)
-  {
+  public function removePrefixPath($prefix, $path = null){
   	return $this->getPluginLoader()->removePrefixPath($prefix, $path);
   }
   
@@ -96,8 +90,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param string $name
    * @return Zend_Loader_PluginLoader
    */
-  public function isLoaded($name)
-  {
+  public function isLoaded($name){
   	return $this->getPluginLoader()->isLoaded($name);
   }
    /**
@@ -106,8 +99,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param string $name
    * @return string
    */
-  public function getClassName($name)
-  {
+  public function getClassName($name){
   	return $this->getPluginLoader()->getClassName($name);
   }
   
@@ -117,16 +109,13 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param string $name
    * @return string
    */
-  public function load($name)
-  { 
+  public function load($name){ 
   	//change name for checking
   	$strName = str_replace('Form', '', $name);
-  	if(in_array(ucfirst($strName), $this->arrFields))
-  	{
+  	if(in_array(ucfirst($strName), $this->arrFields)){
   	  //Field
 	    $strPrefixField = '';
-	    switch($this->strType)
-	    {
+	    switch($this->strType){
 	      case self::TYPE_FORM_HELPER:
 	        $strPrefixField = 'Form_Helper';
 	        break;
@@ -147,12 +136,10 @@ class PluginLoader extends Zend_Loader_PluginLoader
       
       $this->removePrefixPath($strPrefixField);
   	}
-  	else
-  	{
+  	else{
 	  	//Plugin
 	  	$strPrefixPlugin = '';
-	  	switch($this->strType)
-	  	{
+	  	switch($this->strType){
 	  		case self::TYPE_FORM_HELPER:
 	  			$strPrefixPlugin = 'Plugin_FormHelper';
 	  			break;
@@ -183,11 +170,9 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param $strPlugin
    * @return string
    */
-  private function getPluginPath($strPlugin)
-  {
+  private function getPluginPath($strPlugin){
   	$strSearch = '%PLUGIN%';
-  	switch($this->strType)
-  	{
+  	switch($this->strType){
   		case self::TYPE_FORM_HELPER:
   			$strPath = 'application/plugins/%PLUGIN%/forms/helpers';
   			$strName = str_replace('Form', '', $strPlugin);
@@ -218,11 +203,9 @@ class PluginLoader extends Zend_Loader_PluginLoader
    * @param $strField
    * @return string
    */
-  private function getFieldPath($strField)
-  {
+  private function getFieldPath($strField){
     $strSearch = '%FIELD%';
-    switch($this->strType)
-    {
+    switch($this->strType){
       case self::TYPE_FORM_HELPER:
         $strPath = 'library/massiveart/generic/fields/%FIELD%/forms/helpers';
         $strName = str_replace('Form', '', $strField);
