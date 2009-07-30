@@ -331,7 +331,7 @@ CREATE TABLE  `zoolu`.`decorators` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`decorators`
@@ -344,7 +344,8 @@ INSERT INTO `zoolu`.`decorators` VALUES  (1,'Input'),
  (3,'Tag'),
  (4,'Overflow'),
  (5,'Url'),
- (6,'VideoSelect');
+ (6,'VideoSelect'),
+ (7,'Gmaps');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `decorators` ENABLE KEYS */;
 
@@ -769,7 +770,7 @@ CREATE TABLE  `zoolu`.`fileAttributes` (
   PRIMARY KEY (`id`),
   KEY `idFiles` (`idFiles`),
   CONSTRAINT `fileAttributes_ibfk_1` FOREIGN KEY (`idFiles`) REFERENCES `files` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`fileAttributes`
@@ -777,9 +778,6 @@ CREATE TABLE  `zoolu`.`fileAttributes` (
 
 /*!40000 ALTER TABLE `fileAttributes` DISABLE KEYS */;
 LOCK TABLES `fileAttributes` WRITE;
-INSERT INTO `zoolu`.`fileAttributes` VALUES  (63,93,640,200),
- (64,94,640,201),
- (65,95,640,201);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `fileAttributes` ENABLE KEYS */;
 
@@ -822,7 +820,7 @@ CREATE TABLE  `zoolu`.`fileTitles` (
   PRIMARY KEY (`id`),
   KEY `idFiles` (`idFiles`),
   CONSTRAINT `fileTitles_ibfk_1` FOREIGN KEY (`idFiles`) REFERENCES `files` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`fileTitles`
@@ -883,7 +881,7 @@ CREATE TABLE  `zoolu`.`files` (
   `version` int(10) NOT NULL,
   `archived` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`files`
@@ -891,10 +889,7 @@ CREATE TABLE  `zoolu`.`files` (
 
 /*!40000 ALTER TABLE `files` DISABLE KEYS */;
 LOCK TABLES `files` WRITE;
-INSERT INTO `zoolu`.`files` VALUES  (30,'4a2a39af5b456',3,'',4,2,0,0,'4a2a39af5b456.pdf',NULL,3,'2009-06-06 11:41:03',559,'pdf','application/pdf',1,0),
- (93,'4a7038b0dd3d0',6,'',5,2,0,1,'4a7038b0dd3d0.gif',NULL,6,'2009-07-29 13:55:29',43,'gif','image/gif',1,0),
- (94,'4a7038d4dc6ed',6,'',5,2,0,1,'4a7038d4dc6ed.gif',NULL,6,'2009-07-29 13:56:05',41,'gif','image/gif',1,0),
- (95,'4a703925a365e',6,'',5,2,0,1,'4a703925a365e.gif',NULL,6,'2009-07-29 13:57:26',41,'gif','image/gif',1,0);
+INSERT INTO `zoolu`.`files` VALUES  (30,'4a2a39af5b456',3,'',4,2,0,0,'4a2a39af5b456.pdf',NULL,3,'2009-06-06 11:41:03',559,'pdf','application/pdf',1,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 
@@ -1726,7 +1721,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles` (
   KEY `idFiles` (`idFiles`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-InstanceFiles_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE,
   CONSTRAINT `page-DEFAULT_PAGE_1-1-InstanceFiles_ibfk_2` FOREIGN KEY (`idFiles`) REFERENCES `files` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=410 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles`
@@ -1804,7 +1799,7 @@ LOCK TABLES `page-DEFAULT_PAGE_1-1-Instances` WRITE;
 INSERT INTO `zoolu`.`page-DEFAULT_PAGE_1-1-Instances` VALUES  (1,'4a112157d69eb',1,1,3,'','','','','','','','','',2,'2009-05-18 10:50:31','2009-07-23 11:05:12'),
  (2,'4a113342dffe5',1,1,3,'','','','','','','','','',2,'2009-05-18 12:06:58','2009-06-09 18:52:41'),
  (3,'4a1133f43284a',1,1,2,'','','','','','','','','',2,'2009-05-18 12:09:56','2009-05-18 12:09:56'),
- (4,'4a115ca65d8bb',1,1,6,'Testseite mit Überschrift für den Artikel','','','Bildergalerie',' Dokumente','','','Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.asdf','1',2,'2009-05-18 15:03:34','2009-07-29 15:34:04'),
+ (4,'4a115ca65d8bb',1,1,6,'Testseite mit Überschrift für den Artikel','','','Bildergalerie',' Dokumente','','','Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.asdf','1',2,'2009-05-18 15:03:34','2009-07-30 10:52:37'),
  (5,'4a1cf55c8b3e5',1,1,2,'','','','','','','','','',2,'2009-05-27 10:10:04','2009-05-27 10:10:04'),
  (6,'4a115ca65d8bb',1,2,3,'','','','','','','','','2',3,'2009-06-08 15:52:02','2009-06-10 09:41:49'),
  (15,'4a112157d69eb',1,2,3,'','','','','','','','','',3,'2009-06-09 11:34:21','2009-06-09 18:50:35'),
@@ -1838,7 +1833,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles` (
   KEY `idFiles` (`idFiles`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-InstanceFiles_ibfk_1` FOREIGN KEY (`idRegionInstances`) REFERENCES `page-DEFAULT_PAGE_1-1-Region11-Instances` (`id`) ON DELETE CASCADE,
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-InstanceFiles_ibfk_2` FOREIGN KEY (`idFiles`) REFERENCES `files` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`
@@ -1896,7 +1891,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=234 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
@@ -1915,8 +1910,8 @@ INSERT INTO `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances` VALUES  (2,'4a1cf
  (178,'4a681b0f66d2a',1,1,1,'',''),
  (182,'4a112157d69eb',1,1,1,'',''),
  (183,'4a676ebfe3a7a',1,1,1,'',''),
- (232,'4a115ca65d8bb',1,1,1,'Test Thomas','<p>asdfasdfsd</p>'),
- (233,'4a115ca65d8bb',1,1,2,'Test Thomas 2','<p>asfsdfasdf</p>');
+ (238,'4a115ca65d8bb',1,1,1,'Test Thomas','<p>asdfasdfsd</p>'),
+ (239,'4a115ca65d8bb',1,1,2,'Test Thomas 2','<p>asfsdfasdf</p>');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` ENABLE KEYS */;
 
@@ -2353,7 +2348,7 @@ CREATE TABLE  `zoolu`.`pageCategories` (
   KEY `pageId` (`pageId`),
   KEY `version` (`version`),
   CONSTRAINT `pageCategories_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageCategories`
@@ -2481,7 +2476,7 @@ CREATE TABLE  `zoolu`.`pageGmaps` (
   `created` timestamp NULL DEFAULT NULL,
   `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageGmaps`
@@ -2489,7 +2484,7 @@ CREATE TABLE  `zoolu`.`pageGmaps` (
 
 /*!40000 ALTER TABLE `pageGmaps` DISABLE KEYS */;
 LOCK TABLES `pageGmaps` WRITE;
-INSERT INTO `zoolu`.`pageGmaps` VALUES  (42,'4a115ca65d8bb',1,1,'47.277831469519114','9.894561767578125',6,NULL,'2009-07-29 15:34:04');
+INSERT INTO `zoolu`.`pageGmaps` VALUES  (45,'4a115ca65d8bb',1,1,'47.38254402467962','9.7064208984375',6,NULL,'2009-07-30 10:52:37');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageGmaps` ENABLE KEYS */;
 
@@ -2514,7 +2509,7 @@ CREATE TABLE  `zoolu`.`pageLabels` (
   KEY `version` (`version`),
   KEY `pageId_2` (`pageId`,`version`),
   CONSTRAINT `pageLabels_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageLabels`
@@ -2640,7 +2635,7 @@ INSERT INTO `zoolu`.`pageTitles` VALUES  (1,'49f17460a4f9f',1,1,'Home',3,3,'2009
  (2,'4a112157d69eb',1,1,'Hauptpunkt 1',3,2,'2009-05-18 10:50:31','2009-07-23 11:05:21'),
  (3,'4a113342dffe5',1,1,'Hauptpunkt 2',3,2,'2009-05-18 12:06:58','2009-07-08 19:14:48'),
  (4,'4a1133f43284a',1,1,'Hauptpunkt 3',2,2,'2009-05-18 12:09:56','2009-05-18 12:09:56'),
- (5,'4a115ca65d8bb',1,1,'Testseite',6,2,'2009-05-18 15:03:34','2009-07-29 15:34:04'),
+ (5,'4a115ca65d8bb',1,1,'Testseite',6,2,'2009-05-18 15:03:34','2009-07-30 10:52:37'),
  (6,'4a116d34752df',1,1,'Testseite 2',3,2,'2009-05-18 16:14:12','2009-06-09 18:43:55'),
  (7,'4a1cf55c8b3e5',1,1,'Testseite 3',3,2,'2009-05-27 10:10:04','2009-07-08 19:18:48'),
  (8,'4a115ca65d8bb',1,2,'TEST EN',3,3,'2009-06-08 15:52:02','2009-06-10 09:41:49'),
@@ -2836,7 +2831,7 @@ INSERT INTO `zoolu`.`pages` VALUES  (1,8,3,1,1,1,1,1,3,0,'2009-04-24 10:12:50','
  (2,7,4,3,1,1,1,2,3,0,'2009-05-18 10:50:31','4a112157d69eb',1,2,0,'2009-05-18 10:50:31','2009-07-23 11:05:21','2009-06-09 11:34:19',2),
  (3,7,4,3,1,1,2,2,3,0,'2009-05-18 12:06:58','4a113342dffe5',1,2,0,'2009-05-18 12:06:58','2009-07-08 19:14:48','2009-06-09 18:51:23',2),
  (4,2,2,1,1,1,3,2,2,0,'2009-05-18 12:09:56','4a1133f43284a',1,2,0,'2009-05-18 12:09:56','2009-05-18 15:04:20',NULL,2),
- (5,2,1,1,0,1,1,2,6,1,'2009-05-18 15:03:34','4a115ca65d8bb',1,3,0,'2009-05-18 15:03:34','2009-07-29 15:34:04','2009-05-18 16:11:29',2),
+ (5,2,1,1,0,1,1,2,6,1,'2009-05-18 15:03:34','4a115ca65d8bb',1,3,0,'2009-05-18 15:03:34','2009-07-30 10:52:37','2009-05-18 16:11:29',2),
  (6,6,1,2,0,1,2,2,3,1,'2009-05-18 16:14:12','4a116d34752df',1,2,0,'2009-05-18 16:14:12','2009-06-09 19:14:10','2009-05-18 16:16:34',2),
  (7,13,1,4,0,1,3,2,3,1,'2009-05-27 10:10:04','4a1cf55c8b3e5',1,2,0,'2009-05-27 10:10:04','2009-07-08 19:18:48','2009-07-08 19:18:16',2),
  (8,2,2,1,1,0,12,2,3,0,'2009-06-10 14:26:02','4a2fa65ac1781',1,3,0,'2009-06-10 14:26:02','2009-06-10 14:26:02',NULL,1),
@@ -4189,7 +4184,7 @@ CREATE TABLE  `zoolu`.`videoTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`videoTypes`
@@ -4197,7 +4192,8 @@ CREATE TABLE  `zoolu`.`videoTypes` (
 
 /*!40000 ALTER TABLE `videoTypes` DISABLE KEYS */;
 LOCK TABLES `videoTypes` WRITE;
-INSERT INTO `zoolu`.`videoTypes` VALUES  (1,'Vimeo');
+INSERT INTO `zoolu`.`videoTypes` VALUES  (1,'Vimeo'),
+ (2,'Youtube');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `videoTypes` ENABLE KEYS */;
 
