@@ -32,7 +32,7 @@ class PluginLoader extends Zend_Loader_PluginLoader
 	private $arrFields = array('Contact', 'Document', 'Dselect', 'InternalLink',
 	                           'Media', 'MultiCheckboxTree', 'SelectTree', 'Tab',
 	                           'TabContainer', 'Tag', 'Template', 'Texteditor',
-	                           'Url', 'VideoSelect');
+	                           'Url');
 	
 	/**
 	 * Returns the internal PluginLoader
