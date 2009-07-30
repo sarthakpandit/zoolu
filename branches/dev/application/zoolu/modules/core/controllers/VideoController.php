@@ -39,6 +39,7 @@ class Core_VideoController extends AuthControllerAction {
       $strChannelUserId = $objRequest->getParam('channelUserId', '');
       $strElementId = $objRequest->getParam('elementId');
       $strValue = $objRequest->getParam('value');
+      $strSearchQuery = $objRequest->getParam('searchString');
 
       switch($intChannelId){
       	/*
@@ -51,6 +52,7 @@ class Core_VideoController extends AuthControllerAction {
           require_once(GLOBAL_ROOT_PATH.'library/vimeo/vimeo.class.php');
 
           $arrChannelUser = $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
+          $intIdVideoType = 1;
           
           if(array_key_exists('id', $arrChannelUser)){
             // Now lets do the user search query. We will get an response object containing everything we need
@@ -81,14 +83,21 @@ class Core_VideoController extends AuthControllerAction {
       	 */
       	case $this->core->sysConfig->video_channels->youtube->id :
       		$arrChannelUser = $this->core->sysConfig->video_channels->youtube->users->user->toArray();
+          $intIdVideoType = 2;
           	
           $objResponse = new Zend_Gdata_YouTube();
 				  $objResponse->setMajorProtocolVersion(2);
 					  
-				  if(array_key_exists('id', $arrChannelUser)){
+				  if(array_key_exists('id', $arrChannelUser) && $strSearchQuery === ''){
 				  	$arrVideos = $objResponse->getuserUploads($this->core->sysConfig->video_channels->youtube->users->user->id);
 				  }else if($strChannelUserId !== ''){
 				  	$arrVideos = $objResponse->getuserUploads($strChannelUserId);
+				  }else if($strSearchQuery !== ''){
+				  	$query = $objResponse->newVideoQuery();
+					  $query->setOrderBy('viewCount');
+					  $query->setSafeSearch('none');
+					  $query->setVideoQuery($strSearchQuery);
+					  $arrVideos = $objResponse->getVideoFeed($query->getQueryUrl(2));
 				  }
 					  
 				  // Set Channel Users
@@ -96,7 +105,7 @@ class Core_VideoController extends AuthControllerAction {
       	break;
           
       }
-      
+      $this->view->idVideoType = $intIdVideoType;
       $this->view->elements = $arrVideos;
       $this->view->channelUserId = $strChannelUserId;
       $this->view->value = $strValue;
