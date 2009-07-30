@@ -165,15 +165,6 @@ class PluginLoader extends Zend_Loader_PluginLoader
 	  		default:
 	  			$strPrefixPlugin = 'Plugin_DataHelper';
 	  	}
-	
-	  	//Decorator Path has to be included if the type is element
-//	  	if($this->strType == PluginLoader::TYPE_FORM_ELEMENT)
-//	  	{
-//		    $strPathPlugin = 'application/plugins/%PLUGIN%/forms/decorators';
-//		    $strNamePlugin = ucfirst($name);
-//		    $strPathPlugin = GLOBAL_ROOT_PATH.str_replace('%PLUGIN%', $strNamePlugin, $strPathPlugin);
-//		    $this->addPrefixPath('Plugin_FormDecorator', $strPathPlugin);
-//	  	}
 	  	
 	  	//Add Plugin and Field Path
 	  	$strPathPlugin = $this->getPluginPath($name);
