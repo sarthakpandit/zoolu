@@ -37,10 +37,13 @@
  * @package massiveart.forms.elements
  * @subpackage FormElementMultiAbstract
  */
-class FormElementMultiAbstract extends Zend_Form_Element_Multi
-{
-  public function __construct($spec, $options = null)
-  {
+class FormElementMultiAbstract extends Zend_Form_Element_Multi{
+	/**
+	 * constructor
+	 * @param $spec
+	 * @param $options
+	 */
+  public function __construct($spec, $options = null){
     $objLoader = new PluginLoader();
     $objLoader->setPluginLoader($this->getPluginLoader(PluginLoader::TYPE_FORM_DECORATOR));
     $objLoader->setPluginType(PluginLoader::TYPE_FORM_DECORATOR);

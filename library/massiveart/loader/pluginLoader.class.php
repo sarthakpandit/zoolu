@@ -37,8 +37,7 @@
  * @package massiveart.loader
  * @subpackage PluginLoader
  */
-class PluginLoader extends Zend_Loader_PluginLoader
-{
+class PluginLoader extends Zend_Loader_PluginLoader{
 	const TYPE_FORM_HELPER = 'helper';
 	const TYPE_FORM_ELEMENT = 'element';
 	const TYPE_FORM_DECORATOR = 'decorator';
