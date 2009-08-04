@@ -671,7 +671,7 @@ class Cms_PageController extends AuthControllerAction {
       $objField->setGenericSetup($objGenericSetup);
       $objField->loadLinkPage($intPageId);
 
-      require_once(GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/elements/InternalLink.php');
+      require_once(GLOBAL_ROOT_PATH.'library/massiveart/generic/fields/InternalLink/forms/elements/InternalLink.php');
       $objElement= new Form_Element_InternalLink($strFieldId, array(
           'value' => $objField->getValue(),
           'label' => $objField->title,
