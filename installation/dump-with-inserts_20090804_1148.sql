@@ -1,7 +1,7 @@
 -- MySQL Administrator dump 1.4
 --
 -- ------------------------------------------------------
--- Server version	5.1.36
+-- Server version	5.1.37
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -520,9 +520,9 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `zoolu`.`fieldTypeGroups`;
 CREATE TABLE  `zoolu`.`fieldTypeGroups` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
+  `title` varchar(255) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`fieldTypeGroups`
@@ -1788,7 +1788,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Instances`
@@ -1891,7 +1891,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
@@ -2476,7 +2476,7 @@ CREATE TABLE  `zoolu`.`pageGmaps` (
   `created` timestamp NULL DEFAULT NULL,
   `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageGmaps`
@@ -2484,7 +2484,8 @@ CREATE TABLE  `zoolu`.`pageGmaps` (
 
 /*!40000 ALTER TABLE `pageGmaps` DISABLE KEYS */;
 LOCK TABLES `pageGmaps` WRITE;
-INSERT INTO `zoolu`.`pageGmaps` VALUES  (45,'4a115ca65d8bb',1,1,'47.38254402467962','9.7064208984375',6,NULL,'2009-07-30 10:52:37');
+INSERT INTO `zoolu`.`pageGmaps` VALUES  (45,'4a115ca65d8bb',1,1,'47.38254402467962','9.7064208984375',6,NULL,'2009-07-30 10:52:37'),
+ (46,'4a77ef3109cf9',1,1,'47.503042','9.747067',6,NULL,'2009-08-04 10:20:01');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageGmaps` ENABLE KEYS */;
 
@@ -2536,7 +2537,7 @@ CREATE TABLE  `zoolu`.`pageLinks` (
   KEY `idPages` (`idPages`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `pageLinks_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageLinks`
@@ -2545,7 +2546,8 @@ CREATE TABLE  `zoolu`.`pageLinks` (
 /*!40000 ALTER TABLE `pageLinks` DISABLE KEYS */;
 LOCK TABLES `pageLinks` WRITE;
 INSERT INTO `zoolu`.`pageLinks` VALUES  (6,6,'4a115ca65d8bb'),
- (7,13,'4a676ebfe3a7a');
+ (7,13,'4a676ebfe3a7a'),
+ (8,15,'4a113342dffe5');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageLinks` ENABLE KEYS */;
 
@@ -2623,7 +2625,7 @@ CREATE TABLE  `zoolu`.`pageTitles` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `pageTitles_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageTitles`
@@ -2729,7 +2731,7 @@ CREATE TABLE  `zoolu`.`pageUrls` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `pageUrls_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`pageUrls`
@@ -2819,7 +2821,7 @@ CREATE TABLE  `zoolu`.`pages` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   KEY `version` (`version`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pages`
