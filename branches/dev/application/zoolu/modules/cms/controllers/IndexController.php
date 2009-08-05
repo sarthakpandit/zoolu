@@ -61,6 +61,15 @@ class Cms_IndexController extends AuthControllerAction {
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
     $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
     $this->view->assign('module', $this->core->sysConfig->modules->cms);
+    
+    /*
+     * Load Plugin JS
+     */
+    $strJsPlugin = '';
+    foreach($this->core->sysConfig->pluginsJs as $key => $value) {
+    	$strJsPlugin .= '<script type="text/javascript" src="'.$value.'"></script>';
+    }
+    $this->view->assign('jsPlugins', $strJsPlugin);
   } 
 
 }
