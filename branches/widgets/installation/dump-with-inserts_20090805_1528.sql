@@ -2472,7 +2472,10 @@ CREATE TABLE  `zoolu`.`pageGmaps` (
   `creator` bigint(20) unsigned NOT NULL,
   `created` timestamp NULL DEFAULT NULL,
   `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `pageId` (`pageId`),
+  KEY `version` (`version`),
+  CONSTRAINT `pageGmaps_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
 
 --
@@ -2481,8 +2484,6 @@ CREATE TABLE  `zoolu`.`pageGmaps` (
 
 /*!40000 ALTER TABLE `pageGmaps` DISABLE KEYS */;
 LOCK TABLES `pageGmaps` WRITE;
-INSERT INTO `zoolu`.`pageGmaps` VALUES  (45,'4a115ca65d8bb',1,1,'47.38254402467962','9.7064208984375',6,NULL,'2009-07-30 10:52:37'),
- (46,'4a77ef3109cf9',1,1,'47.503042','9.747067',6,NULL,'2009-08-04 10:20:01');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageGmaps` ENABLE KEYS */;
 
@@ -4243,6 +4244,114 @@ INSERT INTO `zoolu`.`virtualFolderTypes` VALUES  (1,'shallow'),
  (2,'deep');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `virtualFolderTypes` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`widgetInstanceProperties`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`widgetInstanceProperties`;
+CREATE TABLE  `zoolu`.`widgetInstanceProperties` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `key` varchar(60) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  `idWidgetInstances` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `widgetInstanceProperties_ibfk_1` (`idWidgetInstances`),
+  CONSTRAINT `widgetInstanceProperties_ibfk_1` FOREIGN KEY (`idWidgetInstances`) REFERENCES `widgetInstances` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zoolu`.`widgetInstanceProperties`
+--
+
+/*!40000 ALTER TABLE `widgetInstanceProperties` DISABLE KEYS */;
+LOCK TABLES `widgetInstanceProperties` WRITE;
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `widgetInstanceProperties` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`widgetInstances`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`widgetInstances`;
+CREATE TABLE  `zoolu`.`widgetInstances` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sortPosition` bigint(20) NOT NULL,
+  `idParent` bigint(20) NOT NULL,
+  `idParentTypes` bigint(20) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `changed` timestamp NULL DEFAULT NULL,
+  `published` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `idStatus` bigint(20) NOT NULL,
+  `sortTimestamp` timestamp NULL DEFAULT NULL,
+  `creator` bigint(20) NOT NULL,
+  `publisher` bigint(20) DEFAULT NULL,
+  `idWidgets` bigint(20) NOT NULL,
+  `widgetId` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `widgetInstances_ibfk_1` (`idWidgets`),
+  CONSTRAINT `widgetInstances_ibfk_1` FOREIGN KEY (`idWidgets`) REFERENCES `widgets` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zoolu`.`widgetInstances`
+--
+
+/*!40000 ALTER TABLE `widgetInstances` DISABLE KEYS */;
+LOCK TABLES `widgetInstances` WRITE;
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `widgetInstances` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`widgetProperties`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`widgetProperties`;
+CREATE TABLE  `zoolu`.`widgetProperties` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `key` varchar(60) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  `idWidgets` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `widgetProperties_ibfk_1` (`idWidgets`),
+  CONSTRAINT `widgetProperties_ibfk_1` FOREIGN KEY (`idWidgets`) REFERENCES `widgets` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zoolu`.`widgetProperties`
+--
+
+/*!40000 ALTER TABLE `widgetProperties` DISABLE KEYS */;
+LOCK TABLES `widgetProperties` WRITE;
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `widgetProperties` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`widgets`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`widgets`;
+CREATE TABLE  `zoolu`.`widgets` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `author` varchar(255) NOT NULL,
+  `description` text,
+  `version` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zoolu`.`widgets`
+--
+
+/*!40000 ALTER TABLE `widgets` DISABLE KEYS */;
+LOCK TABLES `widgets` WRITE;
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `widgets` ENABLE KEYS */;
 
 
 
