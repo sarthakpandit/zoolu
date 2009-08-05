@@ -5,7 +5,7 @@ The following folders have to be created manually:
 /tmp/cache/gen_forms
 /tmp/cache/pages
 /tmp/search_index
-/tmp/serach_index/pages
+/tmp/search_index/pages
 /tmp/sessions
 /log
 
