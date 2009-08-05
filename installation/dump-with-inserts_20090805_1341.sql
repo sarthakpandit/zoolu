@@ -820,7 +820,7 @@ CREATE TABLE  `zoolu`.`fileTitles` (
   PRIMARY KEY (`id`),
   KEY `idFiles` (`idFiles`),
   CONSTRAINT `fileTitles_ibfk_1` FOREIGN KEY (`idFiles`) REFERENCES `files` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`fileTitles`
@@ -828,7 +828,6 @@ CREATE TABLE  `zoolu`.`fileTitles` (
 
 /*!40000 ALTER TABLE `fileTitles` DISABLE KEYS */;
 LOCK TABLES `fileTitles` WRITE;
-INSERT INTO `zoolu`.`fileTitles` VALUES  (7,30,1,'Stapel Dokumente','','0000-00-00 00:00:00');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `fileTitles` ENABLE KEYS */;
 
@@ -881,7 +880,7 @@ CREATE TABLE  `zoolu`.`files` (
   `version` int(10) NOT NULL,
   `archived` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`files`
@@ -889,7 +888,6 @@ CREATE TABLE  `zoolu`.`files` (
 
 /*!40000 ALTER TABLE `files` DISABLE KEYS */;
 LOCK TABLES `files` WRITE;
-INSERT INTO `zoolu`.`files` VALUES  (30,'4a2a39af5b456',3,'',4,2,0,0,'4a2a39af5b456.pdf',NULL,3,'2009-06-06 11:41:03',559,'pdf','application/pdf',1,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 
@@ -1721,7 +1719,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles` (
   KEY `idFiles` (`idFiles`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-InstanceFiles_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE,
   CONSTRAINT `page-DEFAULT_PAGE_1-1-InstanceFiles_ibfk_2` FOREIGN KEY (`idFiles`) REFERENCES `files` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles`
@@ -1729,7 +1727,6 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles` (
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-InstanceFiles` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PAGE_1-1-InstanceFiles` WRITE;
-INSERT INTO `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles` VALUES  (32,'4a115ca65d8bb',1,0,30,8);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-InstanceFiles` ENABLE KEYS */;
 
@@ -1788,7 +1785,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Instances`
@@ -1891,7 +1888,7 @@ CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=241 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
 -- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
@@ -2625,7 +2622,7 @@ CREATE TABLE  `zoolu`.`pageTitles` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `pageTitles_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pageTitles`
@@ -2714,54 +2711,6 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `zoolu`.`pageUrls`
---
-
-DROP TABLE IF EXISTS `zoolu`.`pageUrls`;
-CREATE TABLE  `zoolu`.`pageUrls` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `pageId` varchar(32) NOT NULL,
-  `version` int(10) unsigned NOT NULL,
-  `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
-  `url` varchar(255) NOT NULL,
-  `idUsers` bigint(20) unsigned NOT NULL,
-  `creator` bigint(20) unsigned NOT NULL,
-  `created` timestamp NULL DEFAULT NULL,
-  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `pageId` (`pageId`),
-  CONSTRAINT `pageUrls_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
-
---
--- Dumping data for table `zoolu`.`pageUrls`
---
-
-/*!40000 ALTER TABLE `pageUrls` DISABLE KEYS */;
-LOCK TABLES `pageUrls` WRITE;
-INSERT INTO `zoolu`.`pageUrls` VALUES  (1,'49f17460a4f9f',1,1,'',3,3,'2009-04-24 10:14:16','2009-04-24 10:14:16'),
- (2,'4a112157d69eb',1,1,'hauptpunkt-1/',2,2,'2009-05-18 10:50:31','2009-05-18 10:50:31'),
- (3,'4a113342dffe5',1,1,'hauptpunkt-2/',2,2,'2009-05-18 12:06:58','2009-05-18 12:06:58'),
- (4,'4a1133f43284a',1,1,'hauptpunkt-3/',2,2,'2009-05-18 12:09:56','2009-05-18 12:09:56'),
- (5,'4a115ca65d8bb',1,1,'hauptpunkt-1/testseite',2,2,'2009-05-18 15:03:34','2009-05-18 15:03:34'),
- (6,'4a1cf55c8b3e5',1,1,'hauptpunkt-3/testseite-3',2,2,'2009-05-27 10:10:04','2009-05-27 10:10:04'),
- (16,'4a115ca65d8bb',1,2,'main-navigation-1/test-en',3,3,'2009-06-08 18:14:44','2009-06-08 18:14:44'),
- (17,'4a112157d69eb',1,2,'main-navigation-1/',3,3,'2009-06-09 11:34:21','2009-06-09 11:34:21'),
- (18,'4a116d34752df',1,1,'hauptpunkt-2/testseite-2',3,3,'2009-06-09 18:43:55','2009-06-09 18:43:55'),
- (19,'4a116d34752df',1,2,'testseite-2-en',3,3,'2009-06-09 18:44:11','2009-06-09 18:44:11'),
- (20,'4a113342dffe5',1,2,'main-navigation-2/',3,3,'2009-06-09 18:52:18','2009-06-09 18:52:18'),
- (21,'49f17460a4f9f',1,2,'',3,3,'2009-06-10 09:47:53','2009-06-10 09:47:53'),
- (22,'4a2fa65ac1781',1,1,'asdf/',3,3,'2009-06-10 14:26:02','2009-06-10 14:26:02'),
- (23,'4a40944a8ee78',1,1,'hauptpunkt-1/unterpunkt-1/',3,3,'2009-06-23 10:37:30','2009-06-23 10:37:30'),
- (24,'4a40946ce9d01',1,1,'hauptpunkt-1/unterpunkt-1/testseite-2',3,3,'2009-06-23 10:38:05','2009-06-23 10:38:05'),
- (25,'4a676ebfe3a7a',1,1,'hauptpunkt-1/process',3,3,'2009-07-22 21:57:08','2009-07-22 21:57:08'),
- (26,'4a676ebfe3a7a',1,2,'main-navigation-1/-1',3,3,'2009-07-23 08:22:47','2009-07-23 08:22:47'),
- (27,'4a681b0f66d2a',1,1,'hauptpunkt-1/test',3,3,'2009-07-23 10:10:55','2009-07-23 10:10:55');
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pageUrls` ENABLE KEYS */;
-
-
---
 -- Definition of table `zoolu`.`pageVideos`
 --
 
@@ -2821,7 +2770,7 @@ CREATE TABLE  `zoolu`.`pages` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   KEY `version` (`version`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `zoolu`.`pages`
@@ -4060,6 +4009,79 @@ INSERT INTO `zoolu`.`urlReplacers` VALUES  (1,1,'ä','ae'),
  (8,1,'&','und');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `urlReplacers` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`urlTypes`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`urlTypes`;
+CREATE TABLE  `zoolu`.`urlTypes` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zoolu`.`urlTypes`
+--
+
+/*!40000 ALTER TABLE `urlTypes` DISABLE KEYS */;
+LOCK TABLES `urlTypes` WRITE;
+INSERT INTO `zoolu`.`urlTypes` VALUES  (1,'page'),
+ (2,'widget');
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `urlTypes` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`urls`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`urls`;
+CREATE TABLE  `zoolu`.`urls` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `urlId` varchar(32) NOT NULL,
+  `version` int(10) unsigned NOT NULL,
+  `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
+  `url` varchar(255) NOT NULL,
+  `idUsers` bigint(20) unsigned NOT NULL,
+  `creator` bigint(20) unsigned NOT NULL,
+  `created` timestamp NULL DEFAULT NULL,
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `idUrlTypes` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pageId` (`urlId`),
+  KEY `urls_ibfk_1` (`idUrlTypes`),
+  CONSTRAINT `urls_ibfk_1` FOREIGN KEY (`idUrlTypes`) REFERENCES `urlTypes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+--
+-- Dumping data for table `zoolu`.`urls`
+--
+
+/*!40000 ALTER TABLE `urls` DISABLE KEYS */;
+LOCK TABLES `urls` WRITE;
+INSERT INTO `zoolu`.`urls` VALUES  (1,'49f17460a4f9f',1,1,'',3,3,'2009-04-24 10:14:16','2009-08-05 13:34:17',1),
+ (2,'4a112157d69eb',1,1,'hauptpunkt-1/',2,2,'2009-05-18 10:50:31','2009-08-05 13:34:17',1),
+ (3,'4a113342dffe5',1,1,'hauptpunkt-2/',2,2,'2009-05-18 12:06:58','2009-08-05 13:34:17',1),
+ (4,'4a1133f43284a',1,1,'hauptpunkt-3/',2,2,'2009-05-18 12:09:56','2009-08-05 13:34:17',1),
+ (5,'4a115ca65d8bb',1,1,'hauptpunkt-1/testseite',2,2,'2009-05-18 15:03:34','2009-08-05 13:34:17',1),
+ (6,'4a1cf55c8b3e5',1,1,'hauptpunkt-3/testseite-3',2,2,'2009-05-27 10:10:04','2009-08-05 13:34:17',1),
+ (16,'4a115ca65d8bb',1,2,'main-navigation-1/test-en',3,3,'2009-06-08 18:14:44','2009-08-05 13:34:17',1),
+ (17,'4a112157d69eb',1,2,'main-navigation-1/',3,3,'2009-06-09 11:34:21','2009-08-05 13:34:17',1),
+ (18,'4a116d34752df',1,1,'hauptpunkt-2/testseite-2',3,3,'2009-06-09 18:43:55','2009-08-05 13:34:17',1),
+ (19,'4a116d34752df',1,2,'testseite-2-en',3,3,'2009-06-09 18:44:11','2009-08-05 13:34:17',1),
+ (20,'4a113342dffe5',1,2,'main-navigation-2/',3,3,'2009-06-09 18:52:18','2009-08-05 13:34:17',1),
+ (21,'49f17460a4f9f',1,2,'',3,3,'2009-06-10 09:47:53','2009-08-05 13:34:17',1),
+ (22,'4a2fa65ac1781',1,1,'asdf/',3,3,'2009-06-10 14:26:02','2009-08-05 13:34:17',1),
+ (23,'4a40944a8ee78',1,1,'hauptpunkt-1/unterpunkt-1/',3,3,'2009-06-23 10:37:30','2009-08-05 13:34:17',1),
+ (24,'4a40946ce9d01',1,1,'hauptpunkt-1/unterpunkt-1/testseite-2',3,3,'2009-06-23 10:38:05','2009-08-05 13:34:17',1),
+ (25,'4a676ebfe3a7a',1,1,'hauptpunkt-1/process',3,3,'2009-07-22 21:57:08','2009-08-05 13:34:17',1),
+ (26,'4a676ebfe3a7a',1,2,'main-navigation-1/-1',3,3,'2009-07-23 08:22:47','2009-08-05 13:34:17',1),
+ (27,'4a681b0f66d2a',1,1,'hauptpunkt-1/test',3,3,'2009-07-23 10:10:55','2009-08-05 13:34:17',1);
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `urls` ENABLE KEYS */;
 
 
 --
