@@ -66,7 +66,8 @@ class Plugin_FormHelper_FormGmaps extends Zend_View_Helper_FormElement {
       $endTag= '>';
     }
     
-    $strOutput = ' <script type="text/javascript">
+    $strOutput = '
+    <script type="text/javascript">			
 	    function initialize() {
 	      if (GBrowserIsCompatible()) {
 	        var map = new GMap2(document.getElementById("map_canvas"));
@@ -109,7 +110,7 @@ class Plugin_FormHelper_FormGmaps extends Zend_View_Helper_FormElement {
 	    }
 	    initialize();
     </script>
-    <div id="map_canvas" style="width: 500px; height: 300px"></div>';
+    <div id="map_canvas" style="width: 100%; height: 300px"></div>';
     
 
     // Hidden Fields Latitude and Longitude
