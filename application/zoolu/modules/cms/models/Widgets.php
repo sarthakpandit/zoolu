@@ -52,6 +52,11 @@ class Model_Widgets {
 	protected $objWidgetsTable;
 	
 	/**
+	 * @var Model_Table_GenericForms
+	 */
+	protected $objGenericFormsTable;
+	
+	/**
 	 * Constructor
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
@@ -73,6 +78,40 @@ class Model_Widgets {
 		}
 		
 		return $this->objWidgetsTable;
+	}
+	
+	/**
+   * getGenericFormsTable
+   * @return Zend_Db_Table_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getGenericFormsTable(){
+
+    if($this->objGenericFormsTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/GenericForms.php';
+      $this->objGenericFormsTable = new Model_Table_GenericForms();
+    }
+
+    return $this->objGenericFormsTable;
+  }
+	
+  /**
+   * getGenericFormByWidgetId
+   * @param $intIdWidget
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+	public function getGenericFormByWidgetId($intIdWidget){
+		$this->core->logger->debug('cms->models->Model_Widgets->getGenericFormByWidgetId()');
+		
+		$objSelect = $this->getGenericFormsTable()->select();
+		$objSelect->setIntegrityCheck(false);
+		
+		$objSelect->from($this->objGenericFormsTable, array('id'));
+		
+		return $this->objGenericFormsTable->fetchAll($objSelect);
 	}
 	
 	/**
