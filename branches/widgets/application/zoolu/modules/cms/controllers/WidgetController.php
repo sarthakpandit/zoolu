@@ -146,12 +146,13 @@ class Cms_WidgetController extends AuthControllerAction {
 		$this->core->logger->debug('cms->controllers->WidgetController->getForm('.$intActionType.')');
 		
 		try {
-			$strFormId = $this->objRequest->getParam('formId');
-			$intFormVersion = ($this->objRequest->getParam("formVersion") != '') ? $this->objRequest->getParam("formVersion") : null;
-      $intElementId = ($this->objRequest->getParam("id") != '') ? $this->objRequest->getParam("id") : null;
-      
+			/**
+			 * Get GenericFormId
+			 */      
+			$objRow = $this->getModelWidget()->getGenericFormByWidgetId($this->objRequest->getParam('idWidget'));
+			
       $objFormHandler = FormHandler::getInstance();
-      $objFormHandler->setFormId($strFormId);
+      $objFormHandler->setFormId($objRow->id);
       $objFormHandler->setFormVersion($intFormVersion);
       $objFormHandler->setActionType($intActionType);
       $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
