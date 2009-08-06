@@ -230,12 +230,6 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
       $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
 
-      if($this->objForm->Setup()->getIsStartPage(false) == true){
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1', $this->objForm->Setup()->getElementTypeId());
-      }else{
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1', $this->objForm->Setup()->getElementTypeId());
-      }
-
       $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
       $this->view->monthOptions = DateTimeHelper::getOptionsMonth(false, $this->objForm->Setup()->getPublishDate('n'));
 

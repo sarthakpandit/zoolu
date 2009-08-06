@@ -28,6 +28,7 @@
               </td>
             </tr>
             <?php endif; ?>
+            <?php if($this->typeOptions): ?>
             <tr id="trChangeType">
               <td class="tdNormal">Typ:</td>
               <td id="tdChangeType">
@@ -36,6 +37,7 @@
                 </select>
               </td>
             </tr>
+            <?php endif; ?>
             <?php if(!$this->blnIsStartPage) : ?>
             <tr>
               <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation == 1) ? print(' checked="checked"') : print(''); ?> onclick="$('showInNavigation').value = this.checked ? '1' : '0'"/></td>
