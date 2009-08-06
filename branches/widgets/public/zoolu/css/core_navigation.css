@@ -704,6 +704,13 @@ Icons */
   height:16px;
 }
 
+.img_widget_on {
+  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -255px;
+  position:relative;
+  width:16px;
+  height:16px;
+}
+
 .selected .img_folder_on,
 .selected .img_unit,
 .pselected .img_folder_on {
