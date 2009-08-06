@@ -727,6 +727,31 @@ Massiveart.Navigation = Class.create({
   },
   
   /**
+   * addWidgetForm
+   * @param integer idWidget
+   * @param integer parentId
+   * @param integer parentType
+   */
+  addWidgetForm: function(idWidget, parentId, parentType){
+  	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/getaddform', {
+      parameters: {
+  			parentId: parentId,
+  			parentType: parentType,
+  			idWidget: idWidget    
+      },      
+      evalScripts: true,     
+      onComplete: function() {
+        myForm.writeMetaInfos();
+        
+        $('levelmenu'+currLevel).hide();
+        $('addmenu'+currLevel).fade({duration: 0.5});
+        myCore.removeBusyClass('divWidgetMetaInfos');
+        myCore.removeBusyClass(this.genFormContainer);              
+      }.bind(this)
+    });
+  },
+  
+  /**
    * addStartPage
    * @param integer currLevel
    */
