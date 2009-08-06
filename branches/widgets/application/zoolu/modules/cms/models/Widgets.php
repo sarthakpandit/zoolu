@@ -117,7 +117,7 @@ class Model_Widgets {
 		
 		$objSelectForm = $this->getGenericFormsTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objGenericFormsTable, array('id', 'version'));
+		$objSelectForm->from($this->objGenericFormsTable, array('id', 'genericFormId', 'version'));
 		$objSelectForm->where('genericFormId=?', $strGenericFormId);
 		
 		return $this->objGenericFormsTable->fetchRow($objSelectForm);
