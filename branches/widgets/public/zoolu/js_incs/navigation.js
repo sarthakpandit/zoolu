@@ -3,6 +3,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-14: Cornelius Hansjakob
+ * 1.1, 2009-08-06: Florian Mathis, Added WidgetHover
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
@@ -19,6 +20,7 @@ Massiveart.Navigation = Class.create({
     this.constFolder = 'folder';
     this.constPage = 'page';
     this.constStartPage = 'startpage';
+    this.constWidget = 'widget';
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
     this.constRequestChildNav = '/zoolu/cms/navigation/childnavigation';
@@ -83,6 +85,32 @@ Massiveart.Navigation = Class.create({
           el.removeClassName('hover');
         }else{         
           el.up('.'+this.constFolder).removeClassName('hover');        
+        }        
+      }.bind(this));
+      
+    }.bind(this));
+  },
+  
+  /**
+   * initWidgetHover
+   */
+  initWidgetHover: function(){
+    $$('div.'+this.constWidget).each(function(elDiv){    
+      elDiv.observe('mouseover', function(event){        
+        el = Event.element(event);
+        if(el.hasClassName(this.constWidget)){
+          el.addClassName('hover');
+        }else{         
+          el.up('.'+this.constWidget).addClassName('hover');          
+        }
+      }.bind(this));
+      
+      elDiv.observe('mouseout', function(event){        
+        el = Event.element(event);        
+        if(el.hasClassName(this.constWidget)){
+          el.removeClassName('hover');
+        }else{         
+          el.up('.'+this.constWidget).removeClassName('hover');        
         }        
       }.bind(this));
       
@@ -213,7 +241,8 @@ Massiveart.Navigation = Class.create({
         this.levelArray.push(this.currLevel);
         this.initFolderHover();
         this.initPageHover();
-        this.initAddMenuHover();    
+        this.initAddMenuHover();
+        this.initWidgetHover();
         //this.createSortableNavLevel(this.currLevel);
       }.bind(this)
     });
@@ -294,6 +323,7 @@ Massiveart.Navigation = Class.create({
 	        this.initFolderHover();
 	        this.initPageHover();
 	        this.initAddMenuHover();
+	        this.initWidgetHover();
           //this.createSortableNavLevel(this.currLevel);
           this.scrollNavigationBar();
           this.updateCurrentFolder();
@@ -323,6 +353,7 @@ Massiveart.Navigation = Class.create({
           myCore.removeBusyClass('divNaviCenterInner');
           this.initFolderHover();
           this.initPageHover();
+          this.initWidgetHover();
           this.initAddMenuHover();
           this.scrollNavigationBar();
           this.updateCurrentFolder();
@@ -496,6 +527,7 @@ Massiveart.Navigation = Class.create({
           }
                              
 	        this.initFolderHover();
+	        this.initWidgetHover();
 	        this.initPageHover();
 	        this.initAddMenuHover();    
 	      }.bind(this)
