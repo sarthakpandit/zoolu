@@ -345,8 +345,8 @@ class Model_Folders {
   public function loadChildNavigation($intFolderId, $strSortTimestampOrderType = 'DESC'){
     $this->core->logger->debug('core->models->Folders->loadChildNavigation('.$intFolderId.')');
 
-    $sqlStmt = $this->core->dbh->query('SELECT id, title, genericFormId, version, templateId, folderType, pageType, type, isStartPage, sortPosition, sortTimestamp, idStatus, pageLinkTitle
-																	      FROM (SELECT folders.id, folderTitles.title, genericForms.genericFormId, genericForms.version, -1 AS templateId, folders.idFolderTypes AS folderType, -1 AS pageType, folderTypes.title AS type, -1 AS isStartPage, folders.sortPosition, folders.sortTimestamp, folders.idStatus,
+    $sqlStmt = $this->core->dbh->query('SELECT id, title, genericFormId, version, templateId, widgetType, folderType, pageType, type, isStartPage, sortPosition, sortTimestamp, idStatus, pageLinkTitle
+																	      FROM (SELECT folders.id, folderTitles.title, genericForms.genericFormId, genericForms.version, -1 AS templateId, -1 as widgetType, folders.idFolderTypes AS folderType, -1 AS pageType, folderTypes.title AS type, -1 AS isStartPage, folders.sortPosition, folders.sortTimestamp, folders.idStatus,
 																	                   -1 AS pageLinkTitle
 																	            FROM folders
 																	            LEFT JOIN folderTitles ON folderTitles.folderId = folders.folderId
@@ -355,7 +355,7 @@ class Model_Folders {
 																	            INNER JOIN folderTypes ON folderTypes.id = folders.idFolderTypes
 																	            WHERE folders.idParentFolder = ?
 																	            UNION
-																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pages.idTemplates  AS templateId, -1 AS folderType, pages.idPageTypes AS pageType, pageTypes.title AS type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pages.idStatus,
+																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pages.idTemplates  AS templateId,-1 AS widgetType, -1 AS folderType, pages.idPageTypes AS pageType, pageTypes.title AS type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pages.idStatus,
 																	                   (SELECT pt.title FROM pageLinks, pages AS p LEFT JOIN pageTitles AS pt ON pt.pageId = p.pageId AND pt.version = p.version AND pt.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1) AS pageLinkTitle
 																	            FROM pages
 																	            LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
@@ -365,9 +365,17 @@ class Model_Folders {
 																	            INNER JOIN genericForms ON genericForms.id = pages.idGenericForms
 																	            WHERE pages.idParent = ?
 																	              AND pages.idParentTypes = ?
-																	              AND pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1))
+																	              AND pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1)
+																	            UNION
+																	            SELECT wi.id, wit.title, -1 AS genericFormId, w.version, -1 AS templateId, w.id AS widgetType, -1 AS folderType, -1 AS pageType, w.name AS type, -1 AS isStartPage, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, idStatus AS idStatus, -1 AS pageLinkTitle
+																	            FROM widgetInstances wi
+																	            INNER JOIN widgetInstanceTitles wit ON wi.id = wit.idWidgetInstances
+																	            INNER JOIN widgets w ON w.id = wi.idWidgets
+																	            WHERE wi.idParent = ?
+																	              AND wi.idParentTypes = ?
+																	            )
 																	      AS tbl
-																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder));
+																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder, $intFolderId, $this->core->sysConfig->parent_types->folder));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
