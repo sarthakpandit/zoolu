@@ -69,7 +69,7 @@ class Model_Widgets {
 	public function getWidgetsTable() {
 		if($this->objWidgetsTable === NULL) {
 			require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/Widgets.php';
-      $this->objPageTable = new Model_Table_Widgets();
+      $this->objWidgetsTable = new Model_Table_Widgets();
 		}
 		
 		return $this->objWidgetsTable;
@@ -88,6 +88,7 @@ class Model_Widgets {
 		$objSelect->setIntegrityCheck(false);
 		
 		$objSelect->from($this->objWidgetsTable, array('id', 'name'));
+		$objSelect->order('name ASC');
 		
 		return $this->objWidgetsTable->fetchAll($objSelect);
 	}
