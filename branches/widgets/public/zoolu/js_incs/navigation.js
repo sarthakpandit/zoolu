@@ -716,7 +716,7 @@ Massiveart.Navigation = Class.create({
   
     this.folderId = myNavigation.folderId;
   
-    new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/core/folder/foldertree', { 
+    new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/cms/widget/widgettree', { 
       parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId },
       evalScripts: true,
       onComplete: function(){
