@@ -150,13 +150,11 @@ class Cms_WidgetController extends AuthControllerAction {
 			 * Get GenericFormId
 			 */      
 			$objRow = $this->getModelWidget()->getGenericFormByWidgetId($this->objRequest->getParam('idWidget'));
-			
       $objFormHandler = FormHandler::getInstance();
       $objFormHandler->setFormId($objRow->id);
-      $objFormHandler->setFormVersion($intFormVersion);
+      $objFormHandler->setFormVersion($objRow->version);
       $objFormHandler->setActionType($intActionType);
       $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
-      $objFormHandler->setElementId($intElementId);
       
       $this->objForm = $objFormHandler->getGenericForm();
       
