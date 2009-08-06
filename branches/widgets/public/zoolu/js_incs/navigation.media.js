@@ -90,6 +90,7 @@ Massiveart.Navigation.Media = Class.create(Massiveart.Navigation, {
         myCore.removeBusyClass('navlevel'+this.currLevel);
         this.levelArray.push(this.currLevel);
         this.initFolderHover();
+        this.initWidgetHover();
         this.initPageHover();
         this.initAddMenuHover();
       }.bind(this)
