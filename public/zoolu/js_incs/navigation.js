@@ -3,7 +3,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-14: Cornelius Hansjakob
- * 1.1, 2009-08-06: Florian Mathis, Added WidgetHover
+ * 1.1, 2009-08-06: Florian Mathis, Added Widget Support
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
@@ -702,6 +702,28 @@ Massiveart.Navigation = Class.create({
       }.bind(this)
     });
         
+  },
+  
+  /**
+   * AddWidget
+   * @param integer currLevel
+   */
+  addWidget: function(currLevel){
+    $(myForm.updateOverlayContainer).innerHTML = '';
+    
+    myCore.putCenter('overlayGenContentWrapper');
+    $('overlayGenContentWrapper').show();    
+  
+    this.folderId = myNavigation.folderId;
+  
+    new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/core/folder/foldertree', { 
+      parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId },
+      evalScripts: true,
+      onComplete: function(){
+        myCore.putOverlayCenter('overlayGenContentWrapper');
+        //$('overlayBlack75').show();
+      } 
+    });
   },
   
   /**
