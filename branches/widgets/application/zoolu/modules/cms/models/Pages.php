@@ -667,13 +667,14 @@ class Model_Pages {
 
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
-    $arrData = array('pageId'      => $strPageId,
+    $arrData = array('urlId'      => $strPageId,
                      'version'     => $intVersion,
                      'idLanguages' => $this->intLanguageId,
                      'url'         => $strUrl,
                      'idUsers'     => $intUserId,
                      'creator'     => $intUserId,
-                     'created'     => date('Y-m-d H:i:s'));
+                     'created'     => date('Y-m-d H:i:s'),
+                     'idUrlTypes'  => 1);
 
     return $objSelect = $this->getPageUrlTable()->insert($arrData);
   }
