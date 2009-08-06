@@ -713,13 +713,15 @@ Massiveart.Navigation = Class.create({
     
     myCore.putCenter('overlayGenContentWrapper');
     $('overlayGenContentWrapper').show();    
-  
+    
     this.folderId = myNavigation.folderId;
   
     new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/cms/widget/widgettree', { 
       parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId },
       evalScripts: true,
       onComplete: function(){
+      	$('levelmenu'+currLevel).hide();
+        $('addmenu'+currLevel).fade({duration: 0.5});
         myCore.putOverlayCenter('overlayGenContentWrapper');
         //$('overlayBlack75').show();
       } 
@@ -733,6 +735,18 @@ Massiveart.Navigation = Class.create({
    * @param integer parentType
    */
   addWidgetForm: function(idWidget, parentId, parentType){
+  	$('buttondelete').hide();
+  	this.showFormContainer();
+  	
+  	$(this.genFormContainer).innerHTML = '';
+    $('divWidgetMetaInfos').innerHTML = '';
+    
+    $(this.genFormContainer).show();
+    $(this.genFormSaveContainer).show();
+    
+    myCore.addBusyClass(this.genFormContainer);
+    myCore.addBusyClass('divWidgetMetaInfos');
+    
   	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/getaddform', {
       parameters: {
   			parentId: parentId,
@@ -740,13 +754,12 @@ Massiveart.Navigation = Class.create({
   			idWidget: idWidget    
       },      
       evalScripts: true,     
-      onComplete: function() {
+      onComplete: function() {      	 
+        $('overlayGenContentWrapper').hide();
+        //$('overlayBlack75').hide();
         myForm.writeMetaInfos();
-        
-        $('levelmenu'+currLevel).hide();
-        $('addmenu'+currLevel).fade({duration: 0.5});
         myCore.removeBusyClass('divWidgetMetaInfos');
-        myCore.removeBusyClass(this.genFormContainer);              
+        myCore.removeBusyClass(this.genFormContainer); 
       }.bind(this)
     });
   },
