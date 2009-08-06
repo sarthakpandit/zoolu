@@ -151,6 +151,14 @@ class Cms_WidgetController extends AuthControllerAction {
 			$this->objForm->prepareForm();
 			
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
+<<<<<<< .mine
+			
+			/**
+       * output of metainformation to hidden div
+       */
+      //$this->setViewMetaInfos();
+=======
+>>>>>>> .r104
       
       $this->view->form = $this->objForm;
       
@@ -159,6 +167,10 @@ class Cms_WidgetController extends AuthControllerAction {
 			$this->core->logger->err($exc);
 			exit();
 		}
+	}
+	
+	public function addAction() {
+		
 	}
 	
 	/**
