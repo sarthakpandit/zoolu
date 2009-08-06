@@ -35,6 +35,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-17: Cornelius Hansjakob
+ * 1.1, 2009-08-06: Florian Mathis, Added Widgets to loadChildNavigation() and loadRootNavigation()
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
