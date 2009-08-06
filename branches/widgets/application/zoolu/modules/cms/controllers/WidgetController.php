@@ -151,15 +151,11 @@ class Cms_WidgetController extends AuthControllerAction {
 			$this->objForm->prepareForm();
 			
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
-<<<<<<< .mine
 			
 			/**
        * output of metainformation to hidden div
        */
-      //$this->setViewMetaInfos();
-=======
->>>>>>> .r104
-      
+      $this->setViewMetaInfos();
       $this->view->form = $this->objForm;
       
       $this->renderScript('page/form.phtml');
@@ -167,10 +163,6 @@ class Cms_WidgetController extends AuthControllerAction {
 			$this->core->logger->err($exc);
 			exit();
 		}
-	}
-	
-	public function addAction() {
-		
 	}
 	
 	/**
@@ -220,6 +212,39 @@ class Cms_WidgetController extends AuthControllerAction {
     }
 
     return $this->objModelWidgets;
+  }
+  
+	/**
+   * setViewMetaInfos
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  private function setViewMetaInfos(){
+    if(is_object($this->objForm) && $this->objForm instanceof GenericForm){
+      $this->view->version = $this->objForm->Setup()->getFormVersion();
+      $this->view->publisher = $this->objForm->Setup()->getPublisherName();
+      $this->view->showinnavigation = $this->objForm->Setup()->getShowInNavigation();
+      $this->view->changeUser = $this->objForm->Setup()->getChangeUserName();
+      $this->view->publishDate = $this->objForm->Setup()->getPublishDate('d. M. Y, H:i');
+      $this->view->changeDate = $this->objForm->Setup()->getChangeDate('d. M. Y, H:i');
+      $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
+      $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
+
+      if($this->objForm->Setup()->getIsStartPage(false) == true){
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1', $this->objForm->Setup()->getElementTypeId());
+      }else{
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1', $this->objForm->Setup()->getElementTypeId());
+      }
+
+      $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
+      $this->view->monthOptions = DateTimeHelper::getOptionsMonth(false, $this->objForm->Setup()->getPublishDate('n'));
+
+      $this->view->blnIsStartPage = $this->objForm->Setup()->getIsStartPage(false);
+
+      if($this->objForm->Setup()->getField('url')) $this->view->pageurl = $this->objForm->Setup()->getField('url')->getValue();
+
+      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objForm->Setup()->getElementTypeId() != $this->core->sysConfig->page_types->link->id) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getFormLanguageId());
+    }
   }
 }
 
