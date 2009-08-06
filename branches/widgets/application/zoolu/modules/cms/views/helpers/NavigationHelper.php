@@ -36,6 +36,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-16: Cornelius Hansjakob
+ * 1.1, 2009-08-06: Daniel Rotter - Added Widget-Output
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
@@ -204,7 +205,21 @@ class NavigationHelper {
           </div>';
 
           $counter++;
-        }else{
+        }
+        elseif($objRow->widgetType != -1)
+        {
+        	/**
+           * get values of the row and create widget output
+           */
+          $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
+            <div class="icon img_'.$objRow->type.'_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
+            <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_'.$objRow->type.'_'.$objRow->id.'" id="pos_'.$objRow->type.'_'.$objRow->id.'" value="'.$counter.'" onfocus="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;" onkeyup="if(event.keyCode==13){ myNavigation.updateSortPosition(\'pos_'.$objRow->type.'_'.$objRow->id.'\',\''.$objRow->type.'\','.$currLevel.'); myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false; }" onblur="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;" /></div>
+            <div class="title" onclick="alert(\'Widget\'); return false;">'.htmlentities($strPageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+          </div>';
+
+          $counter++;
+        }
+        else{
     			/**
 	         * get values of the row and create default output
 	         */
