@@ -58,6 +58,12 @@ class Cms_WidgetController extends AuthControllerAction {
 	protected $objModelWidgets;
 	
 	/**
+	 * 
+	 * @var GenericForm
+	 */
+	private $objForm;
+	
+	/**
    * init
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
@@ -97,6 +103,67 @@ class Cms_WidgetController extends AuthControllerAction {
  		$this->view->assign('elements', $objWidgets);
     $this->view->assign('parentId', $intParentId);
     $this->view->assign('parentType', $intParentType);
+	}
+	
+	/**
+	 * getaddformAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getaddformAction() {
+		$this->core->logger->debug('cms->controllers->WidgetController->getaddformAction()');
+		
+		try {
+			$this->getForm($this->core->sysConfig->generic->actions->add);
+			
+			$this->objForm->setAction('/zoolu/cms/widget/add');
+			
+			$this->objForm->prepareForm();
+			
+			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
+			
+			/**
+       * output of metainformation to hidden div
+       */
+      $this->setViewMetaInfos();
+      
+      $this->view->form = $this->objForm;
+      
+      $this->renderScript('page/form.phtml');
+		}catch(Exception $exc) {
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
+	 * getForm
+	 * @param number $intActionType
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	private function getForm($intActionType = null) {
+		$this->core->logger->debug('cms->controllers->WidgetController->getForm('.$intActionType.')');
+		
+		try {
+			$strFormId = $this->objRequest->getParam('formId');
+			$intFormVersion = ($this->objRequest->getParam("formVersion") != '') ? $this->objRequest->getParam("formVersion") : null;
+      $intElementId = ($this->objRequest->getParam("id") != '') ? $this->objRequest->getParam("id") : null;
+      
+      $objFormHandler = FormHandler::getInstance();
+      $objFormHandler->setFormId($strFormId);
+      $objFormHandler->setFormVersion($intFormVersion);
+      $objFormHandler->setActionType($intActionType);
+      $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $objFormHandler->setElementId($intElementId);
+      
+      $this->objForm = $objFormHandler->getGenericForm();
+      
+      $this->objForm->addElement('hidden', 'parentId', array('value' => $this->objRequest->getParam('parentId')));
+      $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType')));
+		}catch(Exception $exc) {
+			$this->core->logger->err($exc);
+		}
 	}
 	
 	/**
