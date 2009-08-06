@@ -104,14 +104,23 @@ class Model_Widgets {
    * @version 1.0
    */
 	public function getGenericFormByWidgetId($intIdWidget){
-		$this->core->logger->debug('cms->models->Model_Widgets->getGenericFormByWidgetId()');
+		$this->core->logger->debug('cms->models->Model_Widgets->getGenericFormByWidgetId('.$intIdWidget.')');
 		
-		$objSelect = $this->getGenericFormsTable()->select();
+		$objSelect = $this->getWidgetsTable()->select();
 		$objSelect->setIntegrityCheck(false);
+		$objSelect->from($this->objWidgetsTable, array('name'));
+		$objSelect->where('id=?', $intIdWidget);
+		$objRowWidget = $this->objWidgetsTable->fetchRow($objSelect);
 		
-		$objSelect->from($this->objGenericFormsTable, array('id'));
+		$strGenericFormId = 'W_'.strtoupper($objRowWidget->name).'_DEFAULT';
+		$this->core->logger->debug('cms->models->Model_Widgets->getGenericFormByWidgetId(), GenericFormId: '.$strGenericFormId);
 		
-		return $this->objGenericFormsTable->fetchAll($objSelect);
+		$objSelectForm = $this->getGenericFormsTable()->select();
+		$objSelectForm->setIntegrityCheck(false);
+		$objSelectForm->from($this->objGenericFormsTable, array('id', 'version'));
+		$objSelectForm->where('genericFormId=?', $strGenericFormId);
+		
+		return $this->objGenericFormsTable->fetchRow($objSelectForm);
 	}
 	
 	/**
