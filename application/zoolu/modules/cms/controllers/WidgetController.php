@@ -104,6 +104,36 @@ class Cms_WidgetController extends AuthControllerAction {
     $this->view->assign('parentId', $intParentId);
     $this->view->assign('parentType', $intParentType);
 	}
+	/**
+	 * addAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addAction() {
+		$this->core->logger->debug('cms->controllers->WidgetController->addAction()');
+		
+		try {
+			$this->getForm($this->core->sysConfig->generic->actions->add);
+			
+			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+				$arrFormData = $this->objRequest->getPost();
+				$this->objForm->Setup()->setFieldValues($arrFormData);
+				
+				$this->objForm->prepareForm();
+				
+				if($this->objForm->isValid($arrFormData)) {
+					$intWidgetId = $this->objForm->saveFormData();
+					$this->objForm->Setup()->setElementId($intWidgetId);
+          $this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
+          $this->objForm->getElement('id')->setValue($intWidgetId);
+          
+          $this->view->assign('blnShowFormAlert', true);
+				}
+			}
+		}catch(Exception $exc) {
+			$this->core->logger->err($exc);
+		}
+	}
 	
 	/**
 	 * getaddformAction
@@ -121,11 +151,6 @@ class Cms_WidgetController extends AuthControllerAction {
 			$this->objForm->prepareForm();
 			
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
-			
-			/**
-       * output of metainformation to hidden div
-       */
-      $this->setViewMetaInfos();
       
       $this->view->form = $this->objForm;
       
@@ -151,7 +176,7 @@ class Cms_WidgetController extends AuthControllerAction {
 			 */      
 			$objRow = $this->getModelWidget()->getGenericFormByWidgetId($this->objRequest->getParam('idWidget'));
       $objFormHandler = FormHandler::getInstance();
-      $objFormHandler->setFormId($objRow->id);
+      $objFormHandler->setFormId($objRow->genericFormId);
       $objFormHandler->setFormVersion($objRow->version);
       $objFormHandler->setActionType($intActionType);
       $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
