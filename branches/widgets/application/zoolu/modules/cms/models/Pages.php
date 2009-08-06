@@ -79,6 +79,8 @@ class Model_Pages {
    * @var Core
    */
   private $core;
+  
+  const URL_TYPE_PAGE = 1;
 
   /**
    * Constructor
@@ -674,7 +676,7 @@ class Model_Pages {
                      'idUsers'     => $intUserId,
                      'creator'     => $intUserId,
                      'created'     => date('Y-m-d H:i:s'),
-                     'idUrlTypes'  => 1);
+                     'idUrlTypes'  => self::URL_TYPE_PAGE);
 
     return $objSelect = $this->getPageUrlTable()->insert($arrData);
   }
