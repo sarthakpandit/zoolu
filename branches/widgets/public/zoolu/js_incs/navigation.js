@@ -749,7 +749,7 @@ Massiveart.Navigation = Class.create({
     
   	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/getaddform', {
       parameters: {
-  			parentId: parentId,
+  			parentFolderId: parentId,
   			parentType: parentType,
   			idWidget: idWidget    
       },      

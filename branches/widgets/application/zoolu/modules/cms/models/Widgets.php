@@ -57,6 +57,16 @@ class Model_Widgets {
 	protected $objGenericFormsTable;
 	
 	/**
+	 * @var Model_Table_WidetInstances
+	 */
+	protected $objWidgetInstancesTable;
+	
+	/**
+	 * @var number
+	 */
+	private $intLanguageId;
+	
+	/**
 	 * Constructor
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
@@ -79,6 +89,21 @@ class Model_Widgets {
 		
 		return $this->objWidgetsTable;
 	}
+	
+  /**
+   * getWidgetInstancesTable
+   * @return Zend_Db_Table_Abstract
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function getWidgetInstancesTable() {
+    if($this->objWidgetsTable === NULL) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/WidgetInstances.php';
+      $this->objWidgetInstancesTable = new Model_Table_WidgetInstances();
+    }
+    
+    return $this->objWidgetInstancesTable;
+  }
 	
 	/**
    * getGenericFormsTable
@@ -139,6 +164,33 @@ class Model_Widgets {
 		$objSelect->order('name ASC');
 		
 		return $this->objWidgetsTable->fetchAll($objSelect);
+	}
+	
+  /**
+   * loadWidgetInstance
+   * @param number $intWidgetId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function loadWidgetInstance($intWidgetInstanceId) {
+    $this->core->logger->debug('cms->models->Model_Widgets->loadWidgetInstance('.$intWidgetInstanceId.')');
+    
+    $objSelect = $this->getWidgetInstancesTable()->select();
+    $objSelect->setIntegrityCheck(false);
+    
+    $objSelect->from($this->objWidgetInstancesTable, array('id', 'idGenericForms', 'sortPosition', 'idParent', 'idParentTypes', 'created', 'changed', 'published', 'idStatus', 'sortTimestamp', 'creator', 'publisher', 'idWidgets', 'widgetInstanceId', 'version'));
+    $objSelect->where('id = ?', $intWidgetInstanceId);
+    
+    return $this->objWidgetInstancesTable->fetchAll($objSelect);
+  }
+	
+	/**
+	 * setLanguage
+	 * @param number $intLanguageId
+	 */
+	public function setLanguage($intLanguageId) {
+		$this->intLanguageId = $intLanguageId;
 	}
 }
 ?>

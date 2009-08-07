@@ -197,6 +197,7 @@ class Cms_WidgetController extends AuthControllerAction {
       $objFormHandler->setFormId($objRow->genericFormId);
       $objFormHandler->setFormVersion($objRow->version);
       $objFormHandler->setActionType($intActionType);
+      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
       $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
       
       $this->objForm = $objFormHandler->getGenericForm();
@@ -210,10 +211,12 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("pageTypeId") != '') ? $this->objRequest->getParam("pageTypeId") : $this->core->sysConfig->page_types->page->id));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentTypeId") != '') ? $this->objRequest->getParam("parentTypeId") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
+      $this->objForm->Setup()->setElementId($this->objRequest->getParam('idWidgetInstance'));
       $this->objForm->Setup()->setModelSubPath('cms/models/');
       
-      $this->objForm->addElement('hidden', 'parentId', array('value' => $this->objRequest->getParam('parentId')));
-      $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType')));
+      $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
+      $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType'), 'decorators' => array('Hidden'), 'ignore' => true));
+      $this->objForm->addElement('hidden', 'idWidget', array('value' => $this->objRequest->getParam('idWidget'), 'decorators' => array('Hidden'), 'ignore' => true));
 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
