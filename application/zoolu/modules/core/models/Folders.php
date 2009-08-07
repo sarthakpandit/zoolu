@@ -179,7 +179,7 @@ class Model_Folders {
 																	            UNION
 																	            SELECT wi.id, wit.title, -1 AS genericFormId, w.version, -1 AS templateId, w.id AS widgetType, -1 AS folderType, -1 AS pageType, w.name AS type, -1 AS isStartPage, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, idStatus AS idStatus, -1 AS pageLinkTitle
 																	            FROM widgetInstances wi
-																	            INNER JOIN widgetInstanceTitles wit ON wi.id = wit.idWidgetInstances
+																	            INNER JOIN widgetInstanceTitles wit ON wi.widgetInstanceId = wit.widgetInstanceId
 																	            INNER JOIN widgets w ON w.id = wi.idWidgets
 																	            WHERE wi.idParent = ?
 																	              AND wi.idParentTypes = ?)
@@ -375,10 +375,11 @@ class Model_Folders {
 																	              AND pages.idParentTypes = ?
 																	              AND pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1)
 																	            UNION
-																	            SELECT wi.id, wit.title, -1 AS genericFormId, w.version, -1 AS templateId, w.id AS widgetType, -1 AS folderType, -1 AS pageType, w.name AS type, -1 AS isStartPage, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, idStatus AS idStatus, -1 AS pageLinkTitle
+																	            SELECT wi.id, wit.title, gf.genericFormId, wi.version, -1 AS templateId, w.id AS widgetType, -1 AS folderType, -1 AS pageType, w.name AS type, -1 AS isStartPage, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, idStatus AS idStatus, -1 AS pageLinkTitle
 																	            FROM widgetInstances wi
-																	            INNER JOIN widgetInstanceTitles wit ON wi.id = wit.idWidgetInstances
+																	            INNER JOIN widgetInstanceTitles wit ON wi.widgetInstanceId = wit.widgetInstanceId
 																	            INNER JOIN widgets w ON w.id = wi.idWidgets
+																	            LEFT JOIN genericForms gf ON wi.idGenericForms = gf.id
 																	            WHERE wi.idParent = ?
 																	              AND wi.idParentTypes = ?
 																	            )

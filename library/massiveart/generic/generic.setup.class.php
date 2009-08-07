@@ -181,6 +181,7 @@ class GenericSetup {
   const TYPE_CATEGORY = 3;
   const TYPE_UNIT = 4;
   const TYPE_CONTACT = 5;
+  const TYPE_WIDGET = 6;
 
   /**
    * field type container
@@ -707,6 +708,9 @@ class GenericSetup {
       case GenericSetup::TYPE_CONTACT :
         require_once(dirname(__FILE__).'/data/types/generic.data.type.contact.class.php');
         return new GenericDataTypeContact();
+      case GenericSetup::TYPE_WIDGET:
+      	require_once(dirname(__FILE__).'/data/types/generic.data.type.widget.class.php');
+      	return new GenericDataTypeWidget();
     }
   }
 
