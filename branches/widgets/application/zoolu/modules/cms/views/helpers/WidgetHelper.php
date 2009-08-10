@@ -61,7 +61,7 @@ class WidgetHelper {
    * @author Florian Mathis <flo@massiveart.com>
  	 * @version 1.0
    */
-  public function getWidgetTree($objRowset, $parentId, $parentType) {
+  public function getWidgetTree($objRowset, $parentId, $parentType, $currLevel) {
     $this->core->logger->debug('cms->views->helpers->WidgetHelper->getWidgetTree()');
     
     $strOutput = '';
@@ -69,7 +69,7 @@ class WidgetHelper {
       foreach ($objRowset as $objRow){           
       	$strOutput .= '<div id="olnavitem'.$objRow->id.'" class="olnavrootitem">
                            <div style="margin-left: 20px;">
-                             - <a href="#" onclick="myNavigation.addWidgetForm('.$objRow->id.', '.$parentId.', '.$parentType.'); return false;">'.htmlentities($objRow->name, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                             - <a href="#" onclick="myNavigation.addWidgetForm('.$objRow->id.', '.$parentId.', '.$parentType.', '.$currLevel.'); return false;">'.htmlentities($objRow->name, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
                            </div>
                          </div>';
       }

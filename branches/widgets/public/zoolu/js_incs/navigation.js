@@ -480,7 +480,6 @@ Massiveart.Navigation = Class.create({
      
     var strAjaxAction = '';
     var strParams = '';
-        
 		if(parentId != '' && parentId > 0){
 		  strAjaxAction = this.constRequestChildNav;
 		  strParams = 'currLevel='+currLevel+'&folderId='+parentId;
@@ -717,7 +716,7 @@ Massiveart.Navigation = Class.create({
     this.folderId = myNavigation.folderId;
   
     new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/cms/widget/widgettree', { 
-      parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId },
+      parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId, currLevel: currLevel },
       evalScripts: true,
       onComplete: function(){
       	$('levelmenu'+currLevel).hide();
@@ -734,7 +733,7 @@ Massiveart.Navigation = Class.create({
    * @param integer parentId
    * @param integer parentType
    */
-  addWidgetForm: function(idWidget, parentId, parentType){
+  addWidgetForm: function(idWidget, parentId, parentType, currLevel){
   	$('buttondelete').hide();
   	this.showFormContainer();
   	
@@ -749,9 +748,11 @@ Massiveart.Navigation = Class.create({
     
   	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/getaddform', {
       parameters: {
-  			parentFolderId: parentId,
+  			parentFolderId: $('navlevel' + currLevel).readAttribute('parentid'),
   			parentType: parentType,
-  			idWidget: idWidget    
+  			idWidget: idWidget,
+  			currLevel: currLevel,
+  			rootLevelId: this.rootLevelId
       },      
       evalScripts: true,     
       onComplete: function() {      	 
