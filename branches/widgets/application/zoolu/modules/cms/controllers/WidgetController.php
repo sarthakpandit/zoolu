@@ -292,7 +292,7 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->Setup()->setModelSubPath('cms/models/');
       
       $this->core->logger->debug('parentfolderid: '.$this->objRequest->getParam('parentFolder'));
-      $this->objForm->addElement('hidden', 'parentFolder', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
+      $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'rootLevelId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'currLevel', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType'), 'decorators' => array('Hidden'), 'ignore' => true));
