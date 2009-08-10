@@ -112,6 +112,31 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
           
           $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
           break;
+        case $this->core->sysConfig->generic->actions->edit:
+          $objSelect = $this->objModelWidgets->getWidgetInstancesTable()->select();
+          $objSelect->from('widgetInstances', array('widgetInstanceId', 'version'));
+          $objSelect->where('id = ?', $this->setup->getElementId());
+          
+          $objRowSet = $this->objModelWidgets->getWidgetInstancesTable()->fetchAll($objSelect);
+          
+          if(count($objRowSet) > 0) {
+            $objWidgetInstances = $objRowSet->current();
+            
+            $strWidgetInstanceId = $objWidgetInstances->widgetInstanceId;
+            $intWidgetInstanceVersion = $objWidgetInstances->version;
+            
+            $strWhere = $this->objModelWidgets->getWidgetInstancesTable()->getAdapter()->quoteInto('widgetInstanceId = ?', $objWidgetInstances->widgetInstanceId);
+            $strWhere .= $this->objModelWidgets->getWidgetInstancesTable()->getAdapter()->quoteInto(' AND version = ?', $objWidgetInstances->version);
+            
+            $this->objModelWidgets->getWidgetInstancesTable()->update(array( 'idGenericForms'   => $this->setup->getGenFormId(),
+                                                                             'idUsers'          => $intUserId,
+                                                                             'creator'          => $this->setup->getCreatorId(),
+                                                                             'idStatus'         => $this->setup->getStatusId(),
+                                                                             'published'        => $this->setup->getPublishDate(),
+                                                                             'changed'          => date('Y-m-d H:i:s')), $strWhere);
+            
+            $this->updateCoreData('widgetInstance', $objWidgetInstances->widgetInstanceId, $objWidgetInstances->version);
+          }
 			}
 			return $this->setup->getElementId();
 		}catch(Exception $exc) {
@@ -119,14 +144,65 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 		}
 	}
 	
-	/**
-	 * load
-	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
-	 * @version 1.0
-	 */
-	public function load(){
-		
-	}
+/**
+   * load
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function load(){
+    $this->core->logger->debug('massiveart->generic->data->GenericDataTypeWidget->load()');
+    
+    $objWidgetsData = $this->getModelWidgets()->loadWidgetInstance($this->Setup()->getElementId());
+    
+    if(count($objWidgetsData) > 0) {
+      $objWidgetData = $objWidgetsData->current();
+      
+//      $this->setup->setMetaInformation($objWidgetData);
+//      $this->setup->setElementTypeId($objWidgetData->idPageTypes);
+//      $this->setup->setIsStartPage($objWidgetData->isStartPage);
+//      $this->setup->setParentTypeId($objWidgetData->idParentTypes);
+      
+      foreach($this->Setup()->CoreFields() as $strField => $objField) {
+        $objGenTable = $this->getModelGenericData()->getGenericTable('widgetInstance'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+        
+        $objSelect = $objGenTable->select();
+
+        $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
+        $objSelect->where('widgetInstanceId = ?', $objWidgetData->widgetInstanceId);
+        $objSelect->where('version = ?', $objWidgetData->version);
+        $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+        $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+        
+        if(count($arrGenFormsData) > 0){
+          $objField->blnHasLoadedData = true;
+          if(count($arrGenFormsData) > 1){
+            $arrFieldData = array();
+            foreach ($arrGenFormsData as $arrRowGenFormData) {
+              foreach ($arrRowGenFormData as $column => $value) {
+                array_push($arrFieldData, $value);
+              }
+            }
+            if($column == $strField){
+              $objField->setValue($arrFieldData);
+            }else{
+              $objField->$column = $arrFieldData;
+            }
+          }else{
+            foreach ($arrGenFormsData as $arrRowGenFormData) {
+              foreach ($arrRowGenFormData as $column => $value) {
+                if($column == $strField){
+                  $objField->setValue($value);
+                }else{
+                  $objField->$column = $value;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 	
 	/**
 	 * getModelWidgets

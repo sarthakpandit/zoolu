@@ -900,6 +900,69 @@ Massiveart.Navigation = Class.create({
   },
   
   /**
+   * selectWidget
+   * @param integer widgetInstanceId, integer widgetId
+   */
+  selectWidget: function(widgetInstanceId, widgetId){
+	$(this.genFormContainer).innerHTML = '';
+    $('divWidgetMetaInfos').innerHTML = '';
+    // hide media container
+    if($('divMediaContainer')) $('divMediaContainer').hide();  
+    
+    var element = 'widget'+widgetInstanceId;
+    this.currItemId = widgetInstanceId;
+    
+    var currLevel = 0;
+    // e.g. level1 - cut level to get currLevel number
+    currLevel = parseInt($(element).up().id.substr(5)); 
+        
+    if(this.navigation[currLevel]){
+      this.makeDeselected(this.navigation[currLevel]);
+    }    
+    this.navigation[currLevel] = element;
+    
+    if(this.navigation.length > 0){      
+      for(var i = 1; i <= this.navigation.length-1; i++){
+        if(this.navigation[i] != element){
+          if(currLevel < i){
+            this.makeDeselected(this.navigation[i]);
+          }else{
+            this.makeParentSelected(this.navigation[i]);
+          }
+        }else{
+          this.makeSelected(this.navigation[currLevel]);
+        }   
+      } 
+    }
+    
+    if(this.levelArray.indexOf(currLevel) != -1){
+      var levelPos = this.levelArray.indexOf(currLevel)+1;
+      for(var i = levelPos; i < this.levelArray.length; i++){
+        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+      }
+      $('divFolderRapper').hide();
+    }
+    
+    $(this.genFormContainer).show();
+    $(this.genFormSaveContainer).show();
+    
+	myCore.addBusyClass(this.genFormContainer);
+	myCore.addBusyClass('divWidgetMetaInfos');
+	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
+	  parameters: {
+		idWidgetInstance: widgetInstanceId,
+		idWidget: widgetId
+	  },
+	  evalScripts: true,
+	  onComplete: function(){
+		myForm.writeMetaInfos();
+		myCore.removeBusyClass('divWidgetMetaInfos');
+        myCore.removeBusyClass(this.genFormContainer);
+	  }.bind(this)
+	});
+  },
+  
+  /**
    * showFormContainer
    */
   showFormContainer: function(){

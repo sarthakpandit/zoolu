@@ -180,6 +180,82 @@ class Cms_WidgetController extends AuthControllerAction {
 	}
 	
 	/**
+   * geteditformAction
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function geteditformAction() {
+    $this->core->logger->debug('cms->controllers->WidgetController->geteditformAction()');
+    
+    try {
+      $this->getForm($this->core->sysConfig->generic->actions->edit);
+    
+      $this->objForm->loadFormData();
+      
+      $this->objForm->setAction('/zoolu/cms/widget/edit');
+      $this->objForm->prepareForm();
+      $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
+      
+      $this->setViewMetaInfos();
+      $this->view->form = $this->objForm;
+      
+      $this->renderScript('page/form.phtml');
+    }catch(Exception $exc){
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * editAction
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function editAction() {
+    $this->core->logger->debug('cms->controllers->WidgetController->editAction()');
+    
+    try {
+      $this->getForm($this->core->sysConfig->generic->actions->edit);
+      
+      $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
+      
+      if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+
+        $arrFormData = $this->objRequest->getPost();
+        $this->objForm->Setup()->setFieldValues($arrFormData);
+
+        /**
+         * prepare form (add fields and region to the Zend_Form)
+         */
+        $this->objForm->prepareForm();
+
+
+        if($this->objForm->isValid($arrFormData)){
+          $this->objForm->saveFormData();
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          $this->view->assign('blnShowFormAlert', false);
+        }
+      }else{
+        /**
+         * prepare form (add fields and region to the Zend_Form)
+         */
+        $this->objForm->prepareForm();
+      }
+      
+      $this->objForm->setAction('/zoolu/cms/page/edit');
+      
+      $this->setViewMetaInfos();
+
+      $this->view->form = $this->objForm;
+
+      $this->renderScript('page/form.phtml');
+    }catch(Exception $exc){
+      $this->core->logger->err($exc);
+    }
+  }
+  
+	
+	/**
 	 * getForm
 	 * @param number $intActionType
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
@@ -199,6 +275,7 @@ class Cms_WidgetController extends AuthControllerAction {
       $objFormHandler->setActionType($intActionType);
       $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
       $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $objFormHandler->setElementId(($this->objRequest->getParam("idWidgetInstance") != '') ? $this->objRequest->getParam("idWidgetInstance") : null);
       
       $this->objForm = $objFormHandler->getGenericForm();
       
@@ -220,6 +297,7 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'currLevel', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'idWidget', array('value' => $this->objRequest->getParam('idWidget'), 'decorators' => array('Hidden'), 'ignore' => true));
+      $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden'), 'ignore' => true));
 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
