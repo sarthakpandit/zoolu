@@ -18,27 +18,27 @@
 -- Create schema zoolu
 --
 
-CREATE DATABASE IF NOT EXISTS widgets;
-USE widgets;
+CREATE DATABASE IF NOT EXISTS zoolu;
+USE zoolu;
 
 --
--- Definition of table `widgets`.`actions`
+-- Definition of table `zoolu`.`actions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`actions`;
-CREATE TABLE  `widgets`.`actions` (
+DROP TABLE IF EXISTS `zoolu`.`actions`;
+CREATE TABLE  `zoolu`.`actions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`actions`
+-- Dumping data for table `zoolu`.`actions`
 --
 
 /*!40000 ALTER TABLE `actions` DISABLE KEYS */;
 LOCK TABLES `actions` WRITE;
-INSERT INTO `widgets`.`actions` VALUES  (1,'add'),
+INSERT INTO `zoolu`.`actions` VALUES  (1,'add'),
  (2,'edit'),
  (3,'change_template'),
  (4,'change_template_id');
@@ -47,11 +47,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`categories`
+-- Definition of table `zoolu`.`categories`
 --
 
-DROP TABLE IF EXISTS `widgets`.`categories`;
-CREATE TABLE  `widgets`.`categories` (
+DROP TABLE IF EXISTS `zoolu`.`categories`;
+CREATE TABLE  `zoolu`.`categories` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idParentCategory` bigint(20) unsigned NOT NULL DEFAULT '0',
   `idRootCategory` bigint(20) unsigned DEFAULT NULL,
@@ -67,12 +67,12 @@ CREATE TABLE  `widgets`.`categories` (
 ) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`categories`
+-- Dumping data for table `zoolu`.`categories`
 --
 
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
 LOCK TABLES `categories` WRITE;
-INSERT INTO `widgets`.`categories` VALUES  (1,0,1,1,NULL,1,12,0),
+INSERT INTO `zoolu`.`categories` VALUES  (1,0,1,1,NULL,1,12,0),
  (11,0,11,2,NULL,1,20,0),
  (12,11,11,2,NULL,2,13,1),
  (13,11,11,2,NULL,14,19,1),
@@ -112,11 +112,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`categoryTitles`
+-- Definition of table `zoolu`.`categoryTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`categoryTitles`;
-CREATE TABLE  `widgets`.`categoryTitles` (
+DROP TABLE IF EXISTS `zoolu`.`categoryTitles`;
+CREATE TABLE  `zoolu`.`categoryTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idCategories` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -129,12 +129,12 @@ CREATE TABLE  `widgets`.`categoryTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`categoryTitles`
+-- Dumping data for table `zoolu`.`categoryTitles`
 --
 
 /*!40000 ALTER TABLE `categoryTitles` DISABLE KEYS */;
 LOCK TABLES `categoryTitles` WRITE;
-INSERT INTO `widgets`.`categoryTitles` VALUES  (1,1,1,'Seiten Kategorien',0,'0000-00-00 00:00:00'),
+INSERT INTO `zoolu`.`categoryTitles` VALUES  (1,1,1,'Seiten Kategorien',0,'0000-00-00 00:00:00'),
  (11,11,1,'Sortierung',0,'0000-00-00 00:00:00'),
  (12,12,1,'Sortierarten',0,'0000-00-00 00:00:00'),
  (13,13,1,'Reihenfolge',0,'0000-00-00 00:00:00'),
@@ -181,23 +181,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`categoryTypes`
+-- Definition of table `zoolu`.`categoryTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`categoryTypes`;
-CREATE TABLE  `widgets`.`categoryTypes` (
+DROP TABLE IF EXISTS `zoolu`.`categoryTypes`;
+CREATE TABLE  `zoolu`.`categoryTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`categoryTypes`
+-- Dumping data for table `zoolu`.`categoryTypes`
 --
 
 /*!40000 ALTER TABLE `categoryTypes` DISABLE KEYS */;
 LOCK TABLES `categoryTypes` WRITE;
-INSERT INTO `widgets`.`categoryTypes` VALUES  (1,'default'),
+INSERT INTO `zoolu`.`categoryTypes` VALUES  (1,'default'),
  (2,'system'),
  (3,'label');
 UNLOCK TABLES;
@@ -205,11 +205,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`contact-DEFAULT_CONTACT-1-InstanceFiles`
+-- Definition of table `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`contact-DEFAULT_CONTACT-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`contact-DEFAULT_CONTACT-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idContacts` bigint(20) unsigned NOT NULL,
   `idFiles` bigint(20) unsigned NOT NULL,
@@ -222,7 +222,7 @@ CREATE TABLE  `widgets`.`contact-DEFAULT_CONTACT-1-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`contact-DEFAULT_CONTACT-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `contact-DEFAULT_CONTACT-1-InstanceFiles` DISABLE KEYS */;
@@ -232,11 +232,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields`
+-- Definition of table `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idContacts` bigint(20) unsigned NOT NULL,
   `idRelation` bigint(20) unsigned NOT NULL,
@@ -248,7 +248,7 @@ CREATE TABLE  `widgets`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`contact-DEFAULT_CONTACT-1-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `contact-DEFAULT_CONTACT-1-InstanceMultiFields` DISABLE KEYS */;
@@ -258,11 +258,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`contact-DEFAULT_CONTACT-1-Instances`
+-- Definition of table `zoolu`.`contact-DEFAULT_CONTACT-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`contact-DEFAULT_CONTACT-1-Instances`;
-CREATE TABLE  `widgets`.`contact-DEFAULT_CONTACT-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`contact-DEFAULT_CONTACT-1-Instances`;
+CREATE TABLE  `zoolu`.`contact-DEFAULT_CONTACT-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idContacts` bigint(20) unsigned NOT NULL,
   `idUsers` bigint(20) unsigned NOT NULL,
@@ -275,7 +275,7 @@ CREATE TABLE  `widgets`.`contact-DEFAULT_CONTACT-1-Instances` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`contact-DEFAULT_CONTACT-1-Instances`
+-- Dumping data for table `zoolu`.`contact-DEFAULT_CONTACT-1-Instances`
 --
 
 /*!40000 ALTER TABLE `contact-DEFAULT_CONTACT-1-Instances` DISABLE KEYS */;
@@ -285,11 +285,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`contacts`
+-- Definition of table `zoolu`.`contacts`
 --
 
-DROP TABLE IF EXISTS `widgets`.`contacts`;
-CREATE TABLE  `widgets`.`contacts` (
+DROP TABLE IF EXISTS `zoolu`.`contacts`;
+CREATE TABLE  `zoolu`.`contacts` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idGenericForms` bigint(20) unsigned NOT NULL,
   `idUsers` bigint(20) unsigned NOT NULL COMMENT 'Person, letzte Änderung',
@@ -311,35 +311,35 @@ CREATE TABLE  `widgets`.`contacts` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`contacts`
+-- Dumping data for table `zoolu`.`contacts`
 --
 
 /*!40000 ALTER TABLE `contacts` DISABLE KEYS */;
 LOCK TABLES `contacts` WRITE;
-INSERT INTO `widgets`.`contacts` VALUES  (1,10,3,3,1,'','','Thomas','Schedler','','','','','','','2009-04-24 10:26:40','2009-04-24 10:26:40'),
+INSERT INTO `zoolu`.`contacts` VALUES  (1,10,3,3,1,'','','Thomas','Schedler','','','','','','','2009-04-24 10:26:40','2009-04-24 10:26:40'),
  (2,10,3,3,1,'','','Bernd','Hepberger','','','','','','','2009-06-08 16:28:48','2009-06-08 16:28:48');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`decorators`
+-- Definition of table `zoolu`.`decorators`
 --
 
-DROP TABLE IF EXISTS `widgets`.`decorators`;
-CREATE TABLE  `widgets`.`decorators` (
+DROP TABLE IF EXISTS `zoolu`.`decorators`;
+CREATE TABLE  `zoolu`.`decorators` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`decorators`
+-- Dumping data for table `zoolu`.`decorators`
 --
 
 /*!40000 ALTER TABLE `decorators` DISABLE KEYS */;
 LOCK TABLES `decorators` WRITE;
-INSERT INTO `widgets`.`decorators` VALUES  (1,'Input'),
+INSERT INTO `zoolu`.`decorators` VALUES  (1,'Input'),
  (2,'Template'),
  (3,'Tag'),
  (4,'Overflow'),
@@ -351,11 +351,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fieldPermissions`
+-- Definition of table `zoolu`.`fieldPermissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fieldPermissions`;
-CREATE TABLE  `widgets`.`fieldPermissions` (
+DROP TABLE IF EXISTS `zoolu`.`fieldPermissions`;
+CREATE TABLE  `zoolu`.`fieldPermissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFields` bigint(20) unsigned NOT NULL,
   `idPermissions` bigint(20) unsigned NOT NULL,
@@ -364,7 +364,7 @@ CREATE TABLE  `widgets`.`fieldPermissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fieldPermissions`
+-- Dumping data for table `zoolu`.`fieldPermissions`
 --
 
 /*!40000 ALTER TABLE `fieldPermissions` DISABLE KEYS */;
@@ -374,11 +374,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fieldProperties`
+-- Definition of table `zoolu`.`fieldProperties`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fieldProperties`;
-CREATE TABLE  `widgets`.`fieldProperties` (
+DROP TABLE IF EXISTS `zoolu`.`fieldProperties`;
+CREATE TABLE  `zoolu`.`fieldProperties` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFields` bigint(20) unsigned NOT NULL,
   `idProperties` int(10) unsigned NOT NULL,
@@ -389,23 +389,23 @@ CREATE TABLE  `widgets`.`fieldProperties` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fieldProperties`
+-- Dumping data for table `zoolu`.`fieldProperties`
 --
 
 /*!40000 ALTER TABLE `fieldProperties` DISABLE KEYS */;
 LOCK TABLES `fieldProperties` WRITE;
-INSERT INTO `widgets`.`fieldProperties` VALUES  (1,3,1,'2'),
+INSERT INTO `zoolu`.`fieldProperties` VALUES  (1,3,1,'2'),
  (2,4,1,'1');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `fieldProperties` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`fieldTitles`
+-- Definition of table `zoolu`.`fieldTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fieldTitles`;
-CREATE TABLE  `widgets`.`fieldTitles` (
+DROP TABLE IF EXISTS `zoolu`.`fieldTitles`;
+CREATE TABLE  `zoolu`.`fieldTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFields` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -416,12 +416,12 @@ CREATE TABLE  `widgets`.`fieldTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fieldTitles`
+-- Dumping data for table `zoolu`.`fieldTitles`
 --
 
 /*!40000 ALTER TABLE `fieldTitles` DISABLE KEYS */;
 LOCK TABLES `fieldTitles` WRITE;
-INSERT INTO `widgets`.`fieldTitles` VALUES  (1,1,1,'Titel',NULL),
+INSERT INTO `zoolu`.`fieldTitles` VALUES  (1,1,1,'Titel',NULL),
  (2,2,1,'Beschreibung',NULL),
  (3,3,1,'Titel',NULL),
  (4,4,1,'Überschrift für den Artikel',NULL),
@@ -492,7 +492,7 @@ INSERT INTO `widgets`.`fieldTitles` VALUES  (1,1,1,'Titel',NULL),
  (77,90,1,'Titel',NULL),
  (78,91,1,'Headerbild',NULL),
  (79,92,1,'Embed Code',NULL),
- (80,93,1,'Url (z.B. http://www.getwidgets.com)',NULL),
+ (80,93,1,'Url (z.B. http://www.getzoolu.com)',NULL),
  (81,94,1,'Titel',NULL),
  (82,95,1,'Sub-Navigations-Seiten',NULL),
  (83,97,1,'Titel',NULL),
@@ -514,23 +514,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fieldTypeGroups`
+-- Definition of table `zoolu`.`fieldTypeGroups`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fieldTypeGroups`;
-CREATE TABLE  `widgets`.`fieldTypeGroups` (
+DROP TABLE IF EXISTS `zoolu`.`fieldTypeGroups`;
+CREATE TABLE  `zoolu`.`fieldTypeGroups` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fieldTypeGroups`
+-- Dumping data for table `zoolu`.`fieldTypeGroups`
 --
 
 /*!40000 ALTER TABLE `fieldTypeGroups` DISABLE KEYS */;
 LOCK TABLES `fieldTypeGroups` WRITE;
-INSERT INTO `widgets`.`fieldTypeGroups` VALUES  (1,'files'),
+INSERT INTO `zoolu`.`fieldTypeGroups` VALUES  (1,'files'),
  (2,'selects'),
  (3,'multi_fields'),
  (4,'special_fields'),
@@ -540,11 +540,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fieldTypes`
+-- Definition of table `zoolu`.`fieldTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fieldTypes`;
-CREATE TABLE  `widgets`.`fieldTypes` (
+DROP TABLE IF EXISTS `zoolu`.`fieldTypes`;
+CREATE TABLE  `zoolu`.`fieldTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idDecorator` bigint(20) unsigned NOT NULL,
   `sqlType` varchar(30) NOT NULL,
@@ -556,12 +556,12 @@ CREATE TABLE  `widgets`.`fieldTypes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`fieldTypes`
+-- Dumping data for table `zoolu`.`fieldTypes`
 --
 
 /*!40000 ALTER TABLE `fieldTypes` DISABLE KEYS */;
 LOCK TABLES `fieldTypes` WRITE;
-INSERT INTO `widgets`.`fieldTypes` VALUES  (1,1,'',0,'text','',5),
+INSERT INTO `zoolu`.`fieldTypes` VALUES  (1,1,'',0,'text','',5),
  (2,1,'',0,'textarea','',5),
  (3,1,'',0,'multiCheckbox','',3),
  (4,1,'',0,'radio','',5),
@@ -590,11 +590,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fieldValidators`
+-- Definition of table `zoolu`.`fieldValidators`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fieldValidators`;
-CREATE TABLE  `widgets`.`fieldValidators` (
+DROP TABLE IF EXISTS `zoolu`.`fieldValidators`;
+CREATE TABLE  `zoolu`.`fieldValidators` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFields` bigint(20) unsigned NOT NULL,
   `idValidators` bigint(20) unsigned NOT NULL,
@@ -602,12 +602,12 @@ CREATE TABLE  `widgets`.`fieldValidators` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fieldValidators`
+-- Dumping data for table `zoolu`.`fieldValidators`
 --
 
 /*!40000 ALTER TABLE `fieldValidators` DISABLE KEYS */;
 LOCK TABLES `fieldValidators` WRITE;
-INSERT INTO `widgets`.`fieldValidators` VALUES  (1,1,17),
+INSERT INTO `zoolu`.`fieldValidators` VALUES  (1,1,17),
  (2,3,17),
  (3,1,2),
  (4,31,17),
@@ -620,11 +620,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fields`
+-- Definition of table `zoolu`.`fields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fields`;
-CREATE TABLE  `widgets`.`fields` (
+DROP TABLE IF EXISTS `zoolu`.`fields`;
+CREATE TABLE  `zoolu`.`fields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFieldTypes` bigint(20) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -645,12 +645,12 @@ CREATE TABLE  `widgets`.`fields` (
 ) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fields`
+-- Dumping data for table `zoolu`.`fields`
 --
 
 /*!40000 ALTER TABLE `fields` DISABLE KEYS */;
 LOCK TABLES `fields` WRITE;
-INSERT INTO `widgets`.`fields` VALUES  (1,1,'title',1,NULL,NULL,NULL,12,0,1,1,1,0,NULL,0),
+INSERT INTO `zoolu`.`fields` VALUES  (1,1,'title',1,NULL,NULL,NULL,12,0,1,1,1,0,NULL,0),
  (2,10,'description',1,NULL,NULL,NULL,12,0,0,0,1,0,NULL,0),
  (3,1,'title',5,NULL,NULL,NULL,12,0,1,1,1,0,NULL,0),
  (4,1,'articletitle',5,NULL,NULL,NULL,12,0,0,0,1,0,NULL,0),
@@ -758,11 +758,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fileAttributes`
+-- Definition of table `zoolu`.`fileAttributes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fileAttributes`;
-CREATE TABLE  `widgets`.`fileAttributes` (
+DROP TABLE IF EXISTS `zoolu`.`fileAttributes`;
+CREATE TABLE  `zoolu`.`fileAttributes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFiles` bigint(20) unsigned NOT NULL,
   `xDim` int(10) DEFAULT NULL,
@@ -773,7 +773,7 @@ CREATE TABLE  `widgets`.`fileAttributes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fileAttributes`
+-- Dumping data for table `zoolu`.`fileAttributes`
 --
 
 /*!40000 ALTER TABLE `fileAttributes` DISABLE KEYS */;
@@ -783,11 +783,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`filePermissions`
+-- Definition of table `zoolu`.`filePermissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`filePermissions`;
-CREATE TABLE  `widgets`.`filePermissions` (
+DROP TABLE IF EXISTS `zoolu`.`filePermissions`;
+CREATE TABLE  `zoolu`.`filePermissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFiles` bigint(20) unsigned NOT NULL,
   `idPermissions` bigint(20) unsigned NOT NULL,
@@ -796,7 +796,7 @@ CREATE TABLE  `widgets`.`filePermissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`filePermissions`
+-- Dumping data for table `zoolu`.`filePermissions`
 --
 
 /*!40000 ALTER TABLE `filePermissions` DISABLE KEYS */;
@@ -806,11 +806,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fileTitles`
+-- Definition of table `zoolu`.`fileTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fileTitles`;
-CREATE TABLE  `widgets`.`fileTitles` (
+DROP TABLE IF EXISTS `zoolu`.`fileTitles`;
+CREATE TABLE  `zoolu`.`fileTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFiles` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -823,7 +823,7 @@ CREATE TABLE  `widgets`.`fileTitles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fileTitles`
+-- Dumping data for table `zoolu`.`fileTitles`
 --
 
 /*!40000 ALTER TABLE `fileTitles` DISABLE KEYS */;
@@ -833,11 +833,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`fileTypes`
+-- Definition of table `zoolu`.`fileTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`fileTypes`;
-CREATE TABLE  `widgets`.`fileTypes` (
+DROP TABLE IF EXISTS `zoolu`.`fileTypes`;
+CREATE TABLE  `zoolu`.`fileTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `isImage` tinyint(1) DEFAULT NULL COMMENT 'If filetyp ecan be rendered to image',
@@ -845,23 +845,23 @@ CREATE TABLE  `widgets`.`fileTypes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`fileTypes`
+-- Dumping data for table `zoolu`.`fileTypes`
 --
 
 /*!40000 ALTER TABLE `fileTypes` DISABLE KEYS */;
 LOCK TABLES `fileTypes` WRITE;
-INSERT INTO `widgets`.`fileTypes` VALUES  (1,'Work',NULL),
+INSERT INTO `zoolu`.`fileTypes` VALUES  (1,'Work',NULL),
  (2,'Private',NULL);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `fileTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`files`
+-- Definition of table `zoolu`.`files`
 --
 
-DROP TABLE IF EXISTS `widgets`.`files`;
-CREATE TABLE  `widgets`.`files` (
+DROP TABLE IF EXISTS `zoolu`.`files`;
+CREATE TABLE  `zoolu`.`files` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `fileId` varchar(32) NOT NULL,
   `idUsers` bigint(20) unsigned NOT NULL,
@@ -883,7 +883,7 @@ CREATE TABLE  `widgets`.`files` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`files`
+-- Dumping data for table `zoolu`.`files`
 --
 
 /*!40000 ALTER TABLE `files` DISABLE KEYS */;
@@ -893,11 +893,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`folder-DEFAULT_FOLDER-1-Instances`
+-- Definition of table `zoolu`.`folder-DEFAULT_FOLDER-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`folder-DEFAULT_FOLDER-1-Instances`;
-CREATE TABLE  `widgets`.`folder-DEFAULT_FOLDER-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`folder-DEFAULT_FOLDER-1-Instances`;
+CREATE TABLE  `zoolu`.`folder-DEFAULT_FOLDER-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `folderId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -913,12 +913,12 @@ CREATE TABLE  `widgets`.`folder-DEFAULT_FOLDER-1-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`folder-DEFAULT_FOLDER-1-Instances`
+-- Dumping data for table `zoolu`.`folder-DEFAULT_FOLDER-1-Instances`
 --
 
 /*!40000 ALTER TABLE `folder-DEFAULT_FOLDER-1-Instances` DISABLE KEYS */;
 LOCK TABLES `folder-DEFAULT_FOLDER-1-Instances` WRITE;
-INSERT INTO `widgets`.`folder-DEFAULT_FOLDER-1-Instances` VALUES  (1,'4a112157c45e5',1,1,'',3,2,'2009-05-18 10:50:31','2009-06-09 17:12:59'),
+INSERT INTO `zoolu`.`folder-DEFAULT_FOLDER-1-Instances` VALUES  (1,'4a112157c45e5',1,1,'',3,2,'2009-05-18 10:50:31','2009-06-09 17:12:59'),
  (2,'4a113342d22e2',1,1,'',2,2,'2009-05-18 12:06:58','2009-05-18 15:04:10'),
  (3,'4a1133f4257b5',1,1,'',2,2,'2009-05-18 12:09:56','2009-05-18 15:04:20'),
  (4,'4a2910cf9583d',1,1,'',3,3,'2009-06-05 14:34:23','2009-06-05 14:34:23'),
@@ -931,11 +931,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`folderPermissions`
+-- Definition of table `zoolu`.`folderPermissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`folderPermissions`;
-CREATE TABLE  `widgets`.`folderPermissions` (
+DROP TABLE IF EXISTS `zoolu`.`folderPermissions`;
+CREATE TABLE  `zoolu`.`folderPermissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idFolders` bigint(20) unsigned NOT NULL,
   `idPermissions` bigint(20) unsigned NOT NULL,
@@ -944,7 +944,7 @@ CREATE TABLE  `widgets`.`folderPermissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`folderPermissions`
+-- Dumping data for table `zoolu`.`folderPermissions`
 --
 
 /*!40000 ALTER TABLE `folderPermissions` DISABLE KEYS */;
@@ -954,11 +954,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`folderTitles`
+-- Definition of table `zoolu`.`folderTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`folderTitles`;
-CREATE TABLE  `widgets`.`folderTitles` (
+DROP TABLE IF EXISTS `zoolu`.`folderTitles`;
+CREATE TABLE  `zoolu`.`folderTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `folderId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -974,12 +974,12 @@ CREATE TABLE  `widgets`.`folderTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`folderTitles`
+-- Dumping data for table `zoolu`.`folderTitles`
 --
 
 /*!40000 ALTER TABLE `folderTitles` DISABLE KEYS */;
 LOCK TABLES `folderTitles` WRITE;
-INSERT INTO `widgets`.`folderTitles` VALUES  (1,'4a112157c45e5',1,1,'Hauptpunkt 1',3,2,'2009-05-18 10:50:31','2009-06-09 17:12:59'),
+INSERT INTO `zoolu`.`folderTitles` VALUES  (1,'4a112157c45e5',1,1,'Hauptpunkt 1',3,2,'2009-05-18 10:50:31','2009-06-09 17:12:59'),
  (2,'4a113342d22e2',1,1,'Hauptpunkt 2',2,2,'2009-05-18 12:06:58','2009-05-18 15:04:10'),
  (3,'4a1133f4257b5',1,1,'Hauptpunkt 3',2,2,'2009-05-18 12:09:56','2009-05-18 15:04:20'),
  (4,'4a2910cf9583d',1,1,'TEST',3,3,'2009-06-05 14:34:23','2009-06-05 14:34:23'),
@@ -992,34 +992,34 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`folderTypes`
+-- Definition of table `zoolu`.`folderTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`folderTypes`;
-CREATE TABLE  `widgets`.`folderTypes` (
+DROP TABLE IF EXISTS `zoolu`.`folderTypes`;
+CREATE TABLE  `zoolu`.`folderTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`folderTypes`
+-- Dumping data for table `zoolu`.`folderTypes`
 --
 
 /*!40000 ALTER TABLE `folderTypes` DISABLE KEYS */;
 LOCK TABLES `folderTypes` WRITE;
-INSERT INTO `widgets`.`folderTypes` VALUES  (1,'folder'),
+INSERT INTO `zoolu`.`folderTypes` VALUES  (1,'folder'),
  (2,'blog');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `folderTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`folders`
+-- Definition of table `zoolu`.`folders`
 --
 
-DROP TABLE IF EXISTS `widgets`.`folders`;
-CREATE TABLE  `widgets`.`folders` (
+DROP TABLE IF EXISTS `zoolu`.`folders`;
+CREATE TABLE  `zoolu`.`folders` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idGenericForms` bigint(20) unsigned NOT NULL,
   `idFolderTypes` bigint(20) unsigned NOT NULL,
@@ -1054,12 +1054,12 @@ CREATE TABLE  `widgets`.`folders` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`folders`
+-- Dumping data for table `zoolu`.`folders`
 --
 
 /*!40000 ALTER TABLE `folders` DISABLE KEYS */;
 LOCK TABLES `folders` WRITE;
-INSERT INTO `widgets`.`folders` VALUES  (1,1,1,0,1,1,4,0,0,NULL,1,'2009-05-18 10:50:31','4a112157c45e5',1,3,2,0,'2009-05-18 10:50:31','2009-06-23 10:37:30',NULL,2,1,1,0,NULL),
+INSERT INTO `zoolu`.`folders` VALUES  (1,1,1,0,1,1,4,0,0,NULL,1,'2009-05-18 10:50:31','4a112157c45e5',1,3,2,0,'2009-05-18 10:50:31','2009-06-23 10:37:30',NULL,2,1,1,0,NULL),
  (2,1,1,0,1,5,6,0,0,NULL,2,'2009-05-18 12:06:58','4a113342d22e2',1,3,2,0,'2009-05-18 12:06:58','2009-06-23 10:37:30',NULL,2,1,1,0,NULL),
  (3,1,1,0,1,7,8,0,0,NULL,3,'2009-05-18 12:09:56','4a1133f4257b5',1,2,2,0,'2009-05-18 12:09:56','2009-06-23 10:37:30',NULL,2,1,1,0,NULL),
  (4,1,1,0,3,1,2,0,0,NULL,0,'2009-06-05 14:34:23','4a2910cf9583d',1,3,3,0,'2009-06-05 14:34:23','2009-06-05 14:34:23',NULL,1,1,0,0,NULL),
@@ -1070,25 +1070,25 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`genericFormTabs`
+-- Definition of table `zoolu`.`genericFormTabs`
 --
 
-DROP TABLE IF EXISTS `widgets`.`genericFormTabs`;
-CREATE TABLE  `widgets`.`genericFormTabs` (
+DROP TABLE IF EXISTS `zoolu`.`genericFormTabs`;
+CREATE TABLE  `zoolu`.`genericFormTabs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `idGenericForms` bigint(20) NOT NULL,
   `idTabs` bigint(20) NOT NULL,
   `order` int(10) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`genericFormTabs`
+-- Dumping data for table `zoolu`.`genericFormTabs`
 --
 
 /*!40000 ALTER TABLE `genericFormTabs` DISABLE KEYS */;
 LOCK TABLES `genericFormTabs` WRITE;
-INSERT INTO `widgets`.`genericFormTabs` VALUES  (1,1,1,1),
+INSERT INTO `zoolu`.`genericFormTabs` VALUES  (1,1,1,1),
  (2,2,2,1),
  (3,3,3,1),
  (4,4,4,1),
@@ -1106,17 +1106,18 @@ INSERT INTO `widgets`.`genericFormTabs` VALUES  (1,1,1,1),
  (16,14,16,3),
  (17,14,17,4),
  (18,14,18,5),
- (19,14,19,6);
+ (19,14,19,6),
+ (20,15,20,1);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `genericFormTabs` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`genericFormTitles`
+-- Definition of table `zoolu`.`genericFormTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`genericFormTitles`;
-CREATE TABLE  `widgets`.`genericFormTitles` (
+DROP TABLE IF EXISTS `zoolu`.`genericFormTitles`;
+CREATE TABLE  `zoolu`.`genericFormTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idGenericForms` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -1128,12 +1129,12 @@ CREATE TABLE  `widgets`.`genericFormTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`genericFormTitles`
+-- Dumping data for table `zoolu`.`genericFormTitles`
 --
 
 /*!40000 ALTER TABLE `genericFormTitles` DISABLE KEYS */;
 LOCK TABLES `genericFormTitles` WRITE;
-INSERT INTO `widgets`.`genericFormTitles` VALUES  (1,6,1,'Interne Verlinkung',1),
+INSERT INTO `zoolu`.`genericFormTitles` VALUES  (1,6,1,'Interne Verlinkung',1),
  (2,6,1,'Interne Verlinkung',2),
  (3,13,1,'Externe Verlinkung',1),
  (4,13,1,'Externe Verlinkung',2);
@@ -1142,37 +1143,38 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`genericFormTypes`
+-- Definition of table `zoolu`.`genericFormTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`genericFormTypes`;
-CREATE TABLE  `widgets`.`genericFormTypes` (
+DROP TABLE IF EXISTS `zoolu`.`genericFormTypes`;
+CREATE TABLE  `zoolu`.`genericFormTypes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`genericFormTypes`
+-- Dumping data for table `zoolu`.`genericFormTypes`
 --
 
 /*!40000 ALTER TABLE `genericFormTypes` DISABLE KEYS */;
 LOCK TABLES `genericFormTypes` WRITE;
-INSERT INTO `widgets`.`genericFormTypes` VALUES  (1,'folder'),
+INSERT INTO `zoolu`.`genericFormTypes` VALUES  (1,'folder'),
  (2,'page'),
  (3,'category'),
  (4,'unit'),
- (5,'contact');
+ (5,'contact'),
+ (6,'widget');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `genericFormTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`genericForms`
+-- Definition of table `zoolu`.`genericForms`
 --
 
-DROP TABLE IF EXISTS `widgets`.`genericForms`;
-CREATE TABLE  `widgets`.`genericForms` (
+DROP TABLE IF EXISTS `zoolu`.`genericForms`;
+CREATE TABLE  `zoolu`.`genericForms` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idUsers` bigint(20) unsigned NOT NULL,
   `genericFormId` varchar(32) NOT NULL,
@@ -1182,15 +1184,15 @@ CREATE TABLE  `widgets`.`genericForms` (
   `idGenericFormTypes` int(10) unsigned NOT NULL,
   `mandatoryUpgrade` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`genericForms`
+-- Dumping data for table `zoolu`.`genericForms`
 --
 
 /*!40000 ALTER TABLE `genericForms` DISABLE KEYS */;
 LOCK TABLES `genericForms` WRITE;
-INSERT INTO `widgets`.`genericForms` VALUES  (1,2,'DEFAULT_FOLDER',1,'2008-11-14 09:54:39','2008-11-14 09:54:39',1,0),
+INSERT INTO `zoolu`.`genericForms` VALUES  (1,2,'DEFAULT_FOLDER',1,'2008-11-14 09:54:39','2008-11-14 09:54:39',1,0),
  (2,2,'DEFAULT_PAGE_1',1,'2009-01-29 08:27:34','2009-01-29 08:27:34',2,0),
  (5,2,'DEFAULT_CATEGORY',1,'2009-03-17 17:01:58','2009-03-17 17:01:58',3,0),
  (6,3,'DEFAULT_LINKING',1,'2009-02-11 16:37:37','2009-02-11 16:37:37',2,0),
@@ -1201,17 +1203,18 @@ INSERT INTO `widgets`.`genericForms` VALUES  (1,2,'DEFAULT_FOLDER',1,'2008-11-14
  (11,2,'DEFAULT_EVENT',1,'2009-04-09 17:04:57','2009-04-09 17:04:57',2,0),
  (12,2,'DEFAULT_EVENT_OVERVIEW',1,'2009-04-17 10:09:45','2009-04-17 10:09:45',2,0),
  (13,2,'DEFAULT_EXTERNAL',1,'2009-05-18 15:15:16','2009-02-11 16:37:37',2,0),
- (14,1,'DEFAULT_PROCESS',1,'2009-07-22 20:57:26','2009-07-22 20:57:26',2,0);
+ (14,1,'DEFAULT_PROCESS',1,'2009-07-22 20:57:26','2009-07-22 20:57:26',2,0),
+ (15,6,'W_WIDGET_DEFAULT',1,'2009-08-06 14:49:42','2009-08-06 14:55:04',6,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `genericForms` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`groupPermissions`
+-- Definition of table `zoolu`.`groupPermissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`groupPermissions`;
-CREATE TABLE  `widgets`.`groupPermissions` (
+DROP TABLE IF EXISTS `zoolu`.`groupPermissions`;
+CREATE TABLE  `zoolu`.`groupPermissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idGroups` bigint(20) unsigned NOT NULL,
   `idPermissions` bigint(20) unsigned NOT NULL,
@@ -1219,7 +1222,7 @@ CREATE TABLE  `widgets`.`groupPermissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`groupPermissions`
+-- Dumping data for table `zoolu`.`groupPermissions`
 --
 
 /*!40000 ALTER TABLE `groupPermissions` DISABLE KEYS */;
@@ -1229,23 +1232,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`groupTypes`
+-- Definition of table `zoolu`.`groupTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`groupTypes`;
-CREATE TABLE  `widgets`.`groupTypes` (
+DROP TABLE IF EXISTS `zoolu`.`groupTypes`;
+CREATE TABLE  `zoolu`.`groupTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Typen für Gruppen CMS,...';
 
 --
--- Dumping data for table `widgets`.`groupTypes`
+-- Dumping data for table `zoolu`.`groupTypes`
 --
 
 /*!40000 ALTER TABLE `groupTypes` DISABLE KEYS */;
 LOCK TABLES `groupTypes` WRITE;
-INSERT INTO `widgets`.`groupTypes` VALUES  (1,'cms'),
+INSERT INTO `zoolu`.`groupTypes` VALUES  (1,'cms'),
  (2,'extranet'),
  (3,'intranet');
 UNLOCK TABLES;
@@ -1253,11 +1256,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`groups`
+-- Definition of table `zoolu`.`groups`
 --
 
-DROP TABLE IF EXISTS `widgets`.`groups`;
-CREATE TABLE  `widgets`.`groups` (
+DROP TABLE IF EXISTS `zoolu`.`groups`;
+CREATE TABLE  `zoolu`.`groups` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `idGroupTypes` bigint(20) unsigned DEFAULT NULL,
@@ -1265,7 +1268,7 @@ CREATE TABLE  `widgets`.`groups` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`groups`
+-- Dumping data for table `zoolu`.`groups`
 --
 
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
@@ -1275,11 +1278,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`guiTexts`
+-- Definition of table `zoolu`.`guiTexts`
 --
 
-DROP TABLE IF EXISTS `widgets`.`guiTexts`;
-CREATE TABLE  `widgets`.`guiTexts` (
+DROP TABLE IF EXISTS `zoolu`.`guiTexts`;
+CREATE TABLE  `zoolu`.`guiTexts` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idLanguanges` int(10) unsigned NOT NULL DEFAULT '1',
   `guiId` varchar(32) NOT NULL,
@@ -1289,7 +1292,7 @@ CREATE TABLE  `widgets`.`guiTexts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Table for multilanguage GUI';
 
 --
--- Dumping data for table `widgets`.`guiTexts`
+-- Dumping data for table `zoolu`.`guiTexts`
 --
 
 /*!40000 ALTER TABLE `guiTexts` DISABLE KEYS */;
@@ -1299,11 +1302,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`languages`
+-- Definition of table `zoolu`.`languages`
 --
 
-DROP TABLE IF EXISTS `widgets`.`languages`;
-CREATE TABLE  `widgets`.`languages` (
+DROP TABLE IF EXISTS `zoolu`.`languages`;
+CREATE TABLE  `zoolu`.`languages` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `languageCode` varchar(3) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -1311,35 +1314,35 @@ CREATE TABLE  `widgets`.`languages` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`languages`
+-- Dumping data for table `zoolu`.`languages`
 --
 
 /*!40000 ALTER TABLE `languages` DISABLE KEYS */;
 LOCK TABLES `languages` WRITE;
-INSERT INTO `widgets`.`languages` VALUES  (1,'DE','Deutsch'),
+INSERT INTO `zoolu`.`languages` VALUES  (1,'DE','Deutsch'),
  (2,'EN','English');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `languages` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`modules`
+-- Definition of table `zoolu`.`modules`
 --
 
-DROP TABLE IF EXISTS `widgets`.`modules`;
-CREATE TABLE  `widgets`.`modules` (
+DROP TABLE IF EXISTS `zoolu`.`modules`;
+CREATE TABLE  `zoolu`.`modules` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`modules`
+-- Dumping data for table `zoolu`.`modules`
 --
 
 /*!40000 ALTER TABLE `modules` DISABLE KEYS */;
 LOCK TABLES `modules` WRITE;
-INSERT INTO `widgets`.`modules` VALUES  (1,'cms'),
+INSERT INTO `zoolu`.`modules` VALUES  (1,'cms'),
  (2,'media'),
  (3,'properties');
 UNLOCK TABLES;
@@ -1347,11 +1350,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_EVENT-1-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_EVENT-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_EVENT-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_EVENT-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_EVENT-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_EVENT-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1366,7 +1369,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_EVENT-1-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_EVENT-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_EVENT-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_EVENT-1-InstanceFiles` DISABLE KEYS */;
@@ -1376,11 +1379,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_EVENT-1-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_EVENT-1-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_EVENT-1-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_EVENT-1-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_EVENT-1-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_EVENT-1-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1394,7 +1397,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_EVENT-1-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_EVENT-1-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_EVENT-1-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_EVENT-1-InstanceMultiFields` DISABLE KEYS */;
@@ -1404,11 +1407,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_EVENT-1-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_EVENT-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_EVENT-1-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_EVENT-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_EVENT-1-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_EVENT-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1440,7 +1443,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_EVENT-1-Instances` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_EVENT-1-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_EVENT-1-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_EVENT-1-Instances` DISABLE KEYS */;
@@ -1450,11 +1453,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1469,7 +1472,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_EVENT_OVERVIEW-1-InstanceFiles` DISABLE KEYS */;
@@ -1479,11 +1482,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1497,7 +1500,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_EVENT_OVERVIEW-1-InstanceMultiFields` DISABLE KEYS */;
@@ -1507,11 +1510,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1528,7 +1531,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_EVENT_OVERVIEW-1-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_EVENT_OVERVIEW-1-Instances` DISABLE KEYS */;
@@ -1538,11 +1541,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1557,7 +1560,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_OVERVIEW-1-InstanceFiles` DISABLE KEYS */;
@@ -1567,11 +1570,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1585,7 +1588,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_OVERVIEW-1-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_OVERVIEW-1-InstanceMultiFields` DISABLE KEYS */;
@@ -1595,11 +1598,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_OVERVIEW-1-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_OVERVIEW-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_OVERVIEW-1-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_OVERVIEW-1-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_OVERVIEW-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1619,12 +1622,12 @@ CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_OVERVIEW-1-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_OVERVIEW-1-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_OVERVIEW-1-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_OVERVIEW-1-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_OVERVIEW-1-Instances` VALUES  (1,'4a112157d69eb',1,1,3,'','','','',NULL,3,'2009-06-09 11:35:23','2009-07-23 11:05:21'),
+INSERT INTO `zoolu`.`page-DEFAULT_OVERVIEW-1-Instances` VALUES  (1,'4a112157d69eb',1,1,3,'','','','',NULL,3,'2009-06-09 11:35:23','2009-07-23 11:05:21'),
  (2,'4a112157d69eb',1,2,3,NULL,'','','',NULL,3,'2009-06-09 11:36:01','2009-06-09 19:07:38'),
  (3,'4a113342dffe5',1,1,3,'','','','',NULL,3,'2009-06-09 18:51:25','2009-07-08 19:14:48'),
  (4,'4a113342dffe5',1,2,3,NULL,'','','',NULL,3,'2009-06-09 18:52:17','2009-06-09 18:52:25');
@@ -1633,11 +1636,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_OVERVIEW-1-Region14-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_OVERVIEW-1-Region14-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_OVERVIEW-1-Region14-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-Region14-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_OVERVIEW-1-Region14-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_OVERVIEW-1-Region14-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1651,12 +1654,12 @@ CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-Region14-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_OVERVIEW-1-Region14-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_OVERVIEW-1-Region14-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_OVERVIEW-1-Region14-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_OVERVIEW-1-Region14-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_OVERVIEW-1-Region14-Instances` VALUES  (7,'4a113342dffe5',1,2,1,'',''),
+INSERT INTO `zoolu`.`page-DEFAULT_OVERVIEW-1-Region14-Instances` VALUES  (7,'4a113342dffe5',1,2,1,'',''),
  (11,'4a112157d69eb',1,2,1,'',''),
  (18,'4a113342dffe5',1,1,1,'',''),
  (20,'4a112157d69eb',1,1,1,'','');
@@ -1665,11 +1668,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_OVERVIEW-1-Region15-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_OVERVIEW-1-Region15-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_OVERVIEW-1-Region15-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-Region15-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_OVERVIEW-1-Region15-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_OVERVIEW-1-Region15-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1689,12 +1692,12 @@ CREATE TABLE  `widgets`.`page-DEFAULT_OVERVIEW-1-Region15-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_OVERVIEW-1-Region15-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_OVERVIEW-1-Region15-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_OVERVIEW-1-Region15-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_OVERVIEW-1-Region15-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_OVERVIEW-1-Region15-Instances` VALUES  (7,'4a113342dffe5',1,2,1,'',0,0,0,0,0,0,NULL),
+INSERT INTO `zoolu`.`page-DEFAULT_OVERVIEW-1-Region15-Instances` VALUES  (7,'4a113342dffe5',1,2,1,'',0,0,0,0,0,0,NULL),
  (11,'4a112157d69eb',1,2,1,'',0,0,0,0,0,0,NULL),
  (18,'4a113342dffe5',1,1,1,'',0,0,0,0,0,0,0),
  (20,'4a112157d69eb',1,1,1,'Übersicht',0,0,29,99,18,14,66);
@@ -1703,11 +1706,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PAGE_1-1-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PAGE_1-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1722,7 +1725,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PAGE_1-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-InstanceFiles` DISABLE KEYS */;
@@ -1732,11 +1735,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1750,7 +1753,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-InstanceMultiFields` DISABLE KEYS */;
@@ -1760,11 +1763,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PAGE_1-1-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PAGE_1-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PAGE_1-1-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PAGE_1-1-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1785,15 +1788,15 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PAGE_1-1-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PAGE_1-1-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PAGE_1-1-Instances` VALUES  (1,'4a112157d69eb',1,1,3,'','','','','','','','','',2,'2009-05-18 10:50:31','2009-07-23 11:05:12'),
+INSERT INTO `zoolu`.`page-DEFAULT_PAGE_1-1-Instances` VALUES  (1,'4a112157d69eb',1,1,3,'','','','','','','','','',2,'2009-05-18 10:50:31','2009-07-23 11:05:12'),
  (2,'4a113342dffe5',1,1,3,'','','','','','','','','',2,'2009-05-18 12:06:58','2009-06-09 18:52:41'),
  (3,'4a1133f43284a',1,1,2,'','','','','','','','','',2,'2009-05-18 12:09:56','2009-05-18 12:09:56'),
  (4,'4a115ca65d8bb',1,1,6,'Testseite mit Überschrift für den Artikel','','','Bildergalerie',' Dokumente','','','Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.asdf','1',2,'2009-05-18 15:03:34','2009-07-30 10:52:37'),
@@ -1806,17 +1809,19 @@ INSERT INTO `widgets`.`page-DEFAULT_PAGE_1-1-Instances` VALUES  (1,'4a112157d69e
  (19,'4a40944a8ee78',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>',NULL,'','','','','','',3,'2009-06-23 10:37:30','2009-06-23 10:46:34'),
  (20,'4a40946ce9d01',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>',NULL,'','','','','','',3,'2009-06-23 10:38:04','2009-07-22 20:47:20'),
  (23,'4a676ebfe3a7a',1,1,3,'','',NULL,'','','','','','',3,'2009-07-22 21:55:43','2009-07-23 11:35:32'),
- (24,'4a681b0f66d2a',1,1,3,'','',NULL,'','','','','','',3,'2009-07-23 10:10:55','2009-07-23 10:47:14');
+ (24,'4a681b0f66d2a',1,1,3,'','',NULL,'','','','','','',3,'2009-07-23 10:10:55','2009-07-23 10:47:14'),
+ (29,'4a7a8f9abb7f1',1,1,6,'','',NULL,'','','','','','',6,'2009-08-06 10:08:58','2009-08-06 10:08:58'),
+ (30,'4a7a906793da5',1,1,6,'','',NULL,'','','','','','',6,'2009-08-06 10:12:23','2009-08-06 10:12:23');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Instances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1833,7 +1838,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-InstanceFiles` DISABLE KEYS */;
@@ -1843,11 +1848,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1863,7 +1868,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-InstanceMultiFields` DISABLE KEYS */;
@@ -1873,11 +1878,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1888,15 +1893,15 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=246 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PAGE_1-1-Region11-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances` VALUES  (2,'4a1cf55c8b3e5',1,1,1,'',''),
+INSERT INTO `zoolu`.`page-DEFAULT_PAGE_1-1-Region11-Instances` VALUES  (2,'4a1cf55c8b3e5',1,1,1,'',''),
  (95,'4a112157d69eb',1,2,1,'',''),
  (109,'4a116d34752df',1,1,1,'',''),
  (110,'4a116d34752df',1,2,1,'',''),
@@ -1908,17 +1913,19 @@ INSERT INTO `widgets`.`page-DEFAULT_PAGE_1-1-Region11-Instances` VALUES  (2,'4a1
  (182,'4a112157d69eb',1,1,1,'',''),
  (183,'4a676ebfe3a7a',1,1,1,'',''),
  (238,'4a115ca65d8bb',1,1,1,'Test Thomas','<p>asdfasdfsd</p>'),
- (239,'4a115ca65d8bb',1,1,2,'Test Thomas 2','<p>asfsdfasdf</p>');
+ (239,'4a115ca65d8bb',1,1,2,'Test Thomas 2','<p>asfsdfasdf</p>'),
+ (244,'4a7a8f9abb7f1',1,1,1,'',''),
+ (245,'4a7a906793da5',1,1,1,'','');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1931,22 +1938,22 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-InstanceFiles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-InstanceFiles` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PROCESS-1-InstanceFiles` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PROCESS-1-InstanceFiles` VALUES  (14,'4a676ebfe3a7a',1,1,88,108);
+INSERT INTO `zoolu`.`page-DEFAULT_PROCESS-1-InstanceFiles` VALUES  (14,'4a676ebfe3a7a',1,1,88,108);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-InstanceFiles` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1959,7 +1966,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-InstanceMultiFields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-InstanceMultiFields` DISABLE KEYS */;
@@ -1969,11 +1976,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -1998,12 +2005,12 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PROCESS-1-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PROCESS-1-Instances` VALUES  (1,'4a676ebfe3a7a',1,1,3,'','<p>Hier kommt eine kurze Beschreibung</p>','Abteilung','Stelle','2','1','<p><strong>Prozessinputs / Informationen / Ressourcen</strong></p>','<p><strong>Prozessinputs / Informationen / Ressourcen</strong></p>','<p><strong>Messg&ouml;&szlig;en</strong></p>\n<p>&nbsp;</p>','<p><strong>Vorschriften / Richtlinien / Sicherheit</strong></p>','<p><strong>Methoden / Verfahren / IT Tools</strong></p>',3,'2009-07-22 22:17:46','2009-07-23 11:35:37'),
+INSERT INTO `zoolu`.`page-DEFAULT_PROCESS-1-Instances` VALUES  (1,'4a676ebfe3a7a',1,1,3,'','<p>Hier kommt eine kurze Beschreibung</p>','Abteilung','Stelle','2','1','<p><strong>Prozessinputs / Informationen / Ressourcen</strong></p>','<p><strong>Prozessinputs / Informationen / Ressourcen</strong></p>','<p><strong>Messg&ouml;&szlig;en</strong></p>\n<p>&nbsp;</p>','<p><strong>Vorschriften / Richtlinien / Sicherheit</strong></p>','<p><strong>Methoden / Verfahren / IT Tools</strong></p>',3,'2009-07-22 22:17:46','2009-07-23 11:35:37'),
  (2,'4a676ebfe3a7a',1,2,3,'','','','','0','0',NULL,NULL,NULL,NULL,NULL,3,'2009-07-22 22:50:44','2009-07-23 08:22:47'),
  (3,'4a681b0f66d2a',1,1,3,'','','','','','','','','','','',3,'2009-07-23 10:37:38','2009-07-23 10:53:29');
 UNLOCK TABLES;
@@ -2011,11 +2018,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-Region27-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-Region27-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-Region27-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region27-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-Region27-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-Region27-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2028,12 +2035,12 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region27-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-Region27-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-Region27-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Region27-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PROCESS-1-Region27-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PROCESS-1-Region27-Instances` VALUES  (32,'4a676ebfe3a7a',1,2,1,'',''),
+INSERT INTO `zoolu`.`page-DEFAULT_PROCESS-1-Region27-Instances` VALUES  (32,'4a676ebfe3a7a',1,2,1,'',''),
  (68,'4a681b0f66d2a',1,1,1,'',''),
  (77,'4a676ebfe3a7a',1,1,1,'Test 1 Thomas','<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.&nbsp;</p>\n<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.&nbsp;</p>\n<table border=\"0\" style=\"width: 100%;\">\n<tbody>\n<tr>\n<td>TEST</td>\n<td>TEST</td>\n<td>TEST</td>\n<td>TEST</td>\n</tr>\n<tr>\n<td>TEST</td>\n<td>TEST</td>\n<td>TEST</td>\n<td>TEST</td>\n</tr>\n<tr>\n<td></td>\n<td></td>\n<td></td>\n<td></td>\n</tr>\n<tr>\n<td></td>\n<td></td>\n<td></td>\n<td></td>\n</tr>\n<tr>\n<td></td>\n<td></td>\n<td></td>\n<td></td>\n</tr>\n</tbody>\n</table>'),
  (78,'4a676ebfe3a7a',1,1,2,'Test 2 Thomas','<p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.&nbsp;</p>');
@@ -2042,11 +2049,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-Region29-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-Region29-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-Region29-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region29-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-Region29-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-Region29-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2060,12 +2067,12 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region29-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-Region29-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-Region29-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Region29-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PROCESS-1-Region29-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PROCESS-1-Region29-Instances` VALUES  (32,'4a676ebfe3a7a',1,2,1,'','',''),
+INSERT INTO `zoolu`.`page-DEFAULT_PROCESS-1-Region29-Instances` VALUES  (32,'4a676ebfe3a7a',1,2,1,'','',''),
  (54,'4a681b0f66d2a',1,1,1,'','',''),
  (63,'4a676ebfe3a7a',1,1,1,'Aktivität 001','','Ich'),
  (64,'4a676ebfe3a7a',1,1,2,'Aktivität 002','','');
@@ -2074,11 +2081,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-Region32-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-Region32-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-Region32-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region32-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-Region32-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-Region32-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2091,23 +2098,23 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region32-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-Region32-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-Region32-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Region32-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PROCESS-1-Region32-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PROCESS-1-Region32-Instances` VALUES  (19,'4a681b0f66d2a',1,1,1,'',''),
+INSERT INTO `zoolu`.`page-DEFAULT_PROCESS-1-Region32-Instances` VALUES  (19,'4a681b0f66d2a',1,1,1,'',''),
  (24,'4a676ebfe3a7a',1,1,1,'<p><strong>Beschreibung / Ursache</strong></p>','<p><strong>Pr&auml;ventive und korrektive Ma&szlig;nahme</strong></p>');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Region32-Instances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_PROCESS-1-Region33-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_PROCESS-1-Region33-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_PROCESS-1-Region33-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region33-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_PROCESS-1-Region33-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_PROCESS-1-Region33-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2120,23 +2127,23 @@ CREATE TABLE  `widgets`.`page-DEFAULT_PROCESS-1-Region33-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_PROCESS-1-Region33-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_PROCESS-1-Region33-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Region33-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_PROCESS-1-Region33-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_PROCESS-1-Region33-Instances` VALUES  (16,'4a681b0f66d2a',1,1,1,'',''),
+INSERT INTO `zoolu`.`page-DEFAULT_PROCESS-1-Region33-Instances` VALUES  (16,'4a681b0f66d2a',1,1,1,'',''),
  (21,'4a676ebfe3a7a',1,1,1,'asdfasdf','');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_PROCESS-1-Region33-Instances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_STARTPAGE-1-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_STARTPAGE-1-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_STARTPAGE-1-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_STARTPAGE-1-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_STARTPAGE-1-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2151,7 +2158,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_STARTPAGE-1-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_STARTPAGE-1-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-InstanceFiles` DISABLE KEYS */;
@@ -2161,11 +2168,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_STARTPAGE-1-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_STARTPAGE-1-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_STARTPAGE-1-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_STARTPAGE-1-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_STARTPAGE-1-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2191,23 +2198,23 @@ CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_STARTPAGE-1-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_STARTPAGE-1-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_STARTPAGE-1-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_STARTPAGE-1-Instances` VALUES  (1,'49f17460a4f9f',1,2,3,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,'2009-06-10 09:47:53','2009-07-08 19:05:38'),
+INSERT INTO `zoolu`.`page-DEFAULT_STARTPAGE-1-Instances` VALUES  (1,'49f17460a4f9f',1,2,3,'','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,'2009-06-10 09:47:53','2009-07-08 19:05:38'),
  (2,'49f17460a4f9f',1,1,3,'','<table style=\"width: 100%;\" border=\"0\" align=\"left\">\n<thead> \n<tr>\n<td><strong>Test</strong></td>\n<td><strong>Test</strong></td>\n<td><strong>Test</strong></td>\n<td><strong>Test</strong></td>\n</tr>\n</thead> \n<tbody>\n<tr>\n<td>Test <br /></td>\n<td>&nbsp;Test</td>\n<td>&nbsp;Test</td>\n<td>&nbsp;Test</td>\n</tr>\n<tr>\n<td>Test</td>\n<td>&nbsp;Test</td>\n<td>&nbsp;Test</td>\n<td>&nbsp;Test</td>\n</tr>\n</tbody>\n</table>\n<p>Test Thomas</p>',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3,'2009-07-21 18:54:37','2009-07-21 18:57:40');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Instances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles`
+-- Definition of table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles`;
-CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2224,7 +2231,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles`
+-- Dumping data for table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Region11-InstanceFiles` DISABLE KEYS */;
@@ -2234,11 +2241,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields`
+-- Definition of table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields`;
-CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(255) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2254,7 +2261,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields` 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields`
+-- Dumping data for table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Region11-InstanceMultiFields` DISABLE KEYS */;
@@ -2264,11 +2271,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2282,7 +2289,7 @@ CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-Instances` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_STARTPAGE-1-Region11-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region11-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Region11-Instances` DISABLE KEYS */;
@@ -2292,11 +2299,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`page-DEFAULT_STARTPAGE-1-Region17-Instances`
+-- Definition of table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region17-Instances`
 --
 
-DROP TABLE IF EXISTS `widgets`.`page-DEFAULT_STARTPAGE-1-Region17-Instances`;
-CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region17-Instances` (
+DROP TABLE IF EXISTS `zoolu`.`page-DEFAULT_STARTPAGE-1-Region17-Instances`;
+CREATE TABLE  `zoolu`.`page-DEFAULT_STARTPAGE-1-Region17-Instances` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2315,23 +2322,23 @@ CREATE TABLE  `widgets`.`page-DEFAULT_STARTPAGE-1-Region17-Instances` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`page-DEFAULT_STARTPAGE-1-Region17-Instances`
+-- Dumping data for table `zoolu`.`page-DEFAULT_STARTPAGE-1-Region17-Instances`
 --
 
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Region17-Instances` DISABLE KEYS */;
 LOCK TABLES `page-DEFAULT_STARTPAGE-1-Region17-Instances` WRITE;
-INSERT INTO `widgets`.`page-DEFAULT_STARTPAGE-1-Region17-Instances` VALUES  (2,'49f17460a4f9f',1,2,1,'',0,0,0,0,0,0),
+INSERT INTO `zoolu`.`page-DEFAULT_STARTPAGE-1-Region17-Instances` VALUES  (2,'49f17460a4f9f',1,2,1,'',0,0,0,0,0,0),
  (6,'49f17460a4f9f',1,1,1,'',0,0,0,0,0,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `page-DEFAULT_STARTPAGE-1-Region17-Instances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`pageCategories`
+-- Definition of table `zoolu`.`pageCategories`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageCategories`;
-CREATE TABLE  `widgets`.`pageCategories` (
+DROP TABLE IF EXISTS `zoolu`.`pageCategories`;
+CREATE TABLE  `zoolu`.`pageCategories` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2348,12 +2355,12 @@ CREATE TABLE  `widgets`.`pageCategories` (
 ) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageCategories`
+-- Dumping data for table `zoolu`.`pageCategories`
 --
 
 /*!40000 ALTER TABLE `pageCategories` DISABLE KEYS */;
 LOCK TABLES `pageCategories` WRITE;
-INSERT INTO `widgets`.`pageCategories` VALUES  (55,'4a112157d69eb',1,2,54,3,3,'2009-06-09 19:07:38','2009-06-09 19:07:38'),
+INSERT INTO `zoolu`.`pageCategories` VALUES  (55,'4a112157d69eb',1,2,54,3,3,'2009-06-09 19:07:38','2009-06-09 19:07:38'),
  (63,'4a115ca65d8bb',1,2,54,3,3,'2009-06-10 09:41:49','2009-06-10 09:41:49'),
  (70,'4a113342dffe5',1,1,54,3,3,'2009-07-08 19:14:48','2009-07-08 19:14:48'),
  (108,'4a112157d69eb',1,1,53,3,3,'2009-07-23 11:05:21','2009-07-23 11:05:21');
@@ -2362,11 +2369,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageContacts`
+-- Definition of table `zoolu`.`pageContacts`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageContacts`;
-CREATE TABLE  `widgets`.`pageContacts` (
+DROP TABLE IF EXISTS `zoolu`.`pageContacts`;
+CREATE TABLE  `zoolu`.`pageContacts` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2383,7 +2390,7 @@ CREATE TABLE  `widgets`.`pageContacts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageContacts`
+-- Dumping data for table `zoolu`.`pageContacts`
 --
 
 /*!40000 ALTER TABLE `pageContacts` DISABLE KEYS */;
@@ -2393,11 +2400,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageDatetimes`
+-- Definition of table `zoolu`.`pageDatetimes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageDatetimes`;
-CREATE TABLE  `widgets`.`pageDatetimes` (
+DROP TABLE IF EXISTS `zoolu`.`pageDatetimes`;
+CREATE TABLE  `zoolu`.`pageDatetimes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2415,7 +2422,7 @@ CREATE TABLE  `widgets`.`pageDatetimes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageDatetimes`
+-- Dumping data for table `zoolu`.`pageDatetimes`
 --
 
 /*!40000 ALTER TABLE `pageDatetimes` DISABLE KEYS */;
@@ -2425,11 +2432,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageExternals`
+-- Definition of table `zoolu`.`pageExternals`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageExternals`;
-CREATE TABLE  `widgets`.`pageExternals` (
+DROP TABLE IF EXISTS `zoolu`.`pageExternals`;
+CREATE TABLE  `zoolu`.`pageExternals` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2445,24 +2452,24 @@ CREATE TABLE  `widgets`.`pageExternals` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageExternals`
+-- Dumping data for table `zoolu`.`pageExternals`
 --
 
 /*!40000 ALTER TABLE `pageExternals` DISABLE KEYS */;
 LOCK TABLES `pageExternals` WRITE;
-INSERT INTO `widgets`.`pageExternals` VALUES  (1,'4a115ca65d8bb',1,1,'http://www.massiveart.at',2,2,'2009-05-27 10:09:11','2009-05-27 10:09:11'),
+INSERT INTO `zoolu`.`pageExternals` VALUES  (1,'4a115ca65d8bb',1,1,'http://www.massiveart.at',2,2,'2009-05-27 10:09:11','2009-05-27 10:09:11'),
  (2,'4a113342dffe5',1,1,'http://www.getzcope.com',3,2,'2009-06-23 11:51:29','2009-07-08 19:14:19'),
- (3,'4a1cf55c8b3e5',1,1,'www.getwidgets.org',3,3,'2009-07-08 19:18:25','2009-07-08 19:18:48');
+ (3,'4a1cf55c8b3e5',1,1,'www.getzoolu.org',3,3,'2009-07-08 19:18:25','2009-07-08 19:18:48');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageExternals` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`pageGmaps`
+-- Definition of table `zoolu`.`pageGmaps`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageGmaps`;
-CREATE TABLE  `widgets`.`pageGmaps` (
+DROP TABLE IF EXISTS `zoolu`.`pageGmaps`;
+CREATE TABLE  `zoolu`.`pageGmaps` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2476,10 +2483,10 @@ CREATE TABLE  `widgets`.`pageGmaps` (
   KEY `pageId` (`pageId`),
   KEY `version` (`version`),
   CONSTRAINT `pageGmaps_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageGmaps`
+-- Dumping data for table `zoolu`.`pageGmaps`
 --
 
 /*!40000 ALTER TABLE `pageGmaps` DISABLE KEYS */;
@@ -2489,11 +2496,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageLabels`
+-- Definition of table `zoolu`.`pageLabels`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageLabels`;
-CREATE TABLE  `widgets`.`pageLabels` (
+DROP TABLE IF EXISTS `zoolu`.`pageLabels`;
+CREATE TABLE  `zoolu`.`pageLabels` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2511,23 +2518,23 @@ CREATE TABLE  `widgets`.`pageLabels` (
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageLabels`
+-- Dumping data for table `zoolu`.`pageLabels`
 --
 
 /*!40000 ALTER TABLE `pageLabels` DISABLE KEYS */;
 LOCK TABLES `pageLabels` WRITE;
-INSERT INTO `widgets`.`pageLabels` VALUES  (28,'4a115ca65d8bb',1,2,56,3,3,'2009-06-10 09:41:49','2009-06-10 09:41:49'),
+INSERT INTO `zoolu`.`pageLabels` VALUES  (28,'4a115ca65d8bb',1,2,56,3,3,'2009-06-10 09:41:49','2009-06-10 09:41:49'),
  (29,'4a115ca65d8bb',1,2,63,3,3,'2009-06-10 09:41:49','2009-06-10 09:41:49');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageLabels` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`pageLinks`
+-- Definition of table `zoolu`.`pageLinks`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageLinks`;
-CREATE TABLE  `widgets`.`pageLinks` (
+DROP TABLE IF EXISTS `zoolu`.`pageLinks`;
+CREATE TABLE  `zoolu`.`pageLinks` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idPages` bigint(20) unsigned NOT NULL,
   `pageId` varchar(32) NOT NULL COMMENT 'linked page',
@@ -2538,12 +2545,12 @@ CREATE TABLE  `widgets`.`pageLinks` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageLinks`
+-- Dumping data for table `zoolu`.`pageLinks`
 --
 
 /*!40000 ALTER TABLE `pageLinks` DISABLE KEYS */;
 LOCK TABLES `pageLinks` WRITE;
-INSERT INTO `widgets`.`pageLinks` VALUES  (6,6,'4a115ca65d8bb'),
+INSERT INTO `zoolu`.`pageLinks` VALUES  (6,6,'4a115ca65d8bb'),
  (7,13,'4a676ebfe3a7a'),
  (8,15,'4a113342dffe5');
 UNLOCK TABLES;
@@ -2551,11 +2558,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pagePermissions`
+-- Definition of table `zoolu`.`pagePermissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pagePermissions`;
-CREATE TABLE  `widgets`.`pagePermissions` (
+DROP TABLE IF EXISTS `zoolu`.`pagePermissions`;
+CREATE TABLE  `zoolu`.`pagePermissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idPages` bigint(20) unsigned NOT NULL,
   `idPermissions` bigint(20) unsigned NOT NULL,
@@ -2564,7 +2571,7 @@ CREATE TABLE  `widgets`.`pagePermissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pagePermissions`
+-- Dumping data for table `zoolu`.`pagePermissions`
 --
 
 /*!40000 ALTER TABLE `pagePermissions` DISABLE KEYS */;
@@ -2574,11 +2581,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageRegistrations`
+-- Definition of table `zoolu`.`pageRegistrations`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageRegistrations`;
-CREATE TABLE  `widgets`.`pageRegistrations` (
+DROP TABLE IF EXISTS `zoolu`.`pageRegistrations`;
+CREATE TABLE  `zoolu`.`pageRegistrations` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idPage` bigint(20) unsigned NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -2596,7 +2603,7 @@ CREATE TABLE  `widgets`.`pageRegistrations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageRegistrations`
+-- Dumping data for table `zoolu`.`pageRegistrations`
 --
 
 /*!40000 ALTER TABLE `pageRegistrations` DISABLE KEYS */;
@@ -2606,11 +2613,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageTitles`
+-- Definition of table `zoolu`.`pageTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageTitles`;
-CREATE TABLE  `widgets`.`pageTitles` (
+DROP TABLE IF EXISTS `zoolu`.`pageTitles`;
+CREATE TABLE  `zoolu`.`pageTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2623,15 +2630,15 @@ CREATE TABLE  `widgets`.`pageTitles` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `pageTitles_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageTitles`
+-- Dumping data for table `zoolu`.`pageTitles`
 --
 
 /*!40000 ALTER TABLE `pageTitles` DISABLE KEYS */;
 LOCK TABLES `pageTitles` WRITE;
-INSERT INTO `widgets`.`pageTitles` VALUES  (1,'49f17460a4f9f',1,1,'Home',3,3,'2009-04-24 10:12:16','2009-07-21 18:57:40'),
+INSERT INTO `zoolu`.`pageTitles` VALUES  (1,'49f17460a4f9f',1,1,'Home',3,3,'2009-04-24 10:12:16','2009-07-21 18:57:40'),
  (2,'4a112157d69eb',1,1,'Hauptpunkt 1',3,2,'2009-05-18 10:50:31','2009-07-23 11:05:21'),
  (3,'4a113342dffe5',1,1,'Hauptpunkt 2',3,2,'2009-05-18 12:06:58','2009-07-08 19:14:48'),
  (4,'4a1133f43284a',1,1,'Hauptpunkt 3',2,2,'2009-05-18 12:09:56','2009-05-18 12:09:56'),
@@ -2648,17 +2655,19 @@ INSERT INTO `widgets`.`pageTitles` VALUES  (1,'49f17460a4f9f',1,1,'Home',3,3,'20
  (15,'4a40946ce9d01',1,1,'Testseite 2',3,3,'2009-06-23 10:38:04','2009-07-22 20:47:20'),
  (18,'4a676ebfe3a7a',1,1,'Process',3,3,'2009-07-22 21:55:43','2009-07-23 11:35:37'),
  (19,'4a676ebfe3a7a',1,2,'Test',3,3,'2009-07-22 22:50:44','2009-07-23 08:22:47'),
- (20,'4a681b0f66d2a',1,1,'Test',3,3,'2009-07-23 10:10:55','2009-07-23 10:53:29');
+ (20,'4a681b0f66d2a',1,1,'Test',3,3,'2009-07-23 10:10:55','2009-07-23 10:53:29'),
+ (25,'4a7a8f9abb7f1',1,1,'test',6,6,'2009-08-06 10:08:58','2009-08-06 10:08:58'),
+ (26,'4a7a906793da5',1,1,'test',6,6,'2009-08-06 10:12:23','2009-08-06 10:12:23');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pageTitles` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`pageTypeTitles`
+-- Definition of table `zoolu`.`pageTypeTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageTypeTitles`;
-CREATE TABLE  `widgets`.`pageTypeTitles` (
+DROP TABLE IF EXISTS `zoolu`.`pageTypeTitles`;
+CREATE TABLE  `zoolu`.`pageTypeTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idPageTypes` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -2667,12 +2676,12 @@ CREATE TABLE  `widgets`.`pageTypeTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageTypeTitles`
+-- Dumping data for table `zoolu`.`pageTypeTitles`
 --
 
 /*!40000 ALTER TABLE `pageTypeTitles` DISABLE KEYS */;
 LOCK TABLES `pageTypeTitles` WRITE;
-INSERT INTO `widgets`.`pageTypeTitles` VALUES  (1,1,1,'Standardseite'),
+INSERT INTO `zoolu`.`pageTypeTitles` VALUES  (1,1,1,'Standardseite'),
  (2,2,1,'Interne Verlinkung'),
  (3,3,1,'Übersicht'),
  (4,4,1,'Externe Verlinkung'),
@@ -2682,11 +2691,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageTypes`
+-- Definition of table `zoolu`.`pageTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageTypes`;
-CREATE TABLE  `widgets`.`pageTypes` (
+DROP TABLE IF EXISTS `zoolu`.`pageTypes`;
+CREATE TABLE  `zoolu`.`pageTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `page` tinyint(1) NOT NULL DEFAULT '0',
@@ -2697,12 +2706,12 @@ CREATE TABLE  `widgets`.`pageTypes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pageTypes`
+-- Dumping data for table `zoolu`.`pageTypes`
 --
 
 /*!40000 ALTER TABLE `pageTypes` DISABLE KEYS */;
 LOCK TABLES `pageTypes` WRITE;
-INSERT INTO `widgets`.`pageTypes` VALUES  (1,'page',1,1),
+INSERT INTO `zoolu`.`pageTypes` VALUES  (1,'page',1,1),
  (2,'link',1,1),
  (3,'overview',0,1),
  (4,'external',1,1),
@@ -2712,11 +2721,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pageVideos`
+-- Definition of table `zoolu`.`pageVideos`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pageVideos`;
-CREATE TABLE  `widgets`.`pageVideos` (
+DROP TABLE IF EXISTS `zoolu`.`pageVideos`;
+CREATE TABLE  `zoolu`.`pageVideos` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -2734,7 +2743,7 @@ CREATE TABLE  `widgets`.`pageVideos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`pageVideos`
+-- Dumping data for table `zoolu`.`pageVideos`
 --
 
 /*!40000 ALTER TABLE `pageVideos` DISABLE KEYS */;
@@ -2744,11 +2753,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`pages`
+-- Definition of table `zoolu`.`pages`
 --
 
-DROP TABLE IF EXISTS `widgets`.`pages`;
-CREATE TABLE  `widgets`.`pages` (
+DROP TABLE IF EXISTS `zoolu`.`pages`;
+CREATE TABLE  `zoolu`.`pages` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idGenericForms` bigint(20) unsigned NOT NULL,
   `idTemplates` bigint(20) unsigned NOT NULL,
@@ -2771,15 +2780,15 @@ CREATE TABLE  `widgets`.`pages` (
   PRIMARY KEY (`id`),
   KEY `pageId` (`pageId`),
   KEY `version` (`version`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`pages`
+-- Dumping data for table `zoolu`.`pages`
 --
 
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
 LOCK TABLES `pages` WRITE;
-INSERT INTO `widgets`.`pages` VALUES  (1,8,3,1,1,1,1,1,3,0,'2009-04-24 10:12:50','49f17460a4f9f',1,3,0,'2009-04-24 10:12:50','2009-07-21 18:57:40','2009-04-24 10:12:50',2),
+INSERT INTO `zoolu`.`pages` VALUES  (1,8,3,1,1,1,1,1,3,0,'2009-04-24 10:12:50','49f17460a4f9f',1,3,0,'2009-04-24 10:12:50','2009-07-21 18:57:40','2009-04-24 10:12:50',2),
  (2,7,4,3,1,1,1,2,3,0,'2009-05-18 10:50:31','4a112157d69eb',1,2,0,'2009-05-18 10:50:31','2009-07-23 11:05:21','2009-06-09 11:34:19',2),
  (3,7,4,3,1,1,2,2,3,0,'2009-05-18 12:06:58','4a113342dffe5',1,2,0,'2009-05-18 12:06:58','2009-07-08 19:14:48','2009-06-09 18:51:23',2),
  (4,2,2,1,1,1,3,2,2,0,'2009-05-18 12:09:56','4a1133f43284a',1,2,0,'2009-05-18 12:09:56','2009-05-18 15:04:20',NULL,2),
@@ -2790,40 +2799,42 @@ INSERT INTO `widgets`.`pages` VALUES  (1,8,3,1,1,1,1,1,3,0,'2009-04-24 10:12:50'
  (9,2,2,1,1,0,6,2,3,0,'2009-06-23 10:37:30','4a40944a8ee78',1,3,0,'2009-06-23 10:37:30','2009-06-23 10:46:34','2009-06-23 10:46:21',2),
  (10,2,1,1,0,0,6,2,3,1,'2009-06-23 10:38:04','4a40946ce9d01',1,3,0,'2009-06-23 10:38:04','2009-07-22 20:47:20','2009-06-23 10:38:34',2),
  (13,14,1,5,0,0,1,2,3,3,'2009-07-22 21:55:43','4a676ebfe3a7a',1,3,0,'2009-07-22 21:55:43','2009-07-23 11:35:37','2009-07-22 21:55:33',2),
- (14,14,1,5,0,0,1,2,3,4,'2009-07-23 10:10:55','4a681b0f66d2a',1,3,0,'2009-07-23 10:10:55','2009-07-23 10:53:29','2009-07-23 10:16:30',1);
+ (14,14,1,5,0,0,1,2,3,4,'2009-07-23 10:10:55','4a681b0f66d2a',1,3,0,'2009-07-23 10:10:55','2009-07-23 10:53:29','2009-07-23 10:16:30',1),
+ (19,2,1,1,0,0,1,2,6,6,'2009-08-06 10:08:58','4a7a8f9abb7f1',1,6,0,'2009-08-06 10:08:58','2009-08-06 10:08:58',NULL,1),
+ (20,2,1,1,0,0,1,2,6,7,'2009-08-06 10:12:23','4a7a906793da5',1,6,0,'2009-08-06 10:12:23','2009-08-06 10:12:23',NULL,1);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`parentTypes`
+-- Definition of table `zoolu`.`parentTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`parentTypes`;
-CREATE TABLE  `widgets`.`parentTypes` (
+DROP TABLE IF EXISTS `zoolu`.`parentTypes`;
+CREATE TABLE  `zoolu`.`parentTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`parentTypes`
+-- Dumping data for table `zoolu`.`parentTypes`
 --
 
 /*!40000 ALTER TABLE `parentTypes` DISABLE KEYS */;
 LOCK TABLES `parentTypes` WRITE;
-INSERT INTO `widgets`.`parentTypes` VALUES  (1,'rootLevel'),
+INSERT INTO `zoolu`.`parentTypes` VALUES  (1,'rootLevel'),
  (2,'folder');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `parentTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`permissions`
+-- Definition of table `zoolu`.`permissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`permissions`;
-CREATE TABLE  `widgets`.`permissions` (
+DROP TABLE IF EXISTS `zoolu`.`permissions`;
+CREATE TABLE  `zoolu`.`permissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `description` text,
@@ -2831,12 +2842,12 @@ CREATE TABLE  `widgets`.`permissions` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`permissions`
+-- Dumping data for table `zoolu`.`permissions`
 --
 
 /*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
 LOCK TABLES `permissions` WRITE;
-INSERT INTO `widgets`.`permissions` VALUES  (1,'full','Vollumfänglicher Zugang:\r\nVIEW, ADD, UPDATE, DELETE, COPY'),
+INSERT INTO `zoolu`.`permissions` VALUES  (1,'full','Vollumfänglicher Zugang:\r\nVIEW, ADD, UPDATE, DELETE, COPY'),
  (2,'view','Der Datensatz darf visualisiert werden'),
  (3,'add','Ein neuer Datensatz darf erzeugt werden'),
  (4,'update','Der Datensatz darf verändert werden'),
@@ -2848,33 +2859,33 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`properties`
+-- Definition of table `zoolu`.`properties`
 --
 
-DROP TABLE IF EXISTS `widgets`.`properties`;
-CREATE TABLE  `widgets`.`properties` (
+DROP TABLE IF EXISTS `zoolu`.`properties`;
+CREATE TABLE  `zoolu`.`properties` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`properties`
+-- Dumping data for table `zoolu`.`properties`
 --
 
 /*!40000 ALTER TABLE `properties` DISABLE KEYS */;
 LOCK TABLES `properties` WRITE;
-INSERT INTO `widgets`.`properties` VALUES  (1,'Url');
+INSERT INTO `zoolu`.`properties` VALUES  (1,'Url');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `properties` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`regionFields`
+-- Definition of table `zoolu`.`regionFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`regionFields`;
-CREATE TABLE  `widgets`.`regionFields` (
+DROP TABLE IF EXISTS `zoolu`.`regionFields`;
+CREATE TABLE  `zoolu`.`regionFields` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `idRegions` bigint(20) NOT NULL,
   `idFields` bigint(20) NOT NULL,
@@ -2882,15 +2893,15 @@ CREATE TABLE  `widgets`.`regionFields` (
   PRIMARY KEY (`id`),
   KEY `idRegions` (`idRegions`),
   KEY `idFields` (`idFields`)
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`regionFields`
+-- Dumping data for table `zoolu`.`regionFields`
 --
 
 /*!40000 ALTER TABLE `regionFields` DISABLE KEYS */;
 LOCK TABLES `regionFields` WRITE;
-INSERT INTO `widgets`.`regionFields` VALUES  (1,1,1,1),
+INSERT INTO `zoolu`.`regionFields` VALUES  (1,1,1,1),
  (2,1,1,1),
  (3,1,2,2),
  (4,2,3,1),
@@ -2995,17 +3006,18 @@ INSERT INTO `widgets`.`regionFields` VALUES  (1,1,1,1),
  (103,33,112,1),
  (104,36,116,1),
  (105,37,117,1),
- (106,38,118,1);
+ (106,38,118,1),
+ (107,39,1,1);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `regionFields` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`regionTitles`
+-- Definition of table `zoolu`.`regionTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`regionTitles`;
-CREATE TABLE  `widgets`.`regionTitles` (
+DROP TABLE IF EXISTS `zoolu`.`regionTitles`;
+CREATE TABLE  `zoolu`.`regionTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idRegions` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -3016,12 +3028,12 @@ CREATE TABLE  `widgets`.`regionTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`regionTitles`
+-- Dumping data for table `zoolu`.`regionTitles`
 --
 
 /*!40000 ALTER TABLE `regionTitles` DISABLE KEYS */;
 LOCK TABLES `regionTitles` WRITE;
-INSERT INTO `widgets`.`regionTitles` VALUES  (1,1,1,'Allgemeine Informationen'),
+INSERT INTO `zoolu`.`regionTitles` VALUES  (1,1,1,'Allgemeine Informationen'),
  (2,2,1,'Allgemeine Informationen'),
  (3,3,1,'Titelbild'),
  (4,4,1,'Artikel'),
@@ -3065,34 +3077,34 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`regionTypes`
+-- Definition of table `zoolu`.`regionTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`regionTypes`;
-CREATE TABLE  `widgets`.`regionTypes` (
+DROP TABLE IF EXISTS `zoolu`.`regionTypes`;
+CREATE TABLE  `zoolu`.`regionTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`regionTypes`
+-- Dumping data for table `zoolu`.`regionTypes`
 --
 
 /*!40000 ALTER TABLE `regionTypes` DISABLE KEYS */;
 LOCK TABLES `regionTypes` WRITE;
-INSERT INTO `widgets`.`regionTypes` VALUES  (1,'content'),
+INSERT INTO `zoolu`.`regionTypes` VALUES  (1,'content'),
  (2,'config');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `regionTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`regions`
+-- Definition of table `zoolu`.`regions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`regions`;
-CREATE TABLE  `widgets`.`regions` (
+DROP TABLE IF EXISTS `zoolu`.`regions`;
+CREATE TABLE  `zoolu`.`regions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idRegionTypes` bigint(20) unsigned NOT NULL,
   `columns` int(10) NOT NULL COMMENT 'size of region',
@@ -3103,15 +3115,15 @@ CREATE TABLE  `widgets`.`regions` (
   `isMultiply` tinyint(1) NOT NULL DEFAULT '0',
   `multiplyRegion` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`regions`
+-- Dumping data for table `zoolu`.`regions`
 --
 
 /*!40000 ALTER TABLE `regions` DISABLE KEYS */;
 LOCK TABLES `regions` WRITE;
-INSERT INTO `widgets`.`regions` VALUES  (1,1,9,0,0,1,NULL,0,0),
+INSERT INTO `zoolu`.`regions` VALUES  (1,1,9,0,0,1,NULL,0,0),
  (2,1,9,0,0,1,NULL,0,0),
  (3,1,9,0,1,1,NULL,0,0),
  (4,1,9,0,1,1,NULL,0,0),
@@ -3147,17 +3159,18 @@ INSERT INTO `widgets`.`regions` VALUES  (1,1,9,0,0,1,NULL,0,0),
  (35,1,9,0,1,0,NULL,0,0),
  (36,1,9,0,1,0,NULL,0,0),
  (37,1,9,0,1,0,NULL,0,0),
- (38,1,9,0,1,1,NULL,0,0);
+ (38,1,9,0,1,1,NULL,0,0),
+ (39,1,9,0,0,1,NULL,0,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `regions` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`renderedFiles`
+-- Definition of table `zoolu`.`renderedFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`renderedFiles`;
-CREATE TABLE  `widgets`.`renderedFiles` (
+DROP TABLE IF EXISTS `zoolu`.`renderedFiles`;
+CREATE TABLE  `zoolu`.`renderedFiles` (
   `id` bigint(20) unsigned NOT NULL,
   `idFiles` bigint(20) unsigned NOT NULL,
   `folder` varchar(255) NOT NULL,
@@ -3165,7 +3178,7 @@ CREATE TABLE  `widgets`.`renderedFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`renderedFiles`
+-- Dumping data for table `zoolu`.`renderedFiles`
 --
 
 /*!40000 ALTER TABLE `renderedFiles` DISABLE KEYS */;
@@ -3175,11 +3188,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`rootLevelPermissions`
+-- Definition of table `zoolu`.`rootLevelPermissions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`rootLevelPermissions`;
-CREATE TABLE  `widgets`.`rootLevelPermissions` (
+DROP TABLE IF EXISTS `zoolu`.`rootLevelPermissions`;
+CREATE TABLE  `zoolu`.`rootLevelPermissions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idRootLevels` bigint(20) unsigned NOT NULL,
   `idGroups` bigint(20) unsigned DEFAULT NULL,
@@ -3188,7 +3201,7 @@ CREATE TABLE  `widgets`.`rootLevelPermissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`rootLevelPermissions`
+-- Dumping data for table `zoolu`.`rootLevelPermissions`
 --
 
 /*!40000 ALTER TABLE `rootLevelPermissions` DISABLE KEYS */;
@@ -3198,11 +3211,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`rootLevelTitles`
+-- Definition of table `zoolu`.`rootLevelTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`rootLevelTitles`;
-CREATE TABLE  `widgets`.`rootLevelTitles` (
+DROP TABLE IF EXISTS `zoolu`.`rootLevelTitles`;
+CREATE TABLE  `zoolu`.`rootLevelTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idRootLevels` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -3213,12 +3226,12 @@ CREATE TABLE  `widgets`.`rootLevelTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`rootLevelTitles`
+-- Dumping data for table `zoolu`.`rootLevelTitles`
 --
 
 /*!40000 ALTER TABLE `rootLevelTitles` DISABLE KEYS */;
 LOCK TABLES `rootLevelTitles` WRITE;
-INSERT INTO `widgets`.`rootLevelTitles` VALUES  (1,1,1,'Portal'),
+INSERT INTO `zoolu`.`rootLevelTitles` VALUES  (1,1,1,'Portal'),
  (2,2,1,'Bilder'),
  (3,3,1,'Dokumente'),
  (4,5,1,'Kontakte'),
@@ -3231,23 +3244,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`rootLevelTypes`
+-- Definition of table `zoolu`.`rootLevelTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`rootLevelTypes`;
-CREATE TABLE  `widgets`.`rootLevelTypes` (
+DROP TABLE IF EXISTS `zoolu`.`rootLevelTypes`;
+CREATE TABLE  `zoolu`.`rootLevelTypes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`rootLevelTypes`
+-- Dumping data for table `zoolu`.`rootLevelTypes`
 --
 
 /*!40000 ALTER TABLE `rootLevelTypes` DISABLE KEYS */;
 LOCK TABLES `rootLevelTypes` WRITE;
-INSERT INTO `widgets`.`rootLevelTypes` VALUES  (1,'portals'),
+INSERT INTO `zoolu`.`rootLevelTypes` VALUES  (1,'portals'),
  (2,'images'),
  (3,'documents'),
  (4,'categories'),
@@ -3259,11 +3272,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`rootLevelUrls`
+-- Definition of table `zoolu`.`rootLevelUrls`
 --
 
-DROP TABLE IF EXISTS `widgets`.`rootLevelUrls`;
-CREATE TABLE  `widgets`.`rootLevelUrls` (
+DROP TABLE IF EXISTS `zoolu`.`rootLevelUrls`;
+CREATE TABLE  `zoolu`.`rootLevelUrls` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idRootLevels` bigint(20) unsigned NOT NULL,
   `url` varchar(255) NOT NULL COMMENT 'without "www" in front',
@@ -3277,22 +3290,22 @@ CREATE TABLE  `widgets`.`rootLevelUrls` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`rootLevelUrls`
+-- Dumping data for table `zoolu`.`rootLevelUrls`
 --
 
 /*!40000 ALTER TABLE `rootLevelUrls` DISABLE KEYS */;
 LOCK TABLES `rootLevelUrls` WRITE;
-INSERT INTO `widgets`.`rootLevelUrls` VALUES  (6,1,'widgets.cc',2,2,'2009-05-07 08:49:07','2009-05-07 08:49:07');
+INSERT INTO `zoolu`.`rootLevelUrls` VALUES  (6,1,'zoolu.cc',2,2,'2009-05-07 08:49:07','2009-05-07 08:49:07');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `rootLevelUrls` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`rootLevels`
+-- Definition of table `zoolu`.`rootLevels`
 --
 
-DROP TABLE IF EXISTS `widgets`.`rootLevels`;
-CREATE TABLE  `widgets`.`rootLevels` (
+DROP TABLE IF EXISTS `zoolu`.`rootLevels`;
+CREATE TABLE  `zoolu`.`rootLevels` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idRootLevelTypes` int(10) unsigned NOT NULL,
   `idModules` bigint(20) unsigned NOT NULL,
@@ -3301,12 +3314,12 @@ CREATE TABLE  `widgets`.`rootLevels` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`rootLevels`
+-- Dumping data for table `zoolu`.`rootLevels`
 --
 
 /*!40000 ALTER TABLE `rootLevels` DISABLE KEYS */;
 LOCK TABLES `rootLevels` WRITE;
-INSERT INTO `widgets`.`rootLevels` VALUES  (1,1,1,1),
+INSERT INTO `zoolu`.`rootLevels` VALUES  (1,1,1,1),
  (2,2,2,NULL),
  (3,3,2,NULL),
  (4,4,3,NULL),
@@ -3318,11 +3331,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`searchFieldTypes`
+-- Definition of table `zoolu`.`searchFieldTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`searchFieldTypes`;
-CREATE TABLE  `widgets`.`searchFieldTypes` (
+DROP TABLE IF EXISTS `zoolu`.`searchFieldTypes`;
+CREATE TABLE  `zoolu`.`searchFieldTypes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `description` text,
@@ -3330,12 +3343,12 @@ CREATE TABLE  `widgets`.`searchFieldTypes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`searchFieldTypes`
+-- Dumping data for table `zoolu`.`searchFieldTypes`
 --
 
 /*!40000 ALTER TABLE `searchFieldTypes` DISABLE KEYS */;
 LOCK TABLES `searchFieldTypes` WRITE;
-INSERT INTO `widgets`.`searchFieldTypes` VALUES  (1,'None',NULL),
+INSERT INTO `zoolu`.`searchFieldTypes` VALUES  (1,'None',NULL),
  (2,'Keyword','Keyword fields are stored and indexed, meaning that they can be searched as well as displayed in search results. They are not split up into separate words by tokenization. Enumerated database fields usually translate well to Keyword fields in Zend_Search_Lucene.'),
  (3,'UnIndexed','UnIndexed fields are not searchable, but they are returned with search hits. Database timestamps, primary keys, file system paths, and other external identifiers are good candidates for UnIndexed fields.'),
  (4,'Binary','Binary fields are not tokenized or indexed, but are stored for retrieval with search hits. They can be used to store any data encoded as a binary string, such as an image icon.'),
@@ -3346,18 +3359,18 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`sortTypes`
+-- Definition of table `zoolu`.`sortTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`sortTypes`;
-CREATE TABLE  `widgets`.`sortTypes` (
+DROP TABLE IF EXISTS `zoolu`.`sortTypes`;
+CREATE TABLE  `zoolu`.`sortTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`sortTypes`
+-- Dumping data for table `zoolu`.`sortTypes`
 --
 
 /*!40000 ALTER TABLE `sortTypes` DISABLE KEYS */;
@@ -3367,23 +3380,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`status`
+-- Definition of table `zoolu`.`status`
 --
 
-DROP TABLE IF EXISTS `widgets`.`status`;
-CREATE TABLE  `widgets`.`status` (
+DROP TABLE IF EXISTS `zoolu`.`status`;
+CREATE TABLE  `zoolu`.`status` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`status`
+-- Dumping data for table `zoolu`.`status`
 --
 
 /*!40000 ALTER TABLE `status` DISABLE KEYS */;
 LOCK TABLES `status` WRITE;
-INSERT INTO `widgets`.`status` VALUES  (1,'test'),
+INSERT INTO `zoolu`.`status` VALUES  (1,'test'),
  (2,'live'),
  (3,'approval');
 UNLOCK TABLES;
@@ -3391,11 +3404,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`statusTitles`
+-- Definition of table `zoolu`.`statusTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`statusTitles`;
-CREATE TABLE  `widgets`.`statusTitles` (
+DROP TABLE IF EXISTS `zoolu`.`statusTitles`;
+CREATE TABLE  `zoolu`.`statusTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idStatus` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -3406,12 +3419,12 @@ CREATE TABLE  `widgets`.`statusTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`statusTitles`
+-- Dumping data for table `zoolu`.`statusTitles`
 --
 
 /*!40000 ALTER TABLE `statusTitles` DISABLE KEYS */;
 LOCK TABLES `statusTitles` WRITE;
-INSERT INTO `widgets`.`statusTitles` VALUES  (1,1,1,'Test'),
+INSERT INTO `zoolu`.`statusTitles` VALUES  (1,1,1,'Test'),
  (2,2,1,'Veröffentlicht'),
  (3,3,1,'Approval');
 UNLOCK TABLES;
@@ -3419,25 +3432,25 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`tabRegions`
+-- Definition of table `zoolu`.`tabRegions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tabRegions`;
-CREATE TABLE  `widgets`.`tabRegions` (
+DROP TABLE IF EXISTS `zoolu`.`tabRegions`;
+CREATE TABLE  `zoolu`.`tabRegions` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `idTabs` bigint(20) NOT NULL,
   `idRegions` bigint(20) NOT NULL,
   `order` int(10) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`tabRegions`
+-- Dumping data for table `zoolu`.`tabRegions`
 --
 
 /*!40000 ALTER TABLE `tabRegions` DISABLE KEYS */;
 LOCK TABLES `tabRegions` WRITE;
-INSERT INTO `widgets`.`tabRegions` VALUES  (1,1,1,1),
+INSERT INTO `zoolu`.`tabRegions` VALUES  (1,1,1,1),
  (2,2,2,1),
  (3,2,3,4),
  (4,2,4,6),
@@ -3502,17 +3515,18 @@ INSERT INTO `widgets`.`tabRegions` VALUES  (1,1,1,1),
  (88,14,35,5),
  (89,14,36,6),
  (90,14,37,7),
- (91,2,38,3);
+ (91,2,38,3),
+ (92,20,39,1);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tabRegions` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`tabTitles`
+-- Definition of table `zoolu`.`tabTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tabTitles`;
-CREATE TABLE  `widgets`.`tabTitles` (
+DROP TABLE IF EXISTS `zoolu`.`tabTitles`;
+CREATE TABLE  `zoolu`.`tabTitles` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `idTabs` bigint(20) NOT NULL,
   `idLanguages` bigint(20) NOT NULL,
@@ -3521,12 +3535,12 @@ CREATE TABLE  `widgets`.`tabTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`tabTitles`
+-- Dumping data for table `zoolu`.`tabTitles`
 --
 
 /*!40000 ALTER TABLE `tabTitles` DISABLE KEYS */;
 LOCK TABLES `tabTitles` WRITE;
-INSERT INTO `widgets`.`tabTitles` VALUES  (1,14,1,'Übersicht'),
+INSERT INTO `zoolu`.`tabTitles` VALUES  (1,14,1,'Übersicht'),
  (2,15,1,'Anweisung'),
  (3,16,1,'Ablauf'),
  (4,17,1,'Schritte'),
@@ -3537,23 +3551,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`tabs`
+-- Definition of table `zoolu`.`tabs`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tabs`;
-CREATE TABLE  `widgets`.`tabs` (
+DROP TABLE IF EXISTS `zoolu`.`tabs`;
+CREATE TABLE  `zoolu`.`tabs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `color` char(7) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `widgets`.`tabs`
+-- Dumping data for table `zoolu`.`tabs`
 --
 
 /*!40000 ALTER TABLE `tabs` DISABLE KEYS */;
 LOCK TABLES `tabs` WRITE;
-INSERT INTO `widgets`.`tabs` VALUES  (1,NULL),
+INSERT INTO `zoolu`.`tabs` VALUES  (1,NULL),
  (2,NULL),
  (3,NULL),
  (4,NULL),
@@ -3571,17 +3585,18 @@ INSERT INTO `widgets`.`tabs` VALUES  (1,NULL),
  (16,NULL),
  (17,NULL),
  (18,NULL),
- (19,NULL);
+ (19,NULL),
+ (20,NULL);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tabs` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`tagFiles`
+-- Definition of table `zoolu`.`tagFiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tagFiles`;
-CREATE TABLE  `widgets`.`tagFiles` (
+DROP TABLE IF EXISTS `zoolu`.`tagFiles`;
+CREATE TABLE  `zoolu`.`tagFiles` (
   `idTags` bigint(20) unsigned NOT NULL,
   `fileId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -3592,7 +3607,7 @@ CREATE TABLE  `widgets`.`tagFiles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`tagFiles`
+-- Dumping data for table `zoolu`.`tagFiles`
 --
 
 /*!40000 ALTER TABLE `tagFiles` DISABLE KEYS */;
@@ -3602,11 +3617,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`tagFolders`
+-- Definition of table `zoolu`.`tagFolders`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tagFolders`;
-CREATE TABLE  `widgets`.`tagFolders` (
+DROP TABLE IF EXISTS `zoolu`.`tagFolders`;
+CREATE TABLE  `zoolu`.`tagFolders` (
   `idTags` bigint(20) unsigned NOT NULL,
   `folderId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -3617,7 +3632,7 @@ CREATE TABLE  `widgets`.`tagFolders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`tagFolders`
+-- Dumping data for table `zoolu`.`tagFolders`
 --
 
 /*!40000 ALTER TABLE `tagFolders` DISABLE KEYS */;
@@ -3627,11 +3642,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`tagPages`
+-- Definition of table `zoolu`.`tagPages`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tagPages`;
-CREATE TABLE  `widgets`.`tagPages` (
+DROP TABLE IF EXISTS `zoolu`.`tagPages`;
+CREATE TABLE  `zoolu`.`tagPages` (
   `idTags` bigint(20) unsigned NOT NULL,
   `pageId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -3641,12 +3656,12 @@ CREATE TABLE  `widgets`.`tagPages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`tagPages`
+-- Dumping data for table `zoolu`.`tagPages`
 --
 
 /*!40000 ALTER TABLE `tagPages` DISABLE KEYS */;
 LOCK TABLES `tagPages` WRITE;
-INSERT INTO `widgets`.`tagPages` VALUES  (4,'4a112157d69eb',1,1),
+INSERT INTO `zoolu`.`tagPages` VALUES  (4,'4a112157d69eb',1,1),
  (4,'4a115ca65d8bb',1,1),
  (4,'4a115ca65d8bb',1,2),
  (5,'4a112157d69eb',1,1),
@@ -3656,23 +3671,23 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`tags`
+-- Definition of table `zoolu`.`tags`
 --
 
-DROP TABLE IF EXISTS `widgets`.`tags`;
-CREATE TABLE  `widgets`.`tags` (
+DROP TABLE IF EXISTS `zoolu`.`tags`;
+CREATE TABLE  `zoolu`.`tags` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`tags`
+-- Dumping data for table `zoolu`.`tags`
 --
 
 /*!40000 ALTER TABLE `tags` DISABLE KEYS */;
 LOCK TABLES `tags` WRITE;
-INSERT INTO `widgets`.`tags` VALUES  (1,'Tag1'),
+INSERT INTO `zoolu`.`tags` VALUES  (1,'Tag1'),
  (2,'Tag2'),
  (3,'Tag3'),
  (4,'Test1'),
@@ -3683,11 +3698,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`templateExcludedFields`
+-- Definition of table `zoolu`.`templateExcludedFields`
 --
 
-DROP TABLE IF EXISTS `widgets`.`templateExcludedFields`;
-CREATE TABLE  `widgets`.`templateExcludedFields` (
+DROP TABLE IF EXISTS `zoolu`.`templateExcludedFields`;
+CREATE TABLE  `zoolu`.`templateExcludedFields` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idTemplates` bigint(20) unsigned NOT NULL,
   `idFields` bigint(20) unsigned NOT NULL,
@@ -3697,12 +3712,12 @@ CREATE TABLE  `widgets`.`templateExcludedFields` (
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`templateExcludedFields`
+-- Dumping data for table `zoolu`.`templateExcludedFields`
 --
 
 /*!40000 ALTER TABLE `templateExcludedFields` DISABLE KEYS */;
 LOCK TABLES `templateExcludedFields` WRITE;
-INSERT INTO `widgets`.`templateExcludedFields` VALUES  (1,1,40),
+INSERT INTO `zoolu`.`templateExcludedFields` VALUES  (1,1,40),
  (2,2,3),
  (3,2,4000),
  (4,4,3),
@@ -3722,11 +3737,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`templateExcludedRegions`
+-- Definition of table `zoolu`.`templateExcludedRegions`
 --
 
-DROP TABLE IF EXISTS `widgets`.`templateExcludedRegions`;
-CREATE TABLE  `widgets`.`templateExcludedRegions` (
+DROP TABLE IF EXISTS `zoolu`.`templateExcludedRegions`;
+CREATE TABLE  `zoolu`.`templateExcludedRegions` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idTemplates` bigint(20) unsigned NOT NULL,
   `idRegions` bigint(20) unsigned NOT NULL,
@@ -3736,12 +3751,12 @@ CREATE TABLE  `widgets`.`templateExcludedRegions` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`templateExcludedRegions`
+-- Dumping data for table `zoolu`.`templateExcludedRegions`
 --
 
 /*!40000 ALTER TABLE `templateExcludedRegions` DISABLE KEYS */;
 LOCK TABLES `templateExcludedRegions` WRITE;
-INSERT INTO `widgets`.`templateExcludedRegions` VALUES  (1,3,16),
+INSERT INTO `zoolu`.`templateExcludedRegions` VALUES  (1,3,16),
  (2,3,23),
  (3,3,11),
  (4,1,24),
@@ -3752,11 +3767,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`templateRegionProperties`
+-- Definition of table `zoolu`.`templateRegionProperties`
 --
 
-DROP TABLE IF EXISTS `widgets`.`templateRegionProperties`;
-CREATE TABLE  `widgets`.`templateRegionProperties` (
+DROP TABLE IF EXISTS `zoolu`.`templateRegionProperties`;
+CREATE TABLE  `zoolu`.`templateRegionProperties` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idTemplates` bigint(20) unsigned NOT NULL,
   `idRegions` bigint(20) unsigned NOT NULL,
@@ -3769,7 +3784,7 @@ CREATE TABLE  `widgets`.`templateRegionProperties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`templateRegionProperties`
+-- Dumping data for table `zoolu`.`templateRegionProperties`
 --
 
 /*!40000 ALTER TABLE `templateRegionProperties` DISABLE KEYS */;
@@ -3779,11 +3794,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`templateTitles`
+-- Definition of table `zoolu`.`templateTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`templateTitles`;
-CREATE TABLE  `widgets`.`templateTitles` (
+DROP TABLE IF EXISTS `zoolu`.`templateTitles`;
+CREATE TABLE  `zoolu`.`templateTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idTemplates` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -3794,12 +3809,12 @@ CREATE TABLE  `widgets`.`templateTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`templateTitles`
+-- Dumping data for table `zoolu`.`templateTitles`
 --
 
 /*!40000 ALTER TABLE `templateTitles` DISABLE KEYS */;
 LOCK TABLES `templateTitles` WRITE;
-INSERT INTO `widgets`.`templateTitles` VALUES  (1,1,1,'Template News'),
+INSERT INTO `zoolu`.`templateTitles` VALUES  (1,1,1,'Template News'),
  (2,2,1,'Startseite'),
  (3,3,1,'Portal Startseite'),
  (4,4,1,'Übersicht'),
@@ -3812,11 +3827,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`templateTypes`
+-- Definition of table `zoolu`.`templateTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`templateTypes`;
-CREATE TABLE  `widgets`.`templateTypes` (
+DROP TABLE IF EXISTS `zoolu`.`templateTypes`;
+CREATE TABLE  `zoolu`.`templateTypes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `idTemplates` bigint(20) unsigned NOT NULL,
   `idTypes` bigint(20) unsigned NOT NULL,
@@ -3824,12 +3839,12 @@ CREATE TABLE  `widgets`.`templateTypes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`templateTypes`
+-- Dumping data for table `zoolu`.`templateTypes`
 --
 
 /*!40000 ALTER TABLE `templateTypes` DISABLE KEYS */;
 LOCK TABLES `templateTypes` WRITE;
-INSERT INTO `widgets`.`templateTypes` VALUES  (2,1,2),
+INSERT INTO `zoolu`.`templateTypes` VALUES  (2,1,2),
  (3,2,1),
  (5,4,3),
  (6,3,4),
@@ -3842,11 +3857,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`templates`
+-- Definition of table `zoolu`.`templates`
 --
 
-DROP TABLE IF EXISTS `widgets`.`templates`;
-CREATE TABLE  `widgets`.`templates` (
+DROP TABLE IF EXISTS `zoolu`.`templates`;
+CREATE TABLE  `zoolu`.`templates` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `genericFormId` varchar(32) NOT NULL,
   `filename` varchar(255) NOT NULL,
@@ -3856,12 +3871,12 @@ CREATE TABLE  `widgets`.`templates` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`templates`
+-- Dumping data for table `zoolu`.`templates`
 --
 
 /*!40000 ALTER TABLE `templates` DISABLE KEYS */;
 LOCK TABLES `templates` WRITE;
-INSERT INTO `widgets`.`templates` VALUES  (1,'DEFAULT_PAGE_1','template_1.php','template_01.jpg',1),
+INSERT INTO `zoolu`.`templates` VALUES  (1,'DEFAULT_PAGE_1','template_1.php','template_01.jpg',1),
  (2,'DEFAULT_PAGE_1','template_1.php','template_01.jpg',1),
  (3,'DEFAULT_STARTPAGE','template_startpage.php','template_startpage.jpg',1),
  (4,'DEFAULT_OVERVIEW','template_overview.php','template_overview.jpg',1),
@@ -3874,11 +3889,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`themes`
+-- Definition of table `zoolu`.`themes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`themes`;
-CREATE TABLE  `widgets`.`themes` (
+DROP TABLE IF EXISTS `zoolu`.`themes`;
+CREATE TABLE  `zoolu`.`themes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `path` varchar(255) NOT NULL,
@@ -3890,34 +3905,34 @@ CREATE TABLE  `widgets`.`themes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`themes`
+-- Dumping data for table `zoolu`.`themes`
 --
 
 /*!40000 ALTER TABLE `themes` DISABLE KEYS */;
 LOCK TABLES `themes` WRITE;
-INSERT INTO `widgets`.`themes` VALUES  (1,'Default','default',2,2,'2009-05-07 09:18:38','2009-05-07 08:48:35');
+INSERT INTO `zoolu`.`themes` VALUES  (1,'Default','default',2,2,'2009-05-07 09:18:38','2009-05-07 08:48:35');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `themes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`types`
+-- Definition of table `zoolu`.`types`
 --
 
-DROP TABLE IF EXISTS `widgets`.`types`;
-CREATE TABLE  `widgets`.`types` (
+DROP TABLE IF EXISTS `zoolu`.`types`;
+CREATE TABLE  `zoolu`.`types` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`types`
+-- Dumping data for table `zoolu`.`types`
 --
 
 /*!40000 ALTER TABLE `types` DISABLE KEYS */;
 LOCK TABLES `types` WRITE;
-INSERT INTO `widgets`.`types` VALUES  (1,'startpage'),
+INSERT INTO `zoolu`.`types` VALUES  (1,'startpage'),
  (2,'page'),
  (3,'overview'),
  (4,'portal_startpage');
@@ -3926,11 +3941,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`unitTitles`
+-- Definition of table `zoolu`.`unitTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`unitTitles`;
-CREATE TABLE  `widgets`.`unitTitles` (
+DROP TABLE IF EXISTS `zoolu`.`unitTitles`;
+CREATE TABLE  `zoolu`.`unitTitles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idUnits` bigint(20) unsigned NOT NULL,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
@@ -3941,22 +3956,22 @@ CREATE TABLE  `widgets`.`unitTitles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`unitTitles`
+-- Dumping data for table `zoolu`.`unitTitles`
 --
 
 /*!40000 ALTER TABLE `unitTitles` DISABLE KEYS */;
 LOCK TABLES `unitTitles` WRITE;
-INSERT INTO `widgets`.`unitTitles` VALUES  (1,1,1,'Massive Art');
+INSERT INTO `zoolu`.`unitTitles` VALUES  (1,1,1,'Massive Art');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `unitTitles` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`units`
+-- Definition of table `zoolu`.`units`
 --
 
-DROP TABLE IF EXISTS `widgets`.`units`;
-CREATE TABLE  `widgets`.`units` (
+DROP TABLE IF EXISTS `zoolu`.`units`;
+CREATE TABLE  `zoolu`.`units` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idGenericForms` bigint(20) unsigned NOT NULL,
   `idParentUnit` bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -3971,22 +3986,22 @@ CREATE TABLE  `widgets`.`units` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`units`
+-- Dumping data for table `zoolu`.`units`
 --
 
 /*!40000 ALTER TABLE `units` DISABLE KEYS */;
 LOCK TABLES `units` WRITE;
-INSERT INTO `widgets`.`units` VALUES  (1,9,0,1,1,2,0);
+INSERT INTO `zoolu`.`units` VALUES  (1,9,0,1,1,2,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `units` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`urlReplacers`
+-- Definition of table `zoolu`.`urlReplacers`
 --
 
-DROP TABLE IF EXISTS `widgets`.`urlReplacers`;
-CREATE TABLE  `widgets`.`urlReplacers` (
+DROP TABLE IF EXISTS `zoolu`.`urlReplacers`;
+CREATE TABLE  `zoolu`.`urlReplacers` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
   `from` varchar(255) NOT NULL,
@@ -3995,12 +4010,12 @@ CREATE TABLE  `widgets`.`urlReplacers` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`urlReplacers`
+-- Dumping data for table `zoolu`.`urlReplacers`
 --
 
 /*!40000 ALTER TABLE `urlReplacers` DISABLE KEYS */;
 LOCK TABLES `urlReplacers` WRITE;
-INSERT INTO `widgets`.`urlReplacers` VALUES  (1,1,'ä','ae'),
+INSERT INTO `zoolu`.`urlReplacers` VALUES  (1,1,'ä','ae'),
  (2,1,'ö','oe'),
  (3,1,'ü','ue'),
  (4,1,'ß','ss'),
@@ -4013,34 +4028,34 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`urlTypes`
+-- Definition of table `zoolu`.`urlTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`urlTypes`;
-CREATE TABLE  `widgets`.`urlTypes` (
+DROP TABLE IF EXISTS `zoolu`.`urlTypes`;
+CREATE TABLE  `zoolu`.`urlTypes` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`urlTypes`
+-- Dumping data for table `zoolu`.`urlTypes`
 --
 
 /*!40000 ALTER TABLE `urlTypes` DISABLE KEYS */;
 LOCK TABLES `urlTypes` WRITE;
-INSERT INTO `widgets`.`urlTypes` VALUES  (1,'page'),
+INSERT INTO `zoolu`.`urlTypes` VALUES  (1,'page'),
  (2,'widget');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `urlTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`urls`
+-- Definition of table `zoolu`.`urls`
 --
 
-DROP TABLE IF EXISTS `widgets`.`urls`;
-CREATE TABLE  `widgets`.`urls` (
+DROP TABLE IF EXISTS `zoolu`.`urls`;
+CREATE TABLE  `zoolu`.`urls` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `urlId` varchar(32) NOT NULL,
   `version` int(10) unsigned NOT NULL,
@@ -4055,15 +4070,15 @@ CREATE TABLE  `widgets`.`urls` (
   KEY `pageId` (`urlId`),
   KEY `urls_ibfk_1` (`idUrlTypes`),
   CONSTRAINT `urls_ibfk_1` FOREIGN KEY (`idUrlTypes`) REFERENCES `urlTypes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 --
--- Dumping data for table `widgets`.`urls`
+-- Dumping data for table `zoolu`.`urls`
 --
 
 /*!40000 ALTER TABLE `urls` DISABLE KEYS */;
 LOCK TABLES `urls` WRITE;
-INSERT INTO `widgets`.`urls` VALUES  (1,'49f17460a4f9f',1,1,'',3,3,'2009-04-24 10:14:16','2009-08-05 13:34:17',1),
+INSERT INTO `zoolu`.`urls` VALUES  (1,'49f17460a4f9f',1,1,'',3,3,'2009-04-24 10:14:16','2009-08-05 13:34:17',1),
  (2,'4a112157d69eb',1,1,'hauptpunkt-1/',2,2,'2009-05-18 10:50:31','2009-08-05 13:34:17',1),
  (3,'4a113342dffe5',1,1,'hauptpunkt-2/',2,2,'2009-05-18 12:06:58','2009-08-05 13:34:17',1),
  (4,'4a1133f43284a',1,1,'hauptpunkt-3/',2,2,'2009-05-18 12:09:56','2009-08-05 13:34:17',1),
@@ -4080,17 +4095,23 @@ INSERT INTO `widgets`.`urls` VALUES  (1,'49f17460a4f9f',1,1,'',3,3,'2009-04-24 1
  (24,'4a40946ce9d01',1,1,'hauptpunkt-1/unterpunkt-1/testseite-2',3,3,'2009-06-23 10:38:05','2009-08-05 13:34:17',1),
  (25,'4a676ebfe3a7a',1,1,'hauptpunkt-1/process',3,3,'2009-07-22 21:57:08','2009-08-05 13:34:17',1),
  (26,'4a676ebfe3a7a',1,2,'main-navigation-1/-1',3,3,'2009-07-23 08:22:47','2009-08-05 13:34:17',1),
- (27,'4a681b0f66d2a',1,1,'hauptpunkt-1/test',3,3,'2009-07-23 10:10:55','2009-08-05 13:34:17',1);
+ (27,'4a681b0f66d2a',1,1,'hauptpunkt-1/test',3,3,'2009-07-23 10:10:55','2009-08-05 13:34:17',1),
+ (28,'4a7a8b25444b0',1,1,'hauptpunkt-1/test-1',6,6,'2009-08-06 09:49:57','2009-08-06 09:49:57',1),
+ (31,'4a7a90f9e29ab',1,1,'test',6,6,'2009-08-06 10:14:50','2009-08-06 10:14:50',1),
+ (32,'4a7a911caf72d',1,1,'test',6,6,'2009-08-06 10:15:24','2009-08-06 10:15:24',1),
+ (33,'4a7c31d0b3e35',1,1,'hauptpunkt-2/test',6,6,'2009-08-07 15:53:20','2009-08-07 15:53:20',1),
+ (34,'4a7c31efe2097',1,1,'hauptpunkt-2/ets',6,6,'2009-08-07 15:53:51','2009-08-07 15:53:51',1),
+ (35,'4a7c3202a47bf',1,1,'hauptpunkt-2/ets',6,6,'2009-08-07 15:54:10','2009-08-07 15:54:10',1);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `urls` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`userGroups`
+-- Definition of table `zoolu`.`userGroups`
 --
 
-DROP TABLE IF EXISTS `widgets`.`userGroups`;
-CREATE TABLE  `widgets`.`userGroups` (
+DROP TABLE IF EXISTS `zoolu`.`userGroups`;
+CREATE TABLE  `zoolu`.`userGroups` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `idUsers` bigint(20) NOT NULL,
   `idGroups` bigint(20) NOT NULL,
@@ -4098,7 +4119,7 @@ CREATE TABLE  `widgets`.`userGroups` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`userGroups`
+-- Dumping data for table `zoolu`.`userGroups`
 --
 
 /*!40000 ALTER TABLE `userGroups` DISABLE KEYS */;
@@ -4108,18 +4129,18 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`userProfiles`
+-- Definition of table `zoolu`.`userProfiles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`userProfiles`;
-CREATE TABLE  `widgets`.`userProfiles` (
+DROP TABLE IF EXISTS `zoolu`.`userProfiles`;
+CREATE TABLE  `zoolu`.`userProfiles` (
   `id` bigint(20) unsigned NOT NULL,
   `idUsers` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`userProfiles`
+-- Dumping data for table `zoolu`.`userProfiles`
 --
 
 /*!40000 ALTER TABLE `userProfiles` DISABLE KEYS */;
@@ -4129,11 +4150,11 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`users`
+-- Definition of table `zoolu`.`users`
 --
 
-DROP TABLE IF EXISTS `widgets`.`users`;
-CREATE TABLE  `widgets`.`users` (
+DROP TABLE IF EXISTS `zoolu`.`users`;
+CREATE TABLE  `zoolu`.`users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `idLanguages` int(10) unsigned NOT NULL DEFAULT '1',
   `username` varchar(64) NOT NULL,
@@ -4145,40 +4166,39 @@ CREATE TABLE  `widgets`.`users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`users`
+-- Dumping data for table `zoolu`.`users`
 --
 
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 LOCK TABLES `users` WRITE;
-INSERT INTO `widgets`.`users` VALUES  (1,1,'rainer','163732f752aeeccdbb9630c04fe08e14','Rainer','Schönherr'),
+INSERT INTO `zoolu`.`users` VALUES  (1,1,'rainer','163732f752aeeccdbb9630c04fe08e14','Rainer','Schönherr'),
  (2,1,'conny','3af31637b5328eb0e6a050e23a064681','Cornelius','Hansjakob'),
  (3,1,'thomas','ef6e65efc188e7dffd7335b646a85a21','Thomas','Schedler'),
  (4,1,'berndhep','01c2310a3cc00933589d3e2f694343d8','Bernd','Hepberger'),
  (5,1,'kate','29ddc288099264c17b07baf44d3f0adc','Kate','Dobler'),
- (6,1,'daniel','c0fc127fbd8824f509beb47eef03010d','Daniel','Rotter'),
- (7,1,'flo','6a204bd89f3c8348afd5c77c717a097a','Florian','Mathis');
+ (6,1,'daniel','c0fc127fbd8824f509beb47eef03010d','Daniel','Rotter');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`validators`
+-- Definition of table `zoolu`.`validators`
 --
 
-DROP TABLE IF EXISTS `widgets`.`validators`;
-CREATE TABLE  `widgets`.`validators` (
+DROP TABLE IF EXISTS `zoolu`.`validators`;
+CREATE TABLE  `zoolu`.`validators` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`validators`
+-- Dumping data for table `zoolu`.`validators`
 --
 
 /*!40000 ALTER TABLE `validators` DISABLE KEYS */;
 LOCK TABLES `validators` WRITE;
-INSERT INTO `widgets`.`validators` VALUES  (1,'Alnum'),
+INSERT INTO `zoolu`.`validators` VALUES  (1,'Alnum'),
  (2,'Alpha'),
  (3,'Barcode'),
  (4,'Between'),
@@ -4202,68 +4222,68 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`videoTypes`
+-- Definition of table `zoolu`.`videoTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`videoTypes`;
-CREATE TABLE  `widgets`.`videoTypes` (
+DROP TABLE IF EXISTS `zoolu`.`videoTypes`;
+CREATE TABLE  `zoolu`.`videoTypes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`videoTypes`
+-- Dumping data for table `zoolu`.`videoTypes`
 --
 
 /*!40000 ALTER TABLE `videoTypes` DISABLE KEYS */;
 LOCK TABLES `videoTypes` WRITE;
-INSERT INTO `widgets`.`videoTypes` VALUES  (1,'Vimeo'),
+INSERT INTO `zoolu`.`videoTypes` VALUES  (1,'Vimeo'),
  (2,'Youtube');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `videoTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`virtualFolderTypes`
+-- Definition of table `zoolu`.`virtualFolderTypes`
 --
 
-DROP TABLE IF EXISTS `widgets`.`virtualFolderTypes`;
-CREATE TABLE  `widgets`.`virtualFolderTypes` (
+DROP TABLE IF EXISTS `zoolu`.`virtualFolderTypes`;
+CREATE TABLE  `zoolu`.`virtualFolderTypes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`virtualFolderTypes`
+-- Dumping data for table `zoolu`.`virtualFolderTypes`
 --
 
 /*!40000 ALTER TABLE `virtualFolderTypes` DISABLE KEYS */;
 LOCK TABLES `virtualFolderTypes` WRITE;
-INSERT INTO `widgets`.`virtualFolderTypes` VALUES  (1,'shallow'),
+INSERT INTO `zoolu`.`virtualFolderTypes` VALUES  (1,'shallow'),
  (2,'deep');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `virtualFolderTypes` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`widgetInstanceProperties`
+-- Definition of table `zoolu`.`widgetInstanceProperties`
 --
 
-DROP TABLE IF EXISTS `widgets`.`widgetInstanceProperties`;
-CREATE TABLE  `widgets`.`widgetInstanceProperties` (
+DROP TABLE IF EXISTS `zoolu`.`widgetInstanceProperties`;
+CREATE TABLE  `zoolu`.`widgetInstanceProperties` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `key` varchar(60) NOT NULL,
   `value` varchar(255) NOT NULL,
   `idWidgetInstances` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `widgetInstanceProperties_ibfk_1` (`idWidgetInstances`),
-  CONSTRAINT `widgetInstanceProperties_ibfk_1` FOREIGN KEY (`idWidgetInstances`) REFERENCES `widgetInstances` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `widgetInstanceProperties_ibfk_1` FOREIGN KEY (`idWidgetInstances`) REFERENCES `widgetInstances` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`widgetInstanceProperties`
+-- Dumping data for table `zoolu`.`widgetInstanceProperties`
 --
 
 /*!40000 ALTER TABLE `widgetInstanceProperties` DISABLE KEYS */;
@@ -4273,12 +4293,42 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`widgetInstances`
+-- Definition of table `zoolu`.`widgetInstanceTitles`
 --
 
-DROP TABLE IF EXISTS `widgets`.`widgetInstances`;
-CREATE TABLE  `widgets`.`widgetInstances` (
+DROP TABLE IF EXISTS `zoolu`.`widgetInstanceTitles`;
+CREATE TABLE  `zoolu`.`widgetInstanceTitles` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `widgetInstanceId` varchar(32) NOT NULL,
+  `idLanguages` bigint(20) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `idUsers` bigint(20) NOT NULL,
+  `creator` bigint(20) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `changed` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `zoolu`.`widgetInstanceTitles`
+--
+
+/*!40000 ALTER TABLE `widgetInstanceTitles` DISABLE KEYS */;
+LOCK TABLES `widgetInstanceTitles` WRITE;
+INSERT INTO `zoolu`.`widgetInstanceTitles` VALUES  (1,'4a7fbd6b4bda7',1,'Test',6,6,'2009-08-10 08:25:47','0000-00-00 00:00:00',1);
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `widgetInstanceTitles` ENABLE KEYS */;
+
+
+--
+-- Definition of table `zoolu`.`widgetInstances`
+--
+
+DROP TABLE IF EXISTS `zoolu`.`widgetInstances`;
+CREATE TABLE  `zoolu`.`widgetInstances` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `idGenericForms` bigint(20) DEFAULT NULL,
   `sortPosition` bigint(20) NOT NULL,
   `idParent` bigint(20) NOT NULL,
   `idParentTypes` bigint(20) NOT NULL,
@@ -4290,28 +4340,30 @@ CREATE TABLE  `widgets`.`widgetInstances` (
   `creator` bigint(20) NOT NULL,
   `publisher` bigint(20) DEFAULT NULL,
   `idWidgets` bigint(20) NOT NULL,
-  `widgetId` varchar(32) NOT NULL,
+  `widgetInstanceId` varchar(32) NOT NULL,
+  `version` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `widgetInstances_ibfk_1` (`idWidgets`),
   CONSTRAINT `widgetInstances_ibfk_1` FOREIGN KEY (`idWidgets`) REFERENCES `widgets` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`widgetInstances`
+-- Dumping data for table `zoolu`.`widgetInstances`
 --
 
 /*!40000 ALTER TABLE `widgetInstances` DISABLE KEYS */;
 LOCK TABLES `widgetInstances` WRITE;
+INSERT INTO `zoolu`.`widgetInstances` VALUES  (1,15,2,2,2,'2009-08-10 08:25:47',NULL,'0000-00-00 00:00:00',1,'2009-08-10 08:25:47',6,NULL,1,'4a7fbd6b4bda7',0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `widgetInstances` ENABLE KEYS */;
 
 
 --
--- Definition of table `widgets`.`widgetProperties`
+-- Definition of table `zoolu`.`widgetProperties`
 --
 
-DROP TABLE IF EXISTS `widgets`.`widgetProperties`;
-CREATE TABLE  `widgets`.`widgetProperties` (
+DROP TABLE IF EXISTS `zoolu`.`widgetProperties`;
+CREATE TABLE  `zoolu`.`widgetProperties` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `key` varchar(60) NOT NULL,
   `value` varchar(255) NOT NULL,
@@ -4322,7 +4374,7 @@ CREATE TABLE  `widgets`.`widgetProperties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`widgetProperties`
+-- Dumping data for table `zoolu`.`widgetProperties`
 --
 
 /*!40000 ALTER TABLE `widgetProperties` DISABLE KEYS */;
@@ -4332,25 +4384,26 @@ UNLOCK TABLES;
 
 
 --
--- Definition of table `widgets`.`widgets`
+-- Definition of table `zoolu`.`widgets`
 --
 
-DROP TABLE IF EXISTS `widgets`.`widgets`;
-CREATE TABLE  `widgets`.`widgets` (
+DROP TABLE IF EXISTS `zoolu`.`widgets`;
+CREATE TABLE  `zoolu`.`widgets` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `author` varchar(255) NOT NULL,
   `description` text,
   `version` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `widgets`.`widgets`
+-- Dumping data for table `zoolu`.`widgets`
 --
 
 /*!40000 ALTER TABLE `widgets` DISABLE KEYS */;
 LOCK TABLES `widgets` WRITE;
+INSERT INTO `zoolu`.`widgets` VALUES  (1,'widget','ich',NULL,NULL);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `widgets` ENABLE KEYS */;
 
