@@ -106,7 +106,8 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
                                 'sortTimestamp'   => date('Y-m-d H:i:s'),
                                 'creator'         => $this->setup->getCreatorId(),
                                 'idWidgets'       => $this->setup->getElementTypeId(),
-                                'widgetInstanceId'=> $strWidgetId);
+                                'widgetInstanceId'=> $strWidgetId,
+                                'version'         => $intWidgetVersion);
           
           $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
           
