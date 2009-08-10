@@ -254,6 +254,28 @@ class Cms_WidgetController extends AuthControllerAction {
     }
   }
   
+  /**
+   * deleteAction
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteAction() {
+  	$this->core->logger->debug('cms->controllers->WidgetController->deleteAction()');
+  	
+  	try {
+  		$this->getModelWidget();
+  		if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+        $this->objModelWidgets->deleteWidgetInstance($this->objRequest->getParam("id"));
+
+        $this->view->blnShowFormAlert = true;
+      }
+
+      $this->renderScript('page/form.phtml');
+  	}catch(Exception $exc) {
+  		$this->core->logger->err($exc);
+  	}
+  }
+  
 	
 	/**
 	 * getForm

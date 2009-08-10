@@ -57,7 +57,7 @@ class Model_Widgets {
 	protected $objGenericFormsTable;
 	
 	/**
-	 * @var Model_Table_WidetInstances
+	 * @var Model_Table_WidgetInstances
 	 */
 	protected $objWidgetInstancesTable;
 	
@@ -183,6 +183,20 @@ class Model_Widgets {
     $objSelect->where('id = ?', $intWidgetInstanceId);
     
     return $this->objWidgetInstancesTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * deleteWidgetInstance
+   * @param number $intElementId
+   * @return number
+   */
+  public function deleteWidgetInstance($intElementId) {
+  	$this->core->logger->debug('cms->models->Model_Widgets->deleteWidgetInstance('.$intElementId.')');
+  	
+  	$this->getWidgetInstancesTable();
+  	
+  	$strWhere = $this->objWidgetInstancesTable->getAdapter()->quoteInto('id = ?', $intElementId);
+  	return $this->objWidgetInstancesTable->delete($strWhere);
   }
 	
 	/**
