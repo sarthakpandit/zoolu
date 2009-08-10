@@ -184,7 +184,8 @@ class Model_Folders {
 																	            WHERE wi.idParent = ?
 																	              AND wi.idParentTypes = ?)
 																	      AS tbl
-																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intRootId, $this->intLanguageId, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
+																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', 
+    array($this->intLanguageId, $intRootId, $this->intLanguageId, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -384,7 +385,8 @@ class Model_Folders {
 																	              AND wi.idParentTypes = ?
 																	            )
 																	      AS tbl
-																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder, $intFolderId, $this->core->sysConfig->parent_types->folder));
+																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', 
+    array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder, $intFolderId, $this->core->sysConfig->parent_types->folder));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
