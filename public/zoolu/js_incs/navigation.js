@@ -946,6 +946,12 @@ Massiveart.Navigation = Class.create({
     $(this.genFormContainer).show();
     $(this.genFormSaveContainer).show();
     
+    if($(element).down('.icon').className.indexOf(this.constStartPage) == -1){
+      $('buttondelete').show();
+	}else{
+	  $('buttondelete').hide();
+	}
+    
 	myCore.addBusyClass(this.genFormContainer);
 	myCore.addBusyClass('divWidgetMetaInfos');
 	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
