@@ -83,7 +83,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 					 * check if parent element is rootlevel or folder
 					 */
 			    if($this->setup->getParentId() != '' && $this->setup->getParentId() > 0){
-            $this->setup->setParentTypeId($this->core->sysConfig->parent_types->folder);
+            if($this->setup->getParentTypeId() == '') $this->setup->setParentTypeId($this->core->sysConfig->parent_types->folder);
             $objNaviData = $this->getModelFolders()->loadChildNavigation($this->setup->getParentId());
           }else{
             if($this->setup->getRootLevelId() != '' && $this->setup->getRootLevelId() > 0){
@@ -95,7 +95,8 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
             $objNaviData = $this->getModelFolders()->loadRootNavigation($this->setup->getRootLevelId());
           }
           $intSortPosition = count($objNaviData);
-          
+
+          $this->core->logger->debug('$this->setup->getParentId(): '.$this->setup->getParentId());
           $arrMainData = array( 'idGenericForms'  => $this->setup->getGenFormId(),
                                 'sortPosition'    => $intSortPosition,
                                 'idParent'        => $this->setup->getParentId(),
