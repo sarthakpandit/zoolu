@@ -900,71 +900,128 @@ Massiveart.Navigation = Class.create({
      });
   },
   
-  /**
-   * selectWidget
-   * @param integer widgetInstanceId, integer widgetId
-   */
-  selectWidget: function(widgetInstanceId, widgetId){
-	$(this.genFormContainer).innerHTML = '';
-    $('divWidgetMetaInfos').innerHTML = '';
-    // hide media container
-    if($('divMediaContainer')) $('divMediaContainer').hide();  
+//  /**
+//   * selectWidgetItem
+//   * @param integer widgetInstanceId, integer widgetId
+//   */
+//  selectWidgetItem: function(widgetInstanceId, widgetId){
+//	$(this.genFormContainer).innerHTML = '';
+//    $('divWidgetMetaInfos').innerHTML = '';
+//    // hide media container
+//    if($('divMediaContainer')) $('divMediaContainer').hide();  
+//    
+//    var element = 'widget'+widgetInstanceId;
+//    this.currItemId = widgetInstanceId;
+//    
+//    var currLevel = 0;
+//    // e.g. level1 - cut level to get currLevel number
+//    currLevel = parseInt($(element).up().id.substr(5)); 
+//        
+//    if(this.navigation[currLevel]){
+//      this.makeDeselected(this.navigation[currLevel]);
+//    }    
+//    this.navigation[currLevel] = element;
+//    
+//    if(this.navigation.length > 0){      
+//      for(var i = 1; i <= this.navigation.length-1; i++){
+//        if(this.navigation[i] != element){
+//          if(currLevel < i){
+//            this.makeDeselected(this.navigation[i]);
+//          }else{
+//            this.makeParentSelected(this.navigation[i]);
+//          }
+//        }else{
+//          this.makeSelected(this.navigation[currLevel]);
+//        }   
+//      } 
+//    }
+//    
+//    if(this.levelArray.indexOf(currLevel) != -1){
+//      var levelPos = this.levelArray.indexOf(currLevel)+1;
+//      for(var i = levelPos; i < this.levelArray.length; i++){
+//        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+//      }
+//      $('divFolderRapper').hide();
+//    }
+//    
+//    $(this.genFormContainer).show();
+//    $(this.genFormSaveContainer).show();
+//    
+//    if($(element).down('.icon').className.indexOf(this.constStartPage) == -1){
+//      $('buttondelete').show();
+//	}else{
+//	  $('buttondelete').hide();
+//	}
+//    
+//	myCore.addBusyClass(this.genFormContainer);
+//	myCore.addBusyClass('divWidgetMetaInfos');
+//	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
+//	  parameters: {
+//		idWidgetInstance: widgetInstanceId,
+//		idWidget: widgetId
+//	  },
+//	  evalScripts: true,
+//	  onComplete: function(){
+//		myForm.writeMetaInfos();
+//		myCore.removeBusyClass('divWidgetMetaInfos');
+//        myCore.removeBusyClass(this.genFormContainer);
+//	  }.bind(this)
+//	});
+//  },
+  
+  selectWidgetItem: function(parentLevel, widgetType, itemId){
+	this.currLevel = parentLevel + 1;
+	var element = widgetType+itemId;
+	
+	this.currItemId = itemId;
+	
+	if(this.navigation[parentLevel]){
+      this.makeDeselected(this.navigation[parentLevel]);
+    }
     
-    var element = 'widget'+widgetInstanceId;
-    this.currItemId = widgetInstanceId;
+    this.navigation[parentLevel] = element;
     
-    var currLevel = 0;
-    // e.g. level1 - cut level to get currLevel number
-    currLevel = parseInt($(element).up().id.substr(5)); 
-        
-    if(this.navigation[currLevel]){
-      this.makeDeselected(this.navigation[currLevel]);
-    }    
-    this.navigation[currLevel] = element;
-    
-    if(this.navigation.length > 0){      
+    if(this.navigation.length > 0){    
       for(var i = 1; i <= this.navigation.length-1; i++){
         if(this.navigation[i] != element){
-          if(currLevel < i){
-            this.makeDeselected(this.navigation[i]);
-          }else{
-            this.makeParentSelected(this.navigation[i]);
-          }
+          this.makeParentSelected(this.navigation[i]);
         }else{
-          this.makeSelected(this.navigation[currLevel]);
+          this.makeSelected(this.navigation[parentLevel]);
         }   
       } 
     }
     
-    if(this.levelArray.indexOf(currLevel) != -1){
-      var levelPos = this.levelArray.indexOf(currLevel)+1;
+    this.setParentFolderId(itemId);
+	
+	if(this.levelArray.indexOf(this.currLevel) == -1){
+	  this.levelArray.push(this.currLevel);
+	  
+	  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+	  new Insertion.Bottom('divNaviCenterInner', levelContainer);
+	}else{
+      myCore.addBusyClass('navlevel'+this.currLevel);   
+      $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
+      
+      var levelPos = this.levelArray.indexOf(this.currLevel);
       for(var i = levelPos; i < this.levelArray.length; i++){
         if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
       }
-      $('divFolderRapper').hide();
     }
-    
-    $(this.genFormContainer).show();
-    $(this.genFormSaveContainer).show();
-    
-    if($(element).down('.icon').className.indexOf(this.constStartPage) == -1){
-      $('buttondelete').show();
-	}else{
-	  $('buttondelete').hide();
-	}
-    
-	myCore.addBusyClass(this.genFormContainer);
-	myCore.addBusyClass('divWidgetMetaInfos');
-	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
+	
+	new Ajax.Updater('navlevel'+this.currLevel, '/../widget/'+widgetType+'/navigation/widgetnavigation', {
 	  parameters: {
-		idWidgetInstance: widgetInstanceId,
-		idWidget: widgetId
+		currLevel: this.currLevel
 	  },
 	  evalScripts: true,
 	  onComplete: function(){
-		myForm.writeMetaInfos();
-		myCore.removeBusyClass('divWidgetMetaInfos');
-        myCore.removeBusyClass(this.genFormContainer);
+		myCore.removeBusyClass('navlevel'+this.currLevel);
+		this.initFolderHover();
+		this.initPageHover();
+        this.initAddMenuHover();
+        this.initWidgetHover();
+        
+        this.scrollNavigationBar();
+		this.updateCurrentFolder();
 	  }.bind(this)
 	});
   },
