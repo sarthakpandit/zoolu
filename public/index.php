@@ -17,13 +17,15 @@ require_once(dirname(__FILE__).'/../sys_config/general.inc.php');
  */
 $front = Zend_Controller_Front::getInstance();
 $front->setControllerDirectory('../application/website/default/controllers');
-$front->addControllerDirectory('../application/zoolu/modules/core/controllers', 'zoolu');                
+$front->addControllerDirectory('../application/zoolu/modules/core/controllers', 'zoolu');
+$front->addModuleDirectory('../application/widgets');                
 $front->addModuleDirectory('../application/zoolu/modules');
 
 /**
  * add helper path
  */
 $viewRenderer = new Zend_Controller_Action_Helper_ViewRenderer(new Zend_View());
+
 /**
  * Add the own plugin loader
  */
@@ -55,6 +57,18 @@ $router = $front->getRouter();
 $route = new Zend_Controller_Router_Route_Regex('(?!(^zoolu))(.*)', array('controller' => 'Index',
                                                                           'action'     => 'index'));
 $router->addRoute('index', $route);
+
+/**
+ * Widget routings
+ */
+$route = new Zend_Controller_Router_Route('widget/:module');
+$router->addRoute('widget', $route);
+
+$route = new Zend_Controller_Router_Route('widget/:module/:controller');
+$router->addRoute('widgetController', $route);
+
+$route = new Zend_Controller_Router_Route('widget/:module/:controller/:action/*');
+$router->addRoute('widgetControllerAction', $route);
 
 /**
  * default zoolu routings
