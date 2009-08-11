@@ -124,6 +124,7 @@ class Cms_WidgetController extends AuthControllerAction {
 				$this->objForm->prepareForm();
 				
 				if($this->objForm->isValid($arrFormData)) {
+					$this->objForm->setAction('/zoolu/cms/widget/edit');
 					$intWidgetId = $this->objForm->saveFormData();
 					$this->objForm->Setup()->setElementId($intWidgetId);
           $this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
@@ -266,6 +267,7 @@ class Cms_WidgetController extends AuthControllerAction {
   	
   	try {
   		$this->getModelWidget();
+  		
   		if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
         $this->objModelWidgets->deleteWidgetInstance($this->objRequest->getParam("id"));
 
@@ -323,7 +325,8 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'idWidget', array('value' => $this->objRequest->getParam('idWidget'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden'), 'ignore' => true));
-		}catch(Exception $exc) {
+      $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
+ 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
 	}

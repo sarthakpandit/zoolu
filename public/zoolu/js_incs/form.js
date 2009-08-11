@@ -103,10 +103,9 @@ Massiveart.Form = Class.create({
       var elType = $('elementType').getValue();
       var elementId = $('id').getValue();
       var parentFolderId = ($('parentFolderId')) ? $F('parentFolderId') : 0;
-            
+         
       // loader
       this.getFormSaveLoader();
-      
       new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'delete', {
         parameters: { id: elementId },
         evalScripts: true,
