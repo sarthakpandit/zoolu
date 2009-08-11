@@ -196,6 +196,7 @@ class Model_Widgets {
   	$this->getWidgetInstancesTable();
   	
   	$strWhere = $this->objWidgetInstancesTable->getAdapter()->quoteInto('id = ?', $intElementId);
+  	
   	return $this->objWidgetInstancesTable->delete($strWhere);
   }
 	
