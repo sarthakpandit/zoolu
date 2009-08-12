@@ -258,6 +258,8 @@ Massiveart.Navigation = Class.create({
     $(this.genFormContainer).hide();
     $(this.genFormSaveContainer).hide();
     
+    this.type = 'folder';
+    
     var level = parentLevel + 1;    
     var element = elType+itemId;
         
@@ -431,7 +433,7 @@ Massiveart.Navigation = Class.create({
    * getEditFormMainFolder
    */
   getEditFormMainFolder: function(){
-	if(this.type = 'widget') {
+	if(this.type == 'widget') {
 	  $('divNavigationEditWidget_'+this.widgetId).ondblclick();
 	}
 	else {	
@@ -836,7 +838,7 @@ Massiveart.Navigation = Class.create({
   },
   
   /**
-   * getWidgetForm
+   * getWidgetEditForm
    * @param integer widgetInstanceId, integer widgetId, integer formId, integer version
    */
   getWidgetEditForm: function(widgetInstanceId, widgetId, formId, version) {
@@ -896,11 +898,11 @@ Massiveart.Navigation = Class.create({
     new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
 	  parameters: { 
     	parentFolderId: $('navlevel' + currLevel).readAttribute('parentid'),
-		parentType: parentType,
 		idWidget: widgetId,
 		currLevel: currLevel,
 		rootLevelId: this.rootLevelId,
-		idWidgetInstance: widgetInstanceId
+		idWidgetInstance: widgetInstanceId,
+		formId: formId
 	  },      
 	  evalScripts: true,     
 	  onComplete: function() {
