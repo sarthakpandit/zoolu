@@ -292,12 +292,23 @@ class Cms_WidgetController extends AuthControllerAction {
 		
 		try {
 			/**
+			 * Get Genericform ID by WidgetId
+			 */
+			if($this->objRequest->getParam("formId") == '' || $this->objRequest->getParam("formId") == '-1') {
+				$objRow = $this->getModelWidget()->getGenericFormByWidgetId($this->objRequest->getParam('idWidget'));
+	      $objFormHandler = FormHandler::getInstance();
+	      $objFormHandler->setFormId($objRow->genericFormId);
+	      $objFormHandler->setFormVersion($objRow->version);
+			} else {
+				$objRow = $this->getModelWidget()->getGenericFormById($this->objRequest->getParam('formId'));
+				$objFormHandler = FormHandler::getInstance();
+     	  $objFormHandler->setFormId($objRow->genericFormId);
+      	$objFormHandler->setFormVersion($objRow->version);
+			}
+			
+			/**
 			 * Get GenericFormId
 			 */      
-			$objRow = $this->getModelWidget()->getGenericFormByWidgetId($this->objRequest->getParam('idWidget'));
-      $objFormHandler = FormHandler::getInstance();
-      $objFormHandler->setFormId($objRow->genericFormId);
-      $objFormHandler->setFormVersion($objRow->version);
       $objFormHandler->setActionType($intActionType);
       $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
       $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);

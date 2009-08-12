@@ -69,7 +69,7 @@ class WidgetHelper {
       foreach ($objRowset as $objRow){           
       	$strOutput .= '<div id="olnavitem'.$objRow->id.'" class="olnavrootitem">
                            <div style="margin-left: 20px;">
-                             - <a href="#" onclick="myNavigation.addWidgetForm('.$objRow->id.', '.$parentId.', '.$parentType.', '.$currLevel.'); return false;">'.htmlentities($objRow->name, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                             - <a href="#" onclick="myNavigation.addWidgetForm('.$objRow->id.', '.$parentId.', '.$parentType.', '.$currLevel.', -1); return false;">'.htmlentities($objRow->name, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
                            </div>
                          </div>';
       }

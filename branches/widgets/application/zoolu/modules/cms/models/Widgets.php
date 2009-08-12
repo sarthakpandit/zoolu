@@ -149,6 +149,28 @@ class Model_Widgets {
 	}
 	
 	/**
+	 * getGenericFormById
+	 * @param $strId
+	 * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+	 */
+	public function getGenericFormById($strId) {
+		$this->core->logger->debug('cms->models->Model_Widgets->getGenericFormById('.$strId.')');
+		
+		$objSelectForm = $this->getGenericFormsTable()->select();
+		$objSelectForm->setIntegrityCheck(false);
+		$objSelectForm->from($this->objGenericFormsTable, array('id', 'genericFormId', 'version'));
+		if(is_numeric($strId)) {
+			$objSelectForm->where('id=?', $strId);
+		} else {
+			$objSelectForm->where('genericFormId=?', $strId);
+		}
+		
+		return $this->objGenericFormsTable->fetchRow($objSelectForm);
+	}
+	
+	/**
 	 * loadWidgets
 	 * @return Zend_Db_Table_Rowset_Abstract
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
