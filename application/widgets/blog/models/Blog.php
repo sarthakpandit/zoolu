@@ -70,10 +70,11 @@ class Model_Blog {
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
 	 */
-	public function getBlogEntries($intCount=5) {
+	public function getBlogEntries($strWidgetInstanceId, $intCount=5) {
 		$objSelectForm = $this->getBlogEntriesTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
 		$objSelectForm->from($this->objBlogEntries, array('id', 'w_blog_articletitle'));
+		$objSelectForm->where("widgetInstanceId=?",$strWidgetInstanceId);
 		$objSelectForm->limit($intCount,0);
 		
 		return $this->objBlogEntries->fetchAll($objSelectForm);

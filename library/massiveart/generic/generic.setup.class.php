@@ -58,6 +58,7 @@ class GenericSetup {
 	protected $intFormTypeId;
 	protected $strFormType;
 	protected $intFormLanguageId;
+	protected $intWidgetInstanceId;
 
 	protected $intRegionId;
 	protected $strRegionTitle;
@@ -908,7 +909,22 @@ class GenericSetup {
 	public function setRegionId($intRegionId){
 		$this->intRegionId = $intRegionId;
 	}
+	
+	/**
+	 * setWidgetInstanceId
+	 * @param integer $intWidgetInstanceId
+	 */
+	public function setWidgetInstanceId($intWidgetInstanceId){
+		$this->intWidgetInstanceId = $intWidgetInstanceId;
+	}
 
+	/**
+	 * getWidgetInstanceId
+	 */
+	public function getWidgetInstanceId(){
+		return $this->intWidgetInstanceId;
+	}
+	
 	/**
 	 * getRegionId
 	 * @param integer $intRegionId
