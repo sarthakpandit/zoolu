@@ -42,7 +42,7 @@
 
 class Model_Table_BlogEntries extends Zend_Db_Table_Abstract {
   
-  protected $_name = 'widgetinstance-w_blog_article-1-instances';
+  protected $_name = 'widgetInstance-W_BLOG_ARTICLE-1-Instances';
   protected $_primary = 'id';
   
 }
