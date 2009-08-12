@@ -41,6 +41,11 @@
  */
 class Blog_NavigationController extends AuthControllerAction {
 	/**
+	 * @var objModelBlog
+	 */
+	protected $objModelBlog;
+	
+	/**
 	 * navigationAction
 	 * @author Daniel Rotter <daniel.rotter@gmail.com>
 	 * @version 1.0
@@ -49,6 +54,26 @@ class Blog_NavigationController extends AuthControllerAction {
 		$this->core->logger->debug('widgets->blog->controllers->NavigationController->widgetnavigationAction()');
 		
 		$this->view->assign('currLevel', $this->getRequest()->getParam('currLevel'));
+		$this->view->assign('childElements', $this->getModelBlog()->getBlogEntries());
 	}
+	
+	/**
+   * getModelBlog
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelBlog(){
+    if (null === $this->objModelBlog) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it 
+       * from its modules path location.
+       */ 
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/Blog.php';
+      $this->objModelBlog = new Model_Blog();
+    }
+    
+    return $this->objModelBlog;
+  }
 }
 ?>
