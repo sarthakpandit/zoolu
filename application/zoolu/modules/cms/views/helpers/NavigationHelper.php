@@ -211,10 +211,10 @@ class NavigationHelper {
         	/**
            * get values of the row and create widget output
            */
-          $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="widget">
-            <div class="icon img_'.$objRow->type.'_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
+          $strOutput .= '<div id="widget'.$objRow->id.'" class="widget">
+            <div id="divNavigationEditWidget_'.$objRow->id.'" class="icon img_'.$objRow->type.'_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'" ondblclick="myNavigation.getWidgetEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.'); return false;"></div>
             <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_'.$objRow->type.'_'.$objRow->id.'" id="pos_'.$objRow->type.'_'.$objRow->id.'" value="'.$counter.'" onfocus="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;" onkeyup="if(event.keyCode==13){ myNavigation.updateSortPosition(\'pos_'.$objRow->type.'_'.$objRow->id.'\',\''.$objRow->type.'\','.$currLevel.'); myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false; }" onblur="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;" /></div>
-            <div class="title" onclick="myNavigation.selectWidgetItem('.$currLevel.', \''.$objRow->type.'\', '.$objRow->id.'); return false;">'.htmlentities($strPageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            <div id="divNavigationTitle_widget'.$objRow->id.'" class="title" onclick="myNavigation.selectWidgetItem('.$currLevel.', \''.$objRow->type.'\', '.$objRow->id.'); return false;">'.htmlentities($strPageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
 
           $counter++;
