@@ -47,7 +47,8 @@
       <search_index>
         <page>tmp/search_index/pages</page>
       </search_index>      
-      <zoolu_modules>application/zoolu/modules/</zoolu_modules>      
+      <zoolu_modules>application/zoolu/modules/</zoolu_modules>   
+      <zoolu_widgets>application/widgets/</zoolu_widgets>
     </path>
     
     <!-- LOGGER / DEBUGGING -->
@@ -69,9 +70,9 @@
       <adapter>Pdo_Mysql</adapter>
       <params>
         <host>localhost</host>
-        <username>zoolu</username>
-        <password>zoolu</password>
-        <dbname>zoolu</dbname>
+        <username>widgets</username>
+        <password>widgets</password>
+        <dbname>widgets</dbname>
       </params>
     </database>
     
@@ -557,7 +558,7 @@
     
   	<!-- Application Keys -->
   	<key>
-    	<gmaps>ABQIAAAAYd6HpKB1Vfqec8cb_5YrlhRtA2_S2kiI47KJ4sJy_X22ETSKqBTcMnbqrvhiPT2Y5ziNW3jseAb6Ig</gmaps>
+    	<gmaps>ABQIAAAA-HDjFpqTqvSFv3M3yKNuPhTQePH1hJYylhmdxtEdWXIvlpOLiRTMVuvYuc2BctQENanfjZnk_-buzw</gmaps>
   	</key>
   </production>
 
