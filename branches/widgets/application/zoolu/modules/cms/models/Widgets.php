@@ -171,6 +171,25 @@ class Model_Widgets {
 	}
 	
 	/**
+	 * getWidgetByWidgetInstanceId
+	 * @param string $strWidgetInstanceId
+	 * @return Zend_Db_Table_Rowset_Abstract
+	 * @author Daniel Rotter <daniel.rotter@massvieart.com>
+	 * @version 1.0
+	 */
+	public function getWidgetByWidgetInstanceId($strWidgetInstanceId) {
+		$this->core->logger->debug('cms->models->Model_Widgets->getWidgetByWidgetInstanceId('.$strWidgetInstanceId.')');
+		
+		$objSelect = $this->getWidgetsTable()->select();
+		$objSelect->setIntegrityCheck(false);
+		$objSelect->from($this->objWidgetsTable, array('name'));
+		$objSelect->join('widgetInstances', 'widgetInstances.idWidgets = widgets.id');
+		$objSelect->where('widgetInstances.widgetInstancesId = ?', $strWidgetInstanceId);
+		
+		return $this->objWidgetsTable->fetchRow($objSelect);
+	}
+	
+	/**
 	 * loadWidgets
 	 * @return Zend_Db_Table_Rowset_Abstract
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
