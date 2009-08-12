@@ -326,17 +326,18 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("idWidget") != '') ? $this->objRequest->getParam("idWidget") : 0));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentType") != '') ? $this->objRequest->getParam("parentType") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setElementId($this->objRequest->getParam('idWidgetInstance'));
+      $this->objForm->Setup()->setWidgetInstanceId($this->objRequest->getParam("instanceId"));
       $this->objForm->Setup()->setModelSubPath('cms/models/');
       
-      $this->core->logger->debug('parentfolderid: '.$this->objRequest->getParam('parentFolderId'));
       $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'rootLevelId', array('value' => $this->objRequest->getParam('rootLevelId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'currLevel', array('value' => $this->objRequest->getParam('currLevel'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'elementType', array('value' => 'widget', 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'parentType', array('value' => $this->objRequest->getParam('parentType'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'idWidget', array('value' => $this->objRequest->getParam('idWidget'), 'decorators' => array('Hidden'), 'ignore' => true));
-      $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden'), 'ignore' => true));
+      $this->objForm->addElement('hidden', 'elementId', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objRequest->getParam('instanceId'), 'decorators' => array('Hidden')));
  		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}

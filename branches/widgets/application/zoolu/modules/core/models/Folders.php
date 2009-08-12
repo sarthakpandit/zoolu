@@ -354,9 +354,9 @@ class Model_Folders {
   public function loadChildNavigation($intFolderId, $strSortTimestampOrderType = 'DESC'){
     $this->core->logger->debug('core->models->Folders->loadChildNavigation('.$intFolderId.')');
 
-    $sqlStmt = $this->core->dbh->query('SELECT id, title, genericFormId, version, templateId, widgetType, folderType, pageType, type, isStartPage, sortPosition, sortTimestamp, idStatus, pageLinkTitle
+    $sqlStmt = $this->core->dbh->query('SELECT id, title, genericFormId, version, templateId, widgetType, folderType, pageType, type, isStartPage, sortPosition, sortTimestamp, idStatus, pageLinkTitle, widgetInstanceId
 																	      FROM (SELECT folders.id, folderTitles.title, genericForms.genericFormId, genericForms.version, -1 AS templateId, -1 as widgetType, folders.idFolderTypes AS folderType, -1 AS pageType, folderTypes.title AS type, -1 AS isStartPage, folders.sortPosition, folders.sortTimestamp, folders.idStatus,
-																	                   -1 AS pageLinkTitle
+																	                   -1 AS pageLinkTitle, -1 AS widgetInstanceId
 																	            FROM folders
 																	            LEFT JOIN folderTitles ON folderTitles.folderId = folders.folderId
 																	              AND folderTitles.version = folders.version AND folderTitles.idLanguages = ?
@@ -365,7 +365,7 @@ class Model_Folders {
 																	            WHERE folders.idParentFolder = ?
 																	            UNION
 																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pages.idTemplates  AS templateId,-1 AS widgetType, -1 AS folderType, pages.idPageTypes AS pageType, pageTypes.title AS type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pages.idStatus,
-																	                   (SELECT pt.title FROM pageLinks, pages AS p LEFT JOIN pageTitles AS pt ON pt.pageId = p.pageId AND pt.version = p.version AND pt.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1) AS pageLinkTitle
+																	                   (SELECT pt.title FROM pageLinks, pages AS p LEFT JOIN pageTitles AS pt ON pt.pageId = p.pageId AND pt.version = p.version AND pt.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1) AS pageLinkTitle, -1 AS widgetInstanceId
 																	            FROM pages
 																	            LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
 																	              AND pageTitles.version = pages.version
@@ -376,7 +376,7 @@ class Model_Folders {
 																	              AND pages.idParentTypes = ?
 																	              AND pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1)
 																	            UNION
-																	            SELECT wi.id, wit.title, gf.genericFormId, wi.version, -1 AS templateId, w.id AS widgetType, -1 AS folderType, -1 AS pageType, w.name AS type, -1 AS isStartPage, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, idStatus AS idStatus, -1 AS pageLinkTitle
+																	            SELECT wi.id, wit.title, gf.genericFormId, wi.version, -1 AS templateId, w.id AS widgetType, -1 AS folderType, -1 AS pageType, w.name AS type, -1 AS isStartPage, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, idStatus AS idStatus, -1 AS pageLinkTitle,  wit.widgetInstanceId AS widgetInstanceId
 																	            FROM widgetInstances wi
 																	            INNER JOIN widgetInstanceTitles wit ON wi.widgetInstanceId = wit.widgetInstanceId
 																	            INNER JOIN widgets w ON w.id = wi.idWidgets
