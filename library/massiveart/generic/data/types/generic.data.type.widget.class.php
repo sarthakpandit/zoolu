@@ -82,7 +82,6 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 					/**
 					 * check if parent element is rootlevel or folder
 					 */
-					$this->core->logger->debug($this->setup->getParentId());
 			    if($this->setup->getParentId() != '' && $this->setup->getParentId() > 0){
             if($this->setup->getParentTypeId() == '') $this->setup->setParentTypeId($this->core->sysConfig->parent_types->folder);
             $objNaviData = $this->getModelFolders()->loadChildNavigation($this->setup->getParentId());
@@ -113,6 +112,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
           $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
           
           $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
+          $this->insertInstanceData('widgetInstance',  array('Id' => $strWidgetId, 'Version' => $intWidgetVersion));
           break;
         case $this->core->sysConfig->generic->actions->edit:
           $objSelect = $this->objModelWidgets->getWidgetInstancesTable()->select();
