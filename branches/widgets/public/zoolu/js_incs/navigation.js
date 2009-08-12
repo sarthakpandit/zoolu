@@ -766,6 +766,7 @@ Massiveart.Navigation = Class.create({
    * @param integer parentType
    */
   addWidgetForm: function(idWidget, parentId, parentType, currLevel, formId){
+
   	$('buttondelete').hide();
   	this.showFormContainer();
   	
@@ -785,7 +786,8 @@ Massiveart.Navigation = Class.create({
   			idWidget: idWidget,
   			currLevel: currLevel,
   			rootLevelId: this.rootLevelId,
-  			formId: formId
+  			formId: formId,
+  			instanceId: $('navlevel' + currLevel).readAttribute('widgetInstanceId')
       },      
       evalScripts: true,     
       onComplete: function() {      	 
@@ -1084,10 +1086,10 @@ Massiveart.Navigation = Class.create({
 //	});
 //  },
   
-  selectWidgetItem: function(parentLevel, widgetType, itemId){
+  selectWidgetItem: function(parentLevel, widgetType, itemId, widgetInstanceId){
 	this.currLevel = parentLevel + 1;
 	var element = 'widget'+itemId;
-	
+
 	this.currItemId = itemId;
 	
 	if(this.navigation[parentLevel]){
@@ -1111,11 +1113,12 @@ Massiveart.Navigation = Class.create({
 	if(this.levelArray.indexOf(this.currLevel) == -1){
 	  this.levelArray.push(this.currLevel);
 	  
-	  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+	  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" widgetInstanceId="'+widgetInstanceId+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
 	  new Insertion.Bottom('divNaviCenterInner', levelContainer);
 	}else{
       myCore.addBusyClass('navlevel'+this.currLevel);   
       $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
+      $('navlevel'+this.currLevel).writeAttribute('widgetInstanceId', widgetInstanceId);
       
       var levelPos = this.levelArray.indexOf(this.currLevel);
       for(var i = levelPos; i < this.levelArray.length; i++){
@@ -1125,7 +1128,8 @@ Massiveart.Navigation = Class.create({
 	
 	new Ajax.Updater('navlevel'+this.currLevel, '/../widget/'+widgetType+'/navigation/widgetnavigation', {
 	  parameters: {
-		currLevel: this.currLevel
+			currLevel: this.currLevel,
+			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId')
 	  },
 	  evalScripts: true,
 	  onComplete: function(){
