@@ -55,10 +55,31 @@ class NavigationHelper {
 		$this->core = Zend_Registry::get('Core');
 	}
 	
+	/**
+	 * getNavigationElements
+	 * @param $objRowset
+	 * @param $currLevel
+	 * @return string
+	 * @author Florian Mathis <flo@massiveart.com
+	 * @version 1.0
+	 */
 	public function getNavigationElements($objRowset, $currLevel) {
-		$this->core->logger->debug('widgets->blog->views->helpers->NavigationHelper->getNavigationElements('.$objRowset.', '.$currLevel.')');
+		$this->core->logger->debug('widgets->blog->views->helpers->NavigationHelper->getNavigationElements(objRowset, '.$currLevel.')');
+		$output = '';
+		$counter=1;
 		
-		return 'Blog!';
+		if(count($objRowset) > 0){
+      foreach ($objRowset as $objRow){  
+				$output .= '<div id="'.$objRow->id.'" class="blog">
+            <div class="icon img_blog_on"></div>
+            <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_blog_'.$objRow->id.'" id="pos_blog_'.$objRow->id.'" value="'.$counter.'" onfocus="return false;" /></div>
+            <div class="title italic" onclick="return false;">'.htmlentities($objRow->w_blog_articletitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+          </div>';
+				$counter++;
+			}
+		}
+		
+		return $output;
 	}
 }
 ?>
