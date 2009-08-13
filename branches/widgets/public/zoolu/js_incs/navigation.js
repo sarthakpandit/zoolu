@@ -24,6 +24,7 @@ Massiveart.Navigation = Class.create({
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
     this.constRequestChildNav = '/zoolu/cms/navigation/childnavigation';
+    this.constRequestWidgetNav = '/../widget/%WIDGET%/navigation/widgetnavigation';
     
     this.rootLevelId = 0;
     this.preSelectedPortal;
@@ -508,17 +509,22 @@ Massiveart.Navigation = Class.create({
     
     if($('elementType') && $F('elementType') != '') elementType = $F('elementType');
     if($('id') && $F('id')) elementId = $F('id');
-     
+    else if($('instanceId') && $F('instanceId')) elementId = $F('instanceId');
+    
     var strAjaxAction = '';
     var strParams = '';
-		if(parentId != '' && parentId > 0){
+    	if(elementType == 'widget') {
+    	  strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
+    	  strParams = 'currLevel='+currLevel+'&instanceId='+elementId;
+    	}
+    	else if(parentId != '' && parentId > 0){
 		  strAjaxAction = this.constRequestChildNav;
 		  strParams = 'currLevel='+currLevel+'&folderId='+parentId;
 		} else {
 		  strAjaxAction = this.constRequestRootNav;
 		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
 		}
-    
+    	
     if(strParams != '' && strAjaxAction != ''){      
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
 	      parameters: strParams,      
@@ -1126,7 +1132,7 @@ Massiveart.Navigation = Class.create({
       }
     }
 	
-	new Ajax.Updater('navlevel'+this.currLevel, '/../widget/'+widgetType+'/navigation/widgetnavigation', {
+	new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
 	  parameters: {
 			currLevel: this.currLevel,
 			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId')

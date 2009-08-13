@@ -70,9 +70,9 @@
       <adapter>Pdo_Mysql</adapter>
       <params>
         <host>localhost</host>
-        <username>widgets</username>
-        <password>widgets</password>
-        <dbname>widgets</dbname>
+        <username>zoolu</username>
+        <password>zoolu</password>
+        <dbname>zoolu</dbname>
       </params>
     </database>
     
@@ -558,7 +558,7 @@
     
   	<!-- Application Keys -->
   	<key>
-    	<gmaps>ABQIAAAA-HDjFpqTqvSFv3M3yKNuPhTQePH1hJYylhmdxtEdWXIvlpOLiRTMVuvYuc2BctQENanfjZnk_-buzw</gmaps>
+    	<gmaps>ABQIAAAAYd6HpKB1Vfqec8cb_5YrlhRtA2_S2kiI47KJ4sJy_X22ETSKqBTcMnbqrvhiPT2Y5ziNW3jseAb6Ig</gmaps>
   	</key>
   </production>
 
