@@ -184,7 +184,7 @@ class Model_Widgets {
 		$objSelect->setIntegrityCheck(false);
 		$objSelect->from($this->objWidgetsTable, array('name'));
 		$objSelect->join('widgetInstances', 'widgetInstances.idWidgets = widgets.id');
-		$objSelect->where('widgetInstances.widgetInstancesId = ?', $strWidgetInstanceId);
+		$objSelect->where('widgetInstances.widgetInstanceId = ?', $strWidgetInstanceId);
 		
 		return $this->objWidgetsTable->fetchRow($objSelect);
 	}

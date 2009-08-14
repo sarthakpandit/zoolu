@@ -73,12 +73,22 @@ class Model_Blog {
 	public function getBlogEntries($strWidgetInstanceId, $intCount=5) {
 		$objSelectForm = $this->getBlogEntriesTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntries, array('id', 'w_blog_articletitle'));
+		$objSelectForm->from($this->objBlogEntries, array('id', 'title'));
 		$objSelectForm->where("widgetInstanceId=?",$strWidgetInstanceId);
 		$objSelectForm->limit($intCount,0);
 		
 		return $this->objBlogEntries->fetchAll($objSelectForm);
 	}
+	
+ /**
+   * addBlogEntry
+   * @return number The new Id
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function addBlogEntry($arrValues) {
+    return $this->getBlogEntriesTable()->insert($arrValues);
+  }
 	
 	/**
    * getBlogEntriesTable

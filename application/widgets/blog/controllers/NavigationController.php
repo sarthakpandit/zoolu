@@ -46,15 +46,27 @@ class Blog_NavigationController extends AuthControllerAction {
 	protected $objModelBlog;
 	
 	/**
+   * @var Model_Widgets
+   */
+  protected $objModelWidgets;
+	
+	/**
 	 * navigationAction
 	 * @author Daniel Rotter <daniel.rotter@gmail.com>
 	 * @version 1.0
 	 */
 	public function widgetnavigationAction() {
 		$this->core->logger->debug('widgets->blog->controllers->NavigationController->widgetnavigationAction()');
-		
-		$this->view->assign('currLevel', $this->getRequest()->getParam('currLevel'));
-		$this->view->assign('childElements', $this->getModelBlog()->getBlogEntries($this->getRequest()->getParam('instanceId')));
+
+    $this->view->assign('currLevel', $this->getRequest()->getParam('currLevel'));
+    $this->view->assign('childElements', $this->getModelBlog()->getBlogEntries($this->getRequest()->getParam('instanceId')));
+    $this->view->assign('widgetName', 'blog');
+    $this->view->assign('parentId', $this->getRequest()->getParam('idWidgetInstances'));
+    $this->view->assign('widgetInstanceId', $this->getRequest()->getParam('instanceId'));
+    
+    //Get widgetId
+    $objRow = $this->getModelWidgets()->getWidgetByWidgetInstanceId($this->getRequest()->getParam('instanceId'));
+    $this->view->assign('widgetId', $objRow->id);
 	}
 	
 	/**
@@ -74,6 +86,25 @@ class Blog_NavigationController extends AuthControllerAction {
     }
     
     return $this->objModelBlog;
+  }
+  
+  /**
+   * getModelWidgets
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelWidgets(){
+    if (null === $this->objModelWidgets) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it 
+       * from its modules path location.
+       */ 
+      require_once GLOBAL_ROOT_PATH.'/application/zoolu/modules/cms/models/Widgets.php';
+      $this->objModelWidgets = new Model_Widgets();
+    }
+    
+    return $this->objModelWidgets;
   }
 }
 ?>

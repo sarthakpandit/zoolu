@@ -21,6 +21,7 @@ Massiveart.Navigation = Class.create({
     this.constPage = 'page';
     this.constStartPage = 'startpage';
     this.constWidget = 'widget';
+    this.constSubWidget = 'subWidget';
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
     this.constRequestChildNav = '/zoolu/cms/navigation/childnavigation';
@@ -807,6 +808,42 @@ Massiveart.Navigation = Class.create({
   },
   
   /**
+   * addSubWidgetForm
+   */
+  addSubWidgetForm: function(widgetName, currLevel, parentId, widgetId, widgetInstanceId){
+	$('buttondelete').hide();
+	this.showFormContainer();
+	$(this.genFormContainer).innerHTML = '';
+	$('divWidgetMetaInfos').innerHTML = '';
+	
+	$(this.genFormContainer).show();
+	$(this.genFormSaveContainer).show();
+	
+	myCore.addBusyClass(this.genFormContainer);
+	myCore.addBusyClass('divWidgetMetaInfos');
+	
+	
+	var strAjaxAction = '/../widget/%WIDGET%/form/getaddsubwidgetform';
+	strAjaxAction = strAjaxAction.replace(/%WIDGET%/, widgetName);
+
+	new Ajax.Updater('genFormContainer', strAjaxAction, {
+	  parameters: {
+		currLevel: currLevel,
+		parentId: parentId,
+		idWidget: widgetId,
+		widgetInstanceId: widgetInstanceId,
+		rootLevelId: this.rootLevelId
+	  },
+	  evalScripts: true,
+	  onComplete: function() {
+		myForm.writeMetaInfos();
+	    myCore.removeBusyClass('divWidgetMetaInfos');
+	    myCore.removeBusyClass('genFormContainer'); 
+	  }.bind(this)
+	})
+  },
+  
+  /**
    * addStartPage
    * @param integer currLevel
    */
@@ -1135,7 +1172,8 @@ Massiveart.Navigation = Class.create({
 	new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
 	  parameters: {
 			currLevel: this.currLevel,
-			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId')
+			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
+			idWidgetInstances: itemId
 	  },
 	  evalScripts: true,
 	  onComplete: function(){

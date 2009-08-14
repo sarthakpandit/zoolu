@@ -79,49 +79,43 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 					/**
 					 * WidgetInstanceId is empty, add Widget itself
 					 */
-					if($this->setup->getWidgetInstanceId() == '') {
-						$strWidgetId = uniqid();
-						$intWidgetVersion = 1;
-						$intSortPosition = GenericSetup::DEFAULT_SORT_POSITION;
-						
-						/**
-						 * check if parent element is rootlevel or folder
-						 */
-				    if($this->setup->getParentId() != '' && $this->setup->getParentId() > 0){
-	            if($this->setup->getParentTypeId() == '') $this->setup->setParentTypeId($this->core->sysConfig->parent_types->folder);
-	            $objNaviData = $this->getModelFolders()->loadChildNavigation($this->setup->getParentId());
-	          }else{
-	            if($this->setup->getRootLevelId() != '' && $this->setup->getRootLevelId() > 0){
-	              $this->setup->setParentId($this->setup->getRootLevelId());
-	            }else{
-	              $this->core->logger->err('massiveart->generic->data->GenericDataTypeWidget->save(): intRootLevelId is empty!');
-	            }
-	            $this->setup->setParentTypeId($this->core->sysConfig->parent_types->rootlevel);
-	            $objNaviData = $this->getModelFolders()->loadRootNavigation($this->setup->getRootLevelId());
-	          }
-	          $intSortPosition = count($objNaviData);
-	
-	          $this->core->logger->debug('$this->setup->getParentId(): '.$this->setup->getParentId());
-	          $arrMainData = array( 'idGenericForms'  => $this->setup->getGenFormId(),
-	                                'sortPosition'    => $intSortPosition,
-	                                'idParent'        => $this->setup->getParentId(),
-	                                'idParentTypes'   => $this->setup->getParentTypeId(),
-	                                'created'         => date('Y-m-d H:i:s'),
-	                                'idStatus'        => $this->setup->getStatusId(),
-	                                'sortTimestamp'   => date('Y-m-d H:i:s'),
-	                                'creator'         => $this->setup->getCreatorId(),
-	                                'idWidgets'       => $this->setup->getElementTypeId(),
-	                                'widgetInstanceId'=> $strWidgetId,
-	                                'version'         => $intWidgetVersion);
-	          
-	          $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
-	          
-	          $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
-	          //$this->insertInstanceData('widgetInstance',  array('Id' => $strWidgetId, 'Version' => $intWidgetVersion));
-					} else {
-						$intWidgetVersion = 1;
-						$this->insertInstanceData('widgetInstance',  array('Id' => $this->setup->getWidgetInstanceId(), 'Version' => $intWidgetVersion));
-					}
+					$strWidgetId = uniqid();
+					$intWidgetVersion = 1;
+					$intSortPosition = GenericSetup::DEFAULT_SORT_POSITION;
+					
+					/**
+					 * check if parent element is rootlevel or folder
+					 */
+			    if($this->setup->getParentId() != '' && $this->setup->getParentId() > 0){
+            if($this->setup->getParentTypeId() == '') $this->setup->setParentTypeId($this->core->sysConfig->parent_types->folder);
+            $objNaviData = $this->getModelFolders()->loadChildNavigation($this->setup->getParentId());
+          }else{
+            if($this->setup->getRootLevelId() != '' && $this->setup->getRootLevelId() > 0){
+              $this->setup->setParentId($this->setup->getRootLevelId());
+            }else{
+              $this->core->logger->err('massiveart->generic->data->GenericDataTypeWidget->save(): intRootLevelId is empty!');
+            }
+            $this->setup->setParentTypeId($this->core->sysConfig->parent_types->rootlevel);
+            $objNaviData = $this->getModelFolders()->loadRootNavigation($this->setup->getRootLevelId());
+          }
+          $intSortPosition = count($objNaviData);
+
+          $this->core->logger->debug('$this->setup->getParentId(): '.$this->setup->getParentId());
+          $arrMainData = array( 'idGenericForms'  => $this->setup->getGenFormId(),
+                                'sortPosition'    => $intSortPosition,
+                                'idParent'        => $this->setup->getParentId(),
+                                'idParentTypes'   => $this->setup->getParentTypeId(),
+                                'created'         => date('Y-m-d H:i:s'),
+                                'idStatus'        => $this->setup->getStatusId(),
+                                'sortTimestamp'   => date('Y-m-d H:i:s'),
+                                'creator'         => $this->setup->getCreatorId(),
+                                'idWidgets'       => $this->setup->getElementTypeId(),
+                                'widgetInstanceId'=> $strWidgetId,
+                                'version'         => $intWidgetVersion);
+          
+          $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
+          
+          $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
           break;
         case $this->core->sysConfig->generic->actions->edit:
           $objSelect = $this->objModelWidgets->getWidgetInstancesTable()->select();
