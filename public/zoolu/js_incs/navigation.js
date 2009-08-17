@@ -515,12 +515,12 @@ Massiveart.Navigation = Class.create({
    var strAjaxAction = '';
    var strParams = '';
    if(parentId != '' && parentId > 0){
-   strAjaxAction = this.constRequestChildNav;
-   strParams = 'currLevel='+currLevel+'&folderId='+parentId;
- } else {
-   strAjaxAction = this.constRequestRootNav;
-   strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
- }
+	   strAjaxAction = this.constRequestChildNav;
+	   strParams = 'currLevel='+currLevel+'&folderId='+parentId;
+	 } else {
+	   strAjaxAction = this.constRequestRootNav;
+	   strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
+	 }
    
    if(strParams != '' && strAjaxAction != ''){      
      new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
@@ -575,10 +575,10 @@ Massiveart.Navigation = Class.create({
       
       // Add new Level
       if(this.levelArray.indexOf(currLevel) == -1){
-      this.levelArray.push(currLevel);
-       var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
-       new Insertion.Bottom('divNaviCenterInner', levelContainer);
-     }
+      	this.levelArray.push(currLevel);
+      	var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
+      	new Insertion.Bottom('divNaviCenterInner', levelContainer);
+      }
       
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
         parameters: strParams,      
