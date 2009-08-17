@@ -117,6 +117,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
           
           $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
           break;
+          
         case $this->core->sysConfig->generic->actions->edit:
           $objSelect = $this->objModelWidgets->getWidgetInstancesTable()->select();
           $objSelect->from('widgetInstances', array('widgetInstanceId', 'version'));
