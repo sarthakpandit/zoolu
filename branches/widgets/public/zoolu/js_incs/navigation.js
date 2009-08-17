@@ -489,107 +489,107 @@ Massiveart.Navigation = Class.create({
    * updateNavigationLevel
    * @param integer level, integer parentItemId
    */
-  updateNavigationLevel: function(level, parentItemId){
-    
-    var elementId;
-    var currLevel;
-    var parentId;
-    var elementType = '';
-    
-    if(typeof(level) != 'undefined' && level != ''){ 
-      currLevel = level;
-    }else{
-      if($('currLevel')) currLevel = $F('currLevel');
-    }
-    
-    if(typeof(parentItemId) != 'undefined' && parentItemId != ''){
-      parentId = parentItemId;
-    }else{
-      if($('parentFolderId')) parentId = $F('parentFolderId');
-    }
-    
-    if($('elementType') && $F('elementType') != '') elementType = $F('elementType');
-    if($('id') && $F('id')) elementId = $F('id');
-    else if($('instanceId') && $F('instanceId')) elementId = $F('instanceId');
+ updateNavigationLevel: function(level, parentItemId){
+   
+   var elementId;
+   var currLevel;
+   var parentId;
+   var elementType = '';
+   
+   if(typeof(level) != 'undefined' && level != ''){ 
+     currLevel = level;
+   }else{
+     if($('currLevel')) currLevel = $F('currLevel');
+   }
+   
+   if(typeof(parentItemId) != 'undefined' && parentItemId != ''){
+     parentId = parentItemId;
+   }else{
+     if($('parentFolderId')) parentId = $F('parentFolderId');
+   }
+   
+   if($('elementType') && $F('elementType') != '') elementType = $F('elementType');
+   if($('id') && $F('id')) elementId = $F('id');
+   else if($('instanceId') && $F('instanceId')) elementId = $F('instanceId');
 
-    var strAjaxAction = '';
-    var strParams = '';
-    if(parentId != '' && parentId > 0){
-		  strAjaxAction = this.constRequestChildNav;
-		  strParams = 'currLevel='+currLevel+'&folderId='+parentId;
-		} else {
-		  strAjaxAction = this.constRequestRootNav;
-		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
-		}
-    
-    if(strParams != '' && strAjaxAction != ''){      
-      new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
-	      parameters: strParams,      
-	      evalScripts: true,     
-	      onComplete: function() {       
-	        new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'});
-          
-          if(elementType != '' && elementId != '' && $(elementType+elementId)){ 
-            if(this.navigation[currLevel]){
-              this.makeDeselected(this.navigation[currLevel]);
-            }    
-            this.navigation[currLevel] = elementType+elementId;
-				    
-				    if(this.navigation.length > 0){      
-				      for(var i = 1; i <= this.navigation.length-1; i++){
-				        if(this.navigation[i] != elementType+elementId){
-				          if(currLevel < i){
-				            this.makeDeselected(this.navigation[i]);
-				          }else{
-				            this.makeParentSelected(this.navigation[i]);
-				          }
-				        }else{
-				          this.makeSelected(this.navigation[currLevel]);
-				        }   
-				      } 
-				    }				    
-				    if(this.levelArray.indexOf(currLevel) != -1 && elType == this.constPage){
-				      var levelPos = this.levelArray.indexOf(currLevel)+1;
-				      for(var i = levelPos; i < this.levelArray.length; i++){
-				        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
-				      }
-				    }				    
-				    if(elementType == this.constFolder){
-              this.selectItem();
-            } 
-          }
-                             
-	        this.initFolderHover();
-	        this.initWidgetHover();
-	        this.initPageHover();
-	        this.initAddMenuHover();    
-	      }.bind(this)
-	    });      
+   var strAjaxAction = '';
+   var strParams = '';
+   if(parentId != '' && parentId > 0){
+   strAjaxAction = this.constRequestChildNav;
+   strParams = 'currLevel='+currLevel+'&folderId='+parentId;
+ } else {
+   strAjaxAction = this.constRequestRootNav;
+   strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
+ }
+   
+   if(strParams != '' && strAjaxAction != ''){      
+     new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
+      parameters: strParams,      
+      evalScripts: true,     
+      onComplete: function() {       
+        new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'});
+         
+         if(elementType != '' && elementId != '' && $(elementType+elementId)){ 
+           if(this.navigation[currLevel]){
+             this.makeDeselected(this.navigation[currLevel]);
+           }    
+           this.navigation[currLevel] = elementType+elementId;
+       
+       if(this.navigation.length > 0){      
+         for(var i = 1; i <= this.navigation.length-1; i++){
+           if(this.navigation[i] != elementType+elementId){
+             if(currLevel < i){
+               this.makeDeselected(this.navigation[i]);
+             }else{
+               this.makeParentSelected(this.navigation[i]);
+             }
+           }else{
+             this.makeSelected(this.navigation[currLevel]);
+           }   
+         } 
+       }        
+       if(this.levelArray.indexOf(currLevel) != -1 && elType == this.constPage){
+         var levelPos = this.levelArray.indexOf(currLevel)+1;
+         for(var i = levelPos; i < this.levelArray.length; i++){
+           if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+         }
+       }        
+       if(elementType == this.constFolder){
+             this.selectItem();
+           } 
+         }
+                            
+        this.initFolderHover();
+        this.initWidgetHover();
+        this.initPageHover();
+        this.initAddMenuHover();    
+      }.bind(this)
+    });      
+     
+     // Update Widget Navigation
+     if(elementType == 'widget') {
+      currLevelOld=currLevel;
+      currLevel=Number(currLevel)+1;
+      strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
+      strParams = 'currLevel='+currLevel+'&instanceId='+elementId;
       
-      // Update Widget Navigation
-      if(elementType == 'widget') {
-      	currLevelOld=currLevel;
-      	currLevel=Number(currLevel)+1;
-    	  strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
-    	  strParams = 'currLevel='+currLevel+'&instanceId='+elementId;
-    	  
-    	  // Add new Level
-    	  if(this.levelArray.indexOf(currLevel) == -1){
-  	  		this.levelArray.push(currLevel);
-  	  	  var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
-  	  	  new Insertion.Bottom('divNaviCenterInner', levelContainer);
-  	  	}
-    	  
-    	  new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
-  	      parameters: strParams,      
-  	      evalScripts: true,     
-  	      onComplete: function() { 
-  	        //new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'}); 
-  	      }.bind(this)
-  	    }); 
-      }
-    }  
-  },
+      // Add new Level
+      if(this.levelArray.indexOf(currLevel) == -1){
+      this.levelArray.push(currLevel);
+       var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
+       new Insertion.Bottom('divNaviCenterInner', levelContainer);
+     }
+      
+      new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
+        parameters: strParams,      
+        evalScripts: true,     
+        onComplete: function() { 
+          //new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'}); 
+        }.bind(this)
+      }); 
+     }
+   }  
+ },
   
   /**
    * updateSortPosition
@@ -981,6 +981,80 @@ Massiveart.Navigation = Class.create({
 		    myForm.loadContactFieldsContent();     
 		  }.bind(this)
 		});
+  },
+  
+  /**
+   * editSubWidgetForm
+   * @param integer widgetInstanceId
+   */
+  editSubWidgetForm: function(subWidgetId, widgetName) {
+	  $(this.genFormContainer).innerHTML = '';
+	  $('divWidgetMetaInfos').innerHTML = '';
+	  // hide media container
+	  if($('divMediaContainer')) $('divMediaContainer').hide();
+	  
+	  var element = this.constSubWidget+subWidgetId;
+	  this.currItemId = subWidgetId;
+	  
+	  var elType = this.constSubWidget;
+  	  var currLevel = 0;
+	  currLevel = parseInt($(element).up().id.substr(5)); 
+	
+	  if(this.navigation[currLevel]){
+        this.makeDeselected(this.navigation[currLevel]);
+      }    
+      this.navigation[currLevel] = element;
+    
+      if(this.navigation.length > 0){      
+        for(var i = 1; i <= this.navigation.length-1; i++){
+          if(this.navigation[i] != element){
+            if(currLevel < i){
+              this.makeDeselected(this.navigation[i]);
+            }else{
+              this.makeParentSelected(this.navigation[i]);
+            }
+          }else{
+            this.makeSelected(this.navigation[currLevel]);
+          }   
+        } 
+      }
+    
+      if(this.levelArray.indexOf(currLevel) != -1 && elType == this.constPage){
+        var levelPos = this.levelArray.indexOf(currLevel)+1;
+        for(var i = levelPos; i < this.levelArray.length; i++){
+          if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+        }
+        $('divFolderRapper').hide();
+      }
+    
+      this.showFormContainer();
+
+      if($(element).down('.icon').className.indexOf(this.constStartPage) == -1){
+        $('buttondelete').show();
+      }else{
+        $('buttondelete').hide();
+      }
+    
+      $(this.genFormContainer).show();
+      $(this.genFormSaveContainer).show();    
+    
+      myCore.addBusyClass(this.genFormContainer);
+      myCore.addBusyClass('divWidgetMetaInfos');
+      
+      var strAjaxAction = '/../widget/%WIDGET%/form/geteditsubwidgetform';
+      strAjaxAction = strAjaxAction.replace(/%WIDGET%/, widgetName)
+      
+      new Ajax.Updater('genFormContainer', strAjaxAction,{
+    	parameters: {
+    	  subWidgetId: subWidgetId
+        },
+        evalScripts: true,
+        onComplete: function() {
+          myForm.writeMetaInfos();
+    	  myCore.removeBusyClass('divWidgetMetaInfos');
+          myCore.removeBusyClass(this.genFormContainer);
+        }.bind(this)
+      });
   },
   
   /**

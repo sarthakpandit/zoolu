@@ -89,6 +89,23 @@ class Model_Blog {
   public function addBlogEntry($arrValues) {
     return $this->getBlogEntriesTable()->insert($arrValues);
   }
+  
+  /**
+   * getBlogEntry
+   * @param integer $intBlogEntryId
+   * @return array
+   * @author Daniel Rotter
+   * @version 1.0
+   */
+  public function getBlogEntry($intBlogEntryId) {
+  	$objSelect = $this->getBlogEntriesTable()->select();
+  	$objSelect->setIntegrityCheck(false);
+  	$objSelect->from($this->objBlogEntries, array('id', 'widgetInstanceId', 'title', 'text'));
+  	$objSelect->where('id = ?', $intBlogEntryId);
+  	$objSelect->limit(1);
+  	
+  	return $this->objBlogEntries->fetchAll($objSelect)->toArray();
+  }
 	
 	/**
    * getBlogEntriesTable

@@ -8,7 +8,7 @@ $objHelper = new NavigationHelper();
 								<div class="title" onclick="myNavigation.getEditForm(22,'widget','W_BLOG_DEFAULT',1,2); return false;">Aktuelle Artikel</div>
 							</div>
 							<div class="linegray"></div>
-              <?php echo $objHelper->getNavigationElements($this->childElements, $this->currLevel); ?>
+              <?php echo $objHelper->getNavigationElements($this->childElements, $this->currLevel, $this->widgetName); ?>
             </div>
             
             <div id="levelmenu<?php echo $this->currLevel; ?>" class="levelmenu" style="display:none;" onclick="myNavigation.showAddMenu(<?php echo $this->currLevel; ?>); return false;" onmouseover="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'show');return false;">

@@ -131,15 +131,23 @@ class Blog_FormController extends AuthControllerAction {
 		}
 	}
 	
-	public function getsubwidgeteditformAction() {
+	/**
+	 * getsubwidgeteditformAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function geteditsubwidgetformAction() {
 		$this->core->logger->debug('widgets->blog->FormController->getsubwidgeteditformAction()');
 		
 		try {
 			$this->getForm($this->core->sysConfig->generic->actions->edit);
-			
-			$this->objForm->loadFormData();
+
+			$arrData = $this->getModelBlog()->getBlogEntry($this->objRequest->getParam('subWidgetId'));
+
+			$this->objForm->Setup()->setFieldValues($arrData);
 			$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 			$this->objForm->prepareForm();
+			$this->objForm->Setup()->setElementId($arrData['id']);
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
       
       $this->setViewMetaInfos();
