@@ -150,7 +150,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 		}
 	}
 	
-/**
+	/**
    * load
    * @author Daniel Rotter <daniel.rotter@massiveart.com>
    * @version 1.0
@@ -163,10 +163,10 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
     if(count($objWidgetsData) > 0) {
       $objWidgetData = $objWidgetsData->current();
       
-//      $this->setup->setMetaInformation($objWidgetData);
-//      $this->setup->setElementTypeId($objWidgetData->idPageTypes);
-//      $this->setup->setIsStartPage($objWidgetData->isStartPage);
-//      $this->setup->setParentTypeId($objWidgetData->idParentTypes);
+			// $this->setup->setMetaInformation($objWidgetData);
+			// $this->setup->setElementTypeId($objWidgetData->idPageTypes);
+			// $this->setup->setIsStartPage($objWidgetData->isStartPage);
+			// $this->setup->setParentTypeId($objWidgetData->idParentTypes);
       
       foreach($this->Setup()->CoreFields() as $strField => $objField) {
         $objGenTable = $this->getModelGenericData()->getGenericTable('widgetInstance'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));

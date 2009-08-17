@@ -423,12 +423,12 @@ Massiveart.Navigation = Class.create({
    * updateCurrentWidget
    */
   updateCurrentWidget: function() {
-	this.widgetId = this.currItemId; 
-	this.type = 'widget';
-	if($('divFolderRapper')){
-	  $('divFolderRapper').show();
-	  $('aFolderTitle').innerHTML = $('divNavigationTitle_widget'+this.widgetId).innerHTML;
-	}
+		this.widgetId = this.currItemId; 
+		this.type = 'widget';
+		if($('divFolderRapper')){
+		  $('divFolderRapper').show();
+		  $('aFolderTitle').innerHTML = $('divNavigationTitle_widget'+this.widgetId).innerHTML;
+		}
   },
   
   /**
@@ -511,21 +511,17 @@ Massiveart.Navigation = Class.create({
     if($('elementType') && $F('elementType') != '') elementType = $F('elementType');
     if($('id') && $F('id')) elementId = $F('id');
     else if($('instanceId') && $F('instanceId')) elementId = $F('instanceId');
-    
+
     var strAjaxAction = '';
     var strParams = '';
-    	if(elementType == 'widget') {
-    	  strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
-    	  strParams = 'currLevel='+currLevel+'&instanceId='+elementId;
-    	}
-    	else if(parentId != '' && parentId > 0){
+    if(parentId != '' && parentId > 0){
 		  strAjaxAction = this.constRequestChildNav;
 		  strParams = 'currLevel='+currLevel+'&folderId='+parentId;
 		} else {
 		  strAjaxAction = this.constRequestRootNav;
 		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
 		}
-    	
+    
     if(strParams != '' && strAjaxAction != ''){      
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
 	      parameters: strParams,      
@@ -568,7 +564,30 @@ Massiveart.Navigation = Class.create({
 	        this.initPageHover();
 	        this.initAddMenuHover();    
 	      }.bind(this)
-	    });       
+	    });      
+      
+      // Update Widget Navigation
+      if(elementType == 'widget') {
+      	currLevelOld=currLevel;
+      	currLevel=Number(currLevel)+1;
+    	  strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
+    	  strParams = 'currLevel='+currLevel+'&instanceId='+elementId;
+    	  
+    	  // Add new Level
+    	  if(this.levelArray.indexOf(currLevel) == -1){
+  	  		this.levelArray.push(currLevel);
+  	  	  var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
+  	  	  new Insertion.Bottom('divNaviCenterInner', levelContainer);
+  	  	}
+    	  
+    	  new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
+  	      parameters: strParams,      
+  	      evalScripts: true,     
+  	      onComplete: function() { 
+  	        //new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'}); 
+  	      }.bind(this)
+  	    }); 
+      }
     }  
   },
   
@@ -887,19 +906,19 @@ Massiveart.Navigation = Class.create({
    * @param integer widgetInstanceId, integer widgetId, integer formId, integer version
    */
   getWidgetEditForm: function(widgetInstanceId, widgetId, formId, version) {
-	$(this.genFormContainer).innerHTML = '';
-	$('divWidgetMetaInfos').innerHTML = '';
-	// hide media container
-	if($('divMediaContainer')) $('divMediaContainer').hide();
-	
-	var element = this.constWidget+widgetInstanceId;
-	this.currItemId = widgetInstanceId;
-	
-	var elType = this.constWidget;
-	var currLevel = 0;
-	currLevel = parseInt($(element).up().id.substr(5)); 
-	
-	if(this.navigation[currLevel]){
+		$(this.genFormContainer).innerHTML = '';
+		$('divWidgetMetaInfos').innerHTML = '';
+		// hide media container
+		if($('divMediaContainer')) $('divMediaContainer').hide();
+		
+		var element = this.constWidget+widgetInstanceId;
+		this.currItemId = widgetInstanceId;
+		
+		var elType = this.constWidget;
+		var currLevel = 0;
+		currLevel = parseInt($(element).up().id.substr(5)); 
+		
+		if(this.navigation[currLevel]){
       this.makeDeselected(this.navigation[currLevel]);
     }    
     this.navigation[currLevel] = element;
@@ -941,27 +960,27 @@ Massiveart.Navigation = Class.create({
     myCore.addBusyClass('divWidgetMetaInfos');
     
     new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
-	  parameters: { 
-    	parentFolderId: $('navlevel' + currLevel).readAttribute('parentid'),
-		idWidget: widgetId,
-		currLevel: currLevel,
-		rootLevelId: this.rootLevelId,
-		idWidgetInstance: widgetInstanceId,
-		formId: formId
-	  },      
-	  evalScripts: true,     
-	  onComplete: function() {
-	    myForm.writeMetaInfos();
-	    myCore.removeBusyClass('divWidgetMetaInfos');
-	    myCore.removeBusyClass(this.genFormContainer);
-	    // load medias
-	    myForm.loadFileFieldsContent('media');
-	    // load documents
-	    myForm.loadFileFieldsContent('document');		
-	    // load contacts
-	    myForm.loadContactFieldsContent();     
-	  }.bind(this)
-	});
+		  parameters: { 
+	    	parentFolderId: $('navlevel' + currLevel).readAttribute('parentid'),
+				idWidget: widgetId,
+				currLevel: currLevel,
+				rootLevelId: this.rootLevelId,
+				idWidgetInstance: widgetInstanceId,
+				formId: formId
+		  },      
+		  evalScripts: true,     
+		  onComplete: function() {
+		    myForm.writeMetaInfos();
+		    myCore.removeBusyClass('divWidgetMetaInfos');
+		    myCore.removeBusyClass(this.genFormContainer);
+		    // load medias
+		    myForm.loadFileFieldsContent('media');
+		    // load documents
+		    myForm.loadFileFieldsContent('document');		
+		    // load contacts
+		    myForm.loadContactFieldsContent();     
+		  }.bind(this)
+		});
   },
   
   /**
@@ -1060,87 +1079,21 @@ Massiveart.Navigation = Class.create({
      });
   },
   
-//  /**
-//   * selectWidgetItem
-//   * @param integer widgetInstanceId, integer widgetId
-//   */
-//  selectWidgetItem: function(widgetInstanceId, widgetId){
-//	$(this.genFormContainer).innerHTML = '';
-//    $('divWidgetMetaInfos').innerHTML = '';
-//    // hide media container
-//    if($('divMediaContainer')) $('divMediaContainer').hide();  
-//    
-//    var element = 'widget'+widgetInstanceId;
-//    this.currItemId = widgetInstanceId;
-//    
-//    var currLevel = 0;
-//    // e.g. level1 - cut level to get currLevel number
-//    currLevel = parseInt($(element).up().id.substr(5)); 
-//        
-//    if(this.navigation[currLevel]){
-//      this.makeDeselected(this.navigation[currLevel]);
-//    }    
-//    this.navigation[currLevel] = element;
-//    
-//    if(this.navigation.length > 0){      
-//      for(var i = 1; i <= this.navigation.length-1; i++){
-//        if(this.navigation[i] != element){
-//          if(currLevel < i){
-//            this.makeDeselected(this.navigation[i]);
-//          }else{
-//            this.makeParentSelected(this.navigation[i]);
-//          }
-//        }else{
-//          this.makeSelected(this.navigation[currLevel]);
-//        }   
-//      } 
-//    }
-//    
-//    if(this.levelArray.indexOf(currLevel) != -1){
-//      var levelPos = this.levelArray.indexOf(currLevel)+1;
-//      for(var i = levelPos; i < this.levelArray.length; i++){
-//        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
-//      }
-//      $('divFolderRapper').hide();
-//    }
-//    
-//    $(this.genFormContainer).show();
-//    $(this.genFormSaveContainer).show();
-//    
-//    if($(element).down('.icon').className.indexOf(this.constStartPage) == -1){
-//      $('buttondelete').show();
-//	}else{
-//	  $('buttondelete').hide();
-//	}
-//    
-//	myCore.addBusyClass(this.genFormContainer);
-//	myCore.addBusyClass('divWidgetMetaInfos');
-//	new Ajax.Updater('genFormContainer', '/zoolu/cms/widget/geteditform', {
-//	  parameters: {
-//		idWidgetInstance: widgetInstanceId,
-//		idWidget: widgetId
-//	  },
-//	  evalScripts: true,
-//	  onComplete: function(){
-//		myForm.writeMetaInfos();
-//		myCore.removeBusyClass('divWidgetMetaInfos');
-//        myCore.removeBusyClass(this.genFormContainer);
-//	  }.bind(this)
-//	});
-//  },
-  
+  /**
+   * selectWidgetItem
+   * @param integer parentLevel, string widgetType, integer itemId, string widgetInstanceId
+   */  
   selectWidgetItem: function(parentLevel, widgetType, itemId, widgetInstanceId){
-	this.currLevel = parentLevel + 1;
-	var element = 'widget'+itemId;
-
-	this.currItemId = itemId;
-	
-	if(this.navigation[parentLevel]){
-      this.makeDeselected(this.navigation[parentLevel]);
-    }
-    
-    this.navigation[parentLevel] = element;
-    
+		this.currLevel = parentLevel + 1;
+		var element = 'widget'+itemId;
+		this.currItemId = itemId;
+		
+		if(this.navigation[parentLevel]){
+	    this.makeDeselected(this.navigation[parentLevel]);
+	  }
+	    
+	  this.navigation[parentLevel] = element;
+	    
     if(this.navigation.length > 0){    
       for(var i = 1; i <= this.navigation.length-1; i++){
         if(this.navigation[i] != element){
@@ -1152,41 +1105,41 @@ Massiveart.Navigation = Class.create({
     }
     
     this.setParentFolderId(itemId);
-	
-	if(this.levelArray.indexOf(this.currLevel) == -1){
-	  this.levelArray.push(this.currLevel);
-	  
-	  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" widgetInstanceId="'+widgetInstanceId+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
-	  new Insertion.Bottom('divNaviCenterInner', levelContainer);
-	}else{
-      myCore.addBusyClass('navlevel'+this.currLevel);   
-      $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
-      $('navlevel'+this.currLevel).writeAttribute('widgetInstanceId', widgetInstanceId);
-      
-      var levelPos = this.levelArray.indexOf(this.currLevel);
-      for(var i = levelPos; i < this.levelArray.length; i++){
-        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
-      }
-    }
-	
-	new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
-	  parameters: {
-			currLevel: this.currLevel,
-			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
-			idWidgetInstances: itemId
-	  },
-	  evalScripts: true,
-	  onComplete: function(){
-		myCore.removeBusyClass('navlevel'+this.currLevel);
-		this.initFolderHover();
-		this.initPageHover();
-        this.initAddMenuHover();
-        this.initWidgetHover();
-        
-        this.scrollNavigationBar();
-		this.updateCurrentWidget();
-	  }.bind(this)
-	});
+		
+		if(this.levelArray.indexOf(this.currLevel) == -1){
+		  this.levelArray.push(this.currLevel);
+		  
+		  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" widgetInstanceId="'+widgetInstanceId+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+		  new Insertion.Bottom('divNaviCenterInner', levelContainer);
+		}else{
+	      myCore.addBusyClass('navlevel'+this.currLevel);   
+	      $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
+	      $('navlevel'+this.currLevel).writeAttribute('widgetInstanceId', widgetInstanceId);
+	      
+	      var levelPos = this.levelArray.indexOf(this.currLevel);
+	      for(var i = levelPos; i < this.levelArray.length; i++){
+	        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+	      }
+	    }
+		
+		new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
+		  parameters: {
+				currLevel: this.currLevel,
+				instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
+				idWidgetInstances: itemId
+		  },
+		  evalScripts: true,
+		  onComplete: function(){
+		  	myCore.removeBusyClass('navlevel'+this.currLevel);
+		  	this.initFolderHover();
+		  	this.initPageHover();
+	      this.initAddMenuHover();
+	      this.initWidgetHover();
+	        
+	      this.scrollNavigationBar();
+	      this.updateCurrentWidget();
+		  }.bind(this)
+		});
   },
   
   /**
