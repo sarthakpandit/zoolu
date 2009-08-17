@@ -63,17 +63,17 @@ class NavigationHelper {
 	 * @author Florian Mathis <flo@massiveart.com
 	 * @version 1.0
 	 */
-	public function getNavigationElements($objRowset, $currLevel) {
+	public function getNavigationElements($objRowset, $currLevel, $widgetName) {
 		$this->core->logger->debug('widgets->blog->views->helpers->NavigationHelper->getNavigationElements(objRowset, '.$currLevel.')');
 		$output = '';
 		$counter=1;
 		
 		if(count($objRowset) > 0){
       foreach ($objRowset as $objRow){  
-				$output .= '<div id="'.$objRow->id.'" class="blog">
+				$output .= '<div id="subWidget'.$objRow->id.'" class="blog">
             <div class="icon img_blog_on"></div>
             <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_blog_'.$objRow->id.'" id="pos_blog_'.$objRow->id.'" value="'.$counter.'" onfocus="return false;" /></div>
-            <div class="title italic" onclick="return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            <div class="title italic" onclick="myNavigation.editSubWidgetForm('.$objRow->id.', \''.$widgetName.'\'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
 				$counter++;
 			}
