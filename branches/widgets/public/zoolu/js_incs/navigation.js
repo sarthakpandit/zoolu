@@ -570,14 +570,23 @@ Massiveart.Navigation = Class.create({
      if(elementType == 'widget') {
       currLevelOld=currLevel;
       currLevel=Number(currLevel)+1;
+      
+      if($('widgetInstanceId').value != '') {
+      	widgetInstanceId = $('widgetInstanceId').value;
+      	currLevel=currLevelOld;
+      } else {
+      	widgetInstanceId = $('navlevel' + currLevel).readAttribute('widgetInstanceId');
+      }
       strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
-      strParams = 'currLevel='+currLevel+'&instanceId='+elementId;
+      strParams = 'currLevel='+currLevel+'&instanceId='+widgetInstanceId;
       
       // Add new Level
-      if(this.levelArray.indexOf(currLevel) == -1){
-      	this.levelArray.push(currLevel);
-      	var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
-      	new Insertion.Bottom('divNaviCenterInner', levelContainer);
+      if($('widgetInstanceId').value == '') {
+	      if(this.levelArray.indexOf(currLevel) == -1){
+	      	this.levelArray.push(currLevel);
+	      	var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
+	      	new Insertion.Bottom('divNaviCenterInner', levelContainer);
+	      }
       }
       
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
@@ -585,6 +594,10 @@ Massiveart.Navigation = Class.create({
         evalScripts: true,     
         onComplete: function() { 
           //new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'}); 
+	      	this.initFolderHover();
+	        this.initWidgetHover();
+	        this.initPageHover();
+	        this.initAddMenuHover();   
         }.bind(this)
       }); 
      }
