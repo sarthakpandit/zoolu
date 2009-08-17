@@ -104,7 +104,16 @@ class Model_Blog {
   	$objSelect->where('id = ?', $intBlogEntryId);
   	$objSelect->limit(1);
   	
-  	return $this->objBlogEntries->fetchAll($objSelect)->toArray();
+  	return $this->objBlogEntries->fetchRow($objSelect)->toArray();
+  }
+  
+  /**
+   * editBlogEntry
+   * @param array $arrValues
+   * @param integer $intBlogEntry
+   */
+  public function editBlogEntry($arrValues, $intBlogEntry) {
+  	$this->getBlogEntriesTable()->update($arrValues, $intBlogEntry);
   }
 	
 	/**
