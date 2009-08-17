@@ -225,7 +225,8 @@ class Cms_WidgetController extends AuthControllerAction {
 
         $arrFormData = $this->objRequest->getPost();
         $this->objForm->Setup()->setFieldValues($arrFormData);
-
+        $this->objForm->Setup()->setElementId($arrFormData['elementId']);
+        
         /**
          * prepare form (add fields and region to the Zend_Form)
          */
