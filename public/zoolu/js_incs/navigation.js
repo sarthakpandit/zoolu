@@ -567,17 +567,21 @@ Massiveart.Navigation = Class.create({
     });      
      
      // Update Widget Navigation
-     if(elementType == 'widget') {
-      currLevelOld=currLevel;
-      currLevel=Number(currLevel)+1;
-      
-    	if($('navLevel' + currLevel)) {
-    		if($('navLevel' + currLevel).hasAttribute('widgetInstanceId')) widgetInstanceId = $('navlevel' + currLevel).readAttribute('widgetInstanceId');
+     if(elementType == 'widget' || elementType == 'subwidget') {
+       if(elementType != 'subwidget')
+       {
+	     currLevelOld=currLevel;
+	     currLevel=Number((currLevel)+1);
+       }
+
+    	if($('navlevel' + currLevel)) {
+    		if($('navlevel' + currLevel).hasAttribute('widgetInstanceId')) widgetInstanceId = $('navlevel' + currLevel).readAttribute('widgetInstanceId');
     	} else {
     		widgetInstanceId = $('instanceId').value;
       	//currLevel=currLevelOld;
     	}
-      
+    	//TODO: If empty, load nothing
+    	
       strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
       strParams = 'currLevel='+currLevel+'&instanceId='+widgetInstanceId;
       
@@ -797,7 +801,7 @@ Massiveart.Navigation = Class.create({
     this.type = 'folder';
     
     new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/cms/widget/widgettree', { 
-      parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId, currLevel: currLevel },
+      parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId, currLevel: currLevel, elementType: 'widget' },
       evalScripts: true,
       onComplete: function(){
       	$('levelmenu'+currLevel).hide();
@@ -836,7 +840,8 @@ Massiveart.Navigation = Class.create({
   			currLevel: currLevel,
   			rootLevelId: this.rootLevelId,
   			formId: formId,
-  			instanceId: $('navlevel' + currLevel).readAttribute('widgetInstanceId')
+  			instanceId: $('navlevel' + currLevel).readAttribute('widgetInstanceId'),
+  			elementType: 'widget'
       },      
       evalScripts: true,     
       onComplete: function() {      	 
@@ -870,8 +875,9 @@ Massiveart.Navigation = Class.create({
 
 	new Ajax.Updater('genFormContainer', strAjaxAction, {
 	  parameters: {
+		elementType: 'subwidget',
 		currLevel: currLevel,
-		parentId: parentId,
+		parentFolderId: parentId,
 		idWidget: widgetId,
 		widgetInstanceId: widgetInstanceId,
 		rootLevelId: this.rootLevelId
@@ -990,7 +996,8 @@ Massiveart.Navigation = Class.create({
 				rootLevelId: this.rootLevelId,
 				idWidgetInstance: widgetInstanceId,
 				formId: formId,
-				instanceId: instanceId
+				instanceId: instanceId,
+				elementType: 'widget'
 		  },      
 		  evalScripts: true,     
 		  onComplete: function() {
@@ -1011,7 +1018,7 @@ Massiveart.Navigation = Class.create({
    * editSubWidgetForm
    * @param integer widgetInstanceId
    */
-  editSubWidgetForm: function(subWidgetId, widgetName) {
+  editSubWidgetForm: function(subWidgetId, widgetName, idWidgetInstances) {
 	  $(this.genFormContainer).innerHTML = '';
 	  $('divWidgetMetaInfos').innerHTML = '';
 	  // hide media container
@@ -1070,7 +1077,13 @@ Massiveart.Navigation = Class.create({
       
       new Ajax.Updater('genFormContainer', strAjaxAction,{
     	parameters: {
-    	  subWidgetId: subWidgetId
+    	  subWidgetId: subWidgetId,
+    	  elementId: subWidgetId,
+    	  currLevel: currLevel,
+    	  parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
+    	  idWidgetInstances: idWidgetInstances,
+    	  elementType: 'subwidget',
+    	  rootLevelId: this.rootLevelId
         },
         evalScripts: true,
         onComplete: function() {
@@ -1224,7 +1237,8 @@ Massiveart.Navigation = Class.create({
 		  parameters: {
 				currLevel: this.currLevel,
 				instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
-				idWidgetInstances: itemId
+				idWidgetInstances: itemId,
+				elementType: 'widget'
 		  },
 		  evalScripts: true,
 		  onComplete: function(){

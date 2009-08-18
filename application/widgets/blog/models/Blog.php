@@ -46,22 +46,19 @@ class Model_Blog {
 	 * @var arrFields
 	 */
 	protected $arrFields;
-	protected $objBlogEntries;
-	
-	public function __construct() {
-		$this->arrFields['default'] = array('title');
-	}
 	
 	/**
-	 * getFormFields
-	 * @param $strName
-	 * @return array Field
+	 * @var Model_Table_BlogEntries
 	 */
-	public function getFormFields($strName='') { // make new class -> zoolu based, not widget!
-		if($strName != '') {
-			return $this->arrFields[$strName];
-		}
-		return $this->arrFields;
+	protected $objBlogEntries;
+	
+	/**
+	 * @var Core
+	 */
+	protected $core;
+	
+	public function __construct() {
+		$this->core = Zend_Registry::get('Core');
 	}
 	
 	/**
@@ -113,7 +110,10 @@ class Model_Blog {
    * @param integer $intBlogEntry
    */
   public function editBlogEntry($arrValues, $intBlogEntry) {
-  	$this->getBlogEntriesTable()->update($arrValues, $intBlogEntry);
+  	$this->core->logger->debug('widgets->blog->Model_Blog->editBlogEntry('.$arrValues.', '.$intBlogEntry.')');
+  	
+  	$strWhere = $this->getBlogEntriesTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
+  	$this->getBlogEntriesTable()->update($arrValues, $strWhere);
   }
 	
 	/**
