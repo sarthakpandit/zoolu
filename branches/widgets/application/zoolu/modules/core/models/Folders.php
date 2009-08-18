@@ -278,8 +278,9 @@ class Model_Folders {
                                                pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
                                                IF(pages.idPageTypes = ?,
                                                   (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.urlId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                  (SELECT pU.url FROM urls AS pU WHERE pU.urlsId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
-                                               (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
+                                                  (SELECT pU.url FROM urls AS pU WHERE pU.urlId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                               (SELECT languageCode FROM languages WHERE id = ?) AS languageCode,
+                                                widgetInstances.widgetInstanceId , widgetInstanceTitles.title AS widgetInstanceTitle, widgetInstances.idWidgets
                                           FROM folders
                                             INNER JOIN folderTitles ON
                                               folderTitles.folderId = folders.folderId AND
@@ -294,6 +295,12 @@ class Model_Folders {
                                               pageTitles.pageId = pages.pageId AND
                                               pageTitles.version = pages.version AND
                                               pageTitles.idLanguages = ?
+                                            LEFT JOIN widgetInstances ON
+                                            	widgetInstances.idParent = folders.id AND
+                                            	widgetInstances.idParentTypes = ?
+                                            LEFT JOIN widgetInstanceTitles ON
+                                            	widgetInstanceTitles.widgetInstanceId = widgetInstances.widgetInstanceId AND
+                                            	widgetInstanceTitles.idLanguages = ?
                                           ,folders AS parent
                                            WHERE parent.id = ? AND
                                                  folders.lft BETWEEN parent.lft AND parent.rgt AND
@@ -301,7 +308,7 @@ class Model_Folders {
                                                  folders.depth <= ? AND
                                                  folders.showInNavigation = 1
                                                  '.$strFolderFilter.'
-                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intFolderId, $intDepth));
+                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intFolderId, $intDepth));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
