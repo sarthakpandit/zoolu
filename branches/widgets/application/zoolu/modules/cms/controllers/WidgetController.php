@@ -246,7 +246,7 @@ class Cms_WidgetController extends AuthControllerAction {
         $this->objForm->prepareForm();
       }
       
-      $this->objForm->setAction('/zoolu/cms/page/edit');
+      $this->objForm->setAction('/zoolu/cms/widget/edit');
       
       $this->setViewMetaInfos();
 
