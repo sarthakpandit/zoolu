@@ -89,7 +89,7 @@ class Model_Blog {
   
   /**
    * getBlogEntry
-   * @param integer $intBlogEntryId
+   * @param number $intBlogEntryId
    * @return array
    * @author Daniel Rotter
    * @version 1.0
@@ -107,13 +107,26 @@ class Model_Blog {
   /**
    * editBlogEntry
    * @param array $arrValues
-   * @param integer $intBlogEntry
+   * @param number $intBlogEntry
    */
   public function editBlogEntry($arrValues, $intBlogEntry) {
   	$this->core->logger->debug('widgets->blog->Model_Blog->editBlogEntry('.$arrValues.', '.$intBlogEntry.')');
   	
   	$strWhere = $this->getBlogEntriesTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
   	$this->getBlogEntriesTable()->update($arrValues, $strWhere);
+  }
+  
+  /**
+   * deleteBlogEntry
+   * @param number $intBlogEntry
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteBlogEntry($intBlogEntry) {
+  	$this->core->logger->debug('widgets->blog->Model_Blog->deleteBlogEntry('.$intBlogEntry.')');
+  	
+  	$strWhere = $this->getBlogEntriesTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
+  	return $this->getBlogEntriesTable()->delete($strWhere);
   }
 	
 	/**

@@ -21,7 +21,7 @@ Massiveart.Navigation = Class.create({
     this.constPage = 'page';
     this.constStartPage = 'startpage';
     this.constWidget = 'widget';
-    this.constSubWidget = 'subWidget';
+    this.constSubWidget = 'subwidget';
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
     this.constRequestChildNav = '/zoolu/cms/navigation/childnavigation';
