@@ -396,7 +396,7 @@ class Model_Pages {
                                               plTitle.version = pl.version AND
                                               plTitle.idLanguages = ?
                                             LEFT JOIN urls AS plUrls ON
-                                              plUrls.pageId = pl.pageId AND
+                                              plUrls.urlId = pl.pageId AND
                                               plUrls.version = pl.version AND
                                               plUrls.idLanguages = ?
                                             LEFT JOIN languages ON
@@ -452,7 +452,7 @@ class Model_Pages {
                                               plTitle.version = pl.version AND
                                               plTitle.idLanguages = ?
                                             LEFT JOIN urls AS plUrls ON
-                                              plUrls.pageId = pl.pageId AND
+                                              plUrls.urlId = pl.pageId AND
                                               plUrls.version = pl.version AND
                                               plUrls.idLanguages = ?
                                             LEFT JOIN languages ON
