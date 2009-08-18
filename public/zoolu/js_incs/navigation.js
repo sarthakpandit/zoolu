@@ -480,7 +480,7 @@ Massiveart.Navigation = Class.create({
    * selectItem 
    */
   selectItem: function(){    
-    if(this.itemId != ''){      
+    if(this.itemId != ''){     
       if($('divNavigationTitle_'+this.itemId)) $('divNavigationTitle_'+this.itemId).onclick();
     }
   },
@@ -571,23 +571,33 @@ Massiveart.Navigation = Class.create({
       currLevelOld=currLevel;
       currLevel=Number(currLevel)+1;
       
-      if($('widgetInstanceId').value != '') {
-      	widgetInstanceId = $('widgetInstanceId').value;
-      	currLevel=currLevelOld;
-      } else {
-      	widgetInstanceId = $('navlevel' + currLevel).readAttribute('widgetInstanceId');
-      }
+    	if($('navLevel' + currLevel)) {
+    		if($('navLevel' + currLevel).hasAttribute('widgetInstanceId')) widgetInstanceId = $('navlevel' + currLevel).readAttribute('widgetInstanceId');
+    	} else {
+    		widgetInstanceId = $('instanceId').value;
+      	//currLevel=currLevelOld;
+    	}
+      
       strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
       strParams = 'currLevel='+currLevel+'&instanceId='+widgetInstanceId;
       
       // Add new Level
-      if($('widgetInstanceId').value == '') {
-	      if(this.levelArray.indexOf(currLevel) == -1){
-	      	this.levelArray.push(currLevel);
-	      	var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
-	      	new Insertion.Bottom('divNaviCenterInner', levelContainer);
-	      }
+      if($('widgetInstanceId')) {
+      	if($('widgetInstanceId').value == '') {
+		      if(this.levelArray.indexOf(currLevel) == -1){
+		      	this.levelArray.push(currLevel);
+		      	var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
+		      	new Insertion.Bottom('divNaviCenterInner', levelContainer);
+		      }
+      	}
       }
+
+      if(this.levelArray.indexOf(currLevel) != -1){
+        var levelPos = this.levelArray.indexOf(currLevel)+1;
+        for(var i = levelPos; i < this.levelArray.length; i++){
+          if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+        }
+      }  
       
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
         parameters: strParams,      
@@ -918,7 +928,7 @@ Massiveart.Navigation = Class.create({
    * getWidgetEditForm
    * @param integer widgetInstanceId, integer widgetId, integer formId, integer version
    */
-  getWidgetEditForm: function(widgetInstanceId, widgetId, formId, version) {
+  getWidgetEditForm: function(widgetInstanceId, widgetId, formId, version, instanceId) {
 		$(this.genFormContainer).innerHTML = '';
 		$('divWidgetMetaInfos').innerHTML = '';
 		// hide media container
@@ -979,7 +989,8 @@ Massiveart.Navigation = Class.create({
 				currLevel: currLevel,
 				rootLevelId: this.rootLevelId,
 				idWidgetInstance: widgetInstanceId,
-				formId: formId
+				formId: formId,
+				instanceId: instanceId
 		  },      
 		  evalScripts: true,     
 		  onComplete: function() {
