@@ -216,6 +216,29 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
 	/**
+	 * deleteAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function deleteAction() {
+		$this->core->logger->debug('widgets->blog->Model_Blog->deleteAction()');
+		
+		try {
+			$this->getModelBlog();
+			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+				$this->objModelBlog->deleteBlogEntry($this->objRequest->getParam('id'));
+				
+				$this->view->blnShowFormAlert = true;
+			}
+			
+			$this->renderScript('page/form.phtml');
+		} catch(Exception $exc) {
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
 	 * getForm
 	 * @param number $intActionType
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
