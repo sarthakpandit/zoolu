@@ -143,11 +143,12 @@ class Blog_FormController extends AuthControllerAction {
 			$this->getForm($this->core->sysConfig->generic->actions->edit);
 
 			$arrData = $this->getModelBlog()->getBlogEntry($this->objRequest->getParam('subWidgetId'));
+			$arrData = array_merge($this->objRequest->getPost(), $arrData);
 
 			$this->objForm->Setup()->setFieldValues($arrData);
 			$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 			$this->objForm->prepareForm();
-			$this->objForm->Setup()->setElementId($arrData['id']);
+			
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
       
       $this->setViewMetaInfos();
@@ -157,6 +158,60 @@ class Blog_FormController extends AuthControllerAction {
 		}catch(Exception $exc){
 			$this->core->logger->err($exc);
 			exit();
+		}
+	}
+	
+	/**
+	 * editsubwidgetAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function editsubwidgetAction() {
+		$this->core->logger->debug('widgets->blog->FormController->editsubwidgetAction()');
+		
+		try {
+			$this->getForm($this->core->sysConfig->generic->actions->edit);
+			
+			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
+			
+      if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+
+        $arrFormData = $this->objRequest->getPost();
+        $this->objForm->Setup()->setFieldValues($arrFormData);
+        $this->objForm->Setup()->setElementId($arrFormData['elementId']);
+        /**
+         * Get the data for the updated entry
+         */
+        $arrData = array('title' => $arrFormData['title'],
+                         'text' => $arrFormData['text']);
+        $this->getModelBlog()->editBlogEntry($arrData, $arrFormData['elementId']);
+        /**
+         * prepare form (add fields and region to the Zend_Form)
+         */
+        $this->objForm->prepareForm();
+
+
+        if($this->objForm->isValid($arrFormData)){
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          $this->view->assign('blnShowFormAlert', false);
+        }
+      }else{
+        /**
+         * prepare form (add fields and region to the Zend_Form)
+         */
+        $this->objForm->prepareForm();
+      }
+      
+      $this->objForm->setAction('/zoolu/cms/page/edit');
+      
+      $this->setViewMetaInfos();
+
+      $this->view->form = $this->objForm;
+
+      $this->renderScript('page/form.phtml');
+		} catch(Exception $exc) {
+			$this->core->logger->err($exc);
 		}
 	}
 	
@@ -188,18 +243,19 @@ class Blog_FormController extends AuthControllerAction {
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentTypeId") != '') ? $this->objRequest->getParam("parentTypeId") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setElementTypeId($this->objRequest->getParam('idWidget'));
-      $this->objForm->Setup()->setElementId($this->objRequest->getParam('widgetInstanceId'));
+      $this->objForm->Setup()->setElementId($this->objRequest->getParam('elementId'));
       $this->objForm->Setup()->setWidgetInstanceId($this->objRequest->getParam('widgetInstanceId'));
       $this->objForm->Setup()->setModelSubPath('cms/models/');
 
       $this->objForm->addElement('hidden', 'currLevel', array('value' => $this->objRequest->getParam('currLevel'), 'decorators' => array('Hidden'), 'ignore' => true));
 			$this->objForm->addElement('hidden', 'elementType', array('value' => $this->objRequest->getParam('elementType'), 'decorators' => array('Hidden'), 'ignore' => true));
-			$this->objForm->addElement('hidden', 'parentId', array('value' => $this->objRequest->getParam('parentId'), 'decorators' => array('Hidden'), 'ignore' => true));
+			$this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
 			$this->objForm->addElement('hidden', 'idWidget', array('value' => $this->objRequest->getParam('idWidget'), 'decorators' => array('Hidden'), 'ignore' => true));
-			$this->objForm->addElement('hidden', 'widgetInstanceId', array('value' => $this->objRequest->getParam('widgetInstanceId'), 'decorators' => array('Hidden'), 'ignore' => true));
+			$this->objForm->addElement('hidden', 'elementId', array('value' => $this->objRequest->getParam('elementId'), 'decorators' => array('Hidden'), 'ignore' => true));
 			$this->objForm->addElement('hidden', 'rootLevelId', array('value' => $this->objRequest->getParam('rootLevelId'), 'decorators' => array('Hidden'), 'ignore' => true));
-			$this->objForm->addElement('hidden', 'elementType', array('value' => 'widget', 'decorators' => array('Hidden'), 'ignore' => true));
+			$this->objForm->addElement('hidden', 'elementType', array('value' => $this->objRequest->getParam('elementType'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'widgetInstanceId', array('value' => $this->objRequest->getParam('widgetInstanceId'), 'decorators' => array('Hidden'), 'ignore' => true));
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
