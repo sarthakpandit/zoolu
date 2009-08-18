@@ -229,16 +229,16 @@ class Navigation {
         
       if($this->intRootFolderId > 0){
         $objSubNavigationData = $this->objModelFolders->loadWebsiteStaticSubNavigation($this->intRootFolderId, $intDepth);
-                
+        Zend_Registry::get('Core')->logger->debug($objSubNavigationData);
         $intTreeId = 0;
         foreach($objSubNavigationData as $objSubNavigationItem){
-          
           if($this->intRootFolderId == $objSubNavigationItem->idFolder){
             if($objSubNavigationItem->isStartPage == 1){
               $objNavigationTree->setTitle($objSubNavigationItem->folderTitle);
               $objNavigationTree->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);
             }else{
-              if($objSubNavigationItem->pageId != null){
+              if($objSubNavigationItem->pageId != null || $objSubNavigationItem->widgetInstanceId != null){
+              	echo $objSubNavigationItem->widgetInstanceTitle;
                 $objItem = new NavigationItem();
                 $objItem->setTitle($objSubNavigationItem->pageTitle);
                 $objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);

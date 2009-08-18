@@ -62,9 +62,19 @@ class Model_Widgets {
 	protected $objWidgetInstancesTable;
 	
 	/**
+	 * @var Model_Table_Url
+	 */
+	protected $objUrlTable;
+	
+	/**
 	 * @var number
 	 */
 	private $intLanguageId;
+	
+	/**
+	 * UrlType Widget
+	 */
+	const URL_TYPE_WIDGET=2;
 	
 	/**
 	 * Constructor
@@ -104,6 +114,31 @@ class Model_Widgets {
     
     return $this->objWidgetInstancesTable;
   }
+  
+	/**
+	 * insertUrl
+	 * @param $strUrl
+	 * @param $strPageId
+	 * @param $intVersion
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+  public function insertUrl($strUrl, $strUrlId, $intVersion){
+		$this->core->logger->debug('application->zoolu->modules->cms->models->Widgets->insertUrl('.$strUrl.', '.$strUrlId.', '.$intVersion.')');
+
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    $arrData = array('urlId'       => $strUrlId,
+                     'version'     => $intVersion,
+                     'idLanguages' => $this->intLanguageId,
+                     'url'         => $strUrl,
+                     'idUsers'     => $intUserId,
+                     'creator'     => $intUserId,
+                     'created'     => date('Y-m-d H:i:s'),
+                     'idUrlTypes'  => self::URL_TYPE_WIDGET);
+
+    return $objSelect = $this->getUrlTable()->insert($arrData);
+	}
 	
 	/**
    * getGenericFormsTable
@@ -119,6 +154,22 @@ class Model_Widgets {
     }
 
     return $this->objGenericFormsTable;
+  }
+  
+	/**
+   * getUrlTable
+   * @return Zend_Db_Table_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getUrlTable(){
+
+    if($this->objUrlTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageUrls.php';
+      $this->objUrlTable = new Model_Table_Urls();
+    }
+
+    return $this->objUrlTable;
   }
 	
   /**

@@ -87,7 +87,7 @@ class Cms_WidgetController extends AuthControllerAction {
     $intCurrLevel = $this->objRequest->getParam('currLevel');
     
     /**
-     * Widget is in Roottree
+     * Widget is in Root-Tree
      */
     if($intFolderId == '') {
     	$intParentId = $intPortalId;
@@ -106,6 +106,7 @@ class Cms_WidgetController extends AuthControllerAction {
     $this->view->assign('parentType', $intParentType);
     $this->view->assign('currLevel', $intCurrLevel);
 	}
+	
 	/**
 	 * addAction
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>

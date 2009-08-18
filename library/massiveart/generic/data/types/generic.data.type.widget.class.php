@@ -114,8 +114,9 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
                                 'version'         => $intWidgetVersion);
           
           $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
-          
           $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
+          //TODO: insert widget url           
+          $this->objModelWidgets->insertUrl($this->setup->getField('title')->getValue(), $strWidgetId, 1);
           break;
           
         case $this->core->sysConfig->generic->actions->edit:

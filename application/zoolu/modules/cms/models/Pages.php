@@ -105,8 +105,9 @@ class Model_Pages {
   	$objPagePluginTable = $this->getPluginTable($strType);
   	
   	$objSelect = $objPagePluginTable->select();
+  	$strTableName = $objPagePluginTable->info('name');
   	$objSelect->from($objPagePluginTable, $arrFields);
-  	$objSelect->join('pages', 'pages.pageId = pageGmaps.pageId AND pages.version = pageGmaps.version', array());
+  	$objSelect->join('pages', 'pages.pageId = '.$strTableName.'.pageId AND pages.version = '.$strTableName.'.version', array());
   	$objSelect->where('pages.id = ?', $intElementId)
   	          ->where('idLanguages = ?', $this->getLanguageId());
   	          
