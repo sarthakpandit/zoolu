@@ -1195,6 +1195,9 @@ Massiveart.Navigation = Class.create({
    * @param integer parentLevel, string widgetType, integer itemId, string widgetInstanceId
    */  
   selectWidgetItem: function(parentLevel, widgetType, itemId, widgetInstanceId){
+  	$(this.genFormContainer).hide();
+    $(this.genFormSaveContainer).hide();
+     
 		this.currLevel = parentLevel + 1;
 		var element = 'widget'+itemId;
 		this.currItemId = itemId;
