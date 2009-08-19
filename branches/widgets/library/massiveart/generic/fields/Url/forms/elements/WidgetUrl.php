@@ -43,9 +43,9 @@
  * @subpackage Form_Element_Url
  */
 
-class Form_Element_Url extends FormElementXhtmlAbstract {
+class Form_Element_WidgetUrl extends FormElementXhtmlAbstract {
 	
-	public $helper = 'formUrl';
+	public $helper = 'formWidgetUrl';
 	
 }
 
