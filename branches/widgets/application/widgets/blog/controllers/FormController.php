@@ -46,9 +46,9 @@ class Blog_FormController extends AuthControllerAction {
 	private $objForm;
 	
 	/**
-	 * @var Model_Blog
+	 * @var Model_BlogEntry
 	 */
-	private $objModelBlog;
+	private $objModelBlogEntry;
 	
 	/**
 	 * init
@@ -102,8 +102,10 @@ class Blog_FormController extends AuthControllerAction {
 					$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 					$arrData = array('widgetInstanceId' => $arrFormData['widgetInstanceId'],
 					                 'title' => $arrFormData['title'],
-					                 'text' => $arrFormData['text']);
-					$intSubWidgetId = $this->getModelBlog()->addBlogEntry($arrData);
+					                 'text' => $arrFormData['text'],
+					                 'created' => date('Y-m-d H:m:s', time()),
+					                 'idUsers' => Zend_Auth::getInstance()->getIdentity()->id);
+					$intSubWidgetId = $this->getModelBlogEntry()->addBlogEntry($arrData);
 					$this->objForm->Setup()->setElementId($intSubWidgetId);
 					$this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
 					$this->objForm->getElement('id')->setValue($intSubWidgetId);
@@ -142,7 +144,7 @@ class Blog_FormController extends AuthControllerAction {
 		try {
 			$this->getForm($this->core->sysConfig->generic->actions->edit);
 
-			$arrData = $this->getModelBlog()->getBlogEntry($this->objRequest->getParam('subWidgetId'));
+			$arrData = $this->getModelBlogEntry()->getBlogEntry($this->objRequest->getParam('subWidgetId'));
 			$arrData = array_merge($this->objRequest->getPost(), $arrData);
 
 			$this->objForm->Setup()->setFieldValues($arrData);
@@ -184,7 +186,7 @@ class Blog_FormController extends AuthControllerAction {
          */
         $arrData = array('title' => $arrFormData['title'],
                          'text' => $arrFormData['text']);
-        $this->getModelBlog()->editBlogEntry($arrData, $arrFormData['elementId']);
+        $this->getModelBlogEntry()->editBlogEntry($arrData, $arrFormData['elementId']);
         /**
          * prepare form (add fields and region to the Zend_Form)
          */
@@ -221,12 +223,12 @@ class Blog_FormController extends AuthControllerAction {
 	 * @version 1.0
 	 */
 	public function deleteAction() {
-		$this->core->logger->debug('widgets->blog->Model_Blog->deleteAction()');
+		$this->core->logger->debug('widgets->blog->Model_BlogEntry->deleteAction()');
 		
 		try {
-			$this->getModelBlog();
+			$this->getModelBlogEntry();
 			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
-				$this->objModelBlog->deleteBlogEntry($this->objRequest->getParam('id'));
+				$this->objModelBlogEntry->deleteBlogEntry($this->objRequest->getParam('id'));
 				
 				$this->view->blnShowFormAlert = true;
 			}
@@ -313,22 +315,22 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
  /**
-   * getModelBlog
+   * getModelBlogEntry
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  protected function getModelBlog(){
-    if (null === $this->objModelBlog) {
+  protected function getModelBlogEntry(){
+    if (null === $this->objModelBlogEntry) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it 
        * from its modules path location.
        */ 
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/Blog.php';
-      $this->objModelBlog = new Model_Blog();
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntry.php';
+      $this->objModelBlogEntry = new Model_BlogEntry();
     }
     
-    return $this->objModelBlog;
+    return $this->objModelBlogEntry;
   }
 }
 ?>
