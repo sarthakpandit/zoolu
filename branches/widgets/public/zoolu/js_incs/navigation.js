@@ -525,12 +525,12 @@ Massiveart.Navigation = Class.create({
     if(elementType != 'subwidget')
     {
       if(strParams != '' && strAjaxAction != ''){  
+    	this.currLevel = currLevel;
         new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
           parameters: strParams,      
           evalScripts: true,     
           onComplete: function() {
-            new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'});
-         //TODO: No Highlight, currLevel is false (string concenation instead uf addition)
+            new Effect.Highlight('navlevel'+this.currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'});
             if(elementType != '' && elementId != '' && $(elementType+elementId)){ 
               if(this.navigation[currLevel]){
                 this.makeDeselected(this.navigation[currLevel]);
@@ -574,14 +574,14 @@ Massiveart.Navigation = Class.create({
       if(elementType != 'subwidget')
       {
 	    currLevelOld=currLevel;
-	    currLevel=Number((currLevel)+1);
+	    currLevel=parseInt(currLevel)+1;
       }
 
       if($('navlevel' + currLevel)) {
     	if($('navlevel' + currLevel).hasAttribute('widgetInstanceId')) widgetInstanceId = $('navlevel' + currLevel).readAttribute('widgetInstanceId');
       } else {
     	widgetInstanceId = $('instanceId').value;
-      	//currLevel=currLevelOld;
+      	//currLevel=currLevelOld;		$this->core->logger->debug($this->getRequest()->getParam('currLevel'));
       }
       //TODO: If empty, load nothing
     	
