@@ -31,7 +31,7 @@
  */
 
 /**
- * Model_Blog
+ * Model_BlogEntry
  *
  *
  * Version history (please keep backward compatible):
@@ -41,16 +41,11 @@
  * @version 1.1
  */
 
-class Model_Blog {
-	/**
-	 * @var arrFields
-	 */
-	protected $arrFields;
-	
+class Model_BlogEntry {	
 	/**
 	 * @var Model_Table_BlogEntries
 	 */
-	protected $objBlogEntries;
+	protected $objBlogEntryTable;
 	
 	/**
 	 * @var Core
@@ -68,13 +63,13 @@ class Model_Blog {
    * @version 1.0
 	 */
 	public function getBlogEntries($strWidgetInstanceId, $intCount=5) {
-		$objSelectForm = $this->getBlogEntriesTable()->select();
+		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntries, array('id', 'title'));
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title'));
 		$objSelectForm->where("widgetInstanceId=?",$strWidgetInstanceId);
 		$objSelectForm->limit($intCount,0);
 		
-		return $this->objBlogEntries->fetchAll($objSelectForm);
+		return $this->objBlogEntryTable->fetchAll($objSelectForm);
 	}
 	
  /**
@@ -84,7 +79,7 @@ class Model_Blog {
    * @version 1.0
    */
   public function addBlogEntry($arrValues) {
-    return $this->getBlogEntriesTable()->insert($arrValues);
+    return $this->getBlogEntryTable()->insert($arrValues);
   }
   
   /**
@@ -95,13 +90,13 @@ class Model_Blog {
    * @version 1.0
    */
   public function getBlogEntry($intBlogEntryId) {
-  	$objSelect = $this->getBlogEntriesTable()->select();
+  	$objSelect = $this->getBlogEntryTable()->select();
   	$objSelect->setIntegrityCheck(false);
-  	$objSelect->from($this->objBlogEntries, array('id', 'widgetInstanceId', 'title', 'text'));
+  	$objSelect->from($this->objBlogEntryTable, array('id', 'widgetInstanceId', 'title', 'text'));
   	$objSelect->where('id = ?', $intBlogEntryId);
   	$objSelect->limit(1);
   	
-  	return $this->objBlogEntries->fetchRow($objSelect)->toArray();
+  	return $this->objBlogEntryTable->fetchRow($objSelect)->toArray();
   }
   
   /**
@@ -112,8 +107,8 @@ class Model_Blog {
   public function editBlogEntry($arrValues, $intBlogEntry) {
   	$this->core->logger->debug('widgets->blog->Model_Blog->editBlogEntry('.$arrValues.', '.$intBlogEntry.')');
   	
-  	$strWhere = $this->getBlogEntriesTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
-  	$this->getBlogEntriesTable()->update($arrValues, $strWhere);
+  	$strWhere = $this->getBlogEntryTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
+  	$this->getBlogEntryTable()->update($arrValues, $strWhere);
   }
   
   /**
@@ -125,24 +120,24 @@ class Model_Blog {
   public function deleteBlogEntry($intBlogEntry) {
   	$this->core->logger->debug('widgets->blog->Model_Blog->deleteBlogEntry('.$intBlogEntry.')');
   	
-  	$strWhere = $this->getBlogEntriesTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
-  	return $this->getBlogEntriesTable()->delete($strWhere);
+  	$strWhere = $this->getBlogEntryTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
+  	return $this->getBlogEntryTable()->delete($strWhere);
   }
 	
 	/**
-   * getBlogEntriesTable
+   * getBlogEntryTable
    * @return Zend_Db_Table_Abstract
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  public function getBlogEntriesTable(){
+  public function getBlogEntryTable(){
 
-    if($this->objBlogEntries === null) {
+    if($this->objBlogEntryTable === null) {
       require_once GLOBAL_ROOT_PATH.'application/widgets/blog/models/tables/BlogEntries.php';
-      $this->objBlogEntries = new Model_Table_BlogEntries();
+      $this->objBlogEntryTable = new Model_Table_BlogEntries();
     }
 
-    return $this->objBlogEntries;
+    return $this->objBlogEntryTable;
   }
 }
 
