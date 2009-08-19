@@ -43,7 +43,7 @@
  * @subpackage Form_Helper_FormUrl
  */
 
-class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
+class Form_Helper_FormWidgetUrl extends Zend_View_Helper_FormElement {
   
   /**
    * formUrl
@@ -54,7 +54,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
    * @param mixed $options   
    * @version 1.0
    */
-  public function formUrl($name, $value = null, $attribs = null, $options = null){
+  public function formWidgetUrl($name, $value = null, $attribs = null, $options = null){
     $info = $this->_getInfo($name, $value, $attribs);
     extract($info); // name, value, attribs, options, listsep, disable
     

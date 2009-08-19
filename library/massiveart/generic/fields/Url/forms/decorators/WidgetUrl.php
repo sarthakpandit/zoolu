@@ -39,7 +39,7 @@
  * @version 1.0
  */
 
-class Form_Decorator_Url extends Zend_Form_Decorator_Abstract {
+class Form_Decorator_WidgetUrl extends Zend_Form_Decorator_Abstract {
   
   /**
    * @var Core

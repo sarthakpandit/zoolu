@@ -30,27 +30,27 @@
  * @version    $Id: version.php
  */
 /**
- * GenericDataHelperUrl
+ * GenericDataHelperWidgetUrl
  *
- * Helper to save and load the "url" element
+ * Helper to save and load the "WidgetUrl" element
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-02-06: Thomas Schedler
+ * 1.0, 2009-08-19: Florian Mathis
  *
- * @author Thomas Schedler <tsh@massiveart.com>
+ * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
  * @package massiveart.generic.data.helpers
- * @subpackage GenericDataHelper_Url
+ * @subpackage GenericDataHelper_WidgetUrl
  */
 
 require_once(dirname(__FILE__).'/../../../../data/helpers/Abstract.php');
 
-class GenericDataHelper_Url extends GenericDataHelperAbstract  {
+class GenericDataHelper_WidgetUrl extends GenericDataHelperAbstract  {
 
   /**
-   * @var Model_Pages
+   * @var Model
    */
-  private $objModelPages;
+  private $objModelWidgets;
 
   /**
    * @var Zend_Db_Table_Rowset_Abstract
@@ -65,29 +65,25 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    * @param string $strType
    * @param string $strElementId
    * @param integet $intVersion
-   * @author Thomas Schedler <tsh@massiveart.com>
+   * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
   public function save($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
-
-      $this->getModelPages();
-
-      $objPageData = $this->objModelPages->loadPage($intElementId);
-
-      if(count($objPageData) > 0){
-        $objPage = $objPageData->current();
-
-        $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
+      $this->getModelWidgets();
+      $objWidgetData = $this->objModelWidgets->loadWidgetInstance($strElementId);
+      
+      if(count($objWidgetData) > 0){
+        $objWidget = $objWidgetData->current();
+        $objUrlData = $this->objModelWidgets->loadWidgetUrl($strElementId, $objWidget->version);
 
         if(count($objUrlData) > 0){
           $objUrl = $objUrlData->current();
           $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
         }else{
           $this->strUrl = '';
-
-          $objParentFoldersData = $this->objModelPages->loadParentFolders($intElementId);
-
+					
+          $objParentFoldersData = $this->objModelWidgets->loadParentFolders($strElementId);
           if(count($objParentFoldersData) > 0){
             foreach($objParentFoldersData as $objParentFolder){
               if($objParentFolder->isUrlFolder == 1){
@@ -95,27 +91,21 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
               }
             }
           }
-
-          if($objPage->isStartPage == 1){
-            $this->strUrl .= '';
-          }else{
-            $objFieldData = $this->objElement->Setup()->getModelGenericForm()->loadFieldsWithPropery($this->core->sysConfig->fields->properties->url_field, $this->objElement->Setup()->getGenFormId());
-
-            if(count($objFieldData) > 0){
-              foreach($objFieldData as $objField){
-                if($this->objElement->Setup()->getRegion($objField->regionId)->getField($objField->name)->getValue() != ''){
-                  $this->strUrl .= $this->makeUrlConform($this->objElement->Setup()->getRegion($objField->regionId)->getField($objField->name)->getValue());
-                  break;
-                }
+          $objFieldData = $this->objElement->Setup()->getModelGenericForm()->loadFieldsAndRegionsByFormId($this->objElement->Setup()->getGenFormId());
+          //->loadFieldsWithPropery($this->core->sysConfig->fields->properties->url_field, $this->objElement->Setup()->getGenFormId());
+          if(count($objFieldData) > 0){          	
+            foreach($objFieldData as $objField){
+              if($this->objElement->Setup()->getRegion($objField->regionId)->getField($objField->name)->getValue() != ''){
+                $this->strUrl .= $this->makeUrlConform($this->objElement->Setup()->getRegion($objField->regionId)->getField($objField->name)->getValue());
+                break;
               }
             }
-          }
+          }        
 
-          $this->strUrl = $this->checkUrlUniqueness($this->strUrl);
+          $this->strUrl = $this->checkUrlUniqueness($this->strUrl);          
+          $this->objModelWidgets->insertWidgetUrl($this->strUrl, $strElementId, $objWidget->version);
 
-          $this->objModelPages->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
-
-          $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
+          $objUrlData = $this->objModelWidgets->loadWidgetUrl($strElementId, $objWidget->version);
           if(count($objUrlData) > 0){
             $objUrl = $objUrlData->current();
             $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
@@ -139,9 +129,9 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    */
   public function load($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
-      $this->getModelPages();
+      $this->getModelWidgets();
 
-      $objUrlData = $this->objModelPages->loadPageUrl($strElementId, $intVersion);
+      $objUrlData = $this->objModelWidgets->loadWidgetUrl($strElementId, $intVersion);
 
       if(count($objUrlData) > 0){
         $objUrl = $objUrlData->current();
@@ -162,7 +152,6 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
   private function makeUrlConform($strUrlPart){
 
     $this->getUrlReplacers();
-
     $strUrlPart = strtolower($strUrlPart);
 
     if(count($this->objUrlReplacers) > 0){
@@ -172,9 +161,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
     }
 
     $strUrlPart = strtolower($strUrlPart);
-
     $strUrlPart = urlencode(preg_replace('/([^A-za-z0-9\s-_])/', '_', $strUrlPart));
-
     $strUrlPart = str_replace('+', '-', $strUrlPart);
 
     return $strUrlPart;
@@ -188,7 +175,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    */
   private function getUrlReplacers(){
     if($this->objUrlReplacers === null) {
-      $this->objUrlReplacers = $this->getModelPages()->loadUrlReplacers();
+      $this->objUrlReplacers = $this->getModelWidgets()->loadUrlReplacers();
     }
   }
 
@@ -198,12 +185,12 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    * @version 1.0
    */
   private function checkUrlUniqueness($strUrl, $intUrlAddon = 0){
-    $this->getModelPages();
+    $this->getModelWidgets();
 
     $strNewUrl = ($intUrlAddon > 0) ? $strUrl.'-'.$intUrlAddon : $strUrl;
-    $objPageUrlsData = $this->objModelPages->loadPageByUrl($this->objElement->Setup()->getRootLevelId(), $strNewUrl);
+    $objWidgetUrlsData = $this->objModelWidgets->loadWidgetByUrl($this->objElement->Setup()->getRootLevelId(), $strNewUrl);
 
-    if(count($objPageUrlsData) > 0){
+    if(count($objWidgetUrlsData) > 0){
       return $this->checkUrlUniqueness($strUrl, $intUrlAddon + 1);
     }else{
       return $strNewUrl;
@@ -211,24 +198,24 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
   }
 
   /**
-   * getModelPages
-   * @return Model_Pages
+   * getModelWidgets
+   * @return Model_Widgets
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function getModelPages(){
-    if (null === $this->objModelPages) {
+  protected function getModelWidgets(){
+    if (null === $this->objModelWidgets) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
-      $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->objElement->Setup()->getLanguageId());
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
+      $this->objModelWidgets = new Model_Widgets();
+      $this->objModelWidgets->setLanguage($this->objElement->Setup()->getLanguageId());
     }
 
-    return $this->objModelPages;
+    return $this->objModelWidgets;
   }
 }
 ?>
