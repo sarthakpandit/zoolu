@@ -240,7 +240,7 @@ class Navigation {
               if(isset($objSubNavigationItem->idWidgetInstance)){
               	$objItem = new NavigationItem();
               	$objItem->setTitle($objSubNavigationItem->widgetInstanceTitle);
-              	$objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.'widget');            //TODO Set Url
+              	$objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);            //TODO Set Url
               	$objItem->setId($objSubNavigationItem->idWidgetInstance);
               	$objItem->setParentId($objSubNavigationItem->idFolder);
               	$objItem->setOrder($objSubNavigationItem->widgetInstanceOrder);
