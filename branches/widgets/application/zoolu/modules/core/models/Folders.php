@@ -59,6 +59,11 @@ class Model_Folders {
    * @var Model_Table_RootLevelUrls
    */
   protected $objRootLevelUrlTable;
+  
+  /**
+   * @var Model_Table_Url
+   */
+  protected $objUrlTable;
 
   /**
    * @var Core
@@ -947,6 +952,29 @@ class Model_Folders {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * getSitetypeByUrl
+   * @param $strUrl
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getSitetypeByUrl($strUrl) {
+  	try{
+  		$this->core->logger->debug('core->models->Folders->getSitetypeByUrl('.$strUrl.')');
+  		
+  		$objSelect = $this->getUrlTable()->select();
+	    $objSelect->setIntegrityCheck(false);
+
+	    $objSelect->from('urls', array('idUrlTypes'));
+	    $objSelect->where('urls.url  = ?', $strUrl);
+	
+	    return $this->getUrlTable()->fetchRow($objSelect);
+  	}catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
 
   /**
    * addFolderNode
@@ -1084,6 +1112,22 @@ class Model_Folders {
     }
 
     return $this->objFolderTable;
+  }
+  
+	/**
+   * getUrlTable
+   * @return Model_Table_Url
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getUrlTable(){
+
+    if($this->objUrlTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageUrls.php';
+      $this->objUrlTable = new Model_Table_Urls();
+    }
+
+    return $this->objUrlTable;
   }
 
   /**

@@ -50,7 +50,8 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'phMagick'                => '/library/phmagick/phMagick.php',
     'PluginLoader'            => '/library/massiveart/loader/pluginLoader.class.php',
     'FormElementXhtmlAbstract'=> '/library/massiveart/generic/forms/fields/form.element.xhtml.abstract.class.php',
-    'FormElementMultiAbstract'=> '/library/massiveart/generic/forms/fields/form.element.multi.abstract.class.php'
+    'FormElementMultiAbstract'=> '/library/massiveart/generic/forms/fields/form.element.multi.abstract.class.php',
+  	'Widget'									=> '/library/massiveart/website/widget.class.php'
     //'GuiTexts'              => '/library/massiveart/utilities/guiTexts.class.php'
   );
 
