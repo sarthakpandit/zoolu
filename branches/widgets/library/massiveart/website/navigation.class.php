@@ -231,7 +231,6 @@ class Navigation {
         $objSubNavigationData = $this->objModelFolders->loadWebsiteStaticSubNavigation($this->intRootFolderId, $intDepth);
         $intTreeId = 0;
         foreach($objSubNavigationData as $objSubNavigationItem){
-        	Zend_Registry::get('Core')->logger->debug($objSubNavigationItem);
           if($this->intRootFolderId == $objSubNavigationItem->idFolder){
             if(isset($objSubNavigationItem->isStartPage) && $objSubNavigationItem->isStartPage == 1){
               $objNavigationTree->setTitle($objSubNavigationItem->folderTitle);
@@ -246,13 +245,16 @@ class Navigation {
               	$objItem->setOrder($objSubNavigationItem->widgetInstanceOrder);
               	$objItem->setItemId($objSubNavigationItem->idWidgetInstance);
               }else{
-                $objItem = new NavigationItem();
-                $objItem->setTitle($objSubNavigationItem->pageTitle);
-                $objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);
-                $objItem->setId($objSubNavigationItem->idPage);
-                $objItem->setParentId($objSubNavigationItem->idFolder);
-                $objItem->setOrder($objSubNavigationItem->pageOrder);            
-                $objItem->setItemId($objSubNavigationItem->idPage);
+              	if(isset($objSubNavigationItem->pageId)){
+	                $objItem = new NavigationItem();
+	                
+	                $objItem->setTitle($objSubNavigationItem->pageTitle);
+	                $objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);
+	                $objItem->setId($objSubNavigationItem->idPage);
+	                $objItem->setParentId($objSubNavigationItem->idFolder);
+	                $objItem->setOrder($objSubNavigationItem->pageOrder);            
+	                $objItem->setItemId($objSubNavigationItem->idPage);
+              	}
               }
               $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
             }
