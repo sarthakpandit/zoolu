@@ -229,16 +229,23 @@ class Navigation {
         
       if($this->intRootFolderId > 0){
         $objSubNavigationData = $this->objModelFolders->loadWebsiteStaticSubNavigation($this->intRootFolderId, $intDepth);
-        Zend_Registry::get('Core')->logger->debug($objSubNavigationData);
         $intTreeId = 0;
         foreach($objSubNavigationData as $objSubNavigationItem){
+        	Zend_Registry::get('Core')->logger->debug($objSubNavigationItem);
           if($this->intRootFolderId == $objSubNavigationItem->idFolder){
-            if($objSubNavigationItem->isStartPage == 1){
+            if(isset($objSubNavigationItem->isStartPage) && $objSubNavigationItem->isStartPage == 1){
               $objNavigationTree->setTitle($objSubNavigationItem->folderTitle);
               $objNavigationTree->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);
             }else{
-              if($objSubNavigationItem->pageId != null || $objSubNavigationItem->widgetInstanceId != null){
-              	echo $objSubNavigationItem->widgetInstanceTitle;
+              if(isset($objSubNavigationItem->idWidgetInstance)){
+              	$objItem = new NavigationItem();
+              	$objItem->setTitle($objSubNavigationItem->widgetInstanceTitle);
+              	$objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.'widget');            //TODO Set Url
+              	$objItem->setId($objSubNavigationItem->idWidgetInstance);
+              	$objItem->setParentId($objSubNavigationItem->idFolder);
+              	$objItem->setOrder($objSubNavigationItem->widgetInstanceOrder);
+              	$objItem->setItemId($objSubNavigationItem->idWidgetInstance);
+              }else{
                 $objItem = new NavigationItem();
                 $objItem->setTitle($objSubNavigationItem->pageTitle);
                 $objItem->setUrl('/'.strtolower($objSubNavigationItem->languageCode).'/'.$objSubNavigationItem->url);
@@ -246,8 +253,8 @@ class Navigation {
                 $objItem->setParentId($objSubNavigationItem->idFolder);
                 $objItem->setOrder($objSubNavigationItem->pageOrder);            
                 $objItem->setItemId($objSubNavigationItem->idPage);
-                $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
               }
+              $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
             }
           }else{            
             if($intTreeId != $objSubNavigationItem->idFolder){
