@@ -301,10 +301,10 @@ class Model_Widgets {
                                               folderTitles.version = folders.version AND
                                               folderTitles.idLanguages = ?
                                           ,folders AS parent
-                                            INNER JOIN widgetinstances ON
-                                              widgetinstances.widgetInstanceId = ? AND
-                                              parent.id = widgetinstances.idParent AND
-                                              widgetinstances.idParentTypes = ?
+                                            INNER JOIN widgetInstances ON
+                                              widgetInstances.widgetInstanceId = ? AND
+                                              parent.id = widgetInstances.idParent AND
+                                              widgetInstances.idParentTypes = ?
                                            WHERE folders.lft <= parent.lft AND
                                                  folders.rgt >= parent.rgt AND
                                                  folders.idRootLevels = parent.idRootLevels
