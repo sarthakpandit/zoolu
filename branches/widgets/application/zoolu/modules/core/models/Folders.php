@@ -306,7 +306,8 @@ class Model_Folders {
     
     $sqlStmtWidget = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folders.idParentFolder as parentId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth, folders.sortPosition as folderOrder,
     																					widgetInstances.id AS idWidgetInstance, widgetInstances.widgetInstanceId, widgetInstanceTitles.title AS widgetInstanceTitle, widgetInstances.idStatus AS widgetInstanceStatus, widgetInstances.sortPosition AS widgetInstanceOrder,
-    																				(SELECT languageCode FROM languages WHERE id = ?) AS languageCode
+    																				(SELECT languageCode FROM languages WHERE id = ?) AS languageCode,
+    																			  (SELECT pU.url FROM urls AS pU WHERE pU.urlId = widgetInstances.widgetInstanceId AND pU.version = widgetInstances.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url
                                           FROM folders
                                             INNER JOIN folderTitles ON
                                               folderTitles.folderId = folders.folderId AND
@@ -327,7 +328,7 @@ class Model_Folders {
                                                  folders.showInNavigation = 1
                                                  '.$strFolderFilter.'
                                              ORDER BY folders.lft, widgetInstances.sortPosition ASC, widgetInstances.sortTimestamp DESC, widgetInstances.id ASC'
-    , array($this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intFolderId, $intDepth));
+    , array($this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intFolderId, $intDepth));
 
     return array_merge($sqlStmt->fetchAll(Zend_Db::FETCH_OBJ), $sqlStmtWidget->fetchAll(Zend_Db::FETCH_OBJ));
   }
