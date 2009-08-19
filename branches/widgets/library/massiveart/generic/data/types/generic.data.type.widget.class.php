@@ -72,6 +72,8 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 			$this->getModelWidgets()->setLanguage($this->setup->getLanguageId());
 			
 			$intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+			$strWidgetInstanceId = 0;
+			$intWidgetVersion = 0;
 			
 			switch($this->setup->getActionType()) {
 				case $this->core->sysConfig->generic->actions->add:
@@ -79,7 +81,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 					/**
 					 * WidgetInstanceId is empty, add Widget itself
 					 */
-					$strWidgetId = uniqid();
+					$strWidgetInstanceId = uniqid();
 					$intWidgetVersion = 1;
 					$intSortPosition = GenericSetup::DEFAULT_SORT_POSITION;
 					
@@ -110,13 +112,13 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
                                 'sortTimestamp'   => date('Y-m-d H:i:s'),
                                 'creator'         => $this->setup->getCreatorId(),
                                 'idWidgets'       => $this->setup->getElementTypeId(),
-                                'widgetInstanceId'=> $strWidgetId,
+                                'widgetInstanceId'=> $strWidgetInstanceId,
                                 'version'         => $intWidgetVersion);
           
           $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
-          $this->insertCoreData('widgetInstance', $strWidgetId, $intWidgetVersion);
+          $this->insertCoreData('widgetInstance', $strWidgetInstanceId, $intWidgetVersion);
           //TODO: insert widget url           
-          $this->objModelWidgets->insertUrl($this->setup->getField('title')->getValue(), $strWidgetId, 1);
+          //$this->objModelWidgets->insertUrl($this->setup->getField('title')->getValue(), $strWidgetId, 1);
           break;
           
         case $this->core->sysConfig->generic->actions->edit:
@@ -145,6 +147,17 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
             $this->updateCoreData('widgetInstance', $objWidgetInstances->widgetInstanceId, $objWidgetInstances->version);
           }
 			}
+			
+			/**
+       * now save all the special fields
+       */
+      if(count($this->setup->SpecialFields()) > 0){
+        foreach($this->setup->SpecialFields() as $objField){
+          $objField->setGenericSetup($this->setup);
+          $objField->save($this->setup->getElementId(), 'widget', $strWidgetInstanceId, $intWidgetVersion);
+        }
+      }
+      
 			return $this->setup->getElementId();
 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);

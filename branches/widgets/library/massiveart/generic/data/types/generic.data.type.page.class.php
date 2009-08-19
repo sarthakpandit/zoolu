@@ -117,7 +117,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
                                'idStatus'         => $this->setup->getStatusId());
 
           $this->setup->setElementId($this->objModelPages->getPageTable()->insert($arrMainData));
-
+					
           $this->insertCoreData('page', $strPageId, $intPageVersion);
           $this->insertFileData('page', array('Id' => $strPageId, 'Version' => $intPageVersion));
           $this->insertMultiFieldData('page', array('Id' => $strPageId, 'Version' => $intPageVersion));
