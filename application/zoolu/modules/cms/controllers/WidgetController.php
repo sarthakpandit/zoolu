@@ -340,6 +340,7 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'elementId', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objRequest->getParam('instanceId'), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden')));
  		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
