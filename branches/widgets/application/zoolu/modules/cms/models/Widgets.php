@@ -217,14 +217,45 @@ class Model_Widgets {
   
 	/**
    * loadWidgetByUrl
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadWidgetByUrl($intRootLevelId = 'null', $strUrl){
+    $this->core->logger->debug('cms->models->Model_Widgets->loadWidgetByUrl('.$intRootLevelId.', '.$strUrl.')');
+
+    if($intRootLevelId != 'null') {
+    	return $this->loadWidgetByUrlAndRootLevel($intRootLevelId, $strUrl);
+	  } else {
+	  	
+	    $objSelect = $this->getUrlTable()->select();
+	    $objSelect->setIntegrityCheck(false);
+	
+	    $objSelect->from($this->objUrlTable, array('url'));
+	    $objSelect->join('widgetInstances', 'widgetInstances.widgetInstanceId = urls.urlId 
+	    																		 AND widgetInstances.version = urls.version
+	    																		 AND widgetInstances.idParentTypes = ?', array());
+	   $objSelect->bind($this->core->sysConfig->parent_types->folder);
+	   $objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id');
+	   $objSelect->where('urls.url = ?', $strUrl)
+	   					 ->where('urls.idLanguages = ?', 1);
+	
+	    return $this->objUrlTable->fetchRow($objSelect);
+    }
+  }
+  
+	/**
+   * loadWidgetByUrlAndRootLevel
    * @param integer $intRootLevelId
    * @param string $strUrl
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  public function loadWidgetByUrl($intRootLevelId, $strUrl){
-    $this->core->logger->debug('cms->models->Model_Widgets->loadWidgetByUrl('.$intRootLevelId.', '.$strUrl.')');
+  public function loadWidgetByUrlAndRootLevel($intRootLevelId, $strUrl){
+    $this->core->logger->debug('cms->models->Model_Widgets->loadWidgetByUrlAndRootLevel('.$intRootLevelId.', '.$strUrl.')');
 
     $sqlStmt = $this->core->dbh->query('SELECT urls.urlId, urls.version, urls.idLanguages FROM urls
                                           INNER JOIN widgetInstances ON

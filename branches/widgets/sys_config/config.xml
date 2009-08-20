@@ -70,9 +70,9 @@
       <adapter>Pdo_Mysql</adapter>
       <params>
         <host>localhost</host>
-        <username>zoolu</username>
-        <password>zoolu</password>
-        <dbname>zoolu</dbname>
+        <username>widgets</username>
+        <password>widgets</password>
+        <dbname>widgets</dbname>
       </params>
     </database>
     
@@ -479,6 +479,13 @@
       <portal_startpage>4</portal_startpage>
     </types>
     
+    <!-- URLTYPES -->
+    <!-- table: urltypes -->
+    <urltypes>
+    	<page>1</page>
+    	<widget>2</widget>
+    </urltypes>
+    
     <!-- table: categories / idRootCategory=11, idCategoryTypes=2 -->
     <sort>
       <!-- sorttypes -->
@@ -558,7 +565,7 @@
     
   	<!-- Application Keys -->
   	<key>
-    	<gmaps>ABQIAAAAYd6HpKB1Vfqec8cb_5YrlhRtA2_S2kiI47KJ4sJy_X22ETSKqBTcMnbqrvhiPT2Y5ziNW3jseAb6Ig</gmaps>
+    	<gmaps>ABQIAAAA-HDjFpqTqvSFv3M3yKNuPhTQePH1hJYylhmdxtEdWXIvlpOLiRTMVuvYuc2BctQENanfjZnk_-buzw</gmaps>
   	</key>
   </production>
 
