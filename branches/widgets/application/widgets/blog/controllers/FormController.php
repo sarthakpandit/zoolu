@@ -51,6 +51,13 @@ class Blog_FormController extends AuthControllerAction {
 	private $objModelBlogEntry;
 	
 	/**
+	 * @var Model_WidgetInstanceProperties
+	 */
+	private $objModelWidgetInstanceProperties;
+	
+	const PREFIX_PROPERTY = 'prop_';
+	
+	/**
 	 * init
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
@@ -69,7 +76,7 @@ class Blog_FormController extends AuthControllerAction {
 		$this->core->logger->debug('widgets->blog->FormController->getaddsubwidgetformAction()');
 		
 		try {
-			$this->getForm($this->core->sysConfig->generic->actions->add);
+			$this->getFormArticle($this->core->sysConfig->generic->actions->add);
 			$this->objForm->setAction('/../widget/blog/form/addsubwidget');
 			$this->objForm->prepareForm();
 			$this->view->form = $this->objForm;
@@ -91,7 +98,7 @@ class Blog_FormController extends AuthControllerAction {
 		$this->core->logger->debug('widgets->blog->FormController->addsubwidgetAction()');
 		
 		try {
-			$this->getForm($this->core->sysConfig->generic->actions->add);
+			$this->getFormArticle($this->core->sysConfig->generic->actions->add);
 			if($this->objRequest->getPost() && $this->objRequest->isXmlHttpRequest()) {
 				$arrFormData = $this->objRequest->getPost();
 				$this->objForm->Setup()->setFieldValues($arrFormData);
@@ -142,7 +149,7 @@ class Blog_FormController extends AuthControllerAction {
 		$this->core->logger->debug('widgets->blog->FormController->getsubwidgeteditformAction()');
 		
 		try {
-			$this->getForm($this->core->sysConfig->generic->actions->edit);
+			$this->getFormArticle($this->core->sysConfig->generic->actions->edit);
 
 			$arrData = $this->getModelBlogEntry()->getBlogEntry($this->objRequest->getParam('subWidgetId'));
 			$arrData = array_merge($this->objRequest->getPost(), $arrData);
@@ -172,7 +179,7 @@ class Blog_FormController extends AuthControllerAction {
 		$this->core->logger->debug('widgets->blog->FormController->editsubwidgetAction()');
 		
 		try {
-			$this->getForm($this->core->sysConfig->generic->actions->edit);
+			$this->getFormArticle($this->core->sysConfig->generic->actions->edit);
 			
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
 			
@@ -241,13 +248,69 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
 	/**
-	 * getForm
+	 * getwidgetpropertiesAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getwidgetpropertiesformAction(){
+    $this->core->logger->debug('widgets->blog->FormController->getwidgetpropertiesformAction()');
+
+    
+    try {
+    	$this->getFormProperties($this->core->sysConfig->generic->actions->edit);
+    	
+    	$arrData = $this->getModelWidgetProperties()->getProperties($this->objRequest->getParam('idWidgetInstances'));
+    	$arrFormData = array();
+    	foreach($arrData as $arrProperty) {
+    		$arrFormData['prop_'.$arrProperty['property']] =$arrProperty['value']; 
+    	}
+    	
+    	$this->objForm->Setup()->setFieldValues($arrFormData);
+    	
+    	$this->objForm->setAction('/../widget/blog/form/editwidgetproperties');
+      $this->objForm->prepareForm();
+      
+      $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
+      
+      $this->view->form = $this->objForm;
+      
+      $this->renderScript('page/empty.phtml');
+    }catch(Exception $exc){
+    	$this->core->logger->err($exc);
+    	exit();
+    }
+	}
+	
+	public function editwidgetpropertiesAction() {
+		$this->core->logger->debug('widget->blog->FormController->editwidgetpropertiesAction()');
+		
+		try {
+			$arrFormData = $this->objRequest->getPost();
+			
+			foreach($arrFormData as $strKey => $strValue) {
+				if(preg_match('/^'.self::PREFIX_PROPERTY.'/', $strKey)) {
+					$strProperty = substr($strKey, strlen(self::PREFIX_PROPERTY), strlen($strKey) - strlen(self::PREFIX_PROPERTY));
+					$this->getModelWidgetProperties()->updateProperty($strProperty, $strValue, $arrFormData['idWidgetInstances']);
+				}
+			}
+			
+			$this->view->blnShowFormAlert = true;
+			
+			$this->renderScript('page/empty.phtml');
+		} catch(Excpetion $exc){
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
+	 * getFormArticle
 	 * @param number $intActionType
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
 	 */
-	private function getForm($intActionType = null) {
-		$this->core->logger->debug('widgets->blog->FormController->getForm('.$intActionType.')');
+	private function getFormArticle($intActionType = null) {
+		$this->core->logger->debug('widgets->blog->FormController->getFormArticle('.$intActionType.')');
 		
 		try {
 			$objFormHandler = FormHandler::getInstance();
@@ -289,6 +352,31 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
 	/**
+	 * getFormProperties
+	 * @param number $intActionType
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	private function getFormProperties($intActionType = null) {
+		$this->core->logger->debug('widgets->log->FormController->getFormProperties('.$intActionType.')');
+		try {
+			$objFormHandler = FormHandler::getInstance();
+			$objFormHandler->setFormId('W_BLOG_PROPERTIES');
+			$objFormHandler->setFormVersion(1);
+			$objFormHandler->setActionType($intActionType);
+			$objFormHandler->setLanguageId($this->core->sysConfig->languages->default->id);
+			$objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+			
+			$this->objForm = $objFormHandler->getGenericForm();
+						
+		  $this->objForm->addElement('hidden', 'idWidgetInstances', array('value' => $this->objRequest->getParam('idWidgetInstances'), 'decorators' => array('Hidden'), 'ignore' => true));
+		}catch(Exception $exc){
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
 	 * setViewMetaInfos
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
@@ -324,7 +412,7 @@ class Blog_FormController extends AuthControllerAction {
     if (null === $this->objModelBlogEntry) {
       /**
        * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it 
+       * Since this is an application model, we need to require it
        * from its modules path location.
        */ 
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntry.php';
@@ -332,6 +420,20 @@ class Blog_FormController extends AuthControllerAction {
     }
     
     return $this->objModelBlogEntry;
+  }
+  
+  /**
+   * getModelWidgetProperties
+   * @return Model_WidgetInstanceProperties
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelWidgetProperties(){
+  	if($this->objModelWidgetInstanceProperties == NULL){
+  		require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/WidgetInstanceProperties.php';
+      $this->objModelWidgetInstanceProperties = new Model_WidgetInstanceProperties();
+  	}
+  	return $this->objModelWidgetInstanceProperties;
   }
 }
 ?>

@@ -626,7 +626,8 @@ div.navlevelinner .contact {
 
 .folder, 
 .category,
-.unit {
+.unit,
+.widget {
   background:transparent url(/zoolu/images/icons/arrows.png) no-repeat right 0;
   position:relative;
   padding-right:15px;
