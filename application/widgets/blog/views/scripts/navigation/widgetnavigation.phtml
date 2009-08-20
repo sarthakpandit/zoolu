@@ -3,11 +3,16 @@ require_once(dirname(__FILE__).'/../../helpers/NavigationHelper.php');
 $objHelper = new NavigationHelper();
 ?>            
             <div id="level<?php echo $this->currLevel; ?>" class="navlevelinner" onmouseover="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'show');return false;" onmouseout="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'hide'); return false;">
-            	<div id="widget22" class="page">
-								<div class="icon img_page_on"></div>
-								<div class="title" onclick="myNavigation.getEditForm(22,'widget','W_BLOG_DEFAULT',1,2); return false;">Aktuelle Artikel</div>
+            	<div class="startpage">
+								<div class="icon img_startpage_on"></div>
+								<div class="title" onclick="myNavigation.getEditForm(0,'widget','W_BLOG_DEFAULT',1,2); return false;">Aktuelle Artikel</div>
 							</div>
 							<div class="linegray"></div>
+              <div id="widgetproperties" class="startpage">
+                <div class="icon img_startpage_on"></div>
+                <div class="title" onclick="myNavigation.getWidgetPropertiesForm('<?php echo $this->widgetName; ?>', <?php echo $this->parentId; ?>); return false;">Blog-Einstellungen</div>
+              </div>
+              <div class="linegray"></div>
               <?php echo $objHelper->getNavigationElements($this->childElements, $this->currLevel, $this->widgetName); ?>
             </div>
             
