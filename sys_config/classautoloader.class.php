@@ -51,7 +51,8 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'PluginLoader'            => '/library/massiveart/loader/pluginLoader.class.php',
     'FormElementXhtmlAbstract'=> '/library/massiveart/generic/forms/fields/form.element.xhtml.abstract.class.php',
     'FormElementMultiAbstract'=> '/library/massiveart/generic/forms/fields/form.element.multi.abstract.class.php',
-  	'Widget'									=> '/library/massiveart/website/widget.class.php'
+  	'Widget'									=> '/library/massiveart/website/widget.class.php',
+  	'SeoUrlPlugin'						=> '/library/massiveart/utilities/seourl.zendplugin.php'
     //'GuiTexts'              => '/library/massiveart/utilities/guiTexts.class.php'
   );
 

@@ -41,16 +41,14 @@
  */
 
 class Blog_IndexController extends AuthControllerAction  {
-	/**
-   * @var GenericForm
-   */
-  var $objForm;
   
 	/**
    * request object instance
    * @var Zend_Controller_Request_Abstract
    */
   protected $objRequest;
+  protected $strLanguageCode;
+  protected $intLanguageId;
   
 	/**
    * init
@@ -62,47 +60,17 @@ class Blog_IndexController extends AuthControllerAction  {
     parent::init();
     $this->objRequest = $this->getRequest();
   }
-  
-	/**
-   * geteditformAction
-   * @author Florian Mathis <flo@massiveart.com>
-   * @version 1.0
-   */
-	public function geteditformAction() {
-		$this->core->logger->debug('widget->blog->controllers->IndexController->geteditformAction()');
-
-		$this->renderScript('form.phtml');
-	}
 	
-	/**
-   * addAction
+  /**
+   * indexAction
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-	public function addAction() {
-		$this->core->logger->debug('widget->blog->controllers->IndexController->addAction()');
-		
-		/**
-		 * Get Form Data
-		 */
-		$strTitle = $this->objRequest->getParam("blog_title");
-		$arrFormData = $this->objRequest->getPost();
-		
-		$objStaticFormHandler = StaticFormHandler::getInstance();
-		$objStaticFormHandler->setModuleName('blog');
-		$objStaticFormHandler->setHandlerDirectory('application/widgets/blog/models');
-		
-		$objStaticFormHandler->save($arrFormData);
-		// -> loadAllFields
-		// -> set Form Data
-		// -> save
-		
-		/**
-		 * Debug
-		 */
-		//$this->core->logger->debug('BlogTitle: '.$strTitle);
-		$this->renderScript('form.phtml');
-	}
+  public function indexAction(){    
+  	$objTheme->path = 'default';
+  	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+    $this->renderScript('master.php');
+  }
 }
 
 ?>

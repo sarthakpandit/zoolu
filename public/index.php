@@ -50,6 +50,7 @@ $front->setControllerDirectory('../application/website/default/controllers');
 $front->addControllerDirectory('../application/zoolu/modules/core/controllers', 'zoolu');
 $front->addModuleDirectory('../application/widgets');                
 $front->addModuleDirectory('../application/zoolu/modules');
+$front->registerPlugin(new SeoUrlPlugin);
 
 /**
  * add helper path
