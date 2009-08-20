@@ -177,9 +177,6 @@ class IndexController extends Zend_Controller_Action {
                                           'File',
                                           $arrFrontendOptions,
                                           $arrBackendOptions);
-  
-    $objSiteType = $this->objModelFolders->getSitetypeByUrl($strUrl); 
-    $strSiteType = $objSiteType->idUrlTypes;                                   	
 
     $strCacheId = 'page_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
     if($this->core->sysConfig->cache->page == 'false' ||
@@ -193,32 +190,13 @@ class IndexController extends Zend_Controller_Action {
       require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
       Zend_Registry::set('Navigation', $objNavigation);
 
-      switch($strSiteType) {      	
-      	/**
-      	 * Load Page Model
-      	 */
-      	case 1: {
-	      	$this->getModelPages();
-	      	$this->objUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl);
-	      	
-		      foreach($this->objUrlsData as $objPageData){
-		        $this->objUrlsData = $objPageData;
-		      }
-      	} break;
-      	
-      	/**
-      	 * Load Widget Model
-      	 */
-      	case 2: {
-      		$this->getModelWidgets();
-      		$this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($objTheme->idRootLevels, $strUrl);
-      		
-      		foreach($this->objUrlsData as $objWidgetData){
-		        $this->objUrlsData = $objWidgetData;
-		      }
-      	} break;
+      $this->getModelPages();
+      $this->objUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl);
+      
+      foreach($this->objUrlsData as $objPageData){
+        $this->objUrlsData = $objPageData;
       }
-
+      	
       if(count($this->objUrlsData) > 0){
 
         $this->core->logger->debug('Cache: '.$this->core->sysConfig->cache->page);
@@ -227,58 +205,36 @@ class IndexController extends Zend_Controller_Action {
           $this->objCache->start($strCacheId);
           $this->blnCachingStart = true;
         }
-				
-	     switch($strSiteType) { 
-	     	/**
-	     	 * Page
-	     	 */
-	     	case 1: {
-	        $this->objPage = new Page();
-	        $this->objPage->setRootLevelId($objTheme->idRootLevels);
-	        $this->objPage->setRootLevelTitle($objTheme->title);
-	        $this->objPage->setPageId($this->objUrlsData->urlId);
-	        $this->objPage->setPageVersion($this->objUrlsData->version);
-	        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
-	
-	        $this->objPage->loadPage();
-	        
-	        /**
-	         * set values for replacers
-	         */
-	        Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
-	        Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
-	
-	        $objNavigation->setPage($this->objPage);
-	
-	        /**
-	         * get page template filename
-	         */
-	        $this->view->template = $this->objPage->getTemplateFile();
-	
-	        $this->view->intRootLevelId = $this->objPage->getRootLevelId();
-	        //$this->view->strRootLevelUrl = $this->core->sysConfig->url->base;
-	        $this->view->publisher = $this->objPage->getPublisherName();
-	        $this->view->publishdate = $this->objPage->getPublishDate();
-	
-	        Zend_Registry::set('Page', $this->objPage);
-	        require_once(dirname(__FILE__).'/../helpers/page.inc.php');
-        } break;
+		
+        $this->objPage = new Page();
+        $this->objPage->setRootLevelId($objTheme->idRootLevels);
+        $this->objPage->setRootLevelTitle($objTheme->title);
+        $this->objPage->setPageId($this->objUrlsData->urlId);
+        $this->objPage->setPageVersion($this->objUrlsData->version);
+        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
+
+        $this->objPage->loadPage();
         
         /**
-         * Widget
+         * set values for replacers
          */
-	     	case 2: {
-	     		$this->objWidget = new Widget();
-	     		$this->objWidget->setRootLevelId($objTheme->idRootLevels);
-	     		$this->objWidget->setRootLevelTitle($objTheme->title);
-	     		$this->objWidget->setWidgetInstanceId($this->objUrlsData->urlId);
-	     		$this->objWidget->setWidgetVersion($this->objUrlsData->version);
-	        $this->objWidget->setLanguageId($this->objUrlsData->idLanguages);
-	        Zend_Registry::set('Widget', $this->objWidget);
-	        
-	     		require_once(dirname(__FILE__).'/../helpers/widget.inc.php');
-	     	} break;
-	    }
+        Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
+        Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
+
+        $objNavigation->setPage($this->objPage);
+
+        /**
+         * get page template filename
+         */
+        $this->view->template = $this->objPage->getTemplateFile();
+
+        $this->view->intRootLevelId = $this->objPage->getRootLevelId();
+        //$this->view->strRootLevelUrl = $this->core->sysConfig->url->base;
+        $this->view->publisher = $this->objPage->getPublisherName();
+        $this->view->publishdate = $this->objPage->getPublishDate();
+
+        Zend_Registry::set('Page', $this->objPage);
+        require_once(dirname(__FILE__).'/../helpers/page.inc.php');
         
         $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
         $this->renderScript('master.php');
@@ -314,26 +270,7 @@ class IndexController extends Zend_Controller_Action {
     return $this->objModelPages;
   }
   
-	/**
-   * getModelWidgets
-   * @return Model_Widgets
-   * @author Florian Mathis <flo@massiveart.com>
-   * @version 1.0
-   */
-  protected function getModelWidgets(){
-    if (null === $this->objModelWidgets) {
-      /**
-       * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it
-       * from its modules path location.
-       */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
-      $this->objModelWidgets = new Model_Widgets();
-      $this->objModelWidgets->setLanguage($this->intLanguageId);
-    }
 
-    return $this->objModelWidgets;
-  }
 
   /**
    * getModelFolders
