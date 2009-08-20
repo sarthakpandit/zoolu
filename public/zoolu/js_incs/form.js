@@ -64,15 +64,15 @@ Massiveart.Form = Class.create({
         evalScripts: true,
         onComplete: function() {         
           if(this.blnShowFormAlert){
+        	//saved
+  	        this.getFormSaveSucces();
             if($F('rootLevelId') != '' && $F('rootLevelId') > 0){
-	            myNavigation.updateNavigationLevel();
-	          }                  
-	          //saved
-	          this.getFormSaveSucces();
+	          myNavigation.updateNavigationLevel();
+	        }                  
 	          
-	          if($('isStartPage') && $F('isStartPage') == 0){
-	            $('buttondelete').show();
-	          }
+	        if($('isStartPage') && $F('isStartPage') == 0){
+	          $('buttondelete').show();
+	        }
           }else{
             this.getFormSaveError();
           }
@@ -871,7 +871,7 @@ Massiveart.Form = Class.create({
    * getFormSaveLoader
    */
   getFormSaveLoader: function(){
-    $('divFormSaveLoader').show();    
+    $('divFormSaveLoader').show();
   },
   
   /**

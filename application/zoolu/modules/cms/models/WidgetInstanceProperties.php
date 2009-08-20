@@ -68,7 +68,7 @@ class Model_WidgetInstanceProperties {
 		try {
 			$strWhere = $this->getWidgetInstancePropertiesTable()->getAdapter()->quoteInto('idWidgetInstances = ?', $intWidgetInstanceId);
 			$strWhere .= ' AND '.$this->getWidgetInstancePropertiesTable()->getAdapter()->quoteInto('property = ?', $strProperty);
-			$this->core->logger->debug($strWhere);
+			
 			$this->getWidgetInstancePropertiesTable()->delete($strWhere);
 			
 			$this->getWidgetInstancePropertiesTable()->insert(array('property' => $strProperty, 'value' => $strValue, 'idWidgetInstances' => $intWidgetInstanceId));

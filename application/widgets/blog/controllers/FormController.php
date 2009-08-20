@@ -285,16 +285,34 @@ class Blog_FormController extends AuthControllerAction {
 		$this->core->logger->debug('widget->blog->FormController->editwidgetpropertiesAction()');
 		
 		try {
-			$arrFormData = $this->objRequest->getPost();
+			$this->getFormProperties($this->core->sysConfig->generic->actions->edit);
+			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
 			
-			foreach($arrFormData as $strKey => $strValue) {
-				if(preg_match('/^'.self::PREFIX_PROPERTY.'/', $strKey)) {
-					$strProperty = substr($strKey, strlen(self::PREFIX_PROPERTY), strlen($strKey) - strlen(self::PREFIX_PROPERTY));
-					$this->getModelWidgetProperties()->updateProperty($strProperty, $strValue, $arrFormData['idWidgetInstances']);
+			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()){
+				$arrFormData = $this->objRequest->getPost();
+				$this->objForm->Setup()->setFieldValues($arrFormData);
+				
+				foreach($arrFormData as $strKey => $strValue) {
+					if(preg_match('/^'.self::PREFIX_PROPERTY.'/', $strKey)) {
+						$strProperty = substr($strKey, strlen(self::PREFIX_PROPERTY), strlen($strKey) - strlen(self::PREFIX_PROPERTY));
+						$this->getModelWidgetProperties()->updateProperty($strProperty, $strValue, $arrFormData['idWidgetInstances']);
+					}
 				}
+				
+			  $this->objForm->prepareForm();
+
+        if($this->objForm->isValid($arrFormData)){
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          $this->view->assign('blnShowFormAlert', false);
+        }
+			}else{
+				$this->objForm->prepareForm();
 			}
 			
-			$this->view->blnShowFormAlert = true;
+			$this->objForm->setAction('/../widget/blog/form/editwidgetproperties');
+			
+			$this->view->form = $this->objForm;
 			
 			$this->renderScript('page/empty.phtml');
 		} catch(Excpetion $exc){
