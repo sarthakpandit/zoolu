@@ -59,7 +59,6 @@ function get_portal_title(){
 }
 
 function get_meta_description(){}
-
 function get_meta_keywords(){}
 
 /**

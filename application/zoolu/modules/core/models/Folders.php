@@ -967,9 +967,14 @@ class Model_Folders {
   		$objSelect = $this->getUrlTable()->select();
 	    $objSelect->setIntegrityCheck(false);
 
-	    $objSelect->from('urls', array('idUrlTypes'));
-	    $objSelect->where('urls.url  = ?', $strUrl);
-	
+	    $objSelect->from('urls', array('url', 'LENGTH(TRIM(TRAILING \'/\' FROM url)) - LENGTH(REPLACE(TRIM(TRAILING \'/\' FROM url), \'/\', \'\')) AS slashes', 'idUrlTypes', 'url'));
+	    $objSelect->where('? LIKE CONCAT(urls.url, \'%\')', $strUrl);
+	    $objSelect->order('slashes DESC');
+	    $objSelect->limit(1);
+	    
+			// SELECT LENGTH(TRIM(TRAILING '/' FROM url)) - LENGTH(REPLACE(TRIM(TRAILING '/' FROM url), '/', '')) AS slashes, url, idUrlTypes 
+			// FROM urls WHERE 'hauptpunkt-2/test/asdf' LIKE CONCAT(url, '%') ORDER BY slashes DESC LIMIT 1
+
 	    return $this->getUrlTable()->fetchRow($objSelect);
   	}catch (Exception $exc) {
       $this->core->logger->err($exc);

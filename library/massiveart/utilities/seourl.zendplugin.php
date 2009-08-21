@@ -72,10 +72,18 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
 					$objModelWidgets = new Model_Widgets();
 					$objModelWidgets->setLanguage($this->intLanguageId);
-					$objWidget = $objModelWidgets->loadWidgetByUrl('null', $strUrl);
-	
-					$this->getRequest()->setRequestUri('widget/'.$objWidget->name.'/index');
-	    		//$this->getRequest()->setControllerName('blog_index');
+					$objWidgetUrl = $objModelWidgets->loadWidgetByUrl('null', $objUrl->url);
+					
+					/* non-performance thing!*/
+					//$arrModifiedUrl = explode('/', substr(str_replace($objUrl->url, '', $strUrl), 1));
+					//$strParams = str_replace($strUrl, '', ltrim(substr(str_replace($objUrl->url, '', $strUrl), 1),'/'));
+					//$strParams = explode('/', (ltrim(substr($strParams,strpos($strParams, '/')), '/')));
+					//$this->getRequest()->setParams($strParams);
+					
+					$objWidget = new Widget();
+					Zend_Registry::set('Widget', $objWidget);
+					
+					$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index/'.$arrModifiedUrl[0]);
 				} break;
 				
 				/**
