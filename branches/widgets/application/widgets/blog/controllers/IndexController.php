@@ -55,6 +55,11 @@ class Blog_IndexController extends AuthControllerAction  {
    */
   protected $objWidget;
   
+  /**
+   * @var Model_Folders
+   */
+  protected $objModelFolders;
+  
 	/**
    * init
    * @author Florian Mathis <flo@massiveart.com>
@@ -76,9 +81,63 @@ class Blog_IndexController extends AuthControllerAction  {
   	
   	$strUrl = $_SERVER['REQUEST_URI'];
   	
+  	$strDomain = $_SERVER['SERVER_NAME'];
+  	
+  	/**
+  	 * Save language-prefix and remove it from the Url
+  	 */
+    if(preg_match('/^\/[a-zA-Z]{2}\//', $strUrl)){
+      preg_match('/^\/[a-zA-Z]{2}\//', $strUrl, $arrMatches);
+      $this->strLanguageCode = trim($arrMatches[0], '/');
+      foreach($this->core->webConfig->languages->language->toArray() as $arrLanguage){
+        if(array_key_exists('code', $arrLanguage) && $arrLanguage['code'] == strtolower($this->strLanguageCode)){
+          $this->intLanguageId = $arrLanguage['id'];
+          break;
+        }
+      }
+      if($this->intLanguageId == null){
+        $this->intLanguageId = $this->core->sysConfig->languages->default->id;
+        $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
+      }
+      $strUrl = preg_replace('/^\/[a-zA-Z]{2}\//', '', $strUrl);
+    }else{
+      $strUrl = preg_replace('/^\//', '', $strUrl);
+      $this->intLanguageId = $this->core->sysConfig->languages->default->id;
+      $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
+    }
+    
+    /**
+     * Get the theme for this domain
+     */
+    $this->getModelFolders();
+    $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
+    
+    //FIXME: Front- and Backend-Options? Cache?
+  	
   	require_once(dirname(__FILE__).'/../../../website/default/helpers/widget.inc.php');
   	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
     $this->renderScript('master.php');
+  }
+  
+  /**
+   * getModelFolders
+   * @return Model_Folders
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelFolders(){
+    if (null === $this->objModelFolders) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
+      $this->objModelFolders = new Model_Folders();
+      $this->objModelFolders->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelFolders;
   }
 }
 
