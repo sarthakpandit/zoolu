@@ -50,6 +50,11 @@ class Blog_IndexController extends AuthControllerAction  {
   protected $strLanguageCode;
   protected $intLanguageId;
   
+  /**
+   * @var Widget
+   */
+  protected $objWidget;
+  
 	/**
    * init
    * @author Florian Mathis <flo@massiveart.com>
@@ -68,6 +73,10 @@ class Blog_IndexController extends AuthControllerAction  {
    */
   public function indexAction(){    
   	$objTheme->path = 'default';
+  	
+  	$strUrl = $_SERVER['REQUEST_URI'];
+  	
+  	require_once(dirname(__FILE__).'/../../../website/default/helpers/widget.inc.php');
   	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
     $this->renderScript('master.php');
   }

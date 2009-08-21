@@ -281,6 +281,11 @@ class Blog_FormController extends AuthControllerAction {
     }
 	}
 	
+	/**
+	 * editwidgetpropertiesAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
 	public function editwidgetpropertiesAction() {
 		$this->core->logger->debug('widget->blog->FormController->editwidgetpropertiesAction()');
 		
