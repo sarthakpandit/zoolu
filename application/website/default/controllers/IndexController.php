@@ -205,7 +205,7 @@ class IndexController extends Zend_Controller_Action {
           $this->objCache->start($strCacheId);
           $this->blnCachingStart = true;
         }
-		
+        
         $this->objPage = new Page();
         $this->objPage->setRootLevelId($objTheme->idRootLevels);
         $this->objPage->setRootLevelTitle($objTheme->title);
