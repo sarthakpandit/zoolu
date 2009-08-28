@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -78,7 +78,8 @@ class GenericSubForm extends Zend_Form_SubForm {
                                                     'strLinkedPageBreadcrumb',
                                                     'intVideoTypeId',
                                                     'strVideoUserId',
-                                                    'strVideoThumb');
+                                                    'strVideoThumb',
+                                                    'objPageInternalLinks');
 
   /**
    * Constructor
@@ -90,7 +91,7 @@ class GenericSubForm extends Zend_Form_SubForm {
      * Zend_Form_SubForm
      */
     parent::__construct($options);
-    
+
     /**
      * Use our own PluginLoader
      */

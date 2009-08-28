@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -31,7 +31,7 @@
  */
 /**
  * This PluginLoader holds other PluginLoaders from Zend, for managing them.
- * 
+ *
  * @author Daniel Rotter <daniel.rotter@massiveart.com>
  * @version 1.0
  * @package massiveart.loader
@@ -41,19 +41,19 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	const TYPE_FORM_HELPER = 'helper';
 	const TYPE_FORM_ELEMENT = 'element';
 	const TYPE_FORM_DECORATOR = 'decorator';
-	
+
 	/**
-	 * 
+	 *
 	 * @var Zend_Loader_PluginLoader
 	 */
 	private $objPluginLoader;
-	
+
 	/**
 	 * Defines the Objecttype
 	 * @var string
 	 */
 	private $strType;
-	
+
 	/**
 	 * Defines the objects from the core of zoolu
 	 * @var array
@@ -61,8 +61,8 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	private $arrFields = array('Contact', 'Document', 'Dselect', 'InternalLink',
 	                           'Media', 'MultiCheckboxTree', 'SelectTree', 'Tab',
 	                           'TabContainer', 'Tag', 'Template', 'Texteditor',
-	                           'TextDisplay', 'Url');
-	
+	                           'TextDisplay', 'Url', 'InternalLinks');
+
 	/**
 	 * Returns the internal PluginLoader
 	 * @return Zend_Loader_PluginLoader
@@ -73,7 +73,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 		}
 		return $this->objPluginLoader;
 	}
-	
+
 	/**
 	 * Sets the internal PluginLoader
 	 * @param Zend_Loader_PluginLoader $objPluginLoader
@@ -81,7 +81,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	public function setPluginLoader(Zend_Loader_PluginLoader &$objPluginLoader){
 		$this->objPluginLoader = $objPluginLoader;
 	}
-	
+
 	/**
 	 * Sets the type of the PluginLoader
 	 * @param $strType
@@ -89,7 +89,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	public function setPluginType($strType){
 		$this->strType = $strType;
 	}
-	
+
   /**
    * Add prefixed paths to the registry of paths
    *
@@ -100,8 +100,8 @@ class PluginLoader extends Zend_Loader_PluginLoader{
   public function addPrefixPath($prefix, $path){
   	return $this->getPluginLoader()->addPrefixPath($prefix, $path);
   }
-  
-  
+
+
   /**
    * Remove a prefix (or prefixed-path) from the registry
    *
@@ -112,7 +112,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
   public function removePrefixPath($prefix, $path = null){
   	return $this->getPluginLoader()->removePrefixPath($prefix, $path);
   }
-  
+
   /**
    * Whether or not a Helper by a specific name
    *
@@ -131,14 +131,14 @@ class PluginLoader extends Zend_Loader_PluginLoader{
   public function getClassName($name){
   	return $this->getPluginLoader()->getClassName($name);
   }
-  
+
   /**
    * Load a helper via the name provided
    *
    * @param string $name
    * @return string
    */
-  public function load($name){ 
+  public function load($name){
   	//change name for checking
   	$strName = str_replace('Form', '', $name);
   	if(in_array(ucfirst($strName), $this->arrFields)){
@@ -162,7 +162,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
       $this->addPrefixPath($strPrefixField, $strPathField);
       $strClassName = $this->getPluginLoader()->load($name);
       //Zend_Registry::get('Core')->logger->debug('PluginLoader: Plugin '.$strClassName.' loaded');
-      
+
       $this->removePrefixPath($strPrefixField);
   	}
   	else{
@@ -181,19 +181,19 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	  		default:
 	  			$strPrefixPlugin = 'Plugin_DataHelper';
 	  	}
-	  	
+
 	  	//Add Plugin and Field Path
 	  	$strPathPlugin = $this->getPluginPath($name);
 	  	$this->addPrefixPath($strPrefixPlugin, $strPathPlugin);
 	  	$strClassName = $this->getPluginLoader()->load($name);
-	  	
+
 	  	//Remove the Paths
 	  	$this->removePrefixPath($strPrefixPlugin);
   	}
   	//Return the loaded classname
   	return $strClassName;
   }
-  
+
   /**
    * Returns the Path for the Plugin
    * @param $strPlugin
@@ -223,10 +223,10 @@ class PluginLoader extends Zend_Loader_PluginLoader{
   			$strName = ucfirst($strPlugin);
   			$strPath = GLOBAL_ROOT_PATH.str_replace($strSearch, $strName, $strPath);
   	}
-  	
+
   	return $strPath;
   }
-  
+
   /**
    * Returns the Path for the Field
    * @param $strField
@@ -256,7 +256,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
         $strName = ucfirst($strField);
         $strPath = GLOBAL_ROOT_PATH.str_replace($strSearch, $strName, $strPath);
     }
-    
+
     return $strPath;
   }
 }

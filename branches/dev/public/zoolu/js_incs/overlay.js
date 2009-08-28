@@ -99,16 +99,17 @@ Massiveart.Overlay = Class.create({
   
   /**
    * selectPage
-   * @param integer pageId
+   * @param integer idPage
+   * @param string pageId
    */
-  selectPage: function(pageId){
+  selectPage: function(idPage, pageId){
     
     myCore.addBusyClass('overlayGenContent');
     
     if('divLinkedPage_'+this.fieldId){
       new Ajax.Updater('divLinkedPage_'+this.fieldId, '/zoolu/cms/page/linkedpagefield', {
         parameters: { 
-         pageId: pageId,
+         pageId: idPage,
          fieldId: this.fieldId, 
          formId: $F('formId'),
          formVersion: $F('formVersion')
@@ -125,6 +126,50 @@ Massiveart.Overlay = Class.create({
   },
   
   /**
+   * addPageToListArea
+   * @param integer idPage
+   * @param string pageId
+   */
+  addPageToListArea: function(id, pageId){
+        
+    itemId = 'olPageItem'+pageId;
+    
+    if($(this.areaId) && $(itemId)){
+      
+      // get the hidden field id
+      var fieldId = this.areaId.substring(this.areaId.indexOf('_')+1);
+      var iconRemoveId = fieldId+'_remove'+id;
+      
+      // create new media item container
+      var mediaItemContainer = '<div id="'+fieldId+'_page'+id+'" pageid="'+pageId+'" class="pageitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
+      if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
+      new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
+      
+      if($('Page'+id)){
+        $('Page'+id).removeAttribute('onclick');
+        $('Page'+id).removeAttribute('style');
+      }
+      if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
+           
+      // insert file id to hidden field - only 1 insert is possible
+      if($(fieldId).value.indexOf('[' + pageId + ']') == -1){
+        $(fieldId).value = $(fieldId).value + '[' + pageId + ']';
+      } 
+      
+      $(fieldId+'_page'+id).appear({ duration: 0.5 });
+      $(itemId).fade({ duration: 0.5 });
+      
+      // add remove method to remove icon
+      if($(iconRemoveId)){
+        $(iconRemoveId).show();
+        $(iconRemoveId).onclick = function(){
+          myForm.removeItem(fieldId, fieldId+'_page'+id, pageId);
+        }
+      }
+    }    
+  },
+  
+  /**
    * getNavItem
    * @param integer folderId, integer viewtype
    */
@@ -135,7 +180,7 @@ Massiveart.Overlay = Class.create({
       this.getMediaFolderContent(folderId, viewtype); 
     }else{
       if(folderId != ''){
-	      var subNavContainer = '<div id="olsubnav'+folderId+'" style="display:none;"></div>'; 
+	    var subNavContainer = '<div id="olsubnav'+folderId+'" style="display:none;"></div>'; 
         new Insertion.Bottom('olnavitem'+folderId, subNavContainer);
 	      
 	      this.toggleSubNavItem(folderId);

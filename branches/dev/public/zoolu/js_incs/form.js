@@ -248,6 +248,28 @@ Massiveart.Form = Class.create({
   },
   
   /**
+   * getAddInternalLinksOverlay
+   */
+   getAddInternalLinksOverlay: function(areaId){    
+    $(this.updateOverlayContainer).innerHTML = '';
+    myCore.putCenter('overlayGenContentWrapper');
+    $('overlayGenContentWrapper').show();    
+    if($(areaId)){
+      var fieldname = areaId.substring(areaId.indexOf('_')+1);
+      new Ajax.Updater(this.updateOverlayContainer, '/zoolu/cms/overlay/pagetree', { 
+        parameters: { portalId: myNavigation.rootLevelId,
+                      itemAction: 'myOverlay.addPageToListArea',
+                      pageIds: $(fieldname).value},
+        evalScripts: true,
+        onComplete: function(){
+          myCore.putOverlayCenter('overlayGenContentWrapper');
+          myOverlay.areaId = areaId;
+        } 
+      });
+    }    
+  },
+  
+  /**
    * getAddContactOverlay
    */
   getAddContactOverlay: function(areaId){    
@@ -290,21 +312,26 @@ Massiveart.Form = Class.create({
   /**
    * removeItem
    */
-  removeItem: function(fieldId, elementId, id){    
+  removeItem: function(fieldId, elementId, id){  
     if($(fieldId) && $(elementId)){     
-      fileId = $(elementId).readAttribute('fileid');
-      if($(fieldId).value.indexOf('[' + fileId + ']') > -1){
-        $(fieldId).value = $(fieldId).value.replace('[' + fileId + ']', '');
+      itemId = $(elementId).readAttribute('fileid');
+      if(itemId == null){
+        itemId = $(elementId).readAttribute('pageid');
+      }
+      if($(fieldId).value.indexOf('[' + itemId + ']') > -1){
+        $(fieldId).value = $(fieldId).value.replace('[' + itemId + ']', '');
  
         // delete element out of field area (media, doc)
         $(elementId).fade({ duration: 0.5 });
         setTimeout('$(\''+elementId+'\').remove()', 500);
         if($('divMediaContainer_'+fieldId)) new Effect.Highlight('divMediaContainer_'+fieldId, {startcolor: '#ffd300', endcolor: '#ffffff'});
         if($('divDocumentContainer_'+fieldId)) new Effect.Highlight('divDocumentContainer_'+fieldId, {startcolor: '#ffd300', endcolor: '#ffffff'});
+        if($('divInternalLinksContainer_'+fieldId)) new Effect.Highlight('divInternalLinksContainer_'+fieldId, {startcolor: '#ffd300', endcolor: '#ffffff'});
         
         // display deleted element in overlay (media, doc)
         if($('olMediaItem'+id)) $('olMediaItem'+id).appear({ duration: 0.5 });
         if($('olDocItem'+id)) $('olDocItem'+id).appear({ duration: 0.5 });
+        if($('olPageItem'+id)) $('olPageItem'+id).appear({ duration: 0.5 });
       }    
     }    
   },

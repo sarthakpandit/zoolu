@@ -271,6 +271,10 @@ Content */
   padding-top:12px;
 }
 
+.divContentSidebar ul {
+  padding-bottom:20px;
+}
+
 .divContentContainer .divImgLeft {
   padding:0 10px 5px 0;
 }

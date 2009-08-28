@@ -45,7 +45,7 @@ Basics */
   cursor:pointer; 
 }
 
-.itemremovelist {
+.itemremovelist, .itemremovelist2 {
   background:url(/zoolu/images/icons/icon_close.png) no-repeat 0 0;
   width:11px; 
   height:11px;
@@ -53,6 +53,10 @@ Basics */
   float:left;
   margin:11px 10px 0 0;
   display:inline;  
+}
+
+.itemremovelist2 {
+  margin:3px 0 0 10px;    
 }
 
 .itemadd {
@@ -532,6 +536,45 @@ Document Chooser Element */
 
 .docitem {
   margin:0 0 0 10px;
+  border-bottom:1px solid #e4e4e4;
+}
+
+/* ----------------
+Internal Links Chooser Element */
+
+.internallinkswrapper {
+  width:100%; 
+}
+
+.internallinkswrapper div {
+   
+}
+
+.internallinkswrapper .top {
+  text-align:right;
+  background-color:#e4e4e4;
+  height:16px;
+  margin:2px 0 0 0;
+  padding:2px 0 0 0;
+  border:1px solid #e4e4e4;
+}
+
+.internallinkswrapper .top img {
+  border:0;
+  vertical-align:middle;
+  margin:0 5px 0 2px;
+  cursor:pointer;
+}
+
+.internallinkswrapper .internalLinks {
+  border:1px solid #ccc;
+  min-height:50px;
+  padding:2px 0 10px 0;
+}
+
+.pageitem {
+  margin:0 0 0 10px;
+  padding:4px 0 4px 0;
   border-bottom:1px solid #e4e4e4;
 }
 

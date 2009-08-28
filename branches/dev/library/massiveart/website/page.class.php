@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -375,6 +375,25 @@ class Page {
       }
 
       return $this->arrCategoriesData[$strFieldName];
+
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getInternalLinks
+   * @param string $strFieldName
+   * @return object $objTagsData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getInternalLinks(){
+    try{
+
+      $this->getModelPages();
+      $this->objModelPages->setLanguageId($this->intLanguageId);
+      return $this->objModelPages->loadPageInternalLinks($this->strPageId, $this->intPageVersion);
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

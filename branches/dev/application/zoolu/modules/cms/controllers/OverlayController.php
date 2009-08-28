@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -32,36 +32,36 @@
 
 /**
  * OverlayController
- * 
+ *
  * Version history (please keep backward compatible):
  * 1.0, 2008-11-24: Cornelius Hansjakob
- * 
+ *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
 
 class Cms_OverlayController extends AuthControllerAction {
-	
+
 	private $intRootLevelId;
   private $intFolderId;
-  
+
   private $arrFileIds = array();
-	
+
 	/**
    * @var Model_Folders
    */
   protected $objModelFolders;
-  
+
   /**
    * @var Model_Files
    */
   protected $objModelFiles;
-	
+
   /**
    * @var Model_Contacts
    */
   protected $objModelContacts;
-  
+
 	/**
    * indexAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -75,40 +75,40 @@ class Cms_OverlayController extends AuthControllerAction {
    * @version 1.0
    */
   public function mediaAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->mediaAction()');    
-    $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->images);    
+    $this->core->logger->debug('cms->controllers->OverlayController->mediaAction()');
+    $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->images);
     $this->view->assign('overlaytitle', 'Medien zuweisen');
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->thumb);
-    $this->renderScript('overlay/overlay.phtml');       
+    $this->renderScript('overlay/overlay.phtml');
   }
-  
+
   /**
    * documentAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
   public function documentAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->documentAction()');    
-    $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->documents);    
+    $this->core->logger->debug('cms->controllers->OverlayController->documentAction()');
+    $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->documents);
     $this->view->assign('overlaytitle', 'Dokumente zuweisen');
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
-    $this->renderScript('overlay/overlay.phtml');       
+    $this->renderScript('overlay/overlay.phtml');
   }
-  
+
   /**
    * contactAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function contactAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->contactAction()');    
-    
+    $this->core->logger->debug('cms->controllers->OverlayController->contactAction()');
+
     $this->loadRootContactsAndUnits();
-        
+
     $this->view->assign('overlaytitle', 'Kontakt zuweisen');
-    $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);          
+    $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
   }
-  
+
   /**
    * pagetreeAction
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -116,89 +116,98 @@ class Cms_OverlayController extends AuthControllerAction {
    */
   public function pagetreeAction(){
     $this->core->logger->debug('cms->controllers->OverlayController->pagetreeAction()');
-    
+
     $objRequest = $this->getRequest();
     $intPortalId = $objRequest->getParam('portalId');
-    
+    $strItemAction = $objRequest->getParam('itemAction', 'myOverlay.selectPage');
+
+    $strPageIds = $objRequest->getParam('pageIds');
+
+    $strTmpPageIds = trim($strPageIds, '[]');
+    $arrPageIds = split('\]\[', $strTmpPageIds);
+
+
     $this->loadPageTreeForPortal($intPortalId);
     $this->view->assign('overlaytitle', 'Seite wählen');
+    $this->view->assign('itemAction', $strItemAction);
+    $this->view->assign('pageIds', $arrPageIds);
   }
-  
+
   /**
    * thumbviewAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
   public function thumbviewAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->thumbviewAction()');	
-  	
+    $this->core->logger->debug('cms->controllers->OverlayController->thumbviewAction()');
+
     $objRequest = $this->getRequest();
     $intFolderId = $objRequest->getParam('folderId');
     $strFileIds = $objRequest->getParam('fileIds');
 
     $strTmpFileIds = trim($strFileIds, '[]');
     $this->arrFileIds = split('\]\[', $strTmpFileIds);
-    
+
     /**
      * get files
      */
     $this->getModelFiles();
     $objFiles = $this->objModelFiles->loadFiles($intFolderId);
-    
+
     $this->view->assign('objFiles', $objFiles);
-    $this->view->assign('arrFileIds', $this->arrFileIds);    
+    $this->view->assign('arrFileIds', $this->arrFileIds);
   }
-  
+
   /**
    * listviewAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
   public function listviewAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->listviewAction()'); 
-    
+    $this->core->logger->debug('cms->controllers->OverlayController->listviewAction()');
+
     $objRequest = $this->getRequest();
     $intFolderId = $objRequest->getParam('folderId');
     $strFileIds = $objRequest->getParam('fileIds');
 
     $strTmpFileIds = trim($strFileIds, '[]');
     $this->arrFileIds = split('\]\[', $strTmpFileIds);
-    
+
     /**
      * get files
      */
     $this->getModelFiles();
     $objFiles = $this->objModelFiles->loadFiles($intFolderId);
-    
+
     $this->view->assign('objFiles', $objFiles);
     $this->view->assign('arrFileIds', $this->arrFileIds);
   }
-  
+
   /**
    * contactlistAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function contactlistAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->contactlistAction()'); 
-    
+    $this->core->logger->debug('cms->controllers->OverlayController->contactlistAction()');
+
     $objRequest = $this->getRequest();
     $intUnitId = $objRequest->getParam('unitId');
     $strFileIds = $objRequest->getParam('fileIds');
 
     $strTmpFileIds = trim($strFileIds, '[]');
     $this->arrFileIds = split('\]\[', $strTmpFileIds);
-    
+
     /**
      * get contacts
      */
     $this->getModelContacts();
     $objContacts = $this->objModelContacts->loadContactsByUnitId($intUnitId);
-    
+
     $this->view->assign('elements', $objContacts);
     $this->view->assign('fileIds', $this->arrFileIds);
   }
-  
+
   /**
    * childnavigationAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -206,44 +215,44 @@ class Cms_OverlayController extends AuthControllerAction {
    */
   public function childnavigationAction(){
     $this->core->logger->debug('cms->controllers->OverlayController->childnavigationAction()');
-    
+
     $this->getModelFolders();
-    
+
     $objRequest = $this->getRequest();
     $this->intFolderId = $objRequest->getParam("folderId");
     $viewtype = $objRequest->getParam("viewtype");
-    
+
     /**
      * get childfolders
      */
     $objChildelements = $this->objModelFolders->loadChildFolders($this->intFolderId);
-        
+
     $this->view->assign('elements', $objChildelements);
     $this->view->assign('intFolderId', $this->intFolderId);
     $this->view->assign('viewtype', $viewtype);
   }
-    
+
   /**
    * unitchildsAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function unitchildsAction(){
-    $this->core->logger->debug('cms->controllers->OverlayController->unitchildsAction()');    
-    
+    $this->core->logger->debug('cms->controllers->OverlayController->unitchildsAction()');
+
     $objRequest = $this->getRequest();
     $intUnitId = $objRequest->getParam("unitId");
-        
+
     /**
      * get unit childs
      */
     $this->getModelContacts();
     $objChildUnits = $this->objModelContacts->loadNavigation($intUnitId, true);
-        
+
     $this->view->assign('elements', $objChildUnits);
-    $this->view->assign('unitId', $intUnitId);          
+    $this->view->assign('unitId', $intUnitId);
   }
-  
+
   /**
    * loadRootNavigation
    * @param integer $intRootLevelModule
@@ -253,20 +262,20 @@ class Cms_OverlayController extends AuthControllerAction {
    */
   protected function loadRootNavigation($intRootLevelModule, $intRootLevelType = -1){
     $this->core->logger->debug('cms->controllers->OverlayController->loadRootNavigation('.$intRootLevelModule.', '.$intRootLevelType.')');
-    
-    $this->getModelFolders();    
+
+    $this->getModelFolders();
     $objMediaRootLevels = $this->objModelFolders->loadAllRootLevels($intRootLevelModule, $intRootLevelType);
- 
+
     if(count($objMediaRootLevels) > 0){
       $objMediaRootLevel = $objMediaRootLevels->current();
       $this->intRootLevelId = $objMediaRootLevel->id;
       $objRootelements = $this->objModelFolders->loadRootFolders($this->intRootLevelId);
-      
+
       $this->view->assign('elements', $objRootelements);
       $this->view->assign('rootLevelId', $this->intRootLevelId);
     }
   }
-  
+
   /**
    * loadRootContactsAndUnits
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -274,9 +283,9 @@ class Cms_OverlayController extends AuthControllerAction {
    */
   protected function loadRootContactsAndUnits(){
     $this->core->logger->debug('cms->controllers->OverlayController->loadRootContactsAndUnits()');
-    
+
     $this->intRootLevelId = 0; //Root id = 0
-    
+
     $this->getModelContacts();
     $objRootUnits = $this->objModelContacts->loadNavigation($this->intRootLevelId, true);
     $objRootContacts = $this->objModelContacts->loadContactsByUnitId($this->intRootLevelId);
@@ -285,7 +294,7 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->view->assign('listElements', $objRootContacts);
     $this->view->assign('rootLevelId', $this->intRootLevelId);
   }
-  
+
   /**
    * loadPageTreeForPortal
    * @param integer $intPortalId
@@ -294,14 +303,14 @@ class Cms_OverlayController extends AuthControllerAction {
    */
   protected function loadPageTreeForPortal($intPortalId){
     $this->core->logger->debug('cms->controllers->OverlayController->loadPageTreeForPortal('.$intPortalId.')');
-    
+
     $this->getModelFolders();
     $objPageTree = $this->objModelFolders->loadRootLevelChilds($intPortalId);
 
     $this->view->assign('elements', $objPageTree);
     $this->view->assign('portalId', $intPortalId);
   }
-  
+
   /**
    * getModelFolders
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -311,17 +320,17 @@ class Cms_OverlayController extends AuthControllerAction {
     if (null === $this->objModelFolders) {
       /**
        * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it 
+       * Since this is an application model, we need to require it
        * from its modules path location.
-       */ 
+       */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
       $this->objModelFolders->setLanguageId(1); // TODO : get language id
     }
-    
+
     return $this->objModelFolders;
   }
-  
+
   /**
    * getModelFiles
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -331,17 +340,17 @@ class Cms_OverlayController extends AuthControllerAction {
     if (null === $this->objModelFiles) {
       /**
        * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it 
+       * Since this is an application model, we need to require it
        * from its modules path location.
-       */ 
+       */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
       $this->objModelFiles->setLanguageId(1); // TODO : get language id
     }
-    
+
     return $this->objModelFiles;
   }
-  
+
   /**
    * getModelContacts
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -351,49 +360,49 @@ class Cms_OverlayController extends AuthControllerAction {
     if (null === $this->objModelContacts) {
       /**
        * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it 
+       * Since this is an application model, we need to require it
        * from its modules path location.
-       */ 
+       */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
       $this->objModelContacts->setLanguageId(1); // TODO : get language id
     }
-    
+
     return $this->objModelContacts;
   }
-  
+
   /**
    * setRootLevelId
    * @param integer $intRootLevelId
    */
   public function setRootLevelId($intRootLevelId){
-    $this->intRootLevelId = $intRootLevelId;  
+    $this->intRootLevelId = $intRootLevelId;
   }
-  
+
   /**
    * getRootLevelId
    * @param integer $intRootLevelId
    */
   public function getRootLevelId(){
-    return $this->intRootLevelId;  
+    return $this->intRootLevelId;
   }
-  
+
   /**
    * setFolderId
    * @param integer $intFolderId
    */
   public function setFolderId($intFolderId){
-    $this->intFolderId = $intFolderId;  
+    $this->intFolderId = $intFolderId;
   }
-  
+
   /**
    * getFolderId
    * @param integer $intFolderId
    */
   public function getFolderId(){
-    return $this->intFolderId;  
+    return $this->intFolderId;
   }
-	
+
 }
 
 ?>
