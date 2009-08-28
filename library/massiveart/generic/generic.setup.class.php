@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -197,7 +197,8 @@ class GenericSetup {
 	const FIELD_TYPE_TEMPLATE = 'template';
   const FIELD_TYPE_TEXTEDITOR = 'texteditor';
   const FIELD_TYPE_INTERNALLINK = 'internalLink';
-  
+  const FIELD_TYPE_INTERNALLINKS = 'internalLinks';
+
 	/*
    * FieldTypeGroups
    */
@@ -427,7 +428,7 @@ class GenericSetup {
 	          $objGenField->isMultiply = $objFieldRegionTagData->isMultiply;
 	          $objGenField->idSearchFieldTypes = $objFieldRegionTagData->idSearchFieldTypes;
 						$objGenField->idFieldTypeGroup = $objFieldRegionTagData->idFieldTypeGroup;
-						
+
 	  			  /**
 	           * select field container
 	           */

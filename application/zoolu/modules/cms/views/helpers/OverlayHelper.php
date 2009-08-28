@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -143,7 +143,7 @@ class OverlayHelper {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getPageTree($objRowset) {
+  public function getPageTree($objRowset, $strItemAction, $arrPageIds = array()) {
     $this->core->logger->debug('cms->views->helpers->OverlayHelper->getPageTree()');
 
     $strOutput = '';
@@ -151,12 +151,16 @@ class OverlayHelper {
     if(count($objRowset) > 0){
       $intLastFolderId = 0;
       foreach ($objRowset as $objRow){
+        $strHidden = '';
+        if(array_search($objRow->pageId, $arrPageIds) !== false){
+         $strHidden = ' style="display:none;"';
+        }
 
         if($intLastFolderId != $objRow->folderId){
 
           $intFolderDepth = $objRow->depth;
 
-          $strOutput .= '<div id="olnavitem'.$objRow->folderId.'" class="olnavrootitem">
+          $strOutput .= '<div id="folder'.$objRow->folderId.'" class="olnavrootitem">
                            <div style="position:relative; padding-left:'.(20*$intFolderDepth).'px">
                              <div class="icon img_folder_'.(($objRow->folderStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->folderTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
                            </div>
@@ -166,11 +170,13 @@ class OverlayHelper {
         }
 
         if($objRow->idPage > 0){
-          $strOutput .= '<div id="olnavitem'.$objRow->pageId.'" class="olnavrootitem">
-                         <div style="position:relative; padding-left:'.(20*$intFolderDepth+20).'px">
-                           <a href="#" onclick="myOverlay.selectPage('.$objRow->idPage.'); return false;"><div class="icon img_'.(($objRow->isStartPage == 1) ? 'startpage' : 'page').'_'.(($objRow->pageStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
-                         </div>
-                       </div>';
+          $strOutput .= '
+                        <div id="olPageItem'.$objRow->pageId.'" class="olnavrootitem"'.$strHidden.'>
+                          <div style="display:none;" id="Remove'.$objRow->idPage.'" class="itemremovelist2"></div>
+                          <div id="Page'.$objRow->idPage.'" style="position:relative; margin-left:'.(20*$intFolderDepth+20).'px; cursor:pointer;" onclick="'.$strItemAction.'('.$objRow->idPage.', \''.$objRow->pageId.'\'); return false;">
+                            <div class="icon img_'.(($objRow->isStartPage == 1) ? 'startpage' : 'page').'_'.(($objRow->pageStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
+                          </div>
+                        </div>';
         }
       }
     }

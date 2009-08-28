@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -60,6 +60,11 @@ class Model_Pages {
   protected $objPageLinksTable;
 
   /**
+   * @var Model_Table_PageInternalLinks
+   */
+  protected $objPageInternalLinksTable;
+
+  /**
    * @var Model_Table_UrlReplacers
    */
   protected $objUrlReplacersTable;
@@ -74,7 +79,7 @@ class Model_Pages {
    * @var Model_Table_PageContacts
    */
   protected $objPageContactsTable;
-  
+
   /**
    * @var Core
    */
@@ -88,7 +93,7 @@ class Model_Pages {
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
-  
+
   /**
    * loadPlugin
    * @param integer $intElementId
@@ -101,16 +106,16 @@ class Model_Pages {
   public function loadPlugin($intElementId, $arrFields, $strType) {
   	$this->core->logger->debug('cms->models->Model_Pages->loadPlugin('.$intElementId.', '.$arrFields.', '.$strType.')');
   	$objPagePluginTable = $this->getPluginTable($strType);
-  	
+
   	$objSelect = $objPagePluginTable->select();
   	$objSelect->from($objPagePluginTable, $arrFields);
   	$objSelect->join('pages', 'pages.pageId = pageGmaps.pageId AND pages.version = pageGmaps.version', array());
   	$objSelect->where('pages.id = ?', $intElementId)
   	          ->where('idLanguages = ?', $this->getLanguageId());
-  	          
+
   	return $objPagePluginTable->fetchAll($objSelect);
   }
-  
+
   /**
    * addPlugin
    * @param integer $intElementId
@@ -122,18 +127,18 @@ class Model_Pages {
    */
   public function addPlugin($intElementId, $arrValues, $strType) {
   	$this->core->logger->debug('cms->models->Model_Pages->addPlugin('.$arrValues.','.$strType.')');
-  	
+
   	$objPageData = $this->loadPage($intElementId);
-  	
+
   	if(count($objPageData) > 0){
   		$objPage = $objPageData->current();
-  		
+
   		$objPagePluginTable = $this->getPluginTable($strType);
-  		
+
   		$strWhere = $objPagePluginTable->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
   		$strWhere .= 'AND '.$objPagePluginTable->getAdapter()->quoteInto('version = ?', $objPage->version);
   		$objPagePluginTable->delete($strWhere);
-  		
+
   		$intUserId = Zend_Auth::getInstance()->getIdentity()->id;
   		$arrData = array( 'pageId'      =>  $objPage->pageId,
   		                  'version'     =>  $objPage->version,
@@ -143,7 +148,7 @@ class Model_Pages {
   		return $objSelect = $objPagePluginTable->insert($arrData);
   	}
   }
-  
+
   /**
    * loadPage
    * @param integer $intElementId
@@ -207,6 +212,37 @@ class Model_Pages {
   }
 
   /**
+   * addPageInternalLinks
+   * @param string $strPageId
+   * @param integer $intElementId
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addPageInternalLinks($strLinkedPageIds, $strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->addPageInternalLinks('.$strLinkedPageIds.', '.$strElementId.', '.$intVersion.')');
+
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    $arrData = array('pageId'      => $strElementId,
+                     'version'     => $intVersion,
+                     'idLanguages' => $this->intLanguageId,
+                     'idUsers'     => $intUserId,
+                     'creator'     => $intUserId,
+                     'created'     => date('Y-m-d H:i:s'));
+
+    $strTmpLinkedPageIds = trim($strLinkedPageIds, '[]');
+    $arrLinkedPageIds = split('\]\[', $strTmpLinkedPageIds);
+
+    if(count($arrLinkedPageIds) > 0){
+      foreach($arrLinkedPageIds as $strLinkedPageId){
+        $arrData['linkedPageId'] = $strLinkedPageId;
+        $this->getPageInternalLinksTable()->insert($arrData);
+      }
+    }
+  }
+
+  /**
    * updateStartPageMainData
    * @param integer $intFolderId
    * @param array $arrProperties
@@ -262,6 +298,30 @@ class Model_Pages {
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p, pageLinks WHERE pageLinks.idPages = ? AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)', $intElementId);
 
     return $this->objPageTable->fetchAll($objSelect);
+  }
+
+  /**
+   * loadPageInternalLinks
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadPageInternalLinks($strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->loadPageInternalLinks('.$strElementId.')');
+
+    $objSelect = $this->getPageInternalLinksTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'idStatus'));
+    $objSelect->join('pageInternalLinks', 'pageInternalLinks.linkedPageId =  pages.pageId AND pageInternalLinks.pageId = \''.$strElementId.'\' AND pageInternalLinks.version = '.$intVersion, array());
+    $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId, array('url'));
+    $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
+    $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
+
+    return $this->objPageInternalLinksTable->fetchAll($objSelect);
   }
 
   /**
@@ -593,6 +653,23 @@ class Model_Pages {
   }
 
   /**
+   * deletePageInternalLinks
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @param integer $intElementId
+   * @version 1.0
+   */
+  public function deletePageInternalLinks($strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->deletePageInternalLinks('.$strElementId.','.$intVersion.')');
+
+    $strWhere = $this->getPageInternalLinksTable()->getAdapter()->quoteInto('pageId = ?', $strElementId);
+    $strWhere .= $this->getPageInternalLinksTable()->getAdapter()->quoteInto(' AND version = ?', $intVersion);
+
+    return $this->objPageInternalLinksTable->delete($strWhere);
+  }
+
+  /**
    * loadPageLink
    * @param integer $intElementId
    * @return Zend_Db_Table_Rowset_Abstract
@@ -765,7 +842,7 @@ class Model_Pages {
   }
 
   /**
-   * addPageLink
+   * loadVideo
    * @param string $intElementId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -1177,6 +1254,22 @@ class Model_Pages {
   }
 
   /**
+   * getPageInternalLinksTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getPageInternalLinksTable(){
+
+    if($this->objPageInternalLinksTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageInternalLinks.php';
+      $this->objPageInternalLinksTable = new Model_Table_PageInternalLinks();
+    }
+
+    return $this->objPageInternalLinksTable;
+  }
+
+  /**
    * getUrlReplacersTable
    * @return Zend_Db_Table_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -1223,7 +1316,7 @@ class Model_Pages {
 
     return $this->objPageContactsTable;
   }
-  
+
   /**
    * Returns a table for a plugin
    * @param string $type The type of the plugin
