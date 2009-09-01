@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -342,9 +342,9 @@ class Cms_PageController extends AuthControllerAction {
       $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
 
       if($this->objForm->Setup()->getIsStartPage(false) == true){
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1', $this->objForm->Setup()->getElementTypeId());
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }else{
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1', $this->objForm->Setup()->getElementTypeId());
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }
 
       $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
@@ -581,6 +581,11 @@ class Cms_PageController extends AuthControllerAction {
             break;
           case $this->core->sysConfig->page_types->process->id :
             $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->process->default_formId);
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->process->default_templateId);
+            break;
+          case $this->core->sysConfig->page_types->collection->id :
+            $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->collection->default_formId);
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->collection->default_templateId);
             break;
         }
       }

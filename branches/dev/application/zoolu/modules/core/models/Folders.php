@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -513,12 +513,13 @@ class Model_Folders {
                                                 LEFT JOIN pages ON
                                                   pages.idParent = folders.id AND
                                                   pages.idParentTypes = ? AND
+                                                  pages.idPageTypes != ? AND
                                                   pages.idPageTypes != ?
                                                 LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
                                                   AND pageTitles.version = pages.version
                                                   AND pageTitles.idLanguages = ?
                                               WHERE folders.idRootLevels = ?
-                                                ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $intRootLevelId));
+                                                ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->core->sysConfig->page_types->link->id, $this->core->sysConfig->page_types->external->id, $this->intLanguageId, $intRootLevelId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }

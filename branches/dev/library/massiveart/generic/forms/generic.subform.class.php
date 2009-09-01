@@ -79,7 +79,8 @@ class GenericSubForm extends Zend_Form_SubForm {
                                                     'intVideoTypeId',
                                                     'strVideoUserId',
                                                     'strVideoThumb',
-                                                    'objPageInternalLinks');
+                                                    'objPageInternalLinks',
+                                                    'objPageCollection');
 
   /**
    * Constructor

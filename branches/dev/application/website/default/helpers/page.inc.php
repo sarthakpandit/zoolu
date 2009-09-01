@@ -1007,6 +1007,60 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
 }
 
 /**
+ * get_collection
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com>
+ * @version 1.0
+ */
+function get_collection($strImageFolder = '80x80'){
+  $core = getCoreObject();
+  $objPage = getPageObject();
+
+  $objPageContainer = $objPage->getCollectionContainer();
+
+  $strHtmlOutput = '';
+
+  if(count($objPageContainer) > 0){
+    $strHtmlOutput .= '
+          <h3>'.htmlentities($objPageContainer->getContainerTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</h3>';
+
+    foreach($objPageContainer->getEntries() as $objPageEntry){
+      $strDescription = '';
+      if($objPageEntry->shortdescription != ''){
+        $strDescription = strip_tags($objPageEntry->shortdescription);
+      }else if($objPageEntry->description != ''){
+        if(strlen($objPageEntry->description) > 200){
+          $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 200))).' ...';
+        }else{
+          $strDescription = strip_tags($objPageEntry->description);
+        }
+      }
+
+      $strHtmlOutput .= '
+        <div class="divContentItem">
+          <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
+      if($objPageEntry->filename != ''){
+        $strHtmlOutput .= '
+          <div class="divImgLeft">
+            <a href="'.$objPageEntry->url.'">
+              <img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
+            </a>
+          </div>';
+      }
+      if($strDescription != ''){
+        $strHtmlOutput .= '<p>'.$strDescription.'</p>';
+      }
+      $strHtmlOutput .= '
+          <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
+          <div class="clear"></div>
+        </div>';
+    }
+
+  }
+  echo $strHtmlOutput;
+}
+
+/**
  * get_video_overview
  * @param integer $intVideoBigWidth
  * @param integer $intVideoBigHeight

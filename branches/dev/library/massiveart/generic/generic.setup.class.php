@@ -198,6 +198,7 @@ class GenericSetup {
   const FIELD_TYPE_TEXTEDITOR = 'texteditor';
   const FIELD_TYPE_INTERNALLINK = 'internalLink';
   const FIELD_TYPE_INTERNALLINKS = 'internalLinks';
+  const FIELD_TYPE_COLLECTION = 'collection';
 
 	/*
    * FieldTypeGroups

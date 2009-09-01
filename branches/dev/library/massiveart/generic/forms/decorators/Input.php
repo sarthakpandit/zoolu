@@ -103,6 +103,7 @@ class Form_Decorator_Input extends Zend_Form_Decorator_Abstract {
         return $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $element->regionId);
       case 'form'.ucfirst(GenericSetup::FIELD_TYPE_INTERNALLINK) :
       case 'form'.ucfirst(GenericSetup::FIELD_TYPE_INTERNALLINKS) :
+      case 'form'.ucfirst(GenericSetup::FIELD_TYPE_COLLECTION) :
         return $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $element);
       default:
         return $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options);

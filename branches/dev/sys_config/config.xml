@@ -451,7 +451,13 @@
       <process>
         <id>5</id>
         <default_formId>DEFAULT_PROCESS</default_formId>
+        <default_templateId>9</default_templateId>
       </process>
+      <collection>
+        <id>6</id>
+        <default_formId>DEFAULT_COLLECTION</default_formId>
+        <default_templateId>10</default_templateId>
+      </collection>
     </page_types>
     
     <!-- REGION TYPES -->
@@ -476,6 +482,7 @@
       <page>2</page>
       <overview>3</overview>
       <portal_startpage>4</portal_startpage>
+      <collection>5</collection>
     </types>
     
     <!-- table: categories / idRootCategory=11, idCategoryTypes=2 -->
@@ -557,7 +564,7 @@
     
   	<!-- Plugins / Fields Javascript -->
   	<pluginsJs>
-    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAA-HDjFpqTqvSFv3M3yKNuPhSJMtSQ88rRPHL8RT8y4VKghHIOYRSrWth16V7exTP5KN9Rrf5OKhKRIg</gmaps>
+    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
   	</pluginsJs>
   </production>
 

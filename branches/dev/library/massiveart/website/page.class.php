@@ -130,6 +130,8 @@ class Page {
   protected $blnShowInNavigation;
   protected $intParentId;
   protected $intParentTypeId;
+  protected $intNavParentId;
+  protected $intNavParentTypeId;
 
   /**
    * Constructor
@@ -151,20 +153,6 @@ class Page {
       if(count($objPageData) > 0){
         $objPage = $objPageData->current();
 
-        $this->objGenericData = new GenericData();
-        $this->objGenericData->Setup()->setRootLevelId($this->intRootLevelId);
-        $this->objGenericData->Setup()->setFormId($objPage->genericFormId);
-        $this->objGenericData->Setup()->setFormVersion($objPage->version);
-        $this->objGenericData->Setup()->setFormTypeId($objPage->idGenericFormTypes);
-        $this->objGenericData->Setup()->setTemplateId($objPage->idTemplates);
-        $this->objGenericData->Setup()->setElementId($objPage->id);
-        $this->objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
-        $this->objGenericData->Setup()->setFormLanguageId($this->core->sysConfig->languages->default->id);
-        $this->objGenericData->Setup()->setLanguageId($this->intLanguageId);
-        $this->objGenericData->Setup()->setModelSubPath('cms/models/');
-
-        $this->objGenericData->loadData();
-
         $this->setElementId($objPage->id);
         $this->setTemplateFile($objPage->filename);
         $this->setTemplateId($objPage->idTemplates);
@@ -179,6 +167,45 @@ class Page {
         $this->setShowInNavigation($objPage->showInNavigation);
         $this->setParentId($objPage->idParent);
         $this->setParentTypeId($objPage->idParentTypes);
+
+        /**
+         * navigation parent properties
+         */
+        if($this->intNavParentId === null){
+          $this->setNavParentId($objPage->idParent);
+          $this->setNavParentTypeId($objPage->idParentTypes);
+        }
+
+        $this->objGenericData = new GenericData();
+        $this->objGenericData->Setup()->setRootLevelId($this->intRootLevelId);
+        $this->objGenericData->Setup()->setFormId($objPage->genericFormId);
+        $this->objGenericData->Setup()->setFormVersion($objPage->version);
+        $this->objGenericData->Setup()->setFormTypeId($objPage->idGenericFormTypes);
+        $this->objGenericData->Setup()->setTemplateId($objPage->idTemplates);
+        $this->objGenericData->Setup()->setElementId($objPage->id);
+        $this->objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
+        $this->objGenericData->Setup()->setFormLanguageId($this->core->sysConfig->languages->default->id);
+        $this->objGenericData->Setup()->setLanguageId($this->intLanguageId);
+        $this->objGenericData->Setup()->setParentId($this->getParentId());
+        $this->objGenericData->Setup()->setParentTypeId($this->getParentTypeId());
+        $this->objGenericData->Setup()->setModelSubPath('cms/models/');
+
+        $this->objGenericData->loadData();
+
+        /**
+         * page type based fallbacks
+         */
+        switch($this->intPageTypeId){
+          case  $this->core->sysConfig->page_types->external->id:
+            if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
+              header ('Location: '.$this->getFieldValue('external'));
+            }else if(filter_var('http://'.$this->getFieldValue('external'), FILTER_VALIDATE_URL)){
+              header ('Location: http://'.$this->getFieldValue('external'));
+            }else{
+              header ('Location: http://'.$_SERVER['HTTP_HOST']);
+            }
+            exit();
+        }
 
       }else{
         throw new Exception('Not able to load page, because no page found in database!');
@@ -540,6 +567,70 @@ class Page {
 
       $objPages = $this->objModelPages->loadPages($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
       return $objPages;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getCollectionContainer
+   * @return PageContainer $objContainer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getCollectionContainer(){
+    try{
+      $arrGenForms = array();
+
+      $objContainer = new PageContainer();
+      $objContainer->setContainerTitle($this->getFieldValue('collection_title'));
+
+      $objCollectionFieldElement = $this->getField('collection');
+
+      if($objCollectionFieldElement->objPageCollection instanceof Zend_Db_Table_Rowset_Abstract && count($objCollectionFieldElement->objPageCollection) > 0){
+        foreach($objCollectionFieldElement->objPageCollection as $objEntryData){
+          $objEntry = new PageEntry();
+          $objEntry->setEntryId($objEntryData->id);
+          $objEntry->title = $objEntryData->title;
+          $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
+
+          $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;
+
+          $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
+        }
+
+        /**
+         * get data of instance tables
+         */
+        if(count($arrGenForms) > 0){
+          foreach($arrGenForms as $key => $arrPageIds){
+            $arrGenFormPageIds = array();
+            if(count($arrPageIds) > 0){
+              foreach($arrPageIds as $value){
+                array_push($arrGenFormPageIds, $value);
+              }
+            }
+            $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+
+            /**
+             * overwrite page entries
+             */
+            if(isset($objPageRowset) && count($objPageRowset) > 0){
+              foreach($objPageRowset as $objPageRow){
+                $objPageEntry = $objContainer->getPageEntry('entry_'.$objPageRow->id);
+                $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
+                $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
+                $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
+                $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
+
+                $objContainer->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
+              }
+            }
+          }
+        }
+      }
+
+      return $objContainer;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -1134,6 +1225,38 @@ class Page {
    */
   public function getParentTypeId(){
     return $this->intParentTypeId;
+  }
+
+  /**
+   * setNavParentId
+   * @param integer $intNavParentId
+   */
+  public function setNavParentId($intNavParentId){
+    $this->intNavParentId = $intNavParentId;
+  }
+
+  /**
+   * getNavParentId
+   * @param integer $intNavParentId
+   */
+  public function getNavParentId(){
+    return $this->intNavParentId;
+  }
+
+  /**
+   * setNavParentTypeId
+   * @param integer $intNavParentTypeId
+   */
+  public function setNavParentTypeId($intNavParentTypeId){
+    $this->intNavParentTypeId = $intNavParentTypeId;
+  }
+
+  /**
+   * getNavParentTypeId
+   * @param integer $intNavParentTypeId
+   */
+  public function getNavParentTypeId(){
+    return $this->intNavParentTypeId;
   }
 
   /**

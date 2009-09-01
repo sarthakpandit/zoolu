@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -100,18 +100,18 @@ class Core {
      * create logfile extension for file writer
      */
     if(isset($_SESSION["sesUserName"]) && isset($_SERVER['REMOTE_ADDR'])){
-      $strLogFileExtension = $_SESSION["sesUserName"].'_'.$_SERVER['REMOTE_ADDR'];
+      $strLogFileExtension = '_'.$_SESSION["sesUserName"].'_'.$_SERVER['REMOTE_ADDR'];
     }else
     if(isset($_SERVER['REMOTE_ADDR'])){
-      $strLogFileExtension = $_SERVER['REMOTE_ADDR'];
+      $strLogFileExtension = '_'.$_SERVER['REMOTE_ADDR'];
     }else{
-      $strLogFileExtension = 'local';
+      $strLogFileExtension = '_local';
     }
 
     /**
      * create log file writer
      */
-    $writer = new Zend_Log_Writer_Stream(GLOBAL_ROOT_PATH.$this->sysConfig->logger->path.'log_'.date('Ymd').'_'.$strLogFileExtension.'.log');
+    $writer = new Zend_Log_Writer_Stream(GLOBAL_ROOT_PATH.$this->sysConfig->logger->path.'log_'.date('Ymd').$strLogFileExtension.'.log');
     $this->logger->addWriter($writer);
 
     /**

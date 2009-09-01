@@ -82,7 +82,8 @@ class GenericForm extends Zend_Form {
                                                     'intVideoTypeId',
                                                     'strVideoUserId',
                                                     'strVideoThumb',
-                                                    'objPageInternalLinks');
+                                                    'objPageInternalLinks',
+                                                    'objPageCollection');
 
 	/**
 	 * @var Model_GenericForms
