@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -66,6 +66,11 @@ class IndexController extends Zend_Controller_Action {
    * @var Page
    */
   private $objPage;
+
+  /**
+   * @var Zend_Db_Table_Row_Abstract
+   */
+  private $objPageUrlsData;
 
   private $blnCachingStart = false;
 
@@ -187,11 +192,7 @@ class IndexController extends Zend_Controller_Action {
       require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
       Zend_Registry::set('Navigation', $objNavigation);
 
-      $this->objPageUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl);
-
-      foreach($this->objPageUrlsData as $objPageData){
-        $this->objPageUrlsData = $objPageData;
-      }
+      $this->objPageUrlsData = current($this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl));
 
       if(count($this->objPageUrlsData) > 0){
 
@@ -210,6 +211,15 @@ class IndexController extends Zend_Controller_Action {
         $this->objPage->setPageId($this->objPageRowData->pageId);
         $this->objPage->setPageVersion($this->objPageRowData->version);
         $this->objPage->setLanguageId($this->objPageRowData->idLanguages);
+
+        /**
+         * preset navigation parent properties
+         * e.g. is a collection page
+         */
+        if($this->objPageUrlsData->idParent !== null){
+          $this->objPage->setNavParentId($this->objPageUrlsData->idParent);
+          $this->objPage->setNavParentTypeId($this->objPageUrlsData->idParentTypes);
+        }
 
         $this->objPage->loadPage();
 

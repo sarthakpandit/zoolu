@@ -248,9 +248,9 @@ Massiveart.Form = Class.create({
   },
   
   /**
-   * getAddInternalLinksOverlay
+   * getAddPageTreeOverlay
    */
-   getAddInternalLinksOverlay: function(areaId){    
+   getAddPageTreeOverlay: function(areaId){    
     $(this.updateOverlayContainer).innerHTML = '';
     myCore.putCenter('overlayGenContentWrapper');
     $('overlayGenContentWrapper').show();    

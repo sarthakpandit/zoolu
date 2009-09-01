@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -119,6 +119,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
           if(count($objUrlData) > 0){
             $objUrl = $objUrlData->current();
             $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
+            $this->objElement->url = $objUrl->url;
           }
         }
       }
@@ -146,6 +147,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       if(count($objUrlData) > 0){
         $objUrl = $objUrlData->current();
         $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
+        $this->objElement->url = $objUrl->url;
       }
 
     }catch (Exception $exc) {
@@ -159,7 +161,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  private function makeUrlConform($strUrlPart){
+  public function makeUrlConform($strUrlPart){
 
     $this->getUrlReplacers();
 
@@ -167,7 +169,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
 
     if(count($this->objUrlReplacers) > 0){
       foreach($this->objUrlReplacers as $objUrlReplacer){
-        $strUrlPart = str_replace(utf8_encode($objUrlReplacer->from), $objUrlReplacer->to, $strUrlPart);
+        $strUrlPart = str_replace($objUrlReplacer->from, $objUrlReplacer->to, $strUrlPart);
       }
     }
 
@@ -197,7 +199,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  private function checkUrlUniqueness($strUrl, $intUrlAddon = 0){
+  public function checkUrlUniqueness($strUrl, $intUrlAddon = 0){
     $this->getModelPages();
 
     $strNewUrl = ($intUrlAddon > 0) ? $strUrl.'-'.$intUrlAddon : $strUrl;

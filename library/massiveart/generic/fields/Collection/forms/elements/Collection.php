@@ -24,50 +24,30 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.generic.data.helpers
+ * @package    library.massiveart.generic.fields.Collection.forms.elements
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * GenericDataHelperAbstract
+ * Form_Element_Collection
+ *
+ * Collection form element
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-01-20: Thomas Schedler
+ * 1.0, 2009-08-28: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
- * @package massiveart.generic.data.helpers
- * @subpackage GenericDataHelperAbstract
+ * @package massiveart.generic.fields.Collection.forms.elements
+ * @subpackage Form_Element_Collection
  */
 
-abstract class GenericDataHelperAbstract {
+class Form_Element_Collection extends FormElementXhtmlAbstract {
 
-  /**
-   * @var Core
-   */
-  protected $core;
+  public $helper = 'formCollection';
 
-  /**
-   * @var GenericElementAbstract
-   */
-  protected $objElement;
-
-  /**
-   * Constructor
-   */
-  public function __construct(){
-    $this->core = Zend_Registry::get('Core');
-  }
-
-  /**
-   * setElement
-   * @param GenericElementAbstract $objElement
-   */
-  public function setElement(GenericElementAbstract &$objElement){
-    $this->objElement = $objElement;
-  }
 }
 
 ?>

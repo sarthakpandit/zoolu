@@ -24,50 +24,27 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.generic.data.helpers
+ * @package    application.zoolu.modules.cms.models.tables
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * GenericDataHelperAbstract
+ * Model_Table_PageCollections
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-01-20: Thomas Schedler
+ * 1.0, 2009-08-28: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
- * @package massiveart.generic.data.helpers
- * @subpackage GenericDataHelperAbstract
  */
 
-abstract class GenericDataHelperAbstract {
+class Model_Table_PageCollections extends Zend_Db_Table_Abstract {
 
-  /**
-   * @var Core
-   */
-  protected $core;
+  protected $_name = 'pageCollections';
+  protected $_primary = 'id';
 
-  /**
-   * @var GenericElementAbstract
-   */
-  protected $objElement;
-
-  /**
-   * Constructor
-   */
-  public function __construct(){
-    $this->core = Zend_Registry::get('Core');
-  }
-
-  /**
-   * setElement
-   * @param GenericElementAbstract $objElement
-   */
-  public function setElement(GenericElementAbstract &$objElement){
-    $this->objElement = $objElement;
-  }
 }
 
 ?>

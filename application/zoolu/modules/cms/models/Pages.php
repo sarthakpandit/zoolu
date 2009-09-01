@@ -65,6 +65,11 @@ class Model_Pages {
   protected $objPageInternalLinksTable;
 
   /**
+   * @var Model_Table_PageCollections
+   */
+  protected $objPageCollectionTable;
+
+  /**
    * @var Model_Table_UrlReplacers
    */
   protected $objUrlReplacersTable;
@@ -213,6 +218,7 @@ class Model_Pages {
 
   /**
    * addPageInternalLinks
+   * @param string $strLinkedPageIds
    * @param string $strPageId
    * @param integer $intElementId
    * @return integer
@@ -238,6 +244,75 @@ class Model_Pages {
       foreach($arrLinkedPageIds as $strLinkedPageId){
         $arrData['linkedPageId'] = $strLinkedPageId;
         $this->getPageInternalLinksTable()->insert($arrData);
+      }
+    }
+  }
+
+  /**
+   * addPageCollection
+   * @param string $strCollectedPageIds
+   * @param string $strPageId
+   * @param integer $intElementId
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addPageCollection($strCollectedPageIds, $strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->addPageCollection('.$strCollectedPageIds.', '.$strElementId.', '.$intVersion.')');
+
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    $arrData = array('pageId'      => $strElementId,
+                     'version'     => $intVersion,
+                     'idLanguages' => $this->intLanguageId,
+                     'idUsers'     => $intUserId,
+                     'creator'     => $intUserId,
+                     'created'     => date('Y-m-d H:i:s'));
+
+    $strTmpCollectedPageIds = trim($strCollectedPageIds, '[]');
+    $arrCollectedPageIds = split('\]\[', $strTmpCollectedPageIds);
+
+    if(count($arrCollectedPageIds) > 0){
+      foreach($arrCollectedPageIds as $strCollectedPageId){
+        $arrData['collectedPageId'] = $strCollectedPageId;
+        $this->getPageCollectionTable()->insert($arrData);
+      }
+    }
+  }
+
+  /**
+   * addPageCollectionUrls
+   * @param Zend_Db_Table_Rowset_Abstract $objPageCollection
+   * @param integer $intParentId
+   * @param integer $intParentTypeId
+   * @param string $strBaseUrl
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addPageCollectionUrls(Zend_Db_Table_Rowset_Abstract &$objPageCollectionData, $intParentId, $intParentTypeId){
+    $this->core->logger->debug('cms->models->Model_Pages->addPageCollectionUrls(Zend_Db_Table_Rowset_Abstract, '.$intParentId.', '.$intParentTypeId.')');
+
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    $arrData = array('idLanguages'    => $this->intLanguageId,
+                     'idUsers'        => $intUserId,
+                     'idParent'       => $intParentId,
+                     'idParentTypes'  => $intParentTypeId,
+                     'creator'        => $intUserId,
+                     'created'        => date('Y-m-d H:i:s'));
+
+    if(count($objPageCollectionData) > 0){
+
+      $objUrlHelper = new GenericDataHelper_Url();
+
+      foreach($objPageCollectionData as $objPageCollection){
+
+        $arrData['pageId'] = $objPageCollection->pageId;
+        $arrData['version'] = $objPageCollection->version;
+        $arrData['url'] = $objPageCollection->url;
+
+        $this->getPageUrlTable()->insert($arrData);
+
       }
     }
   }
@@ -293,7 +368,7 @@ class Model_Pages {
 
     $objSelect->from('pages', array('id', 'pageId', 'version'));
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId, array('url'));
+    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent IS NULL', array('url'));
     $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p, pageLinks WHERE pageLinks.idPages = ? AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)', $intElementId);
 
@@ -315,13 +390,40 @@ class Model_Pages {
     $objSelect->setIntegrityCheck(false);
 
     $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'idStatus'));
-    $objSelect->join('pageInternalLinks', 'pageInternalLinks.linkedPageId =  pages.pageId AND pageInternalLinks.pageId = \''.$strElementId.'\' AND pageInternalLinks.version = '.$intVersion, array());
+    $objSelect->join('pageInternalLinks', 'pageInternalLinks.linkedPageId = pages.pageId AND pageInternalLinks.pageId = \''.$strElementId.'\' AND pageInternalLinks.version = '.$intVersion.' AND pageInternalLinks.idLanguages = '.$this->intLanguageId, array());
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId, array('url'));
+    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent IS NULL', array('url'));
     $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
 
     return $this->objPageInternalLinksTable->fetchAll($objSelect);
+  }
+
+  /**
+   * loadPageCollection
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @param integer $intParentId
+   * @param integer $intParentTypeId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadPageCollection($strElementId, $intVersion, $intParentId, $intParentTypeId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadPageCollection('.$strElementId.')');
+
+    $objSelect = $this->getPageCollectionTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'idStatus'));
+    $objSelect->join('pageCollections', 'pageCollections.collectedPageId = pages.pageId AND pageCollections.pageId = \''.$strElementId.'\' AND pageCollections.version = '.$intVersion.' AND pageCollections.idLanguages = '.$this->intLanguageId, array());
+    $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objSelect->join('genericForms', 'genericForms.id = pages.idGenericForms', array('genericFormId', 'version AS genericFormVersion'));
+    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent = '.$intParentId.' AND pageUrls.idParentTypes = '.$intParentTypeId, array('url'));
+    $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
+    $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
+
+    return $this->objPageCollectionTable->fetchAll($objSelect);
   }
 
   /**
@@ -436,7 +538,8 @@ class Model_Pages {
                                             LEFT JOIN pageUrls ON
                                               pageUrls.pageId = pages.pageId AND
                                               pageUrls.version = pages.version AND
-                                              pageUrls.idLanguages = ?
+                                              pageUrls.idLanguages = ? AND
+                                              pageUrls.idParent IS NULL
                                             LEFT JOIN pageLinks ON
                                               pageLinks.idPages = pages.id
                                             LEFT JOIN pages AS pl ON
@@ -456,7 +559,8 @@ class Model_Pages {
                                             LEFT JOIN pageUrls AS plUrls ON
                                               plUrls.pageId = pl.pageId AND
                                               plUrls.version = pl.version AND
-                                              plUrls.idLanguages = ?
+                                              plUrls.idLanguages = ? AND
+                                              plUrls.idParent IS NULL
                                             LEFT JOIN languages ON
                                               languages.id = ?
                                             ,folders AS parent
@@ -492,7 +596,8 @@ class Model_Pages {
                                             LEFT JOIN pageUrls ON
                                               pageUrls.pageId = pages.pageId AND
                                               pageUrls.version = pages.version AND
-                                              pageUrls.idLanguages = ?
+                                              pageUrls.idLanguages = ? AND
+                                              pageUrls.idParent IS NULL
                                             LEFT JOIN pageLinks ON
                                               pageLinks.idPages = pages.id
                                             LEFT JOIN pages AS pl ON
@@ -512,7 +617,8 @@ class Model_Pages {
                                             LEFT JOIN pageUrls AS plUrls ON
                                               plUrls.pageId = pl.pageId AND
                                               plUrls.version = pl.version AND
-                                              plUrls.idLanguages = ?
+                                              plUrls.idLanguages = ? AND
+                                              plUrls.idParent IS NULL
                                             LEFT JOIN languages ON
                                               languages.id = ?
                                           WHERE pages.idParent = ? AND
@@ -630,7 +736,8 @@ class Model_Pages {
                                           LEFT JOIN pageUrls ON
                                             pageUrls.pageId = pages.pageId AND
                                             pageUrls.version = pages.version AND
-                                            pageUrls.idLanguages = ?
+                                            pageUrls.idLanguages = ? AND
+                                            pageUrls.idParent IS NULL
                                           WHERE pages.id = ?', array($this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $intPageId));
 
       return $sqlStmt->fetch(Zend_Db::FETCH_OBJ);
@@ -664,9 +771,46 @@ class Model_Pages {
     $this->core->logger->debug('cms->models->Model_Pages->deletePageInternalLinks('.$strElementId.','.$intVersion.')');
 
     $strWhere = $this->getPageInternalLinksTable()->getAdapter()->quoteInto('pageId = ?', $strElementId);
-    $strWhere .= $this->getPageInternalLinksTable()->getAdapter()->quoteInto(' AND version = ?', $intVersion);
+    $strWhere .= $this->objPageInternalLinksTable->getAdapter()->quoteInto(' AND version = ?', $intVersion);
+    $strWhere .= $this->objPageInternalLinksTable->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
 
     return $this->objPageInternalLinksTable->delete($strWhere);
+  }
+
+  /**
+   * deletePageCollection
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @param integer $intElementId
+   * @version 1.0
+   */
+  public function deletePageCollection($strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->deletePageCollection('.$strElementId.','.$intVersion.')');
+
+    $strWhere = $this->getPageCollectionTable()->getAdapter()->quoteInto('pageId = ?', $strElementId);
+    $strWhere .= $this->objPageCollectionTable->getAdapter()->quoteInto(' AND version = ?', $intVersion);
+    $strWhere .= $this->objPageCollectionTable->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
+
+    return $this->objPageCollectionTable->delete($strWhere);
+  }
+
+  /**
+   * deletePageCollectionUrls
+   * @param integer $intParentId
+   * @param integer $intParentTypeId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @param integer $intElementId
+   * @version 1.0
+   */
+  public function deletePageCollectionUrls($intParentId, $intParentTypeId){
+    $this->core->logger->debug('cms->models->Model_Pages->deletePageCollectionUrls('.$intParentId.','.$intParentTypeId.')');
+
+    $strWhere = $this->getPageUrlTable()->getAdapter()->quoteInto('idParent = ?', $intParentId);
+    $strWhere .= $this->objPageUrlTable->getAdapter()->quoteInto(' AND idParentTypes = ?', $intParentTypeId);
+    $strWhere .= $this->objPageUrlTable->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
+
+    return $this->objPageUrlTable->delete($strWhere);
   }
 
   /**
@@ -684,7 +828,7 @@ class Model_Pages {
 
     $objSelect->from('pages', array('id', 'pageId', 'version'));
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId, array('url'));
+    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent IS NULL', array('url'));
     $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pages.id = ?', $intElementId);
 
@@ -773,7 +917,8 @@ class Model_Pages {
     $objSelect->join('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pageUrls.pageId = ?', $strPageId)
               ->where('pageUrls.version = ?', $intVersion)
-              ->where('pageUrls.idLanguages = ?', $this->intLanguageId);
+              ->where('pageUrls.idLanguages = ?', $this->intLanguageId)
+              ->where('pageUrls.idParent IS NULL');
 
     return $this->objPageUrlTable->fetchAll($objSelect);
   }
@@ -789,37 +934,38 @@ class Model_Pages {
   public function loadPageByUrl($intRootLevelId, $strUrl){
     $this->core->logger->debug('cms->models->Model_Pages->loadPageByUrl('.$intRootLevelId.', '.$strUrl.')');
 
-    $sqlStmt = $this->core->dbh->query('SELECT pageUrls.pageId, pageUrls.version, pageUrls.idLanguages FROM pageUrls
-                                          INNER JOIN pages ON
-                                            pages.pageId = pageUrls.pageId AND
-                                            pages.version = pageUrls.version AND
-                                            pages.idParentTypes = ?
-                                          INNER JOIN folders ON
-                                            folders.id = pages.idParent
-                                          WHERE pageUrls.url = ? AND
-                                            pageUrls.idLanguages = ? AND
-                                            folders.idRootLevels = ?
+    $sqlStmt = $this->core->dbh->query('SELECT pageUrls.pageId, pageUrls.version, pageUrls.idLanguages, pageUrls.idParent, pageUrls.idParentTypes
+                                          FROM pageUrls
+                                            INNER JOIN pages ON
+                                              pages.pageId = pageUrls.pageId AND
+                                              pages.version = pageUrls.version AND
+                                              pages.idParentTypes = ?
+                                            INNER JOIN folders ON
+                                              folders.id = pages.idParent
+                                            WHERE pageUrls.url = ? AND
+                                              pageUrls.idLanguages = ? AND
+                                              folders.idRootLevels = ?
                                         UNION
-                                        SELECT pageUrls.pageId, pageUrls.version, pageUrls.idLanguages FROM pageUrls
-                                          INNER JOIN pages ON
-                                            pages.pageId = pageUrls.pageId AND
-                                            pages.version = pageUrls.version AND
-                                            pages.idParentTypes = ?
-                                          INNER JOIN rootLevels ON
-                                            rootLevels.id = pages.idParent
-                                          WHERE pageUrls.url = ? AND
-                                            pageUrls.idLanguages = ? AND
-                                            rootLevels.id = ?', array($this->core->sysConfig->parent_types->folder,
-                                                                      $strUrl,
-                                                                      $this->intLanguageId,
-                                                                      $intRootLevelId,
-                                                                      $this->core->sysConfig->parent_types->rootlevel,
-                                                                      $strUrl,
-                                                                      $this->intLanguageId,
-                                                                      $intRootLevelId));
+                                        SELECT pageUrls.pageId, pageUrls.version, pageUrls.idLanguages, pageUrls.idParent, pageUrls.idParentTypes
+                                          FROM pageUrls
+                                            INNER JOIN pages ON
+                                              pages.pageId = pageUrls.pageId AND
+                                              pages.version = pageUrls.version AND
+                                              pages.idParentTypes = ?
+                                            INNER JOIN rootLevels ON
+                                              rootLevels.id = pages.idParent
+                                            WHERE pageUrls.url = ? AND
+                                              pageUrls.idLanguages = ? AND
+                                              rootLevels.id = ?', array($this->core->sysConfig->parent_types->folder,
+                                                                        $strUrl,
+                                                                        $this->intLanguageId,
+                                                                        $intRootLevelId,
+                                                                        $this->core->sysConfig->parent_types->rootlevel,
+                                                                        $strUrl,
+                                                                        $this->intLanguageId,
+                                                                        $intRootLevelId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
-
   }
 
   /**
@@ -1039,7 +1185,7 @@ class Model_Pages {
     if($intTemplateId == $this->core->sysConfig->page_types->page->event_templateId){
 	    $objSelect->join('pageDatetimes', 'pageDatetimes.pageId = pages.pageId AND pageDatetimes.version = pages.version AND pageDatetimes.idLanguages = '.$this->intLanguageId, array('datetime'));
     }
-    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId, array('url'));
+    $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent IS NULL', array('url'));
     $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pages.idTemplates = ?', $intTemplateId);
     if($intTemplateId == $this->core->sysConfig->page_types->page->event_templateId){
@@ -1267,6 +1413,22 @@ class Model_Pages {
     }
 
     return $this->objPageInternalLinksTable;
+  }
+
+  /**
+   * getPageCollectionTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getPageCollectionTable(){
+
+    if($this->objPageCollectionTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageCollections.php';
+      $this->objPageCollectionTable = new Model_Table_PageCollections();
+    }
+
+    return $this->objPageCollectionTable;
   }
 
   /**
