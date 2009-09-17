@@ -518,6 +518,7 @@ class phMagick{
 
 		$cmd .= ' -crop ' . (int)$width . 'x'.(int)$height ;
 		$cmd .= '+' . $left.'+'.$top;
+		$cmd .= ' +repage'; //gif croping fix (http://www.imagemagick.org/discourse-server/viewtopic.php?f=3&t=13010, http://www.imagemagick.org/script/command-line-options.php#repage)
 		$cmd .= ' ' . $this->getDestination() ;
 
 		$this->execute($cmd);
