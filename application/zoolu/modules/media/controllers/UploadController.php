@@ -65,6 +65,7 @@ class Media_UploadController extends AuthControllerAction  {
       $this->core->logger->debug('media->controllers->UploadController->indexAction()');
 
       $this->objUpload = new Zend_File_Transfer_Adapter_Http();
+      $this->objUpload->setOptions(array('useByteString' => false));
 
       /**
        * validators for upload of media

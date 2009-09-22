@@ -462,10 +462,10 @@ function get_documents($strContainerCss = 'divDocItem', $strIconCss = 'divDocIco
   if($objFiles != '' && count($objFiles) > 0){
     foreach($objFiles as $objFile){
       $strHtmlOutput .= '<div class="'.$strContainerCss.'">
-              <div class="'.$strIconCss.'"><img src="/website/themes/default/images/icons/icon_'.$objFile->extension.'.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+              <div class="'.$strIconCss.'"><img src="'.HtmlOutput::getIconByExtension($objFile->extension, '/website/themes/default/images/icons', 'gif').'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
               <div class="'.$strTitleCss.'">
                 <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a><br/>
-                <span>Format:</span> <span class="black">'.$objFile->extension.'</span> <span>Gr&ouml;&szlig;e:</span> <span class="black">'.$objFile->size.' KB</span>
+                <span>Format:</span> <span class="black">'.$objFile->extension.'</span> <span>Gr&ouml;&szlig;e:</span> <span class="black">'.HtmlOutput::getFormattedByteSize($objFile->size).'</span>
               </div>
               <div class="clear"></div>
             </div>';
