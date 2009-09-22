@@ -90,7 +90,7 @@ class GenericDataHelper_Collection extends GenericDataHelperAbstract  {
         }
       }
 
-      $this->objModelPages->addPageCollectionUrls($this->objElement->objPageCollection, $intParentId, $intParentTypeId);
+      if($this->objElement->objPageCollection) $this->objModelPages->addPageCollectionUrls($this->objElement->objPageCollection, $intParentId, $intParentTypeId);
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
