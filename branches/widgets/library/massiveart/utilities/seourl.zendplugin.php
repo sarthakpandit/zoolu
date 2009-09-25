@@ -74,16 +74,20 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					$objModelWidgets->setLanguage($this->intLanguageId);
 					$objWidgetUrl = $objModelWidgets->loadWidgetByUrl('null', $objUrl->url);
 					
-					/* non-performance thing!*/
-					//$arrModifiedUrl = explode('/', substr(str_replace($objUrl->url, '', $strUrl), 1));
-					//$strParams = str_replace($strUrl, '', ltrim(substr(str_replace($objUrl->url, '', $strUrl), 1),'/'));
-					//$strParams = explode('/', (ltrim(substr($strParams,strpos($strParams, '/')), '/')));
-					//$this->getRequest()->setParams($strParams);
-					
+					//$objWidgetUrl->url;
+					$strWidgetArgs = substr($strUrl,strlen($objWidgetUrl->url));
 					$objWidget = new Widget();
 					Zend_Registry::set('Widget', $objWidget);
 					
-					$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index/'.$arrModifiedUrl[0]);
+					if(empty($strWidgetArgs)) {
+						$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index/index');
+					} else {
+						// action must be leading! -> even index Action (only if there are params)
+						// e.g. /view/1/, /index/843/
+						$strWidgetParams = explode('/',ltrim($strWidgetArgs,'/'));
+						$this->getRequest()->setParams($strWidgetParams);
+						$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index'.$strWidgetArgs);
+					}
 				} break;
 				
 				/**

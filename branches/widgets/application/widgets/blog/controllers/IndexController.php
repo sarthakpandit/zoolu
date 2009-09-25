@@ -70,7 +70,17 @@ class Blog_IndexController extends AuthControllerAction  {
     parent::init();
     $this->objRequest = $this->getRequest();
   }
-	
+
+  /**
+   * archiveAction
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function archiveAction() {
+  	//develop
+  	echo var_dump($this->objRequest->getParams());
+  }
+  
   /**
    * indexAction
    * @author Florian Mathis <flo@massiveart.com>
