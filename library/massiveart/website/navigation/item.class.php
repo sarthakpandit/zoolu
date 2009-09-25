@@ -58,7 +58,7 @@ class NavigationItem {
    * @author Thomas Schedler <tsh@massiveart.com>   
    * @version 1.0
    */
-  public public function __construct() { }
+  public function __construct() { }
   
   /**
    * setTitle

@@ -57,7 +57,7 @@ class PageEntry {
    * @author Cornelius Hansjakob <cha@massiveart.com>   
    * @version 1.0
    */
-  public public function __construct() { }
+  public function __construct() { }
   
   /**
    * __set
