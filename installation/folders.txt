@@ -7,6 +7,6 @@ The following folders have to be created manually:
 /tmp/search_index
 /tmp/search_index/pages
 /tmp/sessions
-/log
+/logs
 
 Your webserver-user must have write-permissions on these folders.
