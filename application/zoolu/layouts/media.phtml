@@ -315,10 +315,10 @@
     <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- ext.js includes -->
     <script type="text/javascript" src="/zoolu/js_incs/ext.js/ext-build.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- define layout -->
-    <script type="text/javascript" src="/zoolu/js_incs/layout.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- core -->
     <script type="text/javascript" src="/zoolu/js_incs/core.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- define layout -->
+    <script type="text/javascript" src="/zoolu/js_incs/layout.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- navigation -->
     <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/navigation.media.js?v=<?php echo $this->jsVersion; ?>"></script>    
@@ -348,7 +348,7 @@
     
       document.observe('dom:loaded', function() { 
         myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';        
-        myNavigation.topNaviTitle = 'Medien';
+        myNavigation.topNaviTitle = '<?php echo $this->translate->_('Media'); ?>';
         myNavigation.module = <?php echo $this->module; ?>;
         myNavigation.initModuleMEDIA();
         

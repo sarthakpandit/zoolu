@@ -20,6 +20,16 @@ Basics */
   padding-right:40px;
 }
 
+.contentedit2 {
+  position:absolute;
+  top:40px;
+  bottom:0;
+  left:10px;
+  right:0;
+  overflow:hidden;
+  overflow-y:scroll;  
+}
+
 /* only IE7 */
 *:first-child+html .contentedit { 
   padding-right:50px;
@@ -672,6 +682,33 @@ Function Widget */
   background-color:#754480;
   height:40px;
   padding:0;
+}
+
+#widgetcontentlefttop {
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:auto;
+  background-color:#754480;
+  width:5px;
+  height:10x;
+}
+
+#widgetcontentrighttop {
+  position:absolute;
+  right:0;
+  top:0;
+  bottom:auto;
+  background-color:#754480;
+  width:5px;
+  height:10x;
+}
+
+#widgetcontentlefttop img, 
+#widgetcontentrightttop img {
+  display:block;
+  width:5px;
+  height:5px;
 }
 
 .widgetcontentmain {

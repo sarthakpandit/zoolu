@@ -36,7 +36,7 @@
  * Login, Logout
  *
  * Version history (please keep backward compatible):
- * 1.0, 2008-10-10: Thomas Schedler
+ * 1.0, 2009-10-03: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0

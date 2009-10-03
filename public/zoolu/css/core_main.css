@@ -49,6 +49,17 @@ body {
   background-color:#c6c6c6;
 }
 
+#content2 {
+  position:absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
+  z-index:30;
+  margin:0 10px 10px 0;
+  background-color:#c6c6c6;
+}
+
 #widgets {
   position:absolute;
   top:0;
