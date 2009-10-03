@@ -1,0 +1,50 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ZOOLU\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-10-03 13:32+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Thomas Schedler <thomas.schedler@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: AUSTRIA\n"
+"X-Poedit-Basepath: /Volumes/data/websites/zoolu.chirimoya.com/\n"
+"X-Poedit-KeywordsList: _\n"
+"X-Poedit-SearchPath-0: application/zoolu\n"
+"X-Poedit-SearchPath-1: public/zoolu\n"
+
+#: application/zoolu/layouts/index.phtml:34
+msgid "Report_bugs"
+msgstr "Fehler melden"
+
+#: application/zoolu/layouts/index.phtml:34
+msgid "Help_and_FAQ"
+msgstr "Hilfe & FAQ"
+
+#: application/zoolu/layouts/index.phtml:58
+msgid "Portals"
+msgstr "Portale"
+
+#: application/zoolu/layouts/index.phtml:63
+msgid "Media"
+msgstr "Medien"
+
+#: application/zoolu/layouts/index.phtml:73
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: application/zoolu/layouts/index.phtml:78
+msgid "User_administration"
+msgstr "Benutzerverwaltung"
+
+#: application/zoolu/modules/core/views/scripts/user/userinfo.phtml:11
+msgid "My_Settings"
+msgstr "Meine Einstellungen"
+
+#: application/zoolu/modules/core/views/scripts/user/userinfo.phtml:11
+msgid "Logout"
+msgstr "Log Out"
+
