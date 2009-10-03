@@ -69,6 +69,11 @@ class AuthControllerAction extends Zend_Controller_Action {
   	$this->view->setEncoding($this->core->sysConfig->encoding->default);
   	
   	/**
+  	 * set translate obj
+  	 */
+    $this->view->translate = $this->core->translate;
+  	
+  	/**
      * check if user is authenticated, else redirect to login form
      */
     $auth = Zend_Auth::getInstance();
@@ -82,7 +87,7 @@ class AuthControllerAction extends Zend_Controller_Action {
               </script>';
         exit();
       }else{
-        $this->_redirect('/zoolu/core/user/login');   
+        $this->_redirect('/zoolu/users/user/login');   
       }
     }
     

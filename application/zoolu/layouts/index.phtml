@@ -31,7 +31,7 @@
           </a>
         </div>
         <div class="topright">
-          <div class="faqtitle"><a href="#">Fehler melden</a> | <a href="#">Hilfe &amp; FAQ</a></div>
+          <div class="faqtitle"><a href="#"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
           <div class="faqicon"><img src="/zoolu/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
@@ -55,27 +55,27 @@
         <div id="navtopinner">
           <div class="navtop">
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'">PORTALE</div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'"><?php echo strtoupper($this->translate->_('Portals')); ?></div>
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
           </div>
           <div class="navtop">
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'">MEDIEN</div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'"><?php echo strtoupper($this->translate->_('Media')); ?></div>
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
           </div>
-          <!--<div class="navtop">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/product'">PRODUKTE</div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div> -->
           <div class="navtopinnerright">
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'">Einstellungen</div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'"><?php echo $this->translate->_('Settings'); ?></div>
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
+          </div>
+          <div class="navtopinnerright">
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/users'"><?php echo $this->translate->_('User_administration'); ?></div>
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
           </div>
           <div class="clear"></div>
         </div>
-        <div id="navtopbreadcrumb" style="display:none;">Portal 1 &raquo; Documents &raquo; Test</div>
+        <div id="navtopbreadcrumb" style="display:none;"></div>
       </div>
       
       <div id="navtopright">

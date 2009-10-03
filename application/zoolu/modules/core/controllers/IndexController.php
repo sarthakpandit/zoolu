@@ -56,10 +56,10 @@ class Zoolu_IndexController extends AuthControllerAction {
 		
 		$layout = Zend_Layout::getMvcInstance();  
 		$layout->assign('navigation', '');
-    $layout->assign('userinfo',$this->view->action('userinfo','User','core'));
+    $layout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
     
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
-    $this->view->assign('cssVersion', $this->core->sysConfig->version->css);    
+    $this->view->assign('cssVersion', $this->core->sysConfig->version->css);   
   }
 
 }

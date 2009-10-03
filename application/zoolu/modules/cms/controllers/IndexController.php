@@ -55,8 +55,8 @@ class Cms_IndexController extends AuthControllerAction {
     ));
     
     $objLayout = Zend_Layout::getMvcInstance();  
-    $objLayout->assign('navigation', $this->view->action('index','Navigation','cms'));
-    $objLayout->assign('userinfo', $this->view->action('userinfo','User','core'));
+    $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'cms'));
+    $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
     
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
     $this->view->assign('cssVersion', $this->core->sysConfig->version->css);

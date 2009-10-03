@@ -38,5 +38,5 @@ define('GLOBAL_ROOT_PATH', dirname(__FILE__).'/../');
 /**
  * define MAGIC for finfo (yum install php-pecl-Fileinfo)
  */
-define('MAGIC', '/usr/share/file/magic');
+define('MAGIC', '/usr/share/misc/magic.mgc');
 ?>
