@@ -40,8 +40,10 @@
  * @version 1.0
  */
 
-class Blog_IndexController extends AuthControllerAction  {
+class Blog_IndexController extends Zend_Controller_Action  {
   
+	protected $core;
+	
 	/**
    * request object instance
    * @var Zend_Controller_Request_Abstract
@@ -54,6 +56,11 @@ class Blog_IndexController extends AuthControllerAction  {
    * @var Widget
    */
   protected $objWidget;
+  
+  /**
+   * @var Model_Widgets
+   */
+  protected $objModelWidgets;
   
   /**
    * @var Model_Folders
@@ -69,6 +76,7 @@ class Blog_IndexController extends AuthControllerAction  {
   public function init(){
     parent::init();
     $this->objRequest = $this->getRequest();
+    $this->core = Zend_Registry::get('Core');
   }
 
   /**
@@ -123,7 +131,30 @@ class Blog_IndexController extends AuthControllerAction  {
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
     
     //FIXME: Front- and Backend-Options? Cache?
-  	
+  	$objNavigation = new Navigation();
+    $objNavigation->setRootLevelId($objTheme->idRootLevels);
+    $objNavigation->setLanguageId($this->intLanguageId);
+    
+    $this->getModelWidgets();
+    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrlAndRootLevel($objTheme->idRootLevels, $strUrl);
+    echo var_dump($this->objUrlsData);
+    
+    require_once(dirname(__FILE__).'/../../../website/default/helpers/navigation.inc.php');
+    Zend_Registry::set('Navigation', $objNavigation);
+    
+    $this->objWidget = new Widget();
+    $this->objWidget->setRootLevelId($objTheme->idRootLevels);
+    $this->objWidget->setRootLevelTitle($objTheme->title);
+    $this->objWidget->setWidgetInstanceId($this->objUrlsData->urlId);
+    //TODO: Complete
+    
+//        $this->objPage->setRootLevelId($objTheme->idRootLevels);
+//        $this->objPage->setRootLevelTitle($objTheme->title);
+//        $this->objPage->setPageId($this->objUrlsData->urlId);
+//        $this->objPage->setPageVersion($this->objUrlsData->version);
+//        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
+    
+    Zend_Registry::set('Widget', $this->objWidget);
   	require_once(dirname(__FILE__).'/../../../website/default/helpers/widget.inc.php');
   	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
     $this->renderScript('master.php');
@@ -148,6 +179,21 @@ class Blog_IndexController extends AuthControllerAction  {
     }
 
     return $this->objModelFolders;
+  }
+  
+  protected function getModelWidgets(){
+    if (null === $this->objModelWidgets) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
+      $this->objModelWidgets = new Model_Widgets();
+      //$this->objModelWidgets->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelWidgets;
   }
 }
 
