@@ -9,6 +9,8 @@
  * @version 1.0
  */
 
+Massiveart = {version:"1.0"};
+
 Massiveart.Core = Class.create({
 
   initialize: function() {

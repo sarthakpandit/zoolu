@@ -24,6 +24,12 @@ Basics */
   height:100%;
 }
 
+#navigation-left {
+  width:260px;
+  position:relative;
+  height:100%;  
+}
+
 /* ----------------
 Logo & FAQ */
 
@@ -211,7 +217,7 @@ Navigation Top */
 /* ----------------
 Navigation Main */
 
-#divNaviLeft {
+#divNaviLeft, #divNaviLeft2 {
   background-color:#e4e4e4;
   position:absolute;
   z-index:20;
@@ -219,6 +225,11 @@ Navigation Main */
   bottom:15px;
   left:10px;
   width:250px;
+}
+
+#divNaviLeft2 {
+  width:240px;
+  top:5px;
 }
 
 #divNaviCenter {
@@ -315,7 +326,7 @@ Inner */
 /* ----------------
 Navigtion left */
 
-#navilefttop {
+#navilefttop, #navilefttop2 {
   position:absolute;
   left:10px;
   top:0;
@@ -325,13 +336,18 @@ Navigtion left */
   height:10px;
 }
 
-#navilefttop img {
+#navilefttop2 {
+  width:235px;
+  height:5px;
+}
+
+#navilefttop img, #navilefttop2 img {
   display:block;
   width:5px;
   height:5px;
 }
 
-#navileftbottom {
+#navileftbottom, #navileftbottom2 {
   position:absolute;
   left:10px;
   bottom:0px;
@@ -341,7 +357,13 @@ Navigtion left */
   background-color:#e4e4e4;
 }
 
-#navileftbottom img {
+#navileftbottom2 {
+  width:235px;
+  height:5px;
+  bottom:10px;
+}
+
+#navileftbottom img, navileftbottom2 img {
   display:block;
   width:5px;
   height:5px;
@@ -357,6 +379,32 @@ Navigtion left */
   width:100%;
   overflow-y: auto;
   overflow-x:hidden;
+}
+
+.naviitemcontainer .top,
+.naviitemcontainer .bottom {
+  width:230px;
+  height:4px;
+  margin-left:5px;
+}
+
+.naviitem {
+  margin-left:5px;
+  height:26px;
+  width:230px;
+  overflow:hidden;
+  cursor:pointer;   
+}
+
+.naviitem .itemtitle {
+  height:23px;
+  padding-right:0;
+  padding-top:3px;
+  padding-left:10px;
+  float:left;
+  width:180px;
+  overflow:hidden;
+   
 }
 
 .portalcontainer .portaltop,
@@ -391,7 +439,8 @@ Navigtion left */
 .portal .categoryicon,
 .portal .usericon,
 .portal .labelicon,
-.portal .sysinternicon {
+.portal .sysinternicon,
+.naviitem .usericon {
   margin-top:0;
   margin-left:4px;  
   width:21px;
@@ -415,7 +464,8 @@ Navigtion left */
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -105px;
 }
 
-.portal .usericon {
+.portal .usericon,
+.naviitem .usericon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -147px;
 }
 
@@ -575,7 +625,7 @@ Navigtion left */
 /* ----------------
 Navigtion right */
 
-#navirighttop {
+#navirighttop, #navirighttop2 {
   background-color:#e4e4e4;
   position:absolute;
   right:10px;
@@ -584,7 +634,12 @@ Navigtion right */
   height:10px;
 }
 
-#navirightbottom {
+#navirighttop2{
+  width:5px;
+  height:5px;
+}
+
+#navirightbottom, #navirightbottom2 {
   background-color:#e4e4e4;
   position:absolute;
   right:10px;
@@ -594,8 +649,15 @@ Navigtion right */
   height:10px;
 }
 
+#navirightbottom2{
+  bottom:10px;
+  width:5px;
+  height:5px;
+}
+
 #navirighttop img,
-#navirightbottom img {
+#navirightbottom img,
+navirightbottom2 img {
   display:block;
   width:5px;
   height:5px;

@@ -398,6 +398,7 @@
       <cms>1</cms>
       <media>2</media>
       <properties>3</properties>
+      <users>4</users>
     </modules>
     
     <!-- ROOTLEVEL TYPES -->

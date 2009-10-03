@@ -193,18 +193,16 @@ Ext.onReady(function(){
   // it is generally best to disable state management as dynamically-generated ids
   // can change across page loads, leading to unpredictable results.  The developer
   // should ensure that stable state ids are set for stateful components in real apps.
-  Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+  //Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
   // navigation area
   var mainnavi = {
     id: 'navi-main-panel',
-    region: 'north',
-    contentEl:'navigation-main',
-    height: 200,
-    minSize: 0,
-    maxSize: 400,
-    split: true,
-    collapsible:true,
+    region: 'west',
+    contentEl:'navigation-left',
+    width: 260,
+    split: false,
+    collapsible:false,
     collapseMode:'mini',
     animCollapse:false
   };
@@ -213,7 +211,7 @@ Ext.onReady(function(){
   var maincontent = {
     id: 'content-edit',
     region:'center',
-    contentEl:'content',
+    contentEl:'content2',
     split: true,
     collapsible:true,
     collapseMode:'mini'
@@ -246,7 +244,7 @@ Ext.onReady(function(){
 
   // output body
   var viewport = new Ext.Viewport({
-    layout:'ma_border',
+    layout:'border',
     hideBorders:true,
     items:[topnavi, main],
     renderTo: Ext.getBody()

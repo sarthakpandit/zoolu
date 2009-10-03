@@ -24,44 +24,38 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.users.controllers
+ * @package    application.zoolu.modules.users.views.helpers
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * IndexController
+ * NavigationHelper
  * 
  * Version history (please keep backward compatible):
- * 1.0, 2009-10-03: Thomas Scheder
+ * 1.0, 2009-10-04: Thomas Schedler
  * 
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Users_IndexController extends AuthControllerAction {
+class NavigationHelper {
   
   /**
-   * The default action - show the home page
+   * @var Core
    */
-  public function indexAction(){
-   
-    $this->_helper->viewRenderer->setNoRender();
-    
-    Zend_Layout::startMvc(array(
-      'layout' => 'users',
-      'layoutPath' => '../application/zoolu/layouts'
-    ));
-    
-    $objLayout = Zend_Layout::getMvcInstance();  
-    $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'users'));
-    $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
-    
-    $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
-    $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
-    $this->view->assign('module', $this->core->sysConfig->modules->users);
-        
-  } 
-
+  private $core;
+  
+  /**
+   * Constructor 
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function __construct(){
+    $this->core = Zend_Registry::get('Core');
+  }
+  
 }
+
+?>
