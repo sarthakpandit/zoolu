@@ -235,13 +235,11 @@ class Model_Widgets {
 	
 	    $objSelect->from($this->objUrlTable, array('url'));
 	    $objSelect->join('widgetInstances', 'widgetInstances.widgetInstanceId = urls.urlId 
-	    																		 AND widgetInstances.version = urls.version
-	    																		 AND widgetInstances.idParentTypes = ?', array());
-	   $objSelect->bind($this->core->sysConfig->parent_types->folder);
+	    																		 AND widgetInstances.version = urls.version', array());
 	   $objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id');
 	   $objSelect->where('urls.url = ?', $strUrl)
 	   					 ->where('urls.idLanguages = ?', 1);
-	
+	    
 	    return $this->objUrlTable->fetchRow($objSelect);
     }
   }
