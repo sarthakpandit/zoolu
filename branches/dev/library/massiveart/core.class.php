@@ -68,9 +68,9 @@ class Core {
   public $webConfig;
 
   /**
-	 * @var GuiTexts
-	 */
-  public $guiTexts;
+   * @var HtmlTranslate
+   */
+  public $translate;
 
   /**
    * Constructor
@@ -99,15 +99,18 @@ class Core {
     /**
      * create logfile extension for file writer
      */
-    if(isset($_SESSION["sesUserName"]) && isset($_SERVER['REMOTE_ADDR'])){
-      $strLogFileExtension = '_'.$_SESSION["sesUserName"].'_'.$_SERVER['REMOTE_ADDR'];
-    }else
-    if(isset($_SERVER['REMOTE_ADDR'])){
-      $strLogFileExtension = '_'.$_SERVER['REMOTE_ADDR'];
-    }else{
-      $strLogFileExtension = '_local';
+    $strLogFileExtension = '';
+    if($this->sysConfig->logger->priority > Zend_Log::ERR){
+      if(isset($_SESSION["sesUserName"]) && isset($_SERVER['REMOTE_ADDR'])){
+        $strLogFileExtension = '_'.$_SESSION["sesUserName"].'_'.$_SERVER['REMOTE_ADDR'];
+      }else
+      if(isset($_SERVER['REMOTE_ADDR'])){
+        $strLogFileExtension = '_'.$_SERVER['REMOTE_ADDR'];
+      }else{
+        $strLogFileExtension = '_local';
+      }
     }
-
+    
     /**
      * create log file writer
      */
@@ -119,7 +122,13 @@ class Core {
      */
     $filter = new Zend_Log_Filter_Priority((int) $this->sysConfig->logger->priority);
     $this->logger->addFilter($filter);
-
+    
+    /**
+     * set up zoolu translate obj
+     */
+    $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-de.mo', 'de');
+    
+ 
     if($blnWithDbh == true){
       /**
        * initialize the ZEND DB Connection
@@ -158,7 +167,6 @@ class Core {
         die();
       }
 
-      //$this->initGuiTexts();
     }
   }
 
@@ -174,37 +182,5 @@ class Core {
     }
     return self::$instance;
   }
-
-  /**
-   * initGuiTexts
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function initGuiTexts($blnGuiTextsClassSession = true){
-
-    /**
-     * initialize the guiTexts object && the security object
-     */
-    try {
-      //$this->guiTexts = GuiTexts::getInstance($this->logger, $this->dbh);
-
-      if(GUI_TEXTS_CLASS_SESSION == true && $blnGuiTextsClassSession == true){
-        if(isset($_SESSION['sesGuiTextsObject'])){
-          $this->logger->debug('load guiTexts object from session');
-          $this->guiTexts = unserialize($_SESSION['sesGuiTextsObject']);
-        }else{
-          $this->logger->debug('load guiTexts object from engine db and write to the session');
-          $this->guiTexts = GuiTexts::getInstance($this->logger);
-          $_SESSION['sesGuiTextsObject'] = serialize($this->guiTexts);
-        }
-      }else{
-        $this->logger->debug('load guiTexts object from engine db');
-        $this->guiTexts = GuiTexts::getInstance($this->logger);
-      }
-    } catch (Exception $exc) {
-       $this->logger->err($exc);
-    }
-  }
-
 }
 ?>

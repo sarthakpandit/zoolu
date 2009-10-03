@@ -19,63 +19,10 @@
     <link href="/zoolu/css/core_font.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />    
     <link href="/zoolu/css/media.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
 
+    <!-- libaries -->
     <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- ext.js includes -->
-    <script type="text/javascript" src="/zoolu/js_incs/ext.js/ext-build.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- define layout -->
-    <script type="text/javascript" src="/zoolu/js_incs/layout.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- core -->
-    <script type="text/javascript" src="/zoolu/js_incs/core.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- navigation -->
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.media.js?v=<?php echo $this->jsVersion; ?>"></script>    
-    <!-- media -->
-    <script type="text/javascript" src="/zoolu/js_incs/media.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- form -->
-    <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- TinyMCE Texteditor -->
-    <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- SWFUpload -->
-    <script type="text/javascript" src="/zoolu/js_incs/swfupload/swfupload.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/swfupload/plugins/swfupload.swfobject.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/swfupload/plugins/swfupload.queue.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/swfupload/fileprogress.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/swfupload/handlers.js?v=<?php echo $this->jsVersion; ?>"></script>
-    
-    <script type="text/javascript">//<![CDATA[
-      var myCore = new Massiveart.Core();
-      var myMedia = new Massiveart.Media();
-      var myNavigation = new Massiveart.Navigation.Media();      
-      var myForm = new Massiveart.Form();       
-      
-      var swfu;
-      var sessionId = '<?php echo session_id(); ?>';
-      
-      var currSliderValue = 100;
-    
-      document.observe('dom:loaded', function() { 
-        myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';        
-        myNavigation.topNaviTitle = 'Medien';
-        myNavigation.module = <?php echo $this->module; ?>;
-        myNavigation.initModuleMEDIA();
-        
-        var scaleSlider = new Control.Slider('divMediaSliderBall', 'divMediaSliderTrack', 
-                                {range: $R(32, 200),
-                                 sliderValue: currSliderValue});
-        
-        scaleSlider.options.onSlide = function(value){
-          myMedia.scaleThumbs(value);              
-        }
-        
-        scaleSlider.options.onChange = function(value){
-          myMedia.scaleThumbs(value);
-        }
-      });       
-    //]]>
-    </script>
-    
+       
   </head>
   <body id="myBody">
 
@@ -90,7 +37,7 @@
           </a>
         </div>
         <div class="topright">
-          <div class="faqtitle"><a href="#">Fehler melden</a> | <a href="#">Hilfe &amp; FAQ</a></div>
+          <div class="faqtitle"><a href="#"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
           <div class="faqicon"><img src="/zoolu/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
@@ -114,22 +61,22 @@
         <div id="navtopinner">
           <div class="navtop">
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'">PORTALE</div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'"><?php echo strtoupper($this->translate->_('Portals')); ?></div>
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
           </div>
           <div class="navtop">
             <div class="navtopcorner_on"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink_on" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'">MEDIEN</div>
+            <div class="navtoplink_on" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'"><?php echo strtoupper($this->translate->_('Media')); ?></div>
             <div class="navtopcorner_on"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
           </div>
-          <!--<div class="navtop">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/product'">PRODUKTE</div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div> -->
           <div class="navtopinnerright">
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'">Einstellungen</div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'"><?php echo $this->translate->_('Settings'); ?></div>
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
+          </div>
+          <div class="navtopinnerright">
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/users'"><?php echo $this->translate->_('User_administration'); ?></div>
             <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
           </div>
           <div class="clear"></div>
@@ -361,13 +308,66 @@
           </tr>
         </tbody>
       </table>
-    </div><!-- END overlay SWF Upload -->
+    </div>
+    <!-- END overlay SWF Upload -->
+    
+    <!-- libaries -->
+    <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- ext.js includes -->
+    <script type="text/javascript" src="/zoolu/js_incs/ext.js/ext-build.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- define layout -->
+    <script type="text/javascript" src="/zoolu/js_incs/layout.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- core -->
+    <script type="text/javascript" src="/zoolu/js_incs/core.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- navigation -->
+    <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/navigation.media.js?v=<?php echo $this->jsVersion; ?>"></script>    
+    <!-- media -->
+    <script type="text/javascript" src="/zoolu/js_incs/media.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- form -->
+    <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- TinyMCE Texteditor -->
+    <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- SWFUpload -->
+    <script type="text/javascript" src="/zoolu/js_incs/swfupload/swfupload.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/swfupload/plugins/swfupload.swfobject.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/swfupload/plugins/swfupload.queue.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/swfupload/fileprogress.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/swfupload/handlers.js?v=<?php echo $this->jsVersion; ?>"></script>
     
     <script type="text/javascript">//<![CDATA[
-      new Draggable('overlayUpload', {handle: 'handle', scroll: window });
-      new Draggable('overlayGenContentWrapper', {handle: 'handle', scroll: window });       
-    //]]>
-    </script>
+      var myCore = new Massiveart.Core();
+      var myMedia = new Massiveart.Media();
+      var myNavigation = new Massiveart.Navigation.Media();      
+      var myForm = new Massiveart.Form();       
+      
+      var swfu;
+      var sessionId = '<?php echo session_id(); ?>';
+      
+      var currSliderValue = 100;
     
+      document.observe('dom:loaded', function() { 
+        myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';        
+        myNavigation.topNaviTitle = 'Medien';
+        myNavigation.module = <?php echo $this->module; ?>;
+        myNavigation.initModuleMEDIA();
+        
+        var scaleSlider = new Control.Slider('divMediaSliderBall', 'divMediaSliderTrack', 
+                                {range: $R(32, 200),
+                                 sliderValue: currSliderValue});
+        
+        scaleSlider.options.onSlide = function(value){
+          myMedia.scaleThumbs(value);              
+        }
+        
+        scaleSlider.options.onChange = function(value){
+          myMedia.scaleThumbs(value);
+        }
+
+        new Draggable('overlayUpload', {handle: 'handle', scroll: window });
+        new Draggable('overlayGenContentWrapper', {handle: 'handle', scroll: window });  
+      });       
+    //]]>
+    </script>    
   </body>
 </html>
