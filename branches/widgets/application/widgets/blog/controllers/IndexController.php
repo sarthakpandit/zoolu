@@ -136,8 +136,11 @@ class Blog_IndexController extends Zend_Controller_Action  {
     $objNavigation->setLanguageId($this->intLanguageId);
     
     $this->getModelWidgets();
-    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrlAndRootLevel($objTheme->idRootLevels, $strUrl);
-    echo var_dump($this->objUrlsData);
+    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($objTheme->idRootLevels, $strUrl);
+
+    foreach($this->objUrlsData as $objPageData){
+      $this->objUrlsData = $objPageData;
+    }
     
     require_once(dirname(__FILE__).'/../../../website/default/helpers/navigation.inc.php');
     Zend_Registry::set('Navigation', $objNavigation);
@@ -146,13 +149,8 @@ class Blog_IndexController extends Zend_Controller_Action  {
     $this->objWidget->setRootLevelId($objTheme->idRootLevels);
     $this->objWidget->setRootLevelTitle($objTheme->title);
     $this->objWidget->setWidgetInstanceId($this->objUrlsData->urlId);
-    //TODO: Complete
-    
-//        $this->objPage->setRootLevelId($objTheme->idRootLevels);
-//        $this->objPage->setRootLevelTitle($objTheme->title);
-//        $this->objPage->setPageId($this->objUrlsData->urlId);
-//        $this->objPage->setPageVersion($this->objUrlsData->version);
-//        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
+    $this->objWidget->setWidgetVersion($this->objUrlsData->version);
+    $this->objWidget->setLanguageId($this->objUrlsData->idLanguages);
     
     Zend_Registry::set('Widget', $this->objWidget);
   	require_once(dirname(__FILE__).'/../../../website/default/helpers/widget.inc.php');
@@ -190,7 +188,7 @@ class Blog_IndexController extends Zend_Controller_Action  {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
       $this->objModelWidgets = new Model_Widgets();
-      //$this->objModelWidgets->setLanguageId($this->intLanguageId);
+      $this->objModelWidgets->setLanguageId($this->intLanguageId);
     }
 
     return $this->objModelWidgets;

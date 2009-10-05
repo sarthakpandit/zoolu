@@ -283,7 +283,6 @@ class Model_Widgets {
                                                                       $strUrl,
                                                                       $this->intLanguageId,
                                                                       $intRootLevelId));
-
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
   
@@ -464,5 +463,20 @@ class Model_Widgets {
     return $this->objUrlReplacersTable;
   }
   
+  /**
+   * setLanguageId
+   * @param integer $intLanguageId
+   */
+  public function setLanguageId($intLanguageId){
+    $this->intLanguageId = $intLanguageId;
+  }
+
+  /**
+   * getLanguageId
+   * @param integer $intLanguageId
+   */
+  public function getLanguageId(){
+    return $this->intLanguageId;
+  }
 }
 ?>

@@ -744,9 +744,9 @@ class Model_Pages {
                                                                       $strUrl,
                                                                       $this->intLanguageId,
                                                                       $intRootLevelId));
+    $this->core->logger->debug('asdf');
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
-
   }
 
   /**
