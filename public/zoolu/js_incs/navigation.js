@@ -15,6 +15,9 @@ Massiveart.Navigation = Class.create({
     
     this.genFormContainer = 'genFormContainer';
     this.genFormSaveContainer = 'genFormSaveContainer';
+    this.genFormFunctions = 'genFormFunctions';
+    this.genListContainer = 'genListContainer';
+    this.genListFunctions = 'genListFunctions';
     
     this.constFolder = 'folder';
     this.constPage = 'page';

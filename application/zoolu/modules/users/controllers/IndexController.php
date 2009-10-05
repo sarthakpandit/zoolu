@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -32,36 +32,37 @@
 
 /**
  * IndexController
- * 
+ *
  * Version history (please keep backward compatible):
  * 1.0, 2009-10-03: Thomas Scheder
- * 
+ *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
 class Users_IndexController extends AuthControllerAction {
-  
+
   /**
    * The default action - show the home page
    */
   public function indexAction(){
-   
+
     $this->_helper->viewRenderer->setNoRender();
-    
+
     Zend_Layout::startMvc(array(
       'layout' => 'users',
       'layoutPath' => '../application/zoolu/layouts'
     ));
-    
-    $objLayout = Zend_Layout::getMvcInstance();  
+
+    $objLayout = Zend_Layout::getMvcInstance();
     $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'users'));
     $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
-    
+
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
     $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
     $this->view->assign('module', $this->core->sysConfig->modules->users);
-        
-  } 
 
+  }
 }
+
+?>

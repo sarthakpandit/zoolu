@@ -17,7 +17,7 @@ require_once(dirname(__FILE__).'/../sys_config/general.inc.php');
  */
 $front = Zend_Controller_Front::getInstance();
 $front->setControllerDirectory('../application/website/default/controllers');
-$front->addControllerDirectory('../application/zoolu/modules/core/controllers', 'zoolu');                
+$front->addControllerDirectory('../application/zoolu/modules/core/controllers', 'zoolu');
 $front->addModuleDirectory('../application/zoolu/modules');
 
 /**
@@ -60,22 +60,22 @@ $router->addRoute('index', $route);
  * default zoolu routings
  */
 $route = new Zend_Controller_Router_Route('zoolu/:module');
-$router->addRoute('cms', $route);
+$router->addRoute('zoolu', $route);
 
 $route = new Zend_Controller_Router_Route('zoolu/:module/:controller');
-$router->addRoute('cmsController', $route);
+$router->addRoute('zooluController', $route);
 
 $route = new Zend_Controller_Router_Route('zoolu/:module/:controller/:action/*');
-$router->addRoute('cmsControllerAction', $route);
+$router->addRoute('zooluControllerAction', $route);
 
 /**
  * default zoolu-website routings
  */
 $route = new Zend_Controller_Router_Route('zoolu-website/:controller');
-$router->addRoute('webController', $route);
+$router->addRoute('zooluWebController', $route);
 
 $route = new Zend_Controller_Router_Route('zoolu-website/:controller/:action/*');
-$router->addRoute('webControllerAction', $route);
+$router->addRoute('zooluWebControllerAction', $route);
 
 /**
  * only throw exceptions in developement mode
@@ -85,8 +85,8 @@ if($sysConfig->show_errors === 'false'){
 } else {
   $front->throwExceptions(true);
 }
-        
-/** 
+
+/**
  * *** to debug ***
  * echo "<pre>";
  * print_r($_SESSION);
@@ -118,7 +118,7 @@ $arrFrontendOptions = array(
 $arrBackendOptions = array(
     'cache_dir' => GLOBAL_ROOT_PATH.'tmp/cache/pages/' // Directory where to put the cache files
 );
-  
+
 // getting a Zend_Cache_Core object
 $objCache = Zend_Cache::factory('Page',
                                 'File',

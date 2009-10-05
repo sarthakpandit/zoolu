@@ -3,7 +3,7 @@
   require_once (dirname(__FILE__).'/../../helpers/NavigationHelper.php');
   $objHelper = new NavigationHelper();
 
-?>    
+?>
     <!-- navigation left -->
     <div id="navigation-left">
 
@@ -18,37 +18,14 @@
         <div id="divNaviLeftInner">
           <!-- main navigatin -->
           <div id="divNaviLeftMain">
-            <div class="naviitemcontainer">
-              <div class="top selected"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_top.png"/></div>
-              <div id="portal2" class="naviitem selected" onclick="return false;">
-                <div class="usericon"></div>
-							  <div class="itemtitle">Benutzer</div>
-							   <div class="clear"></div>
-							</div>
-              <div class="bottom selected"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_bottom.png"/></div>
-            </div>
-            
-             <div class="naviitemcontainer">
-              <div class="top"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_top.png"/></div>
-              <div id="portal2" class="naviitem" onclick="return false;">
-                <div class="usericon"></div>
-                <div class="itemtitle">Rollen / Gruppen</div>
-                 <div class="clear"></div>
-              </div>
-              <div class="bottom"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_bottom.png"/></div>
-            </div>
-            
-            <div class="naviitemcontainer">
-              <div class="top"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_top.png"/></div>
-              <div class="bottom"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_bottom.png"/></div>
-            </div>
+            <?php echo $objHelper->getModuleRootLevels($this->moduleRootLevels); ?>
           </div>
         </div>
-      </div>    
-             
+      </div>
+
       <div id="navileftbottom2">
         <img width="5" height="5" src="/zoolu/images/main/bg_corner_bottom_left_white.png"/>
-      </div>     
+      </div>
       <div id="navirightbottom2">
         <img width="5" height="5" src="/zoolu/images/main/bg_corner_bottom_right_white.png"/>
       </div>

@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -32,30 +32,73 @@
 
 /**
  * NavigationHelper
- * 
+ *
  * Version history (please keep backward compatible):
  * 1.0, 2009-10-04: Thomas Schedler
- * 
+ *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
 class NavigationHelper {
-  
+
   /**
    * @var Core
    */
   private $core;
-  
+
   /**
-   * Constructor 
+   * Constructor
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
-  
+
+  /**
+   * getModuleRootLevels
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  function getModuleRootLevels($objRowset) {
+    $this->core->logger->debug('users->views->helpers->NavigationHelper->getModuleRootLevels()');
+
+    $strOutput = '';
+
+    $strRootLevelType = '';
+    foreach ($objRowset as $objRow) {
+
+      switch($objRow->idRootLevelTypes){
+        case $this->core->sysConfig->root_level_types->users:
+          $strRootLevelType = 'user';
+          break;
+        case $this->core->sysConfig->root_level_types->groups:
+          $strRootLevelType = 'group';
+          break;
+        default:
+          $strRootLevelType = 'user';
+          break;
+      }
+
+      /**
+       * get values of the row and create output
+       */
+      $strOutput .= '
+            <div class="naviitemcontainer">
+              <div id="naviitem'.$objRow->id.'top" class="top"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_top.png"/></div>
+              <div id="naviitem'.$objRow->id.'" class="naviitem" onclick="myNavigation.getModuleRootLevelList('.$objRow->id.', \''.$strRootLevelType.'\'); return false;">
+                <div class="'.$strRootLevelType.'icon"></div>
+                <div class="itemtitle">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+                 <div class="clear"></div>
+              </div>
+              <div id="naviitem'.$objRow->id.'bottom" class="bottom"><img height="4" width="230" src="/zoolu/images/main/bg_box_230_bottom.png"/></div>
+            </div>';
+    }
+
+    return $strOutput;
+  }
+
 }
 
 ?>

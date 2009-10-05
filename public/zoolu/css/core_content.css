@@ -830,11 +830,61 @@ Buttons: Save, Delete */
   display:inline;
 }
 
+#buttonedit{
+  float:left;
+  cursor:pointer;
+  margin:7px 0 0 10px;
+  display:inline;
+}
+
 #buttonnewversion {
   float:left;
   cursor:pointer;
   margin:0 0 0 0;
   display:inline;
+}
+
+.buttonedittop {
+  background: transparent url(/zoolu/images/buttons/button_purple_top.png) no-repeat 0 0;
+  height:5px;
+  width:143px;
+}
+
+.buttoneditbottom {
+  background: transparent url(/zoolu/images/buttons/button_purple_bottom.png) no-repeat 0 0;
+  height:5px;
+  width:143px;
+}
+
+.buttoneditmenu {
+  position:absolute; 
+  z-index:300; 
+  width:143px; 
+  top:27px; 
+  left:122px;
+}
+
+.buttoneditmenuinner {
+  padding:10px;
+  width:121px;
+  border-left:1px solid #000;
+  border-right:1px solid #000;
+  background-color:#774580;
+}
+
+.buttoneditlink {
+  cursor:pointer;
+  height:20px;
+}
+
+.buttoneditmiddle {
+  background:#774580 url(/zoolu/images/icons/pointer_dark_opened.png) no-repeat 123px 4px;
+  border-left:1px solid #000;
+  border-right:1px solid #000;
+  width:131px;
+  height:15px;
+  line-height:15px;
+  padding:0 0 0 10px;  
 }
 
 .button17leftOff {

@@ -411,6 +411,8 @@
       <contacts>5</contacts>
       <labels>6</labels>
       <systeminternals>7</systeminternals>
+      <users>8</users>
+      <groups>9</groups>
     </root_level_types>
     
     <!-- FOLDER TYPES -->
@@ -565,7 +567,7 @@
     
   	<!-- Plugins / Fields Javascript -->
   	<pluginsJs>
-    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRamTRuOuUEbmwFeFOBAO59ZV6nfBQWp_8apC14qpOjzxiEzaPh4wHeow</gmaps>
+    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
   	</pluginsJs>
   </production>
 
