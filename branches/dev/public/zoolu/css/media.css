@@ -161,28 +161,6 @@ Media Main Toolbar */
   display:inline;
 }
 
-.buttonedittop {
-  background: transparent url(/zoolu/images/buttons/button_purple_top.png) no-repeat 0 0;
-  height:5px;
-  width:143px;
-}
-
-.buttoneditbottom {
-  background: transparent url(/zoolu/images/buttons/button_purple_bottom.png) no-repeat 0 0;
-  height:5px;
-  width:143px;
-}
-
-.buttoneditmiddle {
-	background:#774580 url(/zoolu/images/icons/pointer_dark_opened.png) no-repeat 123px 4px;
-  border-left:1px solid #000;
-  border-right:1px solid #000;
-  width:131px;
-  height:15px;
-  line-height:15px;
-  padding:0 0 0 10px;  
-}
-
 .mediaeditmenu {
   position:absolute; 
   z-index:300; 

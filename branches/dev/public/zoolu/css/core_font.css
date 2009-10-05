@@ -267,7 +267,8 @@ Forms */
 
 /* Medialist */
 
-.mediaeditmenu {
+.mediaeditmenu,
+.buttoneditmenu {
   color:#fff;
 }
 

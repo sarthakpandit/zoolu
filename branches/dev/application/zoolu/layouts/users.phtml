@@ -22,7 +22,7 @@
     <!-- libaries -->
     <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
-    
+
   </head>
   <body id="myBody">
 
@@ -84,12 +84,12 @@
 
     </div>
     <!-- END navigation top -->
-    
+
     <?php echo $this->layout()->navigation; ?>
-    
+
     <!-- content -->
     <div id="content2">
-    
+
       <!-- widget: save, delete, infos, ... -->
       <div class="widgetfunctions">
         <div class="widgetcontenttop">
@@ -98,8 +98,8 @@
 		      </div>
           <div id="widgetcontentrighttop">
             <img width="5" height="5" src="/zoolu/images/main/bg_corner_top_right_white.png"/>
-          </div>         
-		      
+          </div>
+
           <!-- alerts for saving, editing, deleting, ... -->
           <div id="divFormSaveLoader" class="alertsave" style="display:none;">
             <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
@@ -108,44 +108,69 @@
           <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
           <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;">Gel&ouml;scht!</div>
 
-          <!-- new button -->
-          <div id="buttonsave" onclick="myForm.save();">
-            <div class="button25leftOn"></div>
-            <div class="button25centerOn">
-              <img class="iconsave" src="/zoolu/images/icons/icon_new_black.png" width="13" height="13"/>
-              <div>Neu</div>
+          <div id="genListFunctions" style="display:none;">
+            <!-- new button -->
+            <div id="buttonsave" onclick="myForm.save();">
+              <div class="button25leftOn"></div>
+              <div class="button25centerOn">
+                <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
+                <div>Neu</div>
+              </div>
+              <div class="button25rightOn"></div>
+              <div class="clear"></div>
             </div>
-            <div class="button25rightOn"></div>
-            <div class="clear"></div>
-          </div>
-          
-          <!-- save button -->
-          <div id="buttonsave" onclick="myForm.save();">
-            <div class="button25leftOn"></div>
-            <div class="button25centerOn">
-              <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
-              <div>Speichern</div>
+
+            <!-- edit menu -->
+            <div id="buttonedit" onclick="return false;">
+              <div class="buttonedittop"></div>
+              <div id="buttonmediaedittitle" class="buttoneditmiddle white" onclick="myList.toggleEditMenu(this.id); return false;">Bearbeiten</div>
+              <div class="buttoneditbottom"></div>
+              <div class="clear"></div>
             </div>
-            <div class="button25rightOn"></div>
-            <div class="clear"></div>
+
+            <div id="buttonEditMenu" class="buttoneditmenu"  style="display:none;">
+              <div class="buttoneditmenuinner">
+                <div class="buttoneditlink" onclick="myList.delete(); return false;">L&ouml;schen</div>
+                <div class="clear"></div>
+              </div>
+              <div class="buttoneditbottom"></div>
+              <div class="clear"></div>
+            </div>
           </div>
 
-          <!-- delete button -->
-          <div id="buttondelete" onclick="myForm.deleteElement();">
-            <div class="button25leftOff"></div>
-            <div class="button25centerOff">
-              <img class="icondelete" src="/zoolu/images/icons/icon_delete_white.png" width="11" height="14"/>
-              <div>L&ouml;schen</div>
+          <div id="genFormFunctions" style="display:none;">
+            <!-- save button -->
+            <div id="buttonsave" onclick="myForm.save();">
+              <div class="button25leftOn"></div>
+              <div class="button25centerOn">
+                <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
+                <div>Speichern</div>
+              </div>
+              <div class="button25rightOn"></div>
+              <div class="clear"></div>
             </div>
-            <div class="button25rightOff"></div>
-            <div class="clear"></div>
+
+            <!-- delete button -->
+            <div id="buttondelete" onclick="myForm.deleteElement();">
+              <div class="button25leftOff"></div>
+              <div class="button25centerOff">
+                <img class="icondelete" src="/zoolu/images/icons/icon_delete_white.png" width="11" height="14"/>
+                <div>L&ouml;schen</div>
+              </div>
+              <div class="button25rightOff"></div>
+              <div class="clear"></div>
+            </div>
           </div>
 
           <div class="clear"></div>
         </div>
       </div>
-      
-      <div id="genFormContainer" class="contentedit2">
+
+      <div id="genFormContainer" class="contentedit2" style="display:none;">
+
+      </div>
+
+      <div id="genListContainer" class="contentedit2" style="display:none;">
         <div class="spacer2"></div>
 	      <table class="tablelist">
 	        <thead>
@@ -190,7 +215,7 @@
         <div class="spacer2"></div>
       </div>
     </div>
-    
+
     <!-- libaries -->
     <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- ext.js includes -->
@@ -200,21 +225,26 @@
     <!-- define layout -->
     <script type="text/javascript" src="/zoolu/js_incs/layout2.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- navigation -->
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>  
-    <!-- media -->
-    <script type="text/javascript" src="/zoolu/js_incs/media.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/navigation.users.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- users -->
+    <script type="text/javascript" src="/zoolu/js_incs/users.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- form -->
     <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- TinyMCE Texteditor -->
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
-    
+
     <script type="text/javascript">//<![CDATA[
       var myCore = new Massiveart.Core();
-    
-      document.observe('dom:loaded', function() { 
-       
-      });       
+      var myNavigation = new Massiveart.Navigation.Users();
+      var myForm = new Massiveart.Form();
+
+      document.observe('dom:loaded', function() {
+        myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';
+        myNavigation.topNaviTitle = '<?php echo $this->translate->_('User_administration'); ?>';
+        myNavigation.module = <?php echo $this->module; ?>;
+      });
     //]]>
-    </script> 
+    </script>
   </body>
 </html>
