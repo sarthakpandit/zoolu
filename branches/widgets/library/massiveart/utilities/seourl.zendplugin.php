@@ -79,11 +79,6 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					$objWidget = new Widget();
 					Zend_Registry::set('Widget', $objWidget);
 					
-					$objNavigation = new Navigation();
-		      $objNavigation->setRootLevelId($objTheme->idRootLevels);
-		      $objNavigation->setLanguageId($this->intLanguageId);
-		      Zend_Registry::set('Navigation', $objNavigation);
-      
 					if(empty($strWidgetArgs)) {
 						$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index/index');
 					} else {
@@ -120,6 +115,7 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
           break;
         }
       }
+
       if($this->intLanguageId == null){
         $this->intLanguageId = $this->core->sysConfig->languages->default->id;
         $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
@@ -135,3 +131,4 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 	}
 }
 ?>
+
