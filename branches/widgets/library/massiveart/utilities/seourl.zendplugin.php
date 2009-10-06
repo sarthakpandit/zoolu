@@ -79,6 +79,11 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					$objWidget = new Widget();
 					Zend_Registry::set('Widget', $objWidget);
 					
+					$objNavigation = new Navigation();
+		      $objNavigation->setRootLevelId($objTheme->idRootLevels);
+		      $objNavigation->setLanguageId($this->intLanguageId);
+		      Zend_Registry::set('Navigation', $objNavigation);
+      
 					if(empty($strWidgetArgs)) {
 						$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index/index');
 					} else {
