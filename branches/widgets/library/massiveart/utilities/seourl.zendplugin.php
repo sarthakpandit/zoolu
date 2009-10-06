@@ -131,4 +131,3 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 	}
 }
 ?>
-
