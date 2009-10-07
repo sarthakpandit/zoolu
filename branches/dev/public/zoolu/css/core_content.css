@@ -679,7 +679,7 @@ Function Widget */
 }
 
 .widgetcontenttop {
-  background-color:#754480;
+  background-color:#999; /*#754480;*/
   height:40px;
   padding:0;
 }
@@ -689,7 +689,7 @@ Function Widget */
   left:0;
   top:0;
   bottom:auto;
-  background-color:#754480;
+  background-color:#999;
   width:5px;
   height:10x;
 }
@@ -699,7 +699,7 @@ Function Widget */
   right:0;
   top:0;
   bottom:auto;
-  background-color:#754480;
+  background-color:#999;
   width:5px;
   height:10x;
 }
@@ -992,8 +992,8 @@ Save Message & Loader */
   left:0;
   top:0;
   height:40px;
-  width:270px;
-  background-color:#754480;
+  width:100%;
+  background-color:#999;
 }
 
 .alertsave .alertsaveloader {
@@ -1013,7 +1013,7 @@ Save Message & Loader */
   left:0;
   top:0;
   height:30px;
-  width:270px;
+  width:100%;
   background-color:#ffd300;
   padding:10px 0 0 0;
   text-align:center;
@@ -1024,7 +1024,7 @@ Save Message & Loader */
   left:0;
   top:0;
   height:30px;
-  width:270px;
+  width:100%;
   background-color:#CC0000;
   padding:10px 0 0 0;
   text-align:center;

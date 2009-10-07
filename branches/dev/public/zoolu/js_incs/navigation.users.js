@@ -15,6 +15,8 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     $super();
     
     this.constBasePath = '/zoolu/users';
+    
+    this.rootLevelType = '';
   },
   
   /**
@@ -22,6 +24,9 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
    * @param integer rootLevelId
    */
    getModuleRootLevelList: function(rootLevelId, rootLevelType){
+    
+    this.rootLevelId = rootLevelId;
+    this.rootLevelType = rootLevelType;
     
     $(this.genFormContainer).hide();
     $(this.genFormFunctions).hide();
@@ -34,12 +39,31 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     this.preSelectedPortal = 'naviitem'+rootLevelId;
     this.rootLevelId = rootLevelId;
          
-    new Ajax.Updater(this.genListContainer, this.constBasePath + '/' + rootLevelType + '/list', {
+    new Ajax.Updater(this.genListContainer, this.constBasePath + '/' + this.rootLevelType + '/list', {
       parameters: { rootLevelId: this.rootLevelId },      
       evalScripts: true,     
       onComplete: function() {
         $(this.genListContainer).show();
         $(this.genListFunctions).show();
+        
+      }.bind(this)
+    });
+  },
+  
+  /**
+   * getAddForm
+   */
+  getAddForm: function(){
+    
+    $(this.genListContainer).hide();
+    $(this.genListFunctions).hide();
+    
+    new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/addform', {
+      parameters: { rootLevelId: this.rootLevelId },      
+      evalScripts: true,     
+      onComplete: function() {
+        $(this.genFormContainer).show();
+        $(this.genFormFunctions).show();
         
       }.bind(this)
     });

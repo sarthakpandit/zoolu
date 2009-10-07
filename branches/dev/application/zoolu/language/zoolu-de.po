@@ -2,49 +2,131 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-03 13:32+0100\n"
+"POT-Creation-Date: 2009-10-07 17:05+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Thomas Schedler <thomas.schedler@gmail.com>\n"
+"Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: AUSTRIA\n"
-"X-Poedit-Basepath: /Volumes/data/websites/zoolu.chirimoya.com/\n"
+"X-Poedit-Basepath: /Volumes/massive/websites/dev.zoolu.area51.at/\n"
 "X-Poedit-KeywordsList: _\n"
 "X-Poedit-SearchPath-0: application/zoolu\n"
 "X-Poedit-SearchPath-1: public/zoolu\n"
 
-#: application/zoolu/layouts/index.phtml:34
-msgid "Report_bugs"
-msgstr "Fehler melden"
+#: application/zoolu/modules/users/controllers/UserController.php:146
+msgid "New_User"
+msgstr "Neuen Benutzer anlegen"
 
-#: application/zoolu/layouts/index.phtml:34
-msgid "Help_and_FAQ"
-msgstr "Hilfe & FAQ"
+#: application/zoolu/modules/users/controllers/UserController.php:206
+msgid "fname"
+msgstr "Vorname"
 
-#: application/zoolu/layouts/index.phtml:58
-msgid "Portals"
-msgstr "Portale"
+#: application/zoolu/modules/users/controllers/UserController.php:207
+msgid "sname"
+msgstr "Nachname"
 
-#: application/zoolu/layouts/index.phtml:63
-msgid "Media"
-msgstr "Medien"
+#: application/zoolu/modules/users/controllers/UserController.php:208
+msgid "username"
+msgstr "Benutzername"
 
-#: application/zoolu/layouts/index.phtml:73
-msgid "Settings"
-msgstr "Einstellungen"
+#: application/zoolu/modules/users/controllers/UserController.php:209
+msgid "language"
+msgstr "Systemsprache"
 
-#: application/zoolu/layouts/index.phtml:78
-msgid "User_administration"
-msgstr "Benutzerverwaltung"
+#: application/zoolu/modules/users/controllers/UserController.php:215
+msgid "password"
+msgstr "Passwort"
 
-#: application/zoolu/modules/core/views/scripts/user/userinfo.phtml:11
+#: application/zoolu/modules/users/controllers/UserController.php:216
+msgid "Confirm_password"
+msgstr "Bestätigen Sie Ihr neues Passwort"
+
+#: application/zoolu/language/addon-language-keys.php:40
+msgid "editor"
+msgstr "Geändert von"
+
+#: application/zoolu/language/addon-language-keys.php:41
+msgid "changed"
+msgstr "Geändert am"
+
+#: application/zoolu/modules/users/views/scripts/pagination.phtml:8
+#: application/zoolu/modules/users/views/scripts/pagination.phtml:17
+msgid "previous"
+msgstr "zurück"
+
+#: application/zoolu/modules/users/views/scripts/pagination.phtml:23
+msgid "Page"
+msgstr "Seite"
+
+#: application/zoolu/modules/users/views/scripts/pagination.phtml:38
+#: application/zoolu/modules/users/views/scripts/pagination.phtml:47
+msgid "next"
+msgstr "weiter"
+
+#: application/zoolu/modules/users/views/scripts/pagination.phtml:55
+msgid "Messages_per_page"
+msgstr "Einträge pro Seite"
+
+#: application/zoolu/modules/users/views/scripts/user/userinfo.phtml:11
 msgid "My_Settings"
 msgstr "Meine Einstellungen"
 
-#: application/zoolu/modules/core/views/scripts/user/userinfo.phtml:11
+#: application/zoolu/modules/users/views/scripts/user/userinfo.phtml:11
 msgid "Logout"
 msgstr "Log Out"
+
+#: application/zoolu/layouts/media.phtml:40
+#: application/zoolu/layouts/index.phtml:34
+#: application/zoolu/layouts/users.phtml:40
+#: application/zoolu/layouts/cms.phtml:41
+#: application/zoolu/layouts/properties.phtml:39
+msgid "Report_bugs"
+msgstr "Fehler melden"
+
+#: application/zoolu/layouts/media.phtml:40
+#: application/zoolu/layouts/index.phtml:34
+#: application/zoolu/layouts/users.phtml:40
+#: application/zoolu/layouts/cms.phtml:41
+#: application/zoolu/layouts/properties.phtml:39
+msgid "Help_and_FAQ"
+msgstr "Hilfe & FAQ"
+
+#: application/zoolu/layouts/media.phtml:64
+#: application/zoolu/layouts/index.phtml:58
+#: application/zoolu/layouts/users.phtml:58
+#: application/zoolu/layouts/cms.phtml:59
+#: application/zoolu/layouts/cms.phtml:221
+#: application/zoolu/layouts/properties.phtml:63
+msgid "Portals"
+msgstr "Portale"
+
+#: application/zoolu/layouts/media.phtml:69
+#: application/zoolu/layouts/media.phtml:351
+#: application/zoolu/layouts/index.phtml:63
+#: application/zoolu/layouts/users.phtml:63
+#: application/zoolu/layouts/cms.phtml:64
+#: application/zoolu/layouts/properties.phtml:68
+msgid "Media"
+msgstr "Medien"
+
+#: application/zoolu/layouts/media.phtml:74
+#: application/zoolu/layouts/index.phtml:68
+#: application/zoolu/layouts/users.phtml:68
+#: application/zoolu/layouts/cms.phtml:69
+#: application/zoolu/layouts/properties.phtml:73
+#: application/zoolu/layouts/properties.phtml:219
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: application/zoolu/layouts/media.phtml:79
+#: application/zoolu/layouts/index.phtml:73
+#: application/zoolu/layouts/users.phtml:73
+#: application/zoolu/layouts/users.phtml:202
+#: application/zoolu/layouts/cms.phtml:74
+#: application/zoolu/layouts/properties.phtml:78
+msgid "User_administration"
+msgstr "Benutzerverwaltung"
 

@@ -33,7 +33,7 @@
 /**
  * Core_UserController
  *
- * Login, Logout
+ * Login, Logout, ...
  *
  * Version history (please keep backward compatible):
  * 1.0, 2009-10-03: Thomas Schedler
@@ -45,17 +45,46 @@
 class Users_UserController extends Zend_Controller_Action {
 
   /**
+   * @var Zend_Form
+   */
+  var $objForm;
+
+  /**
    * @var Core
    */
   private $core;
+
+  /**
+   * @var Model_Users
+   */
+  protected $objModelUsers;
 
   /**
    * init
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  function init(){
+  public function init(){
+    $this->core = Zend_Registry::get('Core');
     $this->initView();
+  }
+
+  /**
+   * preDispatch
+   * Called before action method.
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function preDispatch(){
+    /**
+     * set default encoding to view
+     */
+    $this->view->setEncoding($this->core->sysConfig->encoding->default);
+
+    /**
+     * set translate obj
+     */
+    $this->view->translate = $this->core->translate;
   }
 
   /**
@@ -80,7 +109,162 @@ class Users_UserController extends Zend_Controller_Action {
    * @version 1.0
    */
   public function listAction(){
+    $this->core->logger->debug('users->controllers->UserController->listAction()');
 
+    $strOrderColumn = $this->getRequest()->getParam('order', 'sname');
+    $strSortOrder = $this->getRequest()->getParam('sort', 'asc');
+
+    $objSelect = $this->getModelUsers()->getUserTable()->select();
+    $objSelect->from($this->getModelUsers()->getUserTable(), array('fname', 'sname'))
+              ->joinInner('users AS editor', 'editor.id = users.idUsers', array('CONCAT(`editor`.`fname`, \' \', `editor`.`sname`) AS editor', 'changed'))
+              ->order($strOrderColumn.' '.strtoupper($strSortOrder));
+
+    $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
+    $objUsersPaginator = new Zend_Paginator($objAdapter);
+    $objUsersPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', 20));
+    $objUsersPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
+    $objUsersPaginator->setView($this->view);
+
+    $this->view->assign('userPaginator', $objUsersPaginator);
+    $this->view->assign('orderColumn', $strOrderColumn);
+    $this->view->assign('sortOrder', $strSortOrder);
+  }
+
+  /**
+   * addformAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addformAction(){
+    $this->core->logger->debug('users->controllers->UserController->addformAction()');
+
+    try{
+
+      $this->initForm();
+      $this->objForm->setAction('/zoolu/users/user/add');
+
+      $this->view->form = $this->objForm;
+      $this->view->formTitle = $this->core->translate->_('New_User');
+
+      $this->renderScript('form.phtml');
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * addAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addAction(){
+    $this->core->logger->debug('users->controllers->UserController->addformAction()');
+
+    try{
+
+      $this->initForm();
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $arrFormData = $this->getRequest()->getPost();
+        if($this->objForm->isValid($arrFormData)){
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/user/edit');
+
+          $arrFormData['idLanguages'] = $arrFormData['language'];
+          unset($arrFormData['language']);
+          unset($arrFormData['passwordConfirmation']);
+          $this->getModelUsers()->addUser($arrFormData);
+
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/user/add');
+          $this->view->assign('blnShowFormAlert', false);
+        }
+      }
+
+      $this->view->form = $this->objForm;
+      $this->view->formTitle = $this->core->translate->_('New_User');
+
+      $this->renderScript('form.phtml');
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * initForm
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function initForm(){
+
+    $this->objForm = new Zend_Form();
+
+    /**
+     * Use our own PluginLoader
+     */
+    $objLoader = new PluginLoader();
+    $objLoader->setPluginLoader($this->objForm->getPluginLoader(PluginLoader::TYPE_FORM_ELEMENT));
+    $objLoader->setPluginType(PluginLoader::TYPE_FORM_ELEMENT);
+    $this->objForm->setPluginLoader($objLoader, PluginLoader::TYPE_FORM_ELEMENT);
+
+    /**
+     * clear all decorators
+     */
+    $this->objForm->clearDecorators();
+
+    /**
+     * add standard decorators
+     */
+    $this->objForm->addDecorator('TabContainer');
+    $this->objForm->addDecorator('FormElements');
+    $this->objForm->addDecorator('Form');
+
+    /**
+     * add form prefix path
+     */
+    $this->objForm->addPrefixPath('Form_Decorator', GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/decorators/', 'decorator');
+
+    /**
+     * elements prefixes
+     */
+    $this->objForm->addElementPrefixPath('Form_Decorator', GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/decorators/', 'decorator');
+
+    /**
+     * regions prefixes
+     */
+    $this->objForm->addDisplayGroupPrefixPath('Form_Decorator', GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/decorators/');
+
+    $this->objForm->setAttrib('id', 'genForm');
+    $this->objForm->setAttrib('onsubmit', 'return false;');
+
+    $arrLanguageOptions = array();
+    $arrLanguageOptions[''] = 'Bitte wählen';
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `languages`")->fetchAll();
+    foreach($sqlStmt as $arrSql){
+      $arrLanguageOptions[$arrSql['id']] = $arrSql['title'];
+    }
+
+    $this->objForm->addElement('text', 'fname', array('label' => $this->core->translate->_('fname', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text keyfield', 'required' => true));
+    $this->objForm->addElement('text', 'sname', array('label' => $this->core->translate->_('sname', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text keyfield', 'required' => true));
+    $this->objForm->addElement('text', 'username', array('label' => $this->core->translate->_('username', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text keyfield', 'required' => true));
+    $this->objForm->addElement('select', 'language', array('label' => $this->core->translate->_('language', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'select keyfield', 'required' => true, 'MultiOptions' => $arrLanguageOptions));
+
+    $this->objForm->addDisplayGroup(array('fname', 'sname', 'username', 'language'), 'main-group');
+    $this->objForm->getDisplayGroup('main-group')->setLegend('Allgemeine Bentuzer Informationen');
+    $this->objForm->getDisplayGroup('main-group')->setDecorators(array('FormElements', 'Region'));
+
+    $this->objForm->addElement('password', 'password', array('label' => $this->core->translate->_('password', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'password'));
+    $this->objForm->addElement('password', 'passwordConfirmation', array('label' => $this->core->translate->_('Confirm_password', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'password'));
+
+    $this->objForm->addDisplayGroup(array('password', 'passwordConfirmation'), 'password-group');
+    $this->objForm->getDisplayGroup('password-group')->setLegend('Passwort neu setzen');
+    $this->objForm->getDisplayGroup('password-group')->setDecorators(array('FormElements', 'Region'));
   }
 
   /**
@@ -196,6 +380,25 @@ class Users_UserController extends Zend_Controller_Action {
     $auth->clearIdentity();
     unset($_SESSION['sesTestMode']);
     $this->_redirect('/zoolu');
+  }
+
+  /**
+   * getModelUsers
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUsers(){
+    if (null === $this->objModelUsers) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/Users.php';
+      $this->objModelUsers = new Model_Users();
+    }
+
+    return $this->objModelUsers;
   }
 }
 
