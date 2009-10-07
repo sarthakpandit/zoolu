@@ -131,4 +131,29 @@ $objCache->start();
  * Go Go Go!
  */
 $front->dispatch();
+
+
+/**
+ * profiling sql queries
+ */
+if($core->sysConfig->logger->priority == Zend_Log::DEBUG){
+  $objDbhProfiler = $core->dbh->getProfiler();
+  $totalTime    = $objDbhProfiler->getTotalElapsedSecs();
+  $queryCount   = $objDbhProfiler->getTotalNumQueries();
+  $longestTime  = 0;
+  $longestQuery = null;
+
+  foreach ($objDbhProfiler->getQueryProfiles() as $query) {
+    if($query->getElapsedSecs() > $longestTime){
+      $longestTime  = $query->getElapsedSecs();
+      $longestQuery = $query->getQuery();
+    }
+  }
+
+  $core->logger->debug('Executed '.$queryCount.' queries in '.$totalTime.' seconds.');
+  $core->logger->debug('Average query length: '.($totalTime / $queryCount).' seconds');
+  $core->logger->debug('Queries per second: '.($queryCount / $totalTime));
+  $core->logger->debug('Longest query length: '.$longestTime);
+  $core->logger->debug('Longest query: '.$longestQuery);
+}
 ?>

@@ -57,7 +57,7 @@ body {
   right:0;
   z-index:30;
   margin:0 10px 10px 0;
-  background-color:#c6c6c6;
+  background-color:#c6c6c6; /*E4E4E4;*/
 }
 
 #widgets {
@@ -139,14 +139,18 @@ Content List View */
   text-align:left;
 }
 
-.toptitle {
+.toptitle,
+.topsname,
+.topfname {
   background: #e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x 0 0;
   height:26px;
   padding:0 11px 0 11px;
   text-align:left;
 }
 
-.topauthor {
+.topauthor,
+.topeditor,
+.topcreator {
   width:160px;
   background: #e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x 0 0;
   height:26px;
@@ -198,12 +202,16 @@ Content List View */
   padding:0 11px 0 11px;
 }
 
-.rowtitle {
+.rowtitle,
+.rowsname,
+.rowfname {
   height:30px;
   padding:0 11px 0 11px; 
 }
 
-.rowauthor {
+.rowauthor,
+.roweditor,
+.rowcreator {
   width:160px;
   height:30px;
   padding:0 11px 0 11px;
@@ -303,6 +311,7 @@ Content List View */
   float:left;
   cursor:pointer;
   padding:1px 5px 0 5px;
+  color:#754480;
 }
 
 .listfooterbutton .buttonright {

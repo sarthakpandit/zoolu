@@ -110,7 +110,7 @@ class Core {
         $strLogFileExtension = '_local';
       }
     }
-    
+
     /**
      * create log file writer
      */
@@ -122,13 +122,13 @@ class Core {
      */
     $filter = new Zend_Log_Filter_Priority((int) $this->sysConfig->logger->priority);
     $this->logger->addFilter($filter);
-    
+
     /**
      * set up zoolu translate obj
      */
     $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-de.mo', 'de');
-    
- 
+
+
     if($blnWithDbh == true){
       /**
        * initialize the ZEND DB Connection
@@ -151,9 +151,12 @@ class Core {
 
        	$this->dbh = Zend_Db::factory($this->sysConfig->database->adapter, $dbhParameters);
 
+       	if($this->sysConfig->logger->priority == Zend_Log::DEBUG) $this->dbh->getProfiler()->setEnabled(true);
+
        	$this->dbh->getConnection();
 
        	$this->dbh->exec('SET CHARACTER SET '.$this->sysConfig->encoding->db);
+
 
        	Zend_Db_Table::setDefaultAdapter($this->dbh);
 

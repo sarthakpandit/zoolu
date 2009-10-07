@@ -102,7 +102,7 @@
 
           <!-- alerts for saving, editing, deleting, ... -->
           <div id="divFormSaveLoader" class="alertsave" style="display:none;">
-            <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
+            <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save_gray.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
           </div>
           <div id="divFormSaveSucces" class="alertsavesucces" style="display:none;">Gespeichert!</div>
           <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
@@ -110,7 +110,7 @@
 
           <div id="genListFunctions" style="display:none;">
             <!-- new button -->
-            <div id="buttonsave" onclick="myForm.save();">
+            <div id="buttonsave" onclick="myNavigation.getAddForm();">
               <div class="button25leftOn"></div>
               <div class="button25centerOn">
                 <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
@@ -130,7 +130,7 @@
 
             <div id="buttonEditMenu" class="buttoneditmenu"  style="display:none;">
               <div class="buttoneditmenuinner">
-                <div class="buttoneditlink" onclick="myList.delete(); return false;">L&ouml;schen</div>
+                <div class="buttoneditlink" onclick="myList.del(); return false;">L&ouml;schen</div>
                 <div class="clear"></div>
               </div>
               <div class="buttoneditbottom"></div>
@@ -166,54 +166,9 @@
         </div>
       </div>
 
-      <div id="genFormContainer" class="contentedit2" style="display:none;">
+      <div id="genFormContainer" class="contentedit2" style="display:none;"></div>
 
-      </div>
-
-      <div id="genListContainer" class="contentedit2" style="display:none;">
-        <div class="spacer2"></div>
-	      <table class="tablelist">
-	        <thead>
-	          <tr>
-	            <th class="topcornerleft"></th>
-	            <th class="topcheckbox"></th>
-	            <th class="toptitle">Titel</th>
-	            <th class="topauthor">Ge&auml;ndert von</th>
-	            <th class="topchanged">Ge&auml;ndert am</th>
-	            <th class="topcreated">Erstellt am</th>
-	            <th class="topcornerright"></th>
-	          </tr>
-	        </thead>
-	        <tbody>
-	          <tr class="listrow">
-	            <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="16" name="listSelect16" id="listSelect16"/></td>
-	            <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree(16, 'page'); return false;">Test Seite 2.1</a></td>
-	            <td class="rowauthor">Thomas Sch&auml;dler</td>
-	            <td class="rowchanged">01.09.09, 17:53</td>
-	            <td class="rowcreated" colspan="2">01.09.09, 17:51</td>
-	          </tr>
-            <tr class="listrow">
-              <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="16" name="listSelect16" id="listSelect16"/></td>
-              <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree(16, 'page'); return false;">Test Seite 2.1</a></td>
-              <td class="rowauthor">Thomas Sch&auml;dler</td>
-              <td class="rowchanged">01.09.09, 17:53</td>
-              <td class="rowcreated" colspan="2">01.09.09, 17:51</td>
-            </tr>
-            <tr class="listrow">
-              <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="16" name="listSelect16" id="listSelect16"/></td>
-              <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree(16, 'page'); return false;">Test Seite 2.1</a></td>
-              <td class="rowauthor">Thomas Sch&auml;dler</td>
-              <td class="rowchanged">01.09.09, 17:53</td>
-              <td class="rowcreated" colspan="2">01.09.09, 17:51</td>
-            </tr>
-	        </tbody>
-	      </table>
-        <div class="listfooter">
-          <div class="listfootercornerleft"></div>
-          <div class="listfootercornerright"></div>
-        </div>
-        <div class="spacer2"></div>
-      </div>
+      <div id="genListContainer" class="contentedit2" style="display:none;"></div>
     </div>
 
     <!-- libaries -->
@@ -227,6 +182,8 @@
     <!-- navigation -->
     <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/navigation.users.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- list -->
+    <script type="text/javascript" src="/zoolu/js_incs/list.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- users -->
     <script type="text/javascript" src="/zoolu/js_incs/users.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- form -->
@@ -237,6 +194,7 @@
     <script type="text/javascript">//<![CDATA[
       var myCore = new Massiveart.Core();
       var myNavigation = new Massiveart.Navigation.Users();
+      var myList = new Massiveart.List();
       var myForm = new Massiveart.Form();
 
       document.observe('dom:loaded', function() {
