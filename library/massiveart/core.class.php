@@ -157,6 +157,38 @@ class Core {
 
        	$this->dbh->exec('SET CHARACTER SET '.$this->sysConfig->encoding->db);
 
+       	/**
+       	 * using a default metadata cache for all table objects
+       	 *
+       	 * set up the cache
+       	 */
+        $arrFrontendOptions = array(
+          'automatic_serialization' => true
+        );
+
+        /**
+         * memcache server configuration
+         */
+        $arrServer = array(
+          'host' => Zend_Cache_Backend_Memcached::DEFAULT_HOST,
+          'port' => Zend_Cache_Backend_Memcached::DEFAULT_PORT,
+          'persistent' => Zend_Cache_Backend_Memcached::DEFAULT_PERSISTENT
+        );
+
+        $arrBackendOptions  = array(
+          'cache_dir' => GLOBAL_ROOT_PATH.'/tmp/cache/tables/' // Directory where to put the cache files
+          //'server' => $arrServer
+        );
+
+        $objCache = Zend_Cache::factory('Core',
+                                        'Memcached',
+                                        $arrFrontendOptions,
+                                        $arrBackendOptions);
+
+        /**
+         * set the cache to be used with all table objects
+         */
+        Zend_Db_Table_Abstract::setDefaultMetadataCache($objCache);
 
        	Zend_Db_Table::setDefaultAdapter($this->dbh);
 

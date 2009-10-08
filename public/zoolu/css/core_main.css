@@ -141,7 +141,8 @@ Content List View */
 
 .toptitle,
 .topsname,
-.topfname {
+.topfname,
+.topkey {
   background: #e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x 0 0;
   height:26px;
   padding:0 11px 0 11px;
@@ -204,7 +205,8 @@ Content List View */
 
 .rowtitle,
 .rowsname,
-.rowfname {
+.rowfname,
+.rowkey {
   height:30px;
   padding:0 11px 0 11px; 
 }

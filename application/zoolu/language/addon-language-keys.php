@@ -40,4 +40,15 @@
   $core->translate->_('editor');
   $core->translate->_('changed');
 
+
+  /**
+   * group list
+   */
+  $core->translate->_('title');
+
+  /**
+   * resources list
+   */
+  $core->translate->_('key');
+
 ?>

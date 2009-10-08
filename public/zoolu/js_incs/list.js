@@ -12,22 +12,28 @@ Massiveart.List = Class.create({
   
   initialize: function() {
     this.ItemsPerPage = 20;
+    this.page = 1;
   },
   
-  page: function(page){
-    if(myNavigation){
+  getListPage: function(page){
+    if(myNavigation){      
+      
+      if(typeof(page) != 'undefined' && page > 0){ 
+        this.page = page;
+      }
+      
       new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/list', {
-        parameters: { rootLevelId: this.rootLevelId, page: page, itemsPerPage: this.ItemsPerPage },      
+        parameters: { rootLevelId: myNavigation.rootLevelId, page: this.page, itemsPerPage: this.ItemsPerPage },      
         evalScripts: true,     
         onComplete: function() {
-          $(this.genListContainer).show();
-          $(this.genListFunctions).show();
+          $(myNavigation.genListContainer).show();
+          $(myNavigation.genListFunctions).show();
         }.bind(this)
       });
     }
   },
   
-  del: function(){
+  deleteListItem: function(){
     alert('In Arbeit!');    
   },
   

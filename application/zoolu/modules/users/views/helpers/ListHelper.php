@@ -85,6 +85,7 @@ class ListHelper {
 
       $arrItem = $objItem->toArray();
       $intColumCounter = 0;
+      unset($arrItem['id']);
       $intColums = count($arrItem);
       foreach($arrItem as $column => $value){
         $intColumCounter++;
@@ -94,7 +95,7 @@ class ListHelper {
 
         if($column == $strOrderColumn){
           $strTbody .= '
-              <td class="row'.$column.'"'.$strColspan.'><a href="#" onclick="return false;">'.htmlentities($value, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>';
+              <td class="row'.$column.'"'.$strColspan.'><a href="#" onclick="myNavigation.getEditForm('.$objItem->id.'); return false;">'.htmlentities($value, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>';
         }else{
           $strTbody .= '
               <td class="row'.$column.'"'.$strColspan.'>'.htmlentities($value, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>';

@@ -76,6 +76,9 @@ class NavigationHelper {
         case $this->core->sysConfig->root_level_types->groups:
           $strRootLevelType = 'group';
           break;
+        case $this->core->sysConfig->root_level_types->resources:
+          $strRootLevelType = 'resource';
+          break;
         default:
           $strRootLevelType = 'user';
           break;
