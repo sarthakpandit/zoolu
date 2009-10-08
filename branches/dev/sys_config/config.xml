@@ -413,6 +413,7 @@
       <systeminternals>7</systeminternals>
       <users>8</users>
       <groups>9</groups>
+      <resources>10</resources>
     </root_level_types>
     
     <!-- FOLDER TYPES -->
