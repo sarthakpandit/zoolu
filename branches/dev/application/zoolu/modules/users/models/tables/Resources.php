@@ -24,45 +24,27 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.users.controllers
+ * @package    application.zoolu.modules.users.models.tables
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * Users_IndexController
+ * Model_Table_Resources
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-10-03: Thomas Scheder
+ * 1.0, 2009-10-08: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Users_IndexController extends AuthControllerAction {
+class Model_Table_Resources extends Zend_Db_Table_Abstract {
 
-  /**
-   * The default action - show the home page
-   */
-  public function indexAction(){
+  protected $_name = 'resources';
+  protected $_primary = 'id';
 
-    $this->_helper->viewRenderer->setNoRender();
-
-    Zend_Layout::startMvc(array(
-      'layout' => 'users',
-      'layoutPath' => '../application/zoolu/layouts'
-    ));
-
-    $objLayout = Zend_Layout::getMvcInstance();
-    $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'users'));
-    $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
-
-    $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
-    $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
-    $this->view->assign('module', $this->core->sysConfig->modules->users);
-
-  }
 }
 
 ?>

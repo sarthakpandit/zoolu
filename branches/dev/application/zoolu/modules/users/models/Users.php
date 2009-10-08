@@ -52,6 +52,10 @@ class Model_Users {
    */
   protected $objGroupTable;
 
+  /**
+   * @var Model_Table_Resources
+   */
+  protected $objResourceTable;
 
   /**
    * @var Core
@@ -135,6 +139,22 @@ class Model_Users {
     }
 
     return $this->objGroupTable;
+  }
+
+  /**
+   * getResourceTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getResourceTable(){
+
+    if($this->objResourceTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/tables/Resources.php';
+      $this->objResourceTable = new Model_Table_Resources();
+    }
+
+    return $this->objResourceTable;
   }
 }
 

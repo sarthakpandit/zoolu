@@ -37,17 +37,8 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     }  
             
     this.preSelectedPortal = 'naviitem'+rootLevelId;
-    this.rootLevelId = rootLevelId;
-         
-    new Ajax.Updater(this.genListContainer, this.constBasePath + '/' + this.rootLevelType + '/list', {
-      parameters: { rootLevelId: this.rootLevelId },      
-      evalScripts: true,     
-      onComplete: function() {
-        $(this.genListContainer).show();
-        $(this.genListFunctions).show();
         
-      }.bind(this)
-    });
+    myList.getListPage();
   },
   
   /**
@@ -60,6 +51,25 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     
     new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/addform', {
       parameters: { rootLevelId: this.rootLevelId },      
+      evalScripts: true,     
+      onComplete: function() {
+        $(this.genFormContainer).show();
+        $(this.genFormFunctions).show();
+        
+      }.bind(this)
+    });
+  },
+  
+  /**
+   * getEditForm
+   */
+  getEditForm: function(itemId){
+    
+    $(this.genListContainer).hide();
+    $(this.genListFunctions).hide();
+    
+    new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/editform', {
+      parameters: { rootLevelId: this.rootLevelId, id: itemId },      
       evalScripts: true,     
       onComplete: function() {
         $(this.genFormContainer).show();

@@ -1,0 +1,17 @@
+<?php
+
+  require_once (dirname(__FILE__).'/../../helpers/ListHelper.php');
+  $objHelper = new ListHelper();
+
+?>
+        <div class="spacer2"></div>
+        <?php echo $objHelper->getList($this->groupPaginator, $this->orderColumn, $this->sortOrder); ?>
+        <div class="listfooter">
+          <div class="listfootercornerleft"></div>
+          <div class="listfootercornerright"></div>
+          <div class="listfootercontent">
+            <div class="listpagination">
+              <?php echo $this->paginationControl($this->groupPaginator, 'Sliding', 'pagination.phtml'); ?>
+          </div>
+        </div>
+        <div class="spacer2"></div>

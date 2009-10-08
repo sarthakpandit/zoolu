@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-07 17:05+0100\n"
+"POT-Creation-Date: 2009-10-08 19:39+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -16,33 +16,65 @@ msgstr ""
 "X-Poedit-SearchPath-0: application/zoolu\n"
 "X-Poedit-SearchPath-1: public/zoolu\n"
 
-#: application/zoolu/modules/users/controllers/UserController.php:146
+#: application/zoolu/modules/users/controllers/UserController.php:147
+#: application/zoolu/modules/users/controllers/UserController.php:191
 msgid "New_User"
 msgstr "Neuen Benutzer anlegen"
 
-#: application/zoolu/modules/users/controllers/UserController.php:206
+#: application/zoolu/modules/users/controllers/UserController.php:253
 msgid "fname"
 msgstr "Vorname"
 
-#: application/zoolu/modules/users/controllers/UserController.php:207
+#: application/zoolu/modules/users/controllers/UserController.php:254
 msgid "sname"
 msgstr "Nachname"
 
-#: application/zoolu/modules/users/controllers/UserController.php:208
+#: application/zoolu/modules/users/controllers/UserController.php:255
 msgid "username"
 msgstr "Benutzername"
 
-#: application/zoolu/modules/users/controllers/UserController.php:209
-msgid "language"
+#: application/zoolu/modules/users/controllers/UserController.php:256
+msgid "system_language"
 msgstr "Systemsprache"
 
-#: application/zoolu/modules/users/controllers/UserController.php:215
+#: application/zoolu/modules/users/controllers/UserController.php:262
 msgid "password"
 msgstr "Passwort"
 
-#: application/zoolu/modules/users/controllers/UserController.php:216
+#: application/zoolu/modules/users/controllers/UserController.php:263
 msgid "Confirm_password"
 msgstr "Bestätigen Sie Ihr neues Passwort"
+
+#: application/zoolu/modules/users/controllers/GroupController.php:113
+#: application/zoolu/modules/users/controllers/GroupController.php:157
+msgid "New_Group"
+msgstr "Neue Gruppe anlegen"
+
+#: application/zoolu/modules/users/controllers/GroupController.php:188
+msgid "Edit_Group"
+msgstr "Gruppe bearbeiten"
+
+#: application/zoolu/modules/users/controllers/GroupController.php:244
+#: application/zoolu/modules/users/controllers/ResourceController.php:207
+msgid "title"
+msgstr "Titel"
+
+#: application/zoolu/modules/users/controllers/GroupController.php:246
+msgid "description"
+msgstr "Beschreibung"
+
+#: application/zoolu/modules/users/controllers/GroupController.php:257
+msgid "permissions"
+msgstr "Rechte"
+
+#: application/zoolu/modules/users/controllers/GroupController.php:266
+msgid "language"
+msgstr "Sprache"
+
+#: application/zoolu/modules/users/controllers/ResourceController.php:108
+#: application/zoolu/modules/users/controllers/ResourceController.php:152
+msgid "New_Resource"
+msgstr "Neue Ressource anlegen"
 
 #: application/zoolu/language/addon-language-keys.php:40
 msgid "editor"
@@ -51,6 +83,10 @@ msgstr "Geändert von"
 #: application/zoolu/language/addon-language-keys.php:41
 msgid "changed"
 msgstr "Geändert am"
+
+#: application/zoolu/language/addon-language-keys.php:52
+msgid "key"
+msgstr "Schlüssel"
 
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:8
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:17

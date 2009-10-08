@@ -441,7 +441,8 @@ Navigtion left */
 .portal .labelicon,
 .portal .sysinternicon,
 .naviitem .usericon,
-.naviitem .groupicon {
+.naviitem .groupicon,
+.naviitem .resourceicon {
   margin-top:0;
   margin-left:4px;  
   width:21px;
@@ -467,7 +468,8 @@ Navigtion left */
 
 .portal .usericon,
 .naviitem .usericon,
-.naviitem .groupicon {
+.naviitem .groupicon,
+.naviitem .resourceicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -147px;
 }
 
