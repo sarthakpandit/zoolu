@@ -253,10 +253,19 @@ class Model_Folders {
                                                     pages.idParentTypes = ? AND
                                                     pages.showInNavigation = 1 AND
                                                     pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1)
-                                                    '.$strPageFilter.')
+                                                    '.$strPageFilter.'
+                                              UNION
+																	            SELECT DISTINCT wi.id, wit.title, -1 AS idStatus, 
+																	            	(SELECT pU.url FROM urls AS pU WHERE pU.urlId = wi.widgetInstanceId AND pU.version = wi.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url, -1 AS tmpVar,
+																	            	-1 AS folderId, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, -1 AS isStartPage
+																	            FROM widgetInstances wi
+																	            INNER JOIN widgetInstanceTitles wit ON wi.widgetInstanceId = wit.widgetInstanceId
+																	            INNER JOIN widgets w ON w.id = wi.idWidgets																	            
+																	            LEFT JOIN genericForms gf ON wi.idGenericForms = gf.id
+																	            WHERE wi.idParent = ?
+																	              AND wi.idParentTypes = ?)
                                         AS tbl
-                                        ORDER BY sortPosition ASC, sortTimestamp DESC, id ASC', array($this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $intRootId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
-
+                                        ORDER BY sortPosition ASC, sortTimestamp DESC, id ASC', array($this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $intRootId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
