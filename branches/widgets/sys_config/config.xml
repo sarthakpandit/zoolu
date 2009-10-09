@@ -49,6 +49,7 @@
       </search_index>      
       <zoolu_modules>application/zoolu/modules/</zoolu_modules>   
       <zoolu_widgets>application/widgets/</zoolu_widgets>
+      <zoolu_website>application/website/</zoolu_website>
     </path>
     
     <!-- LOGGER / DEBUGGING -->
