@@ -55,6 +55,8 @@ class Widget{
   protected $intWidgetVersion;
   protected $intLanguageId;
   
+  protected $intTemplateId;
+  
   protected $strWidgetInstanceId;
   
   /**
@@ -124,6 +126,22 @@ class Widget{
    */
   public function getWidgetInstanceId(){
   	return $this->strWidgetInstanceId;
+  }
+  
+  /**
+   * setTemplateId
+   * @param integer $intTemplateId
+   */
+  public function setTemplateId($intTemplateId){
+    $this->intTemplateId = $intTemplateId;
+  }
+
+  /**
+   * getTemplateId
+   * @return integer $intTemplateId
+   */
+  public function getTemplateId(){
+    return $this->intTemplateId;
   }
 }
  
