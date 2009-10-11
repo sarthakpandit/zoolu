@@ -433,7 +433,6 @@ class GenericForm extends Zend_Form {
 	  try{
       $sqlStmt = array();
       $arrOptions = array();
-
       /**
        * get array options for select output if sqlSelect is in database
        */

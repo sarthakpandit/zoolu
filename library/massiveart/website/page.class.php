@@ -373,7 +373,6 @@ class Page {
           $this->arrCategoriesData[$strFieldName] = $this->core->dbh->query($sqlSelect)->fetchAll(Zend_Db::FETCH_OBJ);
         }
       }
-
       return $this->arrCategoriesData[$strFieldName];
 
     }catch (Exception $exc) {
