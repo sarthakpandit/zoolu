@@ -59,9 +59,9 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	 * @var array
 	 */
 	private $arrFields = array('Contact', 'Document', 'Dselect', 'InternalLink',
-	                           'Media', 'MultiCheckboxTree', 'SelectTree', 'Tab',
-	                           'TabContainer', 'Tag', 'Template', 'Texteditor',
-	                           'TextDisplay', 'Url', 'WidgetUrl');
+	                           'List', 'Media', 'MultiCheckboxTree', 'SelectTree',
+	                           'Tab', 'TabContainer', 'Tag', 'Template',
+	                           'Texteditor', 'TextDisplay', 'Url', 'WidgetUrl');
 	
 	/**
 	 * Returns the internal PluginLoader

@@ -142,7 +142,14 @@ class GenericSubForm extends Zend_Form_SubForm {
        */
       if($objField->sqlSelect != '' && $objField->sqlSelect){
         $objReplacer = new Replacer();
-        $sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getLanguageId(), $this->objGenericForm->Setup()->getRootLevelId());
+        if($objField->type == 'list')
+        {
+        	$sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getLanguageId(), $this->objGenericForm->Setup()->getRootLevelId(), $this->objGenericForm->Setup()->getElementId());//TODO: Get individual parentId
+        }
+        else
+        {
+        	$sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getLanguageId(), $this->objGenericForm->Setup()->getRootLevelId());
+        }
         $sqlStmt = $this->core->dbh->query($sqlSelect)->fetchAll();
         if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SELECT_ID) {
           $arrOptions[''] = 'Bitte wählen';
