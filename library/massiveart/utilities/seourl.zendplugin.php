@@ -77,6 +77,7 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					//$objWidgetUrl->url;
 					$strWidgetArgs = substr($strUrl,strlen($objWidgetUrl->url));
 					$objWidget = new Widget();
+					$objWidget->setWidgetName($objWidgetUrl->name);
 					$objWidget->setNavigationUrl($objWidgetUrl->url);
 					Zend_Registry::set('Widget', $objWidget);
 					
