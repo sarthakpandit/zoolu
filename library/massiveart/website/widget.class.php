@@ -60,6 +60,7 @@ class Widget{
   protected $strTemplateFile;
   
   protected $strWidgetInstanceId;
+  protected $strActionName;
   
   /**
    * setRootLevelId
@@ -176,6 +177,23 @@ class Widget{
    */
   public function getTemplateFile(){
     return $this->strTemplateFile;
+  }
+ 
+  /**
+   * setAction
+   * @param $strActionname
+   * @return string $strActionname
+   */
+  public function setAction($strActionName){
+  	$this->strActionName = $strActionName;
+  }
+  
+  /**
+   * getAction
+   * @return string $strActionName
+   */
+  public function getAction() {
+  	return $this->strActionName;
   }
 }
  

@@ -90,7 +90,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   	$strUrl = $_SERVER['REQUEST_URI'];
   	
   	$strDomain = $_SERVER['SERVER_NAME'];
-  	
+  	  	
   	/**
   	 * Save language-prefix and remove it from the Url
   	 */
@@ -131,6 +131,11 @@ class WidgetControllerAction extends Zend_Controller_Action  {
       $this->objUrlsData = $objPageData;
     }
     
+    
+  	// Get Widget Arguments
+  	$strWidgetArgs = substr($strUrl,strlen(Zend_Registry::get('Widget')->getNavigationUrl()));
+  	$strWidgetParams = explode('/',ltrim($strWidgetArgs,'/'));
+    
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/navigation.inc.php';
     Zend_Registry::set('Navigation', $objNavigation);
 
@@ -141,6 +146,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     $this->objWidget->setWidgetVersion($this->objUrlsData->version);
     $this->objWidget->setLanguageId($this->objUrlsData->idLanguages);
     $this->objWidget->setTemplateFile($this->strTemplateFile);
+    $this->objWidget->setAction($strWidgetParams[0]);
     
     /**
      * set values for replacers

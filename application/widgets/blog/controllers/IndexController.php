@@ -52,9 +52,8 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
   public function archiveAction() {
-  	//develop
-  	$this->strTemplateFile = 'template.php';
-  	echo var_dump($this->objRequest->getParams());
+  	//$this->strTemplateFile = 'template.php';
+  	//echo var_dump($this->objRequest->getParams());
   }
 }
 

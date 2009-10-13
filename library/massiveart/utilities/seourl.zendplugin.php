@@ -81,12 +81,13 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					Zend_Registry::set('Widget', $objWidget);
 					
 					if(empty($strWidgetArgs)) {
+						Zend_Registry::set('Widget', $objWidget);
 						$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index/index');
 					} else {
 						// action must be leading! -> even index Action (only if there are params)
 						// e.g. /view/1/, /index/843/
 						$strWidgetParams = explode('/',ltrim($strWidgetArgs,'/'));
-						$this->getRequest()->setParams($strWidgetParams);
+						$this->getRequest()->setParams($strWidgetParams);						
 						$this->getRequest()->setRequestUri('widget/'.$objWidgetUrl->name.'/index'.$strWidgetArgs);
 					}
 				} break;
