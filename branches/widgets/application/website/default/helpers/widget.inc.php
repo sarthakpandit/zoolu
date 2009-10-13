@@ -99,7 +99,7 @@ function get_zoolu_header(){
  * @version 1.0
  */
 function get_template_file(){
-	return 'widgets/blog/template.php';
+	return 'widgets/blog/'.getWidgetObject()->getTemplateFile();
 }
 
 /**
