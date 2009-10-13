@@ -81,14 +81,20 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   }
   
   /**
+   * getWidgetObject
+   * @return Zend_Registry object 
+   */
+  public function getWidgetObject(){
+  	return Zend_Registry::get('Widget');
+  }
+  
+  /**
    * indexAction
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
   public function postDispatch(){  
-  	
   	$strUrl = $_SERVER['REQUEST_URI'];
-  	
   	$strDomain = $_SERVER['SERVER_NAME'];
   	  	
   	/**
@@ -147,6 +153,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     $this->objWidget->setLanguageId($this->objUrlsData->idLanguages);
     $this->objWidget->setTemplateFile($this->strTemplateFile);
     $this->objWidget->setAction($strWidgetParams[0]);
+    $this->objWidget->setWidgetName(Zend_Registry::get('Widget')->getWidgetName());
     
     /**
      * set values for replacers

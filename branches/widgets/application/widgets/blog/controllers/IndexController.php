@@ -41,9 +41,21 @@
  */
 
 class Blog_IndexController extends WidgetControllerAction  {
+  /*
+   * @var object $objBlogEntries
+   */
+	protected $objBlogEntries;
   
+  /**
+   * IndexAction
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
 	public function indexAction() {
 		$this->strTemplateFile = 'template.php';
+		$objEntries = $this->getBlogEntries();
+		$objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
+		$this->view->assign('test', 'hey hey hey');
 	}
 	
   /**
@@ -54,6 +66,25 @@ class Blog_IndexController extends WidgetControllerAction  {
   public function archiveAction() {
   	//$this->strTemplateFile = 'template.php';
   	//echo var_dump($this->objRequest->getParams());
+  }
+  
+	/**
+   * getBlogEntries
+   * @return Model_BlogEntry
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  protected function getBlogEntries(){
+    if (null === $this->objBlogEntries) {
+      /**
+       * autoload only handles "library" components.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntry.php';
+      $this->objBlogEntries = new Model_BlogEntry();
+    }
+    return $this->objBlogEntries;
   }
 }
 

@@ -101,9 +101,9 @@ function get_zoolu_header(){
 function get_template_file(){
 	$strTemplateFile = getWidgetObject()->getTemplateFile();
 	if(empty($strTemplateFile)) {
-		return 'widgets/blog/'.getWidgetObject()->getAction().'.php';
+		return 'widgets/'.getWidgetObject()->getWidgetName().'/'.getWidgetObject()->getAction().'.php';
 	} else {
-		return 'widgets/blog/'.getWidgetObject()->getTemplateFile();
+		return 'widgets/'.getWidgetObject()->getWidgetName().'/'.getWidgetObject()->getTemplateFile();
 	}
 }
 
