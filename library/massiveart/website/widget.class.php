@@ -56,6 +56,8 @@ class Widget{
   protected $intLanguageId;
   
   protected $intTemplateId;
+  protected $strNavigationUrl;
+  protected $strTemplateFile;
   
   protected $strWidgetInstanceId;
   
@@ -142,6 +144,38 @@ class Widget{
    */
   public function getTemplateId(){
     return $this->intTemplateId;
+  }
+  
+  /**
+   * setNavigationUrl
+   * @param string $strNavigationUrl
+   */
+  public function setNavigationUrl($strNavigationUrl){
+  	$this->strNavigationUrl = $strNavigationUrl;
+  }
+  
+  /**
+   * getNavigationUrl
+   * @return string $strNavigationUrl
+   */
+  public function getNavigationUrl(){
+  	return $this->strNavigationUrl;
+  }
+  
+	/**
+   * setTemplateFile
+   * @param string $strTemplateFile
+   */
+  public function setTemplateFile($strTemplateFile){
+    $this->strTemplateFile = $strTemplateFile;
+  }
+
+  /**
+   * getTemplateFile
+   * @param string $strTemplateFile
+   */
+  public function getTemplateFile(){
+    return $this->strTemplateFile;
   }
 }
  
