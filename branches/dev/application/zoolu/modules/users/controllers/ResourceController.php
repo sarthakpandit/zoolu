@@ -77,7 +77,7 @@ class Users_ResourceController extends AuthControllerAction {
     $objSelect = $this->getModelUsers()->getResourceTable()->select();
     $objSelect->setIntegrityCheck(false);
     $objSelect->from($this->getModelUsers()->getResourceTable(), array('id', 'title', 'key'))
-              ->joinInner('users', 'users.id = resources.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'changed'))
+              ->joinInner('users', 'users.id = resources.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'resources.changed'))
               ->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);

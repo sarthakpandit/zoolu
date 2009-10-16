@@ -31,21 +31,37 @@
  */
 
 /**
- * Model_Table_Groups
+ * Model_Table_GroupPermissions
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-10-06: Thomas Schedler
+ * 1.0, 2009-10-14: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Model_Table_Groups extends Zend_Db_Table_Abstract {
+class Model_Table_GroupPermissions extends Zend_Db_Table_Abstract {
 
-  protected $_name = 'groups';
-  protected $_primary = 'id';
+  protected $_name = 'groupPermissions';
 
-  protected $_dependentTables = array('BugsProducts');
+  protected $_referenceMap    = array(
+      'Group' => array(
+          'columns'           => array('idGroups'),
+          'refTableClass'     => 'groups',
+          'refColumns'        => array('id')
+      ),
+      'Language' => array(
+          'columns'           => array('idLanguages'),
+          'refTableClass'     => 'languages',
+          'refColumns'        => array('id')
+      ),
+      'Permission' => array(
+          'columns'           => array('idPermissions'),
+          'refTableClass'     => 'permissions',
+          'refColumns'        => array('id')
+      )
+  );
+
 }
 
 ?>
