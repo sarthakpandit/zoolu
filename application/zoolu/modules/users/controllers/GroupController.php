@@ -60,6 +60,11 @@ class Users_GroupController extends AuthControllerAction {
   protected $objGroup;
 
   /**
+   * @var array
+   */
+  protected $arrPermissions = array();
+
+  /**
    * indexAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
@@ -82,7 +87,7 @@ class Users_GroupController extends AuthControllerAction {
     $objSelect = $this->getModelUsers()->getGroupTable()->select();
     $objSelect->setIntegrityCheck(false);
     $objSelect->from($this->getModelUsers()->getGroupTable(), array('id', 'title'))
-              ->joinInner('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'changed'))
+              ->joinInner('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'groups.changed'))
               ->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
@@ -106,6 +111,8 @@ class Users_GroupController extends AuthControllerAction {
 
     try{
 
+      $this->arrPermissions = array(array('language' => '', 'permissions' => ''));
+
       $this->initForm();
       $this->objForm->setAction('/zoolu/users/group/add');
 
@@ -124,9 +131,11 @@ class Users_GroupController extends AuthControllerAction {
    * @version 1.0
    */
   public function addAction(){
-    $this->core->logger->debug('users->controllers->GroupController->addformAction()');
+    $this->core->logger->debug('users->controllers->GroupController->addAction()');
 
     try{
+
+      $this->prepareData();
 
       $this->initForm();
 
@@ -138,11 +147,13 @@ class Users_GroupController extends AuthControllerAction {
            */
           $this->objForm->setAction('/zoolu/users/group/edit');
 
-          $arrFormData['idLanguages'] = $arrFormData['language'];
-          unset($arrFormData['language']);
-          unset($arrFormData['passwordConfirmation']);
-          $this->getModelUsers()->addGroup($arrFormData);
+          $arrGroupData['title'] = $this->getRequest()->getParam('title');
+          $arrGroupData['description'] = $this->getRequest()->getParam('description');
+          $intGroupId = $this->getModelUsers()->addGroup($arrGroupData);
 
+          $this->getModelUsers()->updateGroupPermissions($intGroupId, $this->arrPermissions);
+
+          $this->_forward('list', 'group', 'users');
           $this->view->assign('blnShowFormAlert', true);
         }else{
           /**
@@ -150,13 +161,13 @@ class Users_GroupController extends AuthControllerAction {
            */
           $this->objForm->setAction('/zoolu/users/group/add');
           $this->view->assign('blnShowFormAlert', false);
+
+          $this->view->form = $this->objForm;
+          $this->view->formTitle = $this->core->translate->_('New_Group');
+
+          $this->renderScript('form.phtml');
         }
       }
-
-      $this->view->form = $this->objForm;
-      $this->view->formTitle = $this->core->translate->_('New_Group');
-
-      $this->renderScript('form.phtml');
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -171,6 +182,21 @@ class Users_GroupController extends AuthControllerAction {
     $this->core->logger->debug('users->controllers->GroupController->editformAction()');
 
     try{
+
+      $objSelect = $this->getModelUsers()->getGroupPermissionTable()->select()->where('idGroups = ?', $this->getRequest()->getParam('id'));
+      $arrPermissions = $this->getModelUsers()->getGroupPermissionTable()->fetchAll($objSelect);
+      if(count($arrPermissions) > 0){
+        $this->arrPermissions = array();
+        foreach($arrPermissions as $objPermission){
+          if(!array_key_exists('lang_'.$objPermission->idLanguages, $this->arrPermissions)){
+            $this->arrPermissions['lang_'.$objPermission->idLanguages] = array('language' => $objPermission->idLanguages, 'permissions' => array($objPermission->idPermissions));
+          }else{
+            $this->arrPermissions['lang_'.$objPermission->idLanguages]['permissions'][] = $objPermission->idPermissions;
+          }
+        }
+      }else{
+        $this->arrPermissions = array(array('language' => '', 'permissions' => ''));
+      }
 
       $this->initForm();
       $this->objForm->setAction('/zoolu/users/group/edit');
@@ -188,6 +214,114 @@ class Users_GroupController extends AuthControllerAction {
       $this->view->formTitle = $this->core->translate->_('Edit_Group');
 
       $this->renderScript('form.phtml');
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * editAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editAction(){
+    $this->core->logger->debug('users->controllers->GroupController->editAction()');
+
+    try{
+
+      $this->prepareData();
+
+      $this->initForm();
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $arrFormData = $this->getRequest()->getPost();
+        if($this->objForm->isValid($arrFormData)){
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/group/edit');
+
+          $intGroupId = $this->getRequest()->getParam('id');
+
+          $arrGroupData['title'] = $this->getRequest()->getParam('title');
+          $arrGroupData['description'] = $this->getRequest()->getParam('description');
+          $intGroupId = $this->getModelUsers()->editGroup($intGroupId, $arrGroupData);
+
+          $this->getModelUsers()->updateGroupPermissions($intGroupId, $this->arrPermissions);
+
+          $this->_forward('list', 'group', 'users');
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/group/edit');
+          $this->view->assign('blnShowFormAlert', false);
+
+          $this->view->form = $this->objForm;
+          $this->view->formTitle = $this->core->translate->_('Edit_Group');
+
+          $this->renderScript('form.phtml');
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * deleteAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteAction(){
+    $this->core->logger->debug('users->controllers->GroupController->deleteAction()');
+
+    try{
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $this->getModelUsers()->deleteGroup($this->getRequest()->getParam("id"));
+      }
+
+      $this->_forward('list', 'group', 'users');
+      $this->view->assign('blnShowFormAlert', true);
+
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * prepareData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function prepareData(){
+    try{
+      $this->arrPermission = array();
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $arrFormData = $this->getRequest()->getPost();
+
+        if(isset($arrFormData['Region_Permission_Instances'])){
+          $strRegionInstanceIds = trim($arrFormData['Region_Permission_Instances'], '[]');
+          $arrRegionInstanceIds = array();
+          $arrRegionInstanceIds = split('\]\[', $strRegionInstanceIds);
+
+          /**
+           * go through permissions
+           */
+          foreach($arrRegionInstanceIds as $intRegionInstanceId){
+            if(isset($arrFormData['language_'.$intRegionInstanceId]) && isset($arrFormData['permissions_'.$intRegionInstanceId])){
+              $this->arrPermissions[$intRegionInstanceId] = array('language'    => $arrFormData['language_'.$intRegionInstanceId],
+                                                                  'permissions' => $arrFormData['permissions_'.$intRegionInstanceId]);
+            }
+          }
+        }
+      }
+
+      if(count($this->arrPermissions) == 0){
+        $this->arrPermissions = array(array('language' => '', 'permissions' => ''));
+      }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -254,20 +388,71 @@ class Users_GroupController extends AuthControllerAction {
     foreach($sqlStmt as $arrSql){
       $arrPermissionOptions[$arrSql['id']] = $arrSql['title'];
     }
-    $this->objForm->addElement('multiCheckbox', 'permissions', array('label' => $this->core->translate->_('permissions', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'multiCheckbox', 'MultiOptions' => $arrPermissionOptions));
 
-     $arrLanguageOptions = array();
-    $arrLanguageOptions[''] = 'Bitte wählen';
-    $arrLanguageOptions['all'] = 'Alle Sprachen';
+    $arrLanguageOptions = array();
+    $arrLanguageOptions['0'] = 'Alle Sprachen';
     $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `languages`")->fetchAll();
     foreach($sqlStmt as $arrSql){
       $arrLanguageOptions[$arrSql['id']] = $arrSql['title'];
     }
-    $this->objForm->addElement('select', 'language', array('label' => $this->core->translate->_('language', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'select', 'MultiOptions' => $arrLanguageOptions));
 
-    $this->objForm->addDisplayGroup(array('permissions', 'language'), 'permission-group', array('columns' => 3));
-    $this->objForm->getDisplayGroup('permission-group')->setLegend('Gruppen-Rechte');
-    $this->objForm->getDisplayGroup('permission-group')->setDecorators(array('FormElements', 'Region'));
+    $strRegionInstances = '';
+    $intRegionCounter = 0;
+
+    /**
+     * create group permisson regions
+     */
+    foreach($this->arrPermissions as $arrPermission){
+      $intRegionCounter++;
+      $this->objForm->addElement('radio', 'language_'.$intRegionCounter, array('label' => $this->core->translate->_('language', false),
+                                                                               'value' => $arrPermission['language'],
+                                                                               'decorators' => array('Input'),
+                                                                               'columns' => 6,
+                                                                               'class' => 'radio',
+                                                                               'MultiOptions' => $arrLanguageOptions));
+      $this->objForm->addElement('multiCheckbox', 'permissions_'.$intRegionCounter, array('label' => $this->core->translate->_('permissions', false),
+                                                                                          'value' => $arrPermission['permissions'],
+                                                                                          'decorators' => array('Input'),
+                                                                                          'columns' => 6, 'class' =>
+                                                                                          'multiCheckbox',
+                                                                                          'MultiOptions' => $arrPermissionOptions));
+
+      $this->objForm->addDisplayGroup(array('language_'.$intRegionCounter, 'permissions_'.$intRegionCounter), 'Permission_'.$intRegionCounter, array(
+        'columns' =>  9,
+        'regionTypeId' => 1,
+        'collapsable' => 0,
+        'regionCounter' => $intRegionCounter,
+        'regionId' => 'Permission',
+        'regionExt' => $intRegionCounter,
+        'isMultiply' => true,
+        'regionTitle' => 'Sprachspezifisch'
+      ));
+
+      $this->objForm->getDisplayGroup('Permission_'.$intRegionCounter)->setLegend('Rechte');
+      $this->objForm->getDisplayGroup('Permission_'.$intRegionCounter)->setDecorators(array('FormElements','Region'));
+
+      $strRegionInstances .= '['.$intRegionCounter.']';
+    }
+
+    $this->objForm->addElement('radio', 'language_REPLACE_n', array('label' => $this->core->translate->_('language', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'radio', 'MultiOptions' => $arrLanguageOptions));
+    $this->objForm->addElement('multiCheckbox', 'permissions_REPLACE_n', array('label' => $this->core->translate->_('permissions', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'multiCheckbox', 'MultiOptions' => $arrPermissionOptions));
+
+    $this->objForm->addDisplayGroup(array('language_REPLACE_n', 'permissions_REPLACE_n'), 'Permission_REPLACE_n', array(
+      'columns' =>  9,
+      'regionTypeId' => 1,
+      'collapsable' => 0,
+      'regionId' => 'Permission',
+      'regionExt' => 'REPLACE_n',
+      'isMultiply' => true,
+      'isEmptyWidget' => true,
+      'regionTitle' => 'Sprachspezifisch'
+    ));
+
+    $this->objForm->getDisplayGroup('Permission_REPLACE_n')->setLegend('Rechte');
+    $this->objForm->getDisplayGroup('Permission_REPLACE_n')->setDecorators(array('FormElements','Region'));
+
+    $this->objForm->addElement('hidden', 'Region_Permission_Instances', array('value' => $strRegionInstances, 'decorators' => array('Hidden')));
+    $this->objForm->addElement('hidden', 'Region_Permission_Order', array('value' => '', 'decorators' => array('Hidden')));
 
   }
 

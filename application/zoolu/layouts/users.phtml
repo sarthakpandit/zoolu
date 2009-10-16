@@ -169,6 +169,8 @@
       <div id="genFormContainer" class="contentedit2" style="display:none;"></div>
 
       <div id="genListContainer" class="contentedit2" style="display:none;"></div>
+
+      <div id="genTmpContainer" style="display:none;"></div>
     </div>
 
     <!-- libaries -->
@@ -188,6 +190,7 @@
     <script type="text/javascript" src="/zoolu/js_incs/users.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- form -->
     <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/form.users.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- TinyMCE Texteditor -->
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
 
@@ -195,7 +198,7 @@
       var myCore = new Massiveart.Core();
       var myNavigation = new Massiveart.Navigation.Users();
       var myList = new Massiveart.List();
-      var myForm = new Massiveart.Form();
+      var myForm = new Massiveart.Form.Users();
 
       document.observe('dom:loaded', function() {
         myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';

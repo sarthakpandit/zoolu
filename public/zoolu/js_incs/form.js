@@ -64,15 +64,16 @@ Massiveart.Form = Class.create({
         evalScripts: true,
         onComplete: function() {         
           if(this.blnShowFormAlert){
-            if($F('rootLevelId') != '' && $F('rootLevelId') > 0){
-	            myNavigation.updateNavigationLevel();
-	          }                  
-	          //saved
-	          this.getFormSaveSucces();
+            if($('rootLevelId') && $F('rootLevelId') != '' && $F('rootLevelId') > 0){
+	          myNavigation.updateNavigationLevel();
+	        }
+            
+	        //saved
+	        this.getFormSaveSucces();
 	          
-	          if($('isStartPage') && $F('isStartPage') == 0){
-	            $('buttondelete').show();
-	          }
+	        if($('isStartPage') && $F('isStartPage') == 0){
+	          $('buttondelete').show();
+	        }
           }else{
             this.getFormSaveError();
           }
@@ -726,13 +727,13 @@ Massiveart.Form = Class.create({
   /**
    * getVideoSearchSelect
    */
-  getVideoSearchSelect: function(elementId, channelId, searchString){
+  getVideoSearchSelect: function(elementId, channelId, searchString, channelUserId){
   	if($('div_'+elementId)){
   		new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getvideoselect', {
         parameters: { 
           elementId: elementId,
           channelId: channelId,
-          channelUserId: '',
+          channelUserId: channelUserId,
           searchString: searchString,
           value: $F(elementId)
         },
@@ -750,11 +751,13 @@ Massiveart.Form = Class.create({
    */
   initVideoSearch: function(elementId) {
 	  if($(elementId+'Search')){
-      $(elementId+'Search').observe('change', function(event){
-        if(Event.element(event).value != ''){
-        	this.getVideoSearchSelect(elementId, $F(elementId+'TypeId'), Event.element(event).value);
-        }
-      }.bind(this));
+      $(elementId+'SearchButton').observe('click', function(event){
+       if($F(elementId+'Search') != ''){
+    	
+    	   this.getVideoSearchSelect(elementId, $F(elementId+'TypeId'), $F(elementId+'Search'),($(elementId+'User')? $F(elementId+'User'): '')); 
+       }
+      }.bind(this)); 
+      
 	  }
   },
   

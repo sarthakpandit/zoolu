@@ -58,6 +58,11 @@ class Users_UserController extends Zend_Controller_Action {
    * @var Model_Users
    */
   protected $objModelUsers;
+  
+  /**
+   * @var Zend_Db_Table_Row
+   */
+  protected $objUser;
 
   /**
    * init
@@ -116,7 +121,7 @@ class Users_UserController extends Zend_Controller_Action {
 
     $objSelect = $this->getModelUsers()->getUserTable()->select();
     $objSelect->from($this->getModelUsers()->getUserTable(), array('id', 'fname', 'sname'))
-              ->joinInner('users AS editor', 'editor.id = users.idUsers', array('CONCAT(`editor`.`fname`, \' \', `editor`.`sname`) AS editor', 'changed'))
+              ->joinInner('users AS editor', 'editor.id = users.idUsers', array('CONCAT(`editor`.`fname`, \' \', `editor`.`sname`) AS editor', 'users.changed'))
               ->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
@@ -175,22 +180,129 @@ class Users_UserController extends Zend_Controller_Action {
           $arrFormData['idLanguages'] = $arrFormData['language'];
           unset($arrFormData['language']);
           unset($arrFormData['passwordConfirmation']);
+          
           $this->getModelUsers()->addUser($arrFormData);
 
           $this->view->assign('blnShowFormAlert', true);
+          $this->_forward('list', 'user', 'users');
         }else{
           /**
            * set action
            */
           $this->objForm->setAction('/zoolu/users/user/add');
           $this->view->assign('blnShowFormAlert', false);
+          
+          $this->view->form = $this->objForm;
+		      $this->view->formTitle = $this->core->translate->_('New_User');
+		
+		      $this->renderScript('form.phtml');
         }
       }
+      
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * editformAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editformAction(){
+    $this->core->logger->debug('users->controllers->UserController->editformAction()');
+
+    try{
+
+      $this->initForm();
+      $this->objForm->setAction('/zoolu/users/user/edit');
+
+      $this->objUser = $this->getModelUsers()->getUserTable()->find($this->getRequest()->getParam('id'))->current();
+
+      foreach($this->objForm->getElements() as $objElement){
+        $name = $objElement->getName();
+        if(isset($this->objUser->$name)){
+          $objElement->setValue($this->objUser->$name);
+        }
+      }
+      
+      $this->objForm->getElement('language')->setValue($this->objUser->idLanguages);
 
       $this->view->form = $this->objForm;
-      $this->view->formTitle = $this->core->translate->_('New_User');
+      $this->view->formTitle = $this->core->translate->_('Edit_User');
 
       $this->renderScript('form.phtml');
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * editAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editAction(){
+    $this->core->logger->debug('users->controllers->UserController->editAction()');
+
+    try{
+
+      $this->initForm();
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $arrFormData = $this->getRequest()->getPost();
+        if($this->objForm->isValid($arrFormData)){
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/user/edit');
+
+          $intUserId = $this->getRequest()->getParam('id');
+          
+          $arrFormData['idLanguages'] = $arrFormData['language'];
+          unset($arrFormData['language']);
+          unset($arrFormData['id']);
+          unset($arrFormData['passwordConfirmation']);
+          
+          $this->getModelUsers()->editUser($intUserId, $arrFormData);
+
+          $this->_forward('list', 'user', 'users');
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/user/edit');
+          $this->view->assign('blnShowFormAlert', false);
+
+          $this->view->form = $this->objForm;
+          $this->view->formTitle = $this->core->translate->_('Edit_User');
+
+          $this->renderScript('form.phtml');
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * deleteAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteAction(){
+    $this->core->logger->debug('users->controllers->UserController->deleteAction()');
+
+    try{
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $this->getModelUsers()->deleteUser($this->getRequest()->getParam("id"));
+      }
+
+      $this->_forward('list', 'user', 'users');
+      $this->view->assign('blnShowFormAlert', true);
+
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -242,6 +354,7 @@ class Users_UserController extends Zend_Controller_Action {
 
     $this->objForm->setAttrib('id', 'genForm');
     $this->objForm->setAttrib('onsubmit', 'return false;');
+    $this->objForm->addElement('hidden', 'id', array('decorators' => array('Hidden')));
 
     $arrLanguageOptions = array();
     $arrLanguageOptions[''] = 'Bitte wählen';

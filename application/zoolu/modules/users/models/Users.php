@@ -53,6 +53,11 @@ class Model_Users {
   protected $objGroupTable;
 
   /**
+   * @var Model_Table_GroupPermissions
+   */
+  protected $objGroupPermissionTable;
+
+  /**
    * @var Model_Table_Resources
    */
   protected $objResourceTable;
@@ -86,7 +91,6 @@ class Model_Users {
     $objSelect->from($this->objUserTable, array('fname', 'sname'));
 
     return $this->objUserTable->fetchAll($objSelect);
-
   }
 
   /**
@@ -104,6 +108,127 @@ class Model_Users {
       $arrData['password'] = md5($arrData['password']);
 
       return $this->getUserTable()->insert($arrData);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+    
+  /**
+   * editUser
+   * @param integer $intUserId
+   * @param array $arrData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editUser($intUserId, $arrData){
+    try{
+      $this->getUserTable();
+      $strWhere = $this->objUserTable->getAdapter()->quoteInto('id = ?', $intUserId);
+
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+      $arrData['idUsers'] = $intUserId;
+      $arrData['changed'] = date('Y-m-d H:i:s');
+
+      if($arrData['password'] != ''){
+        $arrData['password'] = md5($arrData['password']);
+      }else{
+        unset($arrData['password']);
+      }
+      
+      return $this->objUserTable->update($arrData, $strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * addGroup
+   * @param array $arrData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addGroup($arrData){
+   try{
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+      $arrData['idUsers'] = $intUserId;
+      $arrData['creator'] = $intUserId;
+      $arrData['created'] = date('Y-m-d H:i:s');
+
+      return $this->getGroupTable()->insert($arrData);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * editGroup
+   * @param integer $intGroupId
+   * @param array $arrData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editGroup($intGroupId, $arrData){
+    try{
+      $this->getGroupTable();
+      $strWhere = $this->objGroupTable->getAdapter()->quoteInto('id = ?', $intGroupId);
+
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+      $arrData['idUsers'] = $intUserId;
+      $arrData['changed'] = date('Y-m-d H:i:s');
+
+      return $this->objGroupTable->update($arrData, $strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * deleteGroup
+   * @param integer $intGroupId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteGroup($intGroupId){
+    try{
+      $strWhere = $this->getGroupTable()->getAdapter()->quoteInto('id = ?', $intGroupId);
+      return $this->objGroupTable->delete($strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * updateGroupPermissions
+   * @param integer $intGroupId
+   * @param array $arrPermissions
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function updateGroupPermissions($intGroupId, $arrPermissions){
+    try{
+      $GroupPermissionTable = $this->getGroupPermissionTable();
+
+      /**
+       * delete data
+       */
+      $strWhere = $GroupPermissionTable->getAdapter()->quoteInto('idGroups = ?', $intGroupId);
+      $GroupPermissionTable->delete($strWhere);
+
+      if(count($arrPermissions) > 0){
+        foreach($arrPermissions as $arrPermissionData){
+
+          if(count($arrPermissionData['permissions']) > 0){
+            $intLanguageId = $arrPermissionData['language'];
+            foreach($arrPermissionData['permissions'] as $intPermissionId){
+              $arrData = array('idGroups'       => $intGroupId,
+                               'idLanguages'    => $intLanguageId,
+                               'idPermissions'  => $intPermissionId);
+
+              $GroupPermissionTable->insert($arrData);
+            }
+          }
+        }
+      }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -139,6 +264,22 @@ class Model_Users {
     }
 
     return $this->objGroupTable;
+  }
+
+  /**
+   * getGroupPermissionTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getGroupPermissionTable(){
+
+    if($this->objGroupPermissionTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/tables/GroupPermissions.php';
+      $this->objGroupPermissionTable = new Model_Table_GroupPermissions();
+    }
+
+    return $this->objGroupPermissionTable;
   }
 
   /**

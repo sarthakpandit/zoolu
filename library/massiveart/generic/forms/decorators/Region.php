@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -32,39 +32,39 @@
 
 /**
  * Form_Decorator_Region
- * 
+ *
  * Version history (please keep backward compatible):
  * 1.0, 2008-10-23: Cornelius Hansjakob
- * 
+ *
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
 
 class Form_Decorator_Region extends Zend_Form_Decorator_Fieldset {
-	
+
   /**
    * Render a region
-   * 
-   * @param  string $content 
+   *
+   * @param  string $content
    * @return string
    */
   public function render($content) {
     $core = Zend_Registry::get('Core');
-  	
+
   	$objElement = $this->getElement();
     $objView = $objElement->getView();
-    
+
     if (null === $objView) {
         return $content;
     }
-    
+
     $strLegend = $this->getLegend();
     $arrAttribs = $this->getOptions();
     $strName = $objElement->getFullyQualifiedName();
     $strId = $objElement->getId();
-    
+
     $strPosition = $objElement->getAttrib('position');
-    
+
     $intRegionId = $objElement->getAttrib('regionId');
     $strRegionExt = $objElement->getAttrib('regionExt');
     $blnIsMultiply = $objElement->getAttrib('isMultiply');
@@ -72,57 +72,57 @@ class Form_Decorator_Region extends Zend_Form_Decorator_Fieldset {
     $intRegionCounter = $objElement->getAttrib('regionCounter');
     $strRegionTitle = $objElement->getAttrib('regionTitle');
     $intRegionTypeId = $objElement->getAttrib('regionTypeId');
-            
+
     $strBoxStyle = '';
     if($blnIsEmptyWidget == true){
       $strBoxStyle = ' style="display:none;"';
     }
-    
+
     $strAddonCssClass = '';
     $intColumns = $objElement->getAttrib('columns');
     if($blnIsMultiply == true){
       $strAddonCssClass = ' sortablebox';
-      $intColumns = '12'; 
-        
+      $intColumns = '12';
+
     }
-    
-    $strCssPos = '';        
+
+    $strCssPos = '';
     if($strPosition != ''){
-      $strCssPos = 'absolute'.$objElement->getAttrib('position').' ';	        	
+      $strCssPos = 'absolute'.$objElement->getAttrib('position').' ';
     }
-    
+
     $strTypeCss = '';
     if($intRegionTypeId != '' && $intRegionTypeId == $core->sysConfig->region_types->config){
       $strTypeCss = ' configbox';
       if($objElement->getAttrib('style') != ''){
-        $strTypeCss = ' configbox-closed';	              
+        $strTypeCss = ' configbox-closed';
       }
     }
-    
+
     $strEditboxClass = 'editbox';
     $strCornerBlClass = 'cornerbl';
     if($objElement->getAttrib('style') != ''){
       $strEditboxClass = $strEditboxClass.'-closed';
-    	$strCornerBlClass = $strCornerBlClass.'-closed';  	        	
+    	$strCornerBlClass = $strCornerBlClass.'-closed';
     }
-    
-    
-    
-    $strOutput = '';    
+
+
+
+    $strOutput = '';
     if($blnIsMultiply == true && $intRegionCounter == 1){
     	$strOutput .= '<div id="divRegion_'.$intRegionId.'" class="box-'.$objElement->getAttrib('columns').'">';
     	$strOutput .= '<div class="multiregionline">
                        <div class="multiregiontop white bold">'.$strLegend.'</div>
                      </div>';
     }
-    
+
     $strOutput .= '<div id="divRegion_'.$strId.'" class="'.$strCssPos.'box-'.$intColumns.$strAddonCssClass.'"'.$strBoxStyle.'>
           <div id="editbox'.$strId.'" class="'.$strEditboxClass.$strTypeCss.'">
             <div class="cornertl"';
     if($objElement->getAttrib('collapsable')){
-      $strOutput .= ' onclick="myForm.toggleFieldsBox(\''.$strId.'\'); return false;"';        	
+      $strOutput .= ' onclick="myForm.toggleFieldsBox(\''.$strId.'\'); return false;"';
     }
-    $strOutput .= '>        
+    $strOutput .= '>
               <div id="pointer'.$strId.'"';
     if($objElement->getAttrib('collapsable')){
     	if($objElement->getAttrib('style') != ''){
@@ -130,24 +130,24 @@ class Form_Decorator_Region extends Zend_Form_Decorator_Fieldset {
     	}else{
     		$strOutput .= ' class="pointerwhite opened"';
     	}
-    }        
+    }
     $strOutput .= '></div>
             </div>
             <div class="cornertr"></div>
             <div class="editboxtitlecontainer">
-              <div class="editboxtitle'; 
+              <div class="editboxtitle';
     if($objElement->getAttrib('collapsable')){
-      $strOutput .= ' cursorhand" onclick="myForm.toggleFieldsBox(\''.$strId.'\'); return false;';         
+      $strOutput .= ' cursorhand" onclick="myForm.toggleFieldsBox(\''.$strId.'\'); return false;';
     }
     $strOutput .= '">';
     if($blnIsMultiply != true){
       $strOutput .= $strLegend;
     }
-    
+
     if($blnIsMultiply == true){
-    	$strOutput .= '<span id="spanRegionTitle_'.$strId.'" class="regiontitlecopy black normal">'.$strRegionTitle.'</span>';    	
+    	$strOutput .= '<span id="spanRegionTitle_'.$strId.'" class="regiontitlecopy black normal">'.$strRegionTitle.'</span>';
     }
-    
+
     $strOutput .= '</div>';
 
     if($blnIsMultiply){
@@ -163,28 +163,28 @@ class Form_Decorator_Region extends Zend_Form_Decorator_Fieldset {
     $strOutput .= '<div class="clear"></div>
             </div>
             <div id="fieldsbox'.$strId.'" class="editboxfields" style="'.$objElement->getAttrib('style').'">';
-    $strOutput .=    $content;            
+    $strOutput .=    $content;
     $strOutput .= '  <div class="clear"></div>
             </div>
             <div id="cornerbl'.$strId.'" class="'.$strCornerBlClass.'"></div>
             <div id="cornerbr'.$strId.'" class="cornerbr"></div>
           </div>
         </div>';
-    
+
     if($blnIsEmptyWidget == true){
       $strOutput .= '
           <div class="clear"></div>
-          <div class="multiregionline"></div>  
+          <div class="multiregionline"></div>
         </div>
-        <script type="text/javascript">//<![CDATA[ 
-          myForm.createSortableRegion('.$intRegionId.');         
+        <script type="text/javascript">//<![CDATA[
+          myForm.createSortableRegion(\''.$intRegionId.'\');
         //]]>
         </script>';
     }
 
     return $strOutput;
   }
-	
+
 }
 
 ?>

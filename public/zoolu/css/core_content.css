@@ -1035,7 +1035,7 @@ Save Message & Loader */
   left:0;
   top:0;
   height:30px;
-  width:270px;
+  width:100%;
   background-color:#ffd300;
   padding:10px 0 0 0;
   text-align:center;

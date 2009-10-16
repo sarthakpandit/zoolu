@@ -49,13 +49,15 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     $(this.genListContainer).hide();
     $(this.genListFunctions).hide();
     
+    if($('buttondelete')) $('buttondelete').hide(); 
+    
     new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/addform', {
       parameters: { rootLevelId: this.rootLevelId },      
       evalScripts: true,     
-      onComplete: function() {
+      onComplete: function() {        
         $(this.genFormContainer).show();
         $(this.genFormFunctions).show();
-        
+        $(this.genFormContainer).scrollTo($('widgetfunctions'));        
       }.bind(this)
     });
   },
@@ -68,13 +70,15 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     $(this.genListContainer).hide();
     $(this.genListFunctions).hide();
     
+    if($('buttondelete')) $('buttondelete').show();
+    
     new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/editform', {
       parameters: { rootLevelId: this.rootLevelId, id: itemId },      
       evalScripts: true,     
       onComplete: function() {
         $(this.genFormContainer).show();
         $(this.genFormFunctions).show();
-        
+        $(this.genFormContainer).scrollTo($('widgetfunctions'));
       }.bind(this)
     });
   }
