@@ -782,7 +782,7 @@ CREATE TABLE `folders` (
 
 LOCK TABLES `folders` WRITE;
 /*!40000 ALTER TABLE `folders` DISABLE KEYS */;
-INSERT INTO `folders` VALUES (1,1,1,0,1,1,4,0,0,NULL,1,'2009-05-18 08:50:31','4a112157c45e5',1,3,2,0,'2009-05-18 08:50:31','2009-09-01 08:44:51',NULL,2,1,1,0,NULL),(2,1,1,0,1,5,6,0,0,NULL,2,'2009-05-18 10:06:58','4a113342d22e2',1,3,2,0,'2009-05-18 10:06:58','2009-09-01 08:41:54',NULL,2,1,1,0,NULL),(3,1,1,0,1,7,8,0,0,NULL,3,'2009-05-18 10:09:56','4a1133f4257b5',1,3,2,0,'2009-05-18 10:09:56','2009-09-01 08:41:57',NULL,2,1,1,0,NULL),(4,1,1,0,3,1,2,0,0,NULL,0,'2009-06-05 12:34:23','4a2910cf9583d',1,3,3,0,'2009-06-05 12:34:23','2009-06-05 12:34:23',NULL,1,1,0,0,NULL),(5,1,1,0,2,1,2,0,0,NULL,0,'2009-06-06 09:52:52','4a2a3c746b0ba',1,3,3,0,'2009-06-06 09:52:52','2009-06-08 16:17:26',NULL,1,1,0,0,NULL),(6,1,1,1,1,2,3,1,0,NULL,2,'2009-06-23 08:37:30','4a40944a7fc0d',1,3,3,0,'2009-06-23 08:37:30','2009-08-28 12:19:35',NULL,2,1,1,0,NULL);
+INSERT INTO `folders` VALUES (1,1,1,0,1,1,4,0,0,NULL,2,'2009-10-16 14:35:17','4a112157c45e5',1,3,2,0,'2009-05-18 08:50:31','2009-10-16 14:35:17',NULL,2,1,1,0,NULL),(2,1,1,0,1,5,6,0,0,NULL,3,'2009-10-16 14:35:17','4a113342d22e2',1,3,2,0,'2009-05-18 10:06:58','2009-10-16 14:35:17',NULL,2,1,1,0,NULL),(3,1,1,0,1,7,8,0,0,NULL,1,'2009-10-16 14:35:17','4a1133f4257b5',1,3,2,0,'2009-05-18 10:09:56','2009-10-16 14:35:17',NULL,2,1,1,0,NULL),(4,1,1,0,3,1,2,0,0,NULL,0,'2009-06-05 12:34:23','4a2910cf9583d',1,3,3,0,'2009-06-05 12:34:23','2009-06-05 12:34:23',NULL,1,1,0,0,NULL),(5,1,1,0,2,1,2,0,0,NULL,0,'2009-06-06 09:52:52','4a2a3c746b0ba',1,3,3,0,'2009-06-06 09:52:52','2009-06-08 16:17:26',NULL,1,1,0,0,NULL),(6,1,1,1,1,2,3,1,0,NULL,3,'2009-10-16 14:36:21','4a40944a7fc0d',1,3,3,0,'2009-06-23 08:37:30','2009-10-16 14:36:21',NULL,2,1,1,0,NULL);
 /*!40000 ALTER TABLE `folders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -903,10 +903,11 @@ DROP TABLE IF EXISTS `groupPermissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `groupPermissions` (
-  `id` bigint(20) unsigned NOT NULL auto_increment,
   `idGroups` bigint(20) unsigned NOT NULL,
+  `idLanguages` bigint(20) unsigned NOT NULL,
   `idPermissions` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`idGroups`,`idLanguages`,`idPermissions`),
+  CONSTRAINT `groupPermissions_ibfk_1` FOREIGN KEY (`idGroups`) REFERENCES `groups` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -916,6 +917,7 @@ CREATE TABLE `groupPermissions` (
 
 LOCK TABLES `groupPermissions` WRITE;
 /*!40000 ALTER TABLE `groupPermissions` DISABLE KEYS */;
+INSERT INTO `groupPermissions` VALUES (1,0,1),(1,0,2),(1,0,3),(1,0,4),(1,0,5),(1,0,6),(2,0,1),(2,0,2),(2,0,3),(2,0,4),(2,0,5),(2,0,6),(3,0,1),(3,0,2),(3,0,3),(3,0,4),(3,0,5),(3,0,6);
 /*!40000 ALTER TABLE `groupPermissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -953,9 +955,14 @@ DROP TABLE IF EXISTS `groups`;
 CREATE TABLE `groups` (
   `id` bigint(20) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
+  `description` text,
   `idGroupTypes` bigint(20) unsigned default NULL,
+  `creator` bigint(20) unsigned NOT NULL,
+  `idUsers` bigint(20) unsigned NOT NULL COMMENT 'Person, letzte Änderung',
+  `created` timestamp NULL default NULL,
+  `changed` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -964,6 +971,7 @@ CREATE TABLE `groups` (
 
 LOCK TABLES `groups` WRITE;
 /*!40000 ALTER TABLE `groups` DISABLE KEYS */;
+INSERT INTO `groups` VALUES (1,'Admin','',NULL,3,3,'2009-10-16 09:48:44','2009-10-16 14:07:55'),(2,'Content Manager','',NULL,3,3,'2009-10-16 09:58:37','2009-10-16 14:07:59'),(3,'Media Manager','',NULL,3,3,'2009-10-16 10:02:54','2009-10-16 10:02:54');
 /*!40000 ALTER TABLE `groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1637,7 +1645,7 @@ CREATE TABLE `page-DEFAULT_PAGE_1-1-Instances` (
 
 LOCK TABLES `page-DEFAULT_PAGE_1-1-Instances` WRITE;
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Instances` DISABLE KEYS */;
-INSERT INTO `page-DEFAULT_PAGE_1-1-Instances` VALUES (1,'4a112157d69eb',1,1,3,'','','','','',NULL,'','','','',2,'2009-05-18 08:50:31','2009-07-23 09:05:12'),(2,'4a113342dffe5',1,1,3,'','','','','',NULL,'','','','',2,'2009-05-18 10:06:58','2009-06-09 16:52:41'),(3,'4a1133f43284a',1,1,3,'','','','','','','','','','',2,'2009-05-18 10:09:56','2009-09-01 08:45:13'),(4,'4a115ca65d8bb',1,1,3,'Testseite mit Überschrift für den Artikel','','','Bildergalerie',' Dokumente','Hier kommen die Internen Links','','','Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.asdf','1',2,'2009-05-18 13:03:34','2009-09-01 09:12:08'),(5,'4a1cf55c8b3e5',1,1,3,'','','','','','','','','','',2,'2009-05-27 08:10:04','2009-09-01 14:06:59'),(6,'4a115ca65d8bb',1,2,3,'','','','','',NULL,'','','','2',3,'2009-06-08 13:52:02','2009-06-10 07:41:49'),(15,'4a112157d69eb',1,2,3,'','','','','',NULL,'','','','',3,'2009-06-09 09:34:21','2009-06-09 16:50:35'),(16,'4a116d34752df',1,1,3,'','','','','',NULL,'','','','',3,'2009-06-09 16:43:55','2009-06-09 16:43:55'),(17,'4a116d34752df',1,2,3,'','','','','',NULL,'','','','',3,'2009-06-09 16:44:11','2009-06-09 16:44:11'),(18,'4a2fa65ac1781',1,1,3,'','',NULL,'','',NULL,'','','','',3,'2009-06-10 12:26:02','2009-06-10 12:26:02'),(19,'4a40944a8ee78',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>',NULL,'','',NULL,'','','','',3,'2009-06-23 08:37:30','2009-06-23 08:46:34'),(20,'4a40946ce9d01',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>',NULL,'','','Interne Links','','','','',3,'2009-06-23 08:38:04','2009-09-01 09:12:48'),(23,'4a676ebfe3a7a',1,1,3,'','',NULL,'','',NULL,'','','','',3,'2009-07-22 19:55:43','2009-08-05 09:41:19'),(24,'4a681b0f66d2a',1,1,3,'','',NULL,'','',NULL,'','','','',3,'2009-07-23 08:10:55','2009-07-23 08:47:14'),(25,'4a978dcd034e2',1,1,3,'','',NULL,'','','','','','','',3,'2009-08-28 07:57:01','2009-09-01 08:56:16'),(26,'4a978dcd034e2',1,2,3,'','',NULL,'','','','','','','',3,'2009-08-28 15:18:38','2009-08-28 15:18:44'),(27,'4a40946ce9d01',1,2,3,'','',NULL,'','','Internal Links','','','','',3,'2009-08-28 15:37:22','2009-08-28 15:37:33'),(28,'4a9d42e6cbb25',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.</p>\n<p>Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.</p>\n<p>Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.</p>\n<p>Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt.</p>',NULL,'','','','','','','',3,'2009-09-01 15:51:02','2009-09-01 15:53:48');
+INSERT INTO `page-DEFAULT_PAGE_1-1-Instances` VALUES (1,'4a112157d69eb',1,1,3,'','','','','',NULL,'','','','',2,'2009-05-18 08:50:31','2009-07-23 09:05:12'),(2,'4a113342dffe5',1,1,3,'','','','','',NULL,'','','','',2,'2009-05-18 10:06:58','2009-06-09 16:52:41'),(3,'4a1133f43284a',1,1,3,'','','','','','','','','','',2,'2009-05-18 10:09:56','2009-09-01 08:45:13'),(4,'4a115ca65d8bb',1,1,3,'Testseite mit Überschrift für den Artikel','','','Bildergalerie',' Dokumente','Hier kommen die Internen Links','','','Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.asdf','1',2,'2009-05-18 13:03:34','2009-10-16 07:43:33'),(5,'4a1cf55c8b3e5',1,1,3,'','','','','','','','','','',2,'2009-05-27 08:10:04','2009-09-01 14:06:59'),(6,'4a115ca65d8bb',1,2,3,'','','','','',NULL,'','','','2',3,'2009-06-08 13:52:02','2009-06-10 07:41:49'),(15,'4a112157d69eb',1,2,3,'','','','','',NULL,'','','','',3,'2009-06-09 09:34:21','2009-06-09 16:50:35'),(16,'4a116d34752df',1,1,3,'','','','','',NULL,'','','','',3,'2009-06-09 16:43:55','2009-06-09 16:43:55'),(17,'4a116d34752df',1,2,3,'','','','','',NULL,'','','','',3,'2009-06-09 16:44:11','2009-06-09 16:44:11'),(18,'4a2fa65ac1781',1,1,3,'','',NULL,'','',NULL,'','','','',3,'2009-06-10 12:26:02','2009-06-10 12:26:02'),(19,'4a40944a8ee78',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>',NULL,'','',NULL,'','','','',3,'2009-06-23 08:37:30','2009-06-23 08:46:34'),(20,'4a40946ce9d01',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>',NULL,'','','Interne Links','','','','',3,'2009-06-23 08:38:04','2009-09-01 09:12:48'),(23,'4a676ebfe3a7a',1,1,3,'','',NULL,'','',NULL,'','','','',3,'2009-07-22 19:55:43','2009-08-05 09:41:19'),(24,'4a681b0f66d2a',1,1,3,'','',NULL,'','',NULL,'','','','',3,'2009-07-23 08:10:55','2009-07-23 08:47:14'),(25,'4a978dcd034e2',1,1,3,'','',NULL,'','','','','','','',3,'2009-08-28 07:57:01','2009-09-01 08:56:16'),(26,'4a978dcd034e2',1,2,3,'','',NULL,'','','','','','','',3,'2009-08-28 15:18:38','2009-08-28 15:18:44'),(27,'4a40946ce9d01',1,2,3,'','',NULL,'','','Internal Links','','','','',3,'2009-08-28 15:37:22','2009-08-28 15:37:33'),(28,'4a9d42e6cbb25',1,1,3,'','<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.</p>\n<p>Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.</p>\n<p>Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.</p>\n<p>Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt.</p>',NULL,'','','','','','','',3,'2009-09-01 15:51:02','2009-09-01 15:53:48');
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Instances` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1724,7 +1732,7 @@ CREATE TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` (
   PRIMARY KEY  (`id`),
   KEY `pageId` (`pageId`),
   CONSTRAINT `page-DEFAULT_PAGE_1-1-Region11-Instances_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=288 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1733,7 +1741,7 @@ CREATE TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` (
 
 LOCK TABLES `page-DEFAULT_PAGE_1-1-Region11-Instances` WRITE;
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` DISABLE KEYS */;
-INSERT INTO `page-DEFAULT_PAGE_1-1-Region11-Instances` VALUES (95,'4a112157d69eb',1,2,1,'',''),(109,'4a116d34752df',1,1,1,'',''),(110,'4a116d34752df',1,2,1,'',''),(113,'4a113342dffe5',1,1,1,'',''),(122,'4a115ca65d8bb',1,2,1,'TEST EN',''),(127,'4a40944a8ee78',1,1,1,'',''),(178,'4a681b0f66d2a',1,1,1,'',''),(182,'4a112157d69eb',1,1,1,'',''),(243,'4a676ebfe3a7a',1,1,1,'',''),(261,'4a978dcd034e2',1,2,1,'',''),(263,'4a40946ce9d01',1,2,1,'',''),(264,'4a1133f43284a',1,1,1,'',''),(269,'4a978dcd034e2',1,1,1,'',''),(274,'4a115ca65d8bb',1,1,1,'Test Thomas','<p>asdfasdfsd</p>'),(275,'4a115ca65d8bb',1,1,2,'Test Thomas 2','<p>asfsdfasdf</p>'),(276,'4a40946ce9d01',1,1,1,'',''),(277,'4a1cf55c8b3e5',1,1,1,'',''),(281,'4a9d42e6cbb25',1,1,1,'','');
+INSERT INTO `page-DEFAULT_PAGE_1-1-Region11-Instances` VALUES (95,'4a112157d69eb',1,2,1,'',''),(109,'4a116d34752df',1,1,1,'',''),(110,'4a116d34752df',1,2,1,'',''),(113,'4a113342dffe5',1,1,1,'',''),(122,'4a115ca65d8bb',1,2,1,'TEST EN',''),(127,'4a40944a8ee78',1,1,1,'',''),(178,'4a681b0f66d2a',1,1,1,'',''),(182,'4a112157d69eb',1,1,1,'',''),(243,'4a676ebfe3a7a',1,1,1,'',''),(261,'4a978dcd034e2',1,2,1,'',''),(263,'4a40946ce9d01',1,2,1,'',''),(264,'4a1133f43284a',1,1,1,'',''),(269,'4a978dcd034e2',1,1,1,'',''),(276,'4a40946ce9d01',1,1,1,'',''),(277,'4a1cf55c8b3e5',1,1,1,'',''),(281,'4a9d42e6cbb25',1,1,1,'',''),(286,'4a115ca65d8bb',1,1,1,'Test Thomas','<p>asdfasdfsd</p>'),(287,'4a115ca65d8bb',1,1,2,'Test Thomas 2','<p>asfsdfasdf</p>');
 /*!40000 ALTER TABLE `page-DEFAULT_PAGE_1-1-Region11-Instances` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2349,7 +2357,7 @@ CREATE TABLE `pageGmaps` (
   `created` timestamp NULL default NULL,
   `changed` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2358,7 +2366,7 @@ CREATE TABLE `pageGmaps` (
 
 LOCK TABLES `pageGmaps` WRITE;
 /*!40000 ALTER TABLE `pageGmaps` DISABLE KEYS */;
-INSERT INTO `pageGmaps` VALUES (48,'4a676ebfe3a7a',1,1,'47.503042','9.747067',3,NULL,'2009-08-05 09:41:20'),(64,'4a1133f43284a',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 08:45:13'),(68,'4a978dcd034e2',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 08:56:16'),(71,'4a115ca65d8bb',1,1,'47.37603463349758','10.0030517578125',3,NULL,'2009-09-01 09:12:08'),(72,'4a40946ce9d01',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 09:12:48'),(73,'4a1cf55c8b3e5',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 14:06:59'),(77,'4a9d42e6cbb25',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 15:53:48');
+INSERT INTO `pageGmaps` VALUES (48,'4a676ebfe3a7a',1,1,'47.503042','9.747067',3,NULL,'2009-08-05 09:41:20'),(64,'4a1133f43284a',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 08:45:13'),(68,'4a978dcd034e2',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 08:56:16'),(72,'4a40946ce9d01',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 09:12:48'),(73,'4a1cf55c8b3e5',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 14:06:59'),(77,'4a9d42e6cbb25',1,1,'47.503042','9.747067',3,NULL,'2009-09-01 15:53:48'),(80,'4a115ca65d8bb',1,1,'47.37603463349758','10.0030517578125',3,NULL,'2009-10-16 07:43:33');
 /*!40000 ALTER TABLE `pageGmaps` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2383,7 +2391,7 @@ CREATE TABLE `pageInternalLinks` (
   KEY `pageId` (`pageId`),
   KEY `version` (`version`),
   CONSTRAINT `pageInternalLinks_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2392,7 +2400,7 @@ CREATE TABLE `pageInternalLinks` (
 
 LOCK TABLES `pageInternalLinks` WRITE;
 /*!40000 ALTER TABLE `pageInternalLinks` DISABLE KEYS */;
-INSERT INTO `pageInternalLinks` VALUES (2,'4a40946ce9d01',1,2,'4a978dcd034e2',3,3,'2009-08-28 15:37:33','2009-08-28 15:37:33'),(3,'4a1133f43284a',1,1,'',3,3,'2009-09-01 08:45:13','2009-09-01 08:45:13'),(7,'4a978dcd034e2',1,1,'',3,3,'2009-09-01 08:56:16','2009-09-01 08:56:16'),(10,'4a115ca65d8bb',1,1,'',3,3,'2009-09-01 09:12:08','2009-09-01 09:12:08'),(11,'4a40946ce9d01',1,1,'',3,3,'2009-09-01 09:12:48','2009-09-01 09:12:48'),(12,'4a1cf55c8b3e5',1,1,'',3,3,'2009-09-01 14:06:59','2009-09-01 14:06:59'),(16,'4a9d42e6cbb25',1,1,'',3,3,'2009-09-01 15:53:48','2009-09-01 15:53:48');
+INSERT INTO `pageInternalLinks` VALUES (2,'4a40946ce9d01',1,2,'4a978dcd034e2',3,3,'2009-08-28 15:37:33','2009-08-28 15:37:33'),(3,'4a1133f43284a',1,1,'',3,3,'2009-09-01 08:45:13','2009-09-01 08:45:13'),(7,'4a978dcd034e2',1,1,'',3,3,'2009-09-01 08:56:16','2009-09-01 08:56:16'),(11,'4a40946ce9d01',1,1,'',3,3,'2009-09-01 09:12:48','2009-09-01 09:12:48'),(12,'4a1cf55c8b3e5',1,1,'',3,3,'2009-09-01 14:06:59','2009-09-01 14:06:59'),(16,'4a9d42e6cbb25',1,1,'',3,3,'2009-09-01 15:53:48','2009-09-01 15:53:48'),(19,'4a115ca65d8bb',1,1,'',3,3,'2009-10-16 07:43:33','2009-10-16 07:43:33');
 /*!40000 ALTER TABLE `pageInternalLinks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2547,7 +2555,7 @@ CREATE TABLE `pageTitles` (
 
 LOCK TABLES `pageTitles` WRITE;
 /*!40000 ALTER TABLE `pageTitles` DISABLE KEYS */;
-INSERT INTO `pageTitles` VALUES (1,'49f17460a4f9f',1,1,'Home',3,3,'2009-04-24 08:12:16','2009-09-29 12:21:03'),(2,'4a112157d69eb',1,1,'Hauptpunkt 1',3,2,'2009-05-18 08:50:31','2009-09-01 08:44:56'),(3,'4a113342dffe5',1,1,'Hauptpunkt 2',3,2,'2009-05-18 10:06:58','2009-09-01 14:07:52'),(4,'4a1133f43284a',1,1,'Hauptpunkt 3',3,2,'2009-05-18 10:09:56','2009-09-01 08:45:13'),(5,'4a115ca65d8bb',1,1,'Testseite',3,2,'2009-05-18 13:03:34','2009-09-01 09:12:08'),(6,'4a116d34752df',1,1,'Testseite 2',3,2,'2009-05-18 14:14:12','2009-06-09 16:43:55'),(7,'4a1cf55c8b3e5',1,1,'Testseite 3',3,2,'2009-05-27 08:10:04','2009-09-01 14:07:04'),(8,'4a115ca65d8bb',1,2,'TEST EN',3,3,'2009-06-08 13:52:02','2009-06-10 07:41:49'),(9,'4a112157d69eb',1,2,'Main Navigation 1',3,2,NULL,'2009-06-09 17:07:38'),(10,'4a116d34752df',1,2,'Testseite 2 EN',3,3,'2009-06-09 16:44:11','2009-06-09 16:44:11'),(11,'4a113342dffe5',1,2,'Main Navigation 2',3,2,NULL,'2009-06-09 16:52:25'),(12,'49f17460a4f9f',1,2,'Home',3,3,'2009-06-10 07:48:53','2009-07-08 17:05:38'),(13,'4a2fa65ac1781',1,1,'asdf',3,3,'2009-06-10 12:26:02','2009-06-10 12:26:02'),(14,'4a40944a8ee78',1,1,'Kollektion 1',3,3,'2009-06-23 08:37:30','2009-09-01 16:29:58'),(15,'4a40946ce9d01',1,1,'Testseite 2',3,3,'2009-06-23 08:38:04','2009-09-01 09:12:48'),(18,'4a676ebfe3a7a',1,1,'Process',3,3,'2009-07-22 19:55:43','2009-09-01 14:05:31'),(19,'4a676ebfe3a7a',1,2,'Test',3,3,'2009-07-22 20:50:44','2009-07-23 06:22:47'),(20,'4a681b0f66d2a',1,1,'Test',3,3,'2009-07-23 08:10:55','2009-09-01 08:56:10'),(21,'4a978dcd034e2',1,1,'Test Thomas',3,3,'2009-08-28 07:57:01','2009-09-01 08:56:16'),(22,'4a978dcd034e2',1,2,'Test Thomas',3,3,'2009-08-28 15:18:38','2009-08-28 15:18:44'),(23,'4a40946ce9d01',1,2,'Testsite 2',3,3,'2009-08-28 15:37:22','2009-08-28 15:37:33'),(24,'4a9d42e6cbb25',1,1,'Test Seite 2.1',3,3,'2009-09-01 15:51:02','2009-09-01 15:53:48');
+INSERT INTO `pageTitles` VALUES (1,'49f17460a4f9f',1,1,'Home',3,3,'2009-04-24 08:12:16','2009-09-29 12:21:03'),(2,'4a112157d69eb',1,1,'Hauptpunkt 1',3,2,'2009-05-18 08:50:31','2009-09-01 08:44:56'),(3,'4a113342dffe5',1,1,'Hauptpunkt 2',3,2,'2009-05-18 10:06:58','2009-09-01 14:07:52'),(4,'4a1133f43284a',1,1,'Hauptpunkt 3',3,2,'2009-05-18 10:09:56','2009-09-01 08:45:13'),(5,'4a115ca65d8bb',1,1,'Testseite',3,2,'2009-05-18 13:03:34','2009-10-16 07:43:33'),(6,'4a116d34752df',1,1,'Testseite 2',3,2,'2009-05-18 14:14:12','2009-06-09 16:43:55'),(7,'4a1cf55c8b3e5',1,1,'Testseite 3',3,2,'2009-05-27 08:10:04','2009-09-01 14:07:04'),(8,'4a115ca65d8bb',1,2,'TEST EN',3,3,'2009-06-08 13:52:02','2009-06-10 07:41:49'),(9,'4a112157d69eb',1,2,'Main Navigation 1',3,2,NULL,'2009-06-09 17:07:38'),(10,'4a116d34752df',1,2,'Testseite 2 EN',3,3,'2009-06-09 16:44:11','2009-06-09 16:44:11'),(11,'4a113342dffe5',1,2,'Main Navigation 2',3,2,NULL,'2009-06-09 16:52:25'),(12,'49f17460a4f9f',1,2,'Home',3,3,'2009-06-10 07:48:53','2009-07-08 17:05:38'),(13,'4a2fa65ac1781',1,1,'asdf',3,3,'2009-06-10 12:26:02','2009-06-10 12:26:02'),(14,'4a40944a8ee78',1,1,'Kollektion 1',3,3,'2009-06-23 08:37:30','2009-09-01 16:29:58'),(15,'4a40946ce9d01',1,1,'Testseite 2',3,3,'2009-06-23 08:38:04','2009-09-01 09:12:48'),(18,'4a676ebfe3a7a',1,1,'Process',3,3,'2009-07-22 19:55:43','2009-09-01 14:05:31'),(19,'4a676ebfe3a7a',1,2,'Test',3,3,'2009-07-22 20:50:44','2009-07-23 06:22:47'),(20,'4a681b0f66d2a',1,1,'Test',3,3,'2009-07-23 08:10:55','2009-09-01 08:56:10'),(21,'4a978dcd034e2',1,1,'Test Thomas',3,3,'2009-08-28 07:57:01','2009-09-01 08:56:16'),(22,'4a978dcd034e2',1,2,'Test Thomas',3,3,'2009-08-28 15:18:38','2009-08-28 15:18:44'),(23,'4a40946ce9d01',1,2,'Testsite 2',3,3,'2009-08-28 15:37:22','2009-08-28 15:37:33'),(24,'4a9d42e6cbb25',1,1,'Test Seite 2.1',3,3,'2009-09-01 15:51:02','2009-09-01 15:53:48');
 /*!40000 ALTER TABLE `pageTitles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2662,7 +2670,7 @@ CREATE TABLE `pageVideos` (
   KEY `pageId` (`pageId`),
   KEY `version` (`version`),
   CONSTRAINT `pageVideos_ibfk_1` FOREIGN KEY (`pageId`) REFERENCES `pages` (`pageId`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2671,6 +2679,7 @@ CREATE TABLE `pageVideos` (
 
 LOCK TABLES `pageVideos` WRITE;
 /*!40000 ALTER TABLE `pageVideos` DISABLE KEYS */;
+INSERT INTO `pageVideos` VALUES (3,'4a115ca65d8bb',1,1,'','l4PZBpcGfY8','http://i.ytimg.com/vi/l4PZBpcGfY8/default.jpg',2,3,'2009-10-16 07:43:33');
 /*!40000 ALTER TABLE `pageVideos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2713,7 +2722,7 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-INSERT INTO `pages` VALUES (1,8,3,1,1,1,1,1,3,0,'2009-04-24 08:12:50','49f17460a4f9f',1,3,0,'2009-04-24 08:12:50','2009-09-29 12:21:03','2009-04-24 08:12:50',2),(2,7,4,3,1,1,1,2,3,0,'2009-05-18 08:50:31','4a112157d69eb',1,2,0,'2009-05-18 08:50:31','2009-09-01 08:44:56','2009-06-09 09:34:19',2),(3,7,4,3,1,1,2,2,3,0,'2009-05-18 10:06:58','4a113342dffe5',1,2,0,'2009-05-18 10:06:58','2009-09-01 14:07:52','2009-06-09 16:51:23',2),(4,2,2,1,1,1,3,2,3,0,'2009-05-18 10:09:56','4a1133f43284a',1,2,0,'2009-05-18 10:09:56','2009-09-01 08:45:13','2009-09-01 08:45:11',2),(5,2,1,1,0,1,1,2,3,1,'2009-05-18 13:03:34','4a115ca65d8bb',1,3,0,'2009-05-18 13:03:34','2009-09-01 09:12:08','2009-05-18 14:11:29',2),(6,6,1,2,0,1,2,2,3,1,'2009-05-18 14:14:12','4a116d34752df',1,2,0,'2009-05-18 14:14:12','2009-09-01 14:09:37','2009-05-18 14:16:34',2),(7,13,1,4,0,1,3,2,3,1,'2009-05-27 08:10:04','4a1cf55c8b3e5',1,2,0,'2009-05-27 08:10:04','2009-09-01 14:07:04','2009-07-08 17:18:16',2),(8,2,2,1,1,0,12,2,3,0,'2009-06-10 12:26:02','4a2fa65ac1781',1,3,0,'2009-06-10 12:26:02','2009-06-10 12:26:02',NULL,1),(9,15,10,6,1,1,6,2,3,0,'2009-06-23 08:37:30','4a40944a8ee78',1,3,0,'2009-06-23 08:37:30','2009-09-01 16:29:58','2009-06-23 08:46:21',2),(10,2,1,1,0,0,6,2,3,1,'2009-06-23 08:38:04','4a40946ce9d01',1,3,0,'2009-06-23 08:38:04','2009-09-01 09:12:48','2009-06-23 08:38:34',2),(13,14,9,5,0,1,1,2,3,3,'2009-07-22 19:55:43','4a676ebfe3a7a',1,3,0,'2009-07-22 19:55:43','2009-09-01 14:05:31','2009-07-22 19:55:33',2),(14,14,1,5,0,0,1,2,3,4,'2009-07-23 08:10:55','4a681b0f66d2a',1,3,0,'2009-07-23 08:10:55','2009-09-01 08:56:10','2009-07-23 08:16:30',1),(15,2,1,1,0,0,1,2,3,5,'2009-08-28 07:57:01','4a978dcd034e2',1,3,0,'2009-08-28 07:57:01','2009-09-01 08:56:16','2009-08-28 07:56:42',2),(16,2,1,1,0,1,2,2,3,2,'2009-09-01 15:51:02','4a9d42e6cbb25',1,3,0,'2009-09-01 15:51:02','2009-09-01 15:53:48','2009-09-01 15:50:39',2);
+INSERT INTO `pages` VALUES (1,8,3,1,1,1,1,1,3,0,'2009-04-24 08:12:50','49f17460a4f9f',1,3,0,'2009-04-24 08:12:50','2009-09-29 12:21:03','2009-04-24 08:12:50',2),(2,7,4,3,1,1,1,2,3,0,'2009-05-18 08:50:31','4a112157d69eb',1,2,0,'2009-05-18 08:50:31','2009-09-01 08:44:56','2009-06-09 09:34:19',2),(3,7,4,3,1,1,2,2,3,0,'2009-05-18 10:06:58','4a113342dffe5',1,2,0,'2009-05-18 10:06:58','2009-09-01 14:07:52','2009-06-09 16:51:23',2),(4,2,2,1,1,1,3,2,3,0,'2009-05-18 10:09:56','4a1133f43284a',1,2,0,'2009-05-18 10:09:56','2009-09-01 08:45:13','2009-09-01 08:45:11',2),(5,2,1,1,0,1,1,2,3,2,'2009-10-16 14:36:21','4a115ca65d8bb',1,3,0,'2009-05-18 13:03:34','2009-10-16 14:36:21','2009-05-18 14:11:29',2),(6,6,1,2,0,1,2,2,3,1,'2009-05-18 14:14:12','4a116d34752df',1,2,0,'2009-05-18 14:14:12','2009-09-01 14:09:37','2009-05-18 14:16:34',2),(7,13,1,4,0,1,3,2,3,1,'2009-05-27 08:10:04','4a1cf55c8b3e5',1,2,0,'2009-05-27 08:10:04','2009-09-01 14:07:04','2009-07-08 17:18:16',2),(8,2,2,1,1,0,12,2,3,0,'2009-06-10 12:26:02','4a2fa65ac1781',1,3,0,'2009-06-10 12:26:02','2009-06-10 12:26:02',NULL,1),(9,15,10,6,1,1,6,2,3,0,'2009-06-23 08:37:30','4a40944a8ee78',1,3,0,'2009-06-23 08:37:30','2009-09-01 16:29:58','2009-06-23 08:46:21',2),(10,2,1,1,0,0,6,2,3,1,'2009-06-23 08:38:04','4a40946ce9d01',1,3,0,'2009-06-23 08:38:04','2009-09-01 09:12:48','2009-06-23 08:38:34',2),(13,14,9,5,0,1,1,2,3,4,'2009-10-16 14:36:21','4a676ebfe3a7a',1,3,0,'2009-07-22 19:55:43','2009-10-16 14:36:21','2009-07-22 19:55:33',2),(14,14,1,5,0,0,1,2,3,1,'2009-10-16 14:35:30','4a681b0f66d2a',1,3,0,'2009-07-23 08:10:55','2009-10-16 14:35:30','2009-07-23 08:16:30',1),(15,2,1,1,0,0,1,2,3,5,'2009-10-16 14:36:21','4a978dcd034e2',1,3,0,'2009-08-28 07:57:01','2009-10-16 14:36:21','2009-08-28 07:56:42',2),(16,2,1,1,0,1,2,2,3,2,'2009-09-01 15:51:02','4a9d42e6cbb25',1,3,0,'2009-09-01 15:51:02','2009-09-01 15:53:48','2009-09-01 15:50:39',2);
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2753,7 +2762,7 @@ CREATE TABLE `permissions` (
   `title` varchar(255) NOT NULL,
   `description` text,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2762,7 +2771,7 @@ CREATE TABLE `permissions` (
 
 LOCK TABLES `permissions` WRITE;
 /*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` VALUES (1,'full','Vollumfänglicher Zugang:\r\nVIEW, ADD, UPDATE, DELETE, COPY'),(2,'view','Der Datensatz darf visualisiert werden'),(3,'add','Ein neuer Datensatz darf erzeugt werden'),(4,'update','Der Datensatz darf verändert werden'),(5,'delete','Der Datensatz darf gelöscht werden'),(6,'copy','Der Datensatz darf kopiert werden'),(7,'live','Live schalten');
+INSERT INTO `permissions` VALUES (1,'view','Der Datensatz darf visualisiert werden'),(2,'add','Ein neuer Datensatz darf erzeugt werden'),(3,'update','Der Datensatz darf verändert werden'),(4,'delete','Der Datensatz darf gelöscht werden'),(5,'archive','Der Datensatz darf archiviert werden'),(6,'live','Live schalten');
 /*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2897,7 +2906,7 @@ CREATE TABLE `regions` (
 
 LOCK TABLES `regions` WRITE;
 /*!40000 ALTER TABLE `regions` DISABLE KEYS */;
-INSERT INTO `regions` VALUES (1,1,9,0,0,1,NULL,0,0),(2,1,9,0,0,1,NULL,0,0),(3,1,9,0,1,1,NULL,0,0),(4,1,9,0,1,1,NULL,0,0),(5,1,9,0,1,0,NULL,0,0),(6,1,9,0,1,0,NULL,0,0),(8,1,9,0,1,0,NULL,0,0),(9,1,3,0,1,1,'right',0,0),(10,1,12,0,0,1,NULL,0,0),(11,1,9,0,1,0,NULL,1,1),(12,1,9,0,1,0,NULL,0,0),(13,1,12,0,0,1,NULL,0,0),(14,1,9,0,1,0,NULL,1,1),(15,2,9,0,1,0,NULL,1,1),(16,2,9,0,1,1,NULL,0,0),(17,2,9,0,1,0,NULL,1,1),(18,1,12,0,0,1,NULL,0,0),(19,1,9,0,1,1,NULL,0,0),(20,1,9,0,1,1,NULL,0,0),(21,1,12,0,1,1,NULL,0,0),(22,1,9,0,1,1,NULL,0,0),(23,1,9,0,1,0,NULL,0,0),(24,1,9,0,1,0,NULL,0,0),(25,1,12,0,0,1,NULL,0,0),(26,1,9,0,0,1,NULL,0,0),(27,1,9,0,1,1,NULL,1,0),(28,1,9,0,1,1,NULL,0,0),(29,1,9,0,1,0,NULL,1,0),(30,1,9,0,1,0,NULL,0,0),(31,1,9,0,1,0,NULL,0,0),(32,1,9,0,1,0,NULL,1,1),(33,1,9,0,1,1,NULL,1,0),(34,1,9,0,1,0,NULL,0,0),(35,1,9,0,1,0,NULL,0,0),(36,1,9,0,1,0,NULL,0,0),(37,1,9,0,1,0,NULL,0,0),(38,1,9,0,1,1,NULL,0,0),(39,1,9,0,1,0,NULL,0,0),(40,1,9,0,1,0,NULL,0,0);
+INSERT INTO `regions` VALUES (1,1,9,0,0,1,NULL,0,0),(2,1,9,0,0,1,NULL,0,0),(3,1,9,0,1,1,NULL,0,0),(4,1,9,0,1,1,NULL,0,0),(5,1,9,0,1,0,NULL,0,0),(6,1,9,0,1,0,NULL,0,0),(8,1,9,0,1,0,NULL,0,0),(9,1,3,0,1,1,'right',0,0),(10,1,12,0,0,1,NULL,0,0),(11,1,9,0,1,0,NULL,1,1),(12,1,9,0,1,0,NULL,0,0),(13,1,12,0,0,1,NULL,0,0),(14,1,9,0,1,0,NULL,1,1),(15,2,9,0,1,0,NULL,1,1),(16,2,9,0,1,1,NULL,0,0),(17,2,9,0,1,0,NULL,1,1),(18,1,12,0,0,1,NULL,0,0),(19,1,9,0,1,1,NULL,0,0),(20,1,9,0,1,1,NULL,0,0),(21,1,12,0,1,1,NULL,0,0),(22,1,9,0,1,1,NULL,0,0),(23,1,9,0,1,0,NULL,0,0),(24,1,9,0,1,0,NULL,0,0),(25,1,12,0,0,1,NULL,0,0),(26,1,9,0,0,1,NULL,0,0),(27,1,9,0,1,1,NULL,1,0),(28,1,9,0,1,1,NULL,0,0),(29,1,9,0,1,0,NULL,1,0),(30,1,9,0,1,0,NULL,0,0),(31,1,9,0,1,0,NULL,0,0),(32,1,9,0,1,0,NULL,1,1),(33,1,9,0,1,1,NULL,1,0),(34,1,9,0,1,0,NULL,0,0),(35,1,9,0,1,0,NULL,0,0),(36,1,9,0,1,0,NULL,0,0),(37,1,9,0,1,0,NULL,0,0),(38,1,9,0,1,0,NULL,0,0),(39,1,9,0,1,0,NULL,0,0),(40,1,9,0,1,0,NULL,0,0);
 /*!40000 ALTER TABLE `regions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2923,6 +2932,35 @@ CREATE TABLE `renderedFiles` (
 LOCK TABLES `renderedFiles` WRITE;
 /*!40000 ALTER TABLE `renderedFiles` DISABLE KEYS */;
 /*!40000 ALTER TABLE `renderedFiles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `resources`
+--
+
+DROP TABLE IF EXISTS `resources`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `resources` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `title` varchar(255) NOT NULL,
+  `key` varchar(64) NOT NULL,
+  `creator` bigint(20) unsigned NOT NULL,
+  `idUsers` bigint(20) unsigned NOT NULL COMMENT 'Person, letzte Änderung',
+  `created` timestamp NULL default NULL,
+  `changed` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `resources`
+--
+
+LOCK TABLES `resources` WRITE;
+/*!40000 ALTER TABLE `resources` DISABLE KEYS */;
+INSERT INTO `resources` VALUES (1,'Portals','portals',3,3,'2009-10-08 10:15:10','2009-10-08 10:15:10'),(2,'Media','media',3,3,'2009-10-08 10:15:10','2009-10-08 10:15:10');
+/*!40000 ALTER TABLE `resources` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -2965,7 +3003,7 @@ CREATE TABLE `rootLevelTitles` (
   PRIMARY KEY  (`id`),
   KEY `rootLevelTitles_ibfk_1` (`idRootLevels`),
   CONSTRAINT `rootLevelTitles_ibfk_1` FOREIGN KEY (`idRootLevels`) REFERENCES `rootLevels` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2974,7 +3012,7 @@ CREATE TABLE `rootLevelTitles` (
 
 LOCK TABLES `rootLevelTitles` WRITE;
 /*!40000 ALTER TABLE `rootLevelTitles` DISABLE KEYS */;
-INSERT INTO `rootLevelTitles` VALUES (1,1,1,'Portal'),(2,2,1,'Bilder'),(3,3,1,'Dokumente'),(4,5,1,'Kontakte'),(5,4,1,'Kategorien'),(6,6,1,'Eigene Etiketten'),(7,7,1,'System Interne'),(8,8,1,'Benutzer'),(9,9,1,'Gruppen / Rollen'),(10,1,2,'Portal');
+INSERT INTO `rootLevelTitles` VALUES (1,1,1,'Portal'),(2,2,1,'Bilder'),(3,3,1,'Dokumente'),(4,5,1,'Kontakte'),(5,4,1,'Kategorien'),(6,6,1,'Eigene Etiketten'),(7,7,1,'System Interne'),(8,8,1,'Benutzer'),(9,9,1,'Gruppen / Rollen'),(10,10,1,'Ressourcen'),(11,1,2,'Portal');
 /*!40000 ALTER TABLE `rootLevelTitles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2989,7 +3027,7 @@ CREATE TABLE `rootLevelTypes` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2998,7 +3036,7 @@ CREATE TABLE `rootLevelTypes` (
 
 LOCK TABLES `rootLevelTypes` WRITE;
 /*!40000 ALTER TABLE `rootLevelTypes` DISABLE KEYS */;
-INSERT INTO `rootLevelTypes` VALUES (1,'portals'),(2,'images'),(3,'documents'),(4,'categories'),(5,'contacts'),(6,'labels'),(7,'systeminternals'),(8,'users'),(9,'groups');
+INSERT INTO `rootLevelTypes` VALUES (1,'portals'),(2,'images'),(3,'documents'),(4,'categories'),(5,'contacts'),(6,'labels'),(7,'systeminternals'),(8,'users'),(9,'groups'),(10,'resources');
 /*!40000 ALTER TABLE `rootLevelTypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3020,7 +3058,7 @@ CREATE TABLE `rootLevelUrls` (
   PRIMARY KEY  (`id`),
   KEY `idRootLevels` (`idRootLevels`),
   CONSTRAINT `rootLevelUrls_ibfk_1` FOREIGN KEY (`idRootLevels`) REFERENCES `rootLevels` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3029,7 +3067,7 @@ CREATE TABLE `rootLevelUrls` (
 
 LOCK TABLES `rootLevelUrls` WRITE;
 /*!40000 ALTER TABLE `rootLevelUrls` DISABLE KEYS */;
-INSERT INTO `rootLevelUrls` VALUES (6,1,'dev.zoolu.area51.at',2,2,'2009-08-05 09:38:38','2009-05-07 06:49:07');
+INSERT INTO `rootLevelUrls` VALUES (6,1,'dev.zoolu.area51.at',2,2,'2009-08-05 09:38:38','2009-05-07 06:49:07'),(7,1,'ivoclarvivadent.zoolu.area51.at',3,3,'2009-10-15 13:09:31','2009-10-15 13:09:23');
 /*!40000 ALTER TABLE `rootLevelUrls` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3046,7 +3084,7 @@ CREATE TABLE `rootLevels` (
   `idModules` bigint(20) unsigned NOT NULL,
   `idThemes` bigint(20) unsigned default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3055,7 +3093,7 @@ CREATE TABLE `rootLevels` (
 
 LOCK TABLES `rootLevels` WRITE;
 /*!40000 ALTER TABLE `rootLevels` DISABLE KEYS */;
-INSERT INTO `rootLevels` VALUES (1,1,1,1),(2,2,2,NULL),(3,3,2,NULL),(4,4,3,NULL),(5,5,3,NULL),(6,6,3,NULL),(7,7,3,NULL),(8,8,4,NULL),(9,9,4,NULL);
+INSERT INTO `rootLevels` VALUES (1,1,1,1),(2,2,2,NULL),(3,3,2,NULL),(4,4,3,NULL),(5,5,3,NULL),(6,6,3,NULL),(7,7,3,NULL),(8,8,4,NULL),(9,9,4,NULL),(10,10,4,NULL);
 /*!40000 ALTER TABLE `rootLevels` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3709,7 +3747,7 @@ CREATE TABLE `users` (
   `changed` timestamp NOT NULL default CURRENT_TIMESTAMP,
   PRIMARY KEY  (`id`),
   KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3718,7 +3756,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,1,'rainer','163732f752aeeccdbb9630c04fe08e14','Rainer','Schönherr',3,3,'2009-10-07 09:41:35','2009-10-07 09:41:17'),(2,1,'conny','3af31637b5328eb0e6a050e23a064681','Cornelius','Hansjakob',1,1,NULL,'2009-10-07 09:41:17'),(3,1,'thomas','ef6e65efc188e7dffd7335b646a85a21','Thomas','Schedler',2,2,NULL,'2009-10-07 09:41:35'),(4,1,'berndhep','01c2310a3cc00933589d3e2f694343d8','Bernd','Hepberger',3,3,NULL,'2009-10-07 09:41:17'),(5,1,'kate','29ddc288099264c17b07baf44d3f0adc','Kate','Dobler',3,3,NULL,'2009-10-07 09:41:17');
+INSERT INTO `users` VALUES (1,1,'rainer','163732f752aeeccdbb9630c04fe08e14','Rainer','Schönherr',3,3,'2009-10-07 09:41:35','2009-10-07 09:41:17'),(2,1,'conny','3af31637b5328eb0e6a050e23a064681','Cornelius','Hansjakob',1,1,NULL,'2009-10-07 09:41:17'),(3,1,'thomas','ef6e65efc188e7dffd7335b646a85a21','Thomas','Schedler',2,2,NULL,'2009-10-07 09:41:35'),(4,1,'berndhep','01c2310a3cc00933589d3e2f694343d8','Bernd','Hepberger',3,3,NULL,'2009-10-07 09:41:17'),(5,1,'kate','29ddc288099264c17b07baf44d3f0adc','Kate','Dobler',3,3,NULL,'2009-10-16 16:44:16'),(6,1,'dominik','4bd2b007716888ed6bf6c2399a6d7305','Dominik','Mößlang',3,3,'2009-10-16 07:50:48','2009-10-16 07:50:48'),(7,1,'thomas.schedler','090c25cfa555e7685a14d33b1d0f52a1','Thomas','Schedler',3,3,'2009-10-16 12:32:59','2009-10-16 12:32:59');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3803,4 +3841,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-10-07 18:39:53
+-- Dump completed on 2009-10-16 18:45:15
