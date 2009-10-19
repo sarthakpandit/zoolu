@@ -54,8 +54,10 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function indexAction() {
 		$this->strTemplateFile = 'template.php';
 		$objEntries = $this->getBlogEntries();
-		$objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
-		$this->view->assign('test', 'hey hey hey');
+
+		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
+		$this->view->assign('objEntries',$objEntry);
+		//plugin_css$this->view->assign('test', 'hey hey hey');
 	}
 	
   /**
