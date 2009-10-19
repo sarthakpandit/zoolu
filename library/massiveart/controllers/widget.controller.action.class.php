@@ -68,6 +68,13 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   protected $objModelFolders;  
   protected $strTemplateFile;
   
+  /**
+   * @var Object objTheme
+   */
+  protected $objTheme;
+  protected $strWidgetArgs;
+  protected $strWidgetParams;
+  
 	/**
    * init
    * @author Florian Mathis <flo@massiveart.com>
@@ -78,23 +85,8 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     parent::init();
     $this->objRequest = $this->getRequest();
     $this->core = Zend_Registry::get('Core');
-  }
-  
-  /**
-   * getWidgetObject
-   * @return Zend_Registry object 
-   */
-  public function getWidgetObject(){
-  	return Zend_Registry::get('Widget');
-  }
-  
-  /**
-   * indexAction
-   * @author Florian Mathis <flo@massiveart.com>
-   * @version 1.0
-   */
-  public function postDispatch(){  
-  	$strUrl = $_SERVER['REQUEST_URI'];
+    
+    $strUrl = $_SERVER['REQUEST_URI'];
   	$strDomain = $_SERVER['SERVER_NAME'];
   	  	
   	/**
@@ -120,50 +112,75 @@ class WidgetControllerAction extends Zend_Controller_Action  {
       $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
     }
     
+    // Get Widget Arguments
+  	$this->strWidgetArgs = substr($strUrl,strlen(Zend_Registry::get('Widget')->getNavigationUrl()));
+  	$this->strWidgetParams = explode('/',ltrim($this->strWidgetArgs,'/'));
+    
     /**
      * Get the theme for this domain
      */
     $this->getModelFolders();
-    $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
+    $this->objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
     
-    //FIXME: Front- and Backend-Options? Cache?
-  	$objNavigation = new Navigation();
-    $objNavigation->setRootLevelId($objTheme->idRootLevels);
-    $objNavigation->setLanguageId($this->intLanguageId);
-    
-    $this->getModelWidgets();
-    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($objTheme->idRootLevels, Zend_Registry::get('Widget')->getNavigationUrl());
+  	$this->getModelWidgets();
+    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($this->objTheme->idRootLevels, Zend_Registry::get('Widget')->getNavigationUrl());
     foreach($this->objUrlsData as $objPageData){
       $this->objUrlsData = $objPageData;
     }
     
+    $this->objWidget = new Widget();    
+    $this->objWidget->setWidgetInstanceId($this->objUrlsData->urlId);
+  }
+  
+  /**
+   * getWidgetObject
+   * @return Zend_Registry object 
+   */
+  public function getWidgetObject(){
+  	return Zend_Registry::get('Widget');
+  }
+  
+  /**
+   * indexAction
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function postDispatch(){  
     
-  	// Get Widget Arguments
-  	$strWidgetArgs = substr($strUrl,strlen(Zend_Registry::get('Widget')->getNavigationUrl()));
-  	$strWidgetParams = explode('/',ltrim($strWidgetArgs,'/'));
+    //FIXME: Front- and Backend-Options? Cache?
+  	$objNavigation = new Navigation();
+    $objNavigation->setRootLevelId($this->objTheme->idRootLevels);
+    $objNavigation->setLanguageId($this->intLanguageId);
+    
+    /*$this->getModelWidgets();
+    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($objTheme->idRootLevels, Zend_Registry::get('Widget')->getNavigationUrl());
+    foreach($this->objUrlsData as $objPageData){
+      $this->objUrlsData = $objPageData;
+    }
+    */
+    
+  	
     
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/navigation.inc.php';
     Zend_Registry::set('Navigation', $objNavigation);
 
-    $this->objWidget = new Widget();
-    $this->objWidget->setRootLevelId($objTheme->idRootLevels);
-    $this->objWidget->setRootLevelTitle($objTheme->title);
-    $this->objWidget->setWidgetInstanceId($this->objUrlsData->urlId);
+    $this->objWidget->setRootLevelId($this->objTheme->idRootLevels);
+    $this->objWidget->setRootLevelTitle($this->objTheme->title);
     $this->objWidget->setWidgetVersion($this->objUrlsData->version);
     $this->objWidget->setLanguageId($this->objUrlsData->idLanguages);
     $this->objWidget->setTemplateFile($this->strTemplateFile);
-    $this->objWidget->setAction($strWidgetParams[0]);
+    $this->objWidget->setAction($this->strWidgetParams[0]);
     $this->objWidget->setWidgetName(Zend_Registry::get('Widget')->getWidgetName());
     
     /**
      * set values for replacers
      */
-    Zend_Registry::set('TemplateCss', ($this->objWidget->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
-    Zend_Registry::set('TemplateJs', ($this->objWidget->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
-    
+    Zend_Registry::set('WidgetCss', '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$this->objTheme->path.'/css/startpage.css"></link>');
+    Zend_Registry::set('PluginJs', ($this->objWidget->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
+
     Zend_Registry::set('Widget', $this->objWidget);
   	require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/widget.inc.php';
-  	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+  	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$this->objTheme->path.'/');
     $this->renderScript('master.php');
   }
   

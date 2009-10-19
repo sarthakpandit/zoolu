@@ -6,10 +6,13 @@
         <?php include dirname(__FILE__).'/../../../includes/subnavigation.inc.php'; ?>
         
         <!-- Main Content -->
-        <div class="divContentContainer"><?php echo $this->test; ?>
-        	<h1>Blogtitle asdfAB Bla</h1>von <em>Admin</em> am 12.03.2009 um 18:00 Uhr<br/><br/><a>The new WikiReader is a $99 portable device from the Openmoko group that stuffs every Wikipedia article into a pocket-friendly traveling companion. While those of us entrenched in technology day in and day out may scoff at the idea of having Wikipedia at the ready (we all have smartphones, remember?), this is something that might be able to make some waves with baby boomers and/or the technically petrified.</a>
-          <div class="clear"></div>
-        </div>
+        <?php foreach($this->objEntries AS $entry): ?>
+	        <div class="divContentContainer">
+	        	<?php if (isset($entry->title)): print '<h1>'. $entry->title .'</h1>'; endif; ?>
+	        	von <em><?php if (isset($entry->username)): print $entry->username; endif; ?></em> am <?php if (isset($entry->created)): print $entry->created; endif; ?><br/><br/><?php if (isset($entry->text)): print $entry->text; endif; ?>
+	          <div class="clear"></div>
+	        </div>
+        <?php endforeach; ?>
         <div class="clear"></div>
       </div>  
     </div>
