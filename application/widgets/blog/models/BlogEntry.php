@@ -101,6 +101,25 @@ class Model_BlogEntry {
   }
   
   /**
+   * getBlogEntryByDateAndTitle
+   * @param $strDate
+   * @param $strTitle
+   * @return array
+   * @author Florian Mathis
+   * @version 1.0
+   */
+  public function getBlogEntryByDateAndTitle($strDate, $strTitle){
+  	$objSelect = $this->getBlogEntryTable()->select();
+  	$objSelect->setIntegrityCheck(false);
+  	$objSelect->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'created', 'text'));
+  	$objSelect->joinInner('users','widget_blogentries.idUsers = users.id');
+  	$objSelect->where('created LIKE ?', $strDate.'%');
+  	$objSelect->where('title = ?', ereg_replace('-',' ',$strTitle));
+
+  	return $this->objBlogEntryTable->fetchRow($objSelect);
+  }
+  
+  /**
    * editBlogEntry
    * @param array $arrValues
    * @param number $intBlogEntry

@@ -61,13 +61,21 @@ class Blog_IndexController extends WidgetControllerAction  {
 	}
 	
   /**
-   * archiveAction
+   * viewAction
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  public function archiveAction() {
+  public function viewAction() {
   	//$this->strTemplateFile = 'template.php';
-  	//echo var_dump($this->objRequest->getParams());
+  	$objBlogEntries = $this->getBlogEntries();
+  	
+  	$arrParams = $this->objRequest->getParams();
+  	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
+  	$strTitle = $arrParams[4];
+  	
+  	$objEntry = $objBlogEntries->getBlogEntryByDateAndTitle($strDate, $strTitle);
+  	$this->view->assign('objEntry',$objEntry);
+  	//$objEntries = $objBlogEntries->getBlogEntry();
   }
   
 	/**
