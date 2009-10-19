@@ -112,6 +112,8 @@ class WidgetControllerAction extends Zend_Controller_Action  {
       $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
     }
     
+    $this->view->assign('strWidgetUrl', $strUrl);
+    
     // Get Widget Arguments
   	$this->strWidgetArgs = substr($strUrl,strlen(Zend_Registry::get('Widget')->getNavigationUrl()));
   	$this->strWidgetParams = explode('/',ltrim($this->strWidgetArgs,'/'));
