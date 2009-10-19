@@ -48,6 +48,11 @@ class Model_Users {
   protected $objUserTable;
 
   /**
+   * @var Model_Table_UserGroups
+   */
+  protected $objUserGroupTable;
+
+  /**
    * @var Model_Table_Groups
    */
   protected $objGroupTable;
@@ -61,6 +66,11 @@ class Model_Users {
    * @var Model_Table_Resources
    */
   protected $objResourceTable;
+
+  /**
+   * @var Model_Table_ResourceGroups
+   */
+  protected $objResourceGroupTable;
 
   /**
    * @var Core
@@ -79,6 +89,7 @@ class Model_Users {
   /**
    * getUserTable
    * @return Zend_Db_Table_Rowset_Abstract
+   * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -96,6 +107,7 @@ class Model_Users {
   /**
    * addUser
    * @param array $arrData
+   * @return integer user id
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -107,16 +119,19 @@ class Model_Users {
       $arrData['created'] = date('Y-m-d H:i:s');
       $arrData['password'] = md5($arrData['password']);
 
-      return $this->getUserTable()->insert($arrData);
+      $this->getUserTable()->insert($arrData);
+
+      return $this->objUserTable->getAdapter()->lastInsertId();
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
   }
-    
+
   /**
    * editUser
    * @param integer $intUserId
    * @param array $arrData
+   * @return integer the number of rows updated
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -134,8 +149,71 @@ class Model_Users {
       }else{
         unset($arrData['password']);
       }
-      
+
       return $this->objUserTable->update($arrData, $strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * deleteUser
+   * @param integer $intUserId
+   * @return integer the number of rows deleted
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteUser($intUserId){
+    try{
+      $strWhere = $this->getUserTable()->getAdapter()->quoteInto('id = ?', $intUserId);
+      return $this->objUserTable->delete($strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * updateUserGroups
+   * @param integer $intUserId
+   * @param array $arrGroups
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function updateUserGroups($intUserId, $arrGroups){
+    try{
+      $this->getUserGroupTable();
+
+      /**
+       * delete data
+       */
+      $strWhere = $this->objUserGroupTable->getAdapter()->quoteInto('idUsers = ?', $intUserId);
+      $this->objUserGroupTable->delete($strWhere);
+
+      if(count($arrGroups) > 0){
+        foreach($arrGroups as $intGroupId){
+          $arrData = array('idUsers'  => $intUserId,
+                           'idGroups' => $intGroupId);
+
+          $this->objUserGroupTable->insert($arrData);
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getUserGroups
+   * @param integer $intUserId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getUserGroups($intUserId){
+    try{
+      $objSelect = $this->getUserGroupTable()->select()->where('idUsers = ?', $intUserId);
+      return $this->objUserGroupTable->fetchAll($objSelect);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -144,6 +222,7 @@ class Model_Users {
   /**
    * addGroup
    * @param array $arrData
+   * @return integer group id
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -164,6 +243,7 @@ class Model_Users {
    * editGroup
    * @param integer $intGroupId
    * @param array $arrData
+   * @return integer the number of rows updated
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -185,6 +265,7 @@ class Model_Users {
   /**
    * deleteGroup
    * @param integer $intGroupId
+   * @return integer the number of rows deleted
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -201,18 +282,19 @@ class Model_Users {
    * updateGroupPermissions
    * @param integer $intGroupId
    * @param array $arrPermissions
+   * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function updateGroupPermissions($intGroupId, $arrPermissions){
     try{
-      $GroupPermissionTable = $this->getGroupPermissionTable();
+      $this->getGroupPermissionTable();
 
       /**
        * delete data
        */
-      $strWhere = $GroupPermissionTable->getAdapter()->quoteInto('idGroups = ?', $intGroupId);
-      $GroupPermissionTable->delete($strWhere);
+      $strWhere = $this->objGroupPermissionTable->getAdapter()->quoteInto('idGroups = ?', $intGroupId);
+      $this->objGroupPermissionTable->delete($strWhere);
 
       if(count($arrPermissions) > 0){
         foreach($arrPermissions as $arrPermissionData){
@@ -224,11 +306,188 @@ class Model_Users {
                                'idLanguages'    => $intLanguageId,
                                'idPermissions'  => $intPermissionId);
 
-              $GroupPermissionTable->insert($arrData);
+              $this->objGroupPermissionTable->insert($arrData);
             }
           }
         }
       }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getGroups
+   * @param integer $intGroupId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @version 1.0
+   */
+  public function getGroups(){
+    try{
+      return $this->getGroupTable()->fetchAll();
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getGroupPermissions
+   * @param integer $intGroupId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @version 1.0
+   */
+  public function getGroupPermissions($intGroupId){
+    try{
+      $objSelect = $this->getGroupPermissionTable()->select()->where('idGroups = ?', $intGroupId);
+      return $this->objGroupPermissionTable->fetchAll($objSelect);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * addResource
+   * @param array $arrData
+   * @return integer resource id
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addResource($arrData){
+   try{
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+      $arrData['idUsers'] = $intUserId;
+      $arrData['creator'] = $intUserId;
+      $arrData['created'] = date('Y-m-d H:i:s');
+
+      $this->getResourceTable()->insert($arrData);
+
+      return $this->objResourceTable->getAdapter()->lastInsertId();
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * editResource
+   * @param integer $intResourceId
+   * @param array $arrData
+   * @return integer the number of rows updated
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editResource($intResourceId, $arrData){
+    try{
+      $this->getResourceTable();
+      $strWhere = $this->objResourceTable->getAdapter()->quoteInto('id = ?', $intResourceId);
+
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+      $arrData['idUsers'] = $intUserId;
+      $arrData['changed'] = date('Y-m-d H:i:s');
+
+      return $this->objResourceTable->update($arrData, $strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * deleteResource
+   * @param integer $intResourceId
+   * @return integer the number of rows deleted
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteResource($intResourceId){
+    try{
+      $strWhere = $this->getResourceTable()->getAdapter()->quoteInto('id = ?', $intResourceId);
+      return $this->objResourceTable->delete($strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * updateResourceGroups
+   * @param integer $intResourceId
+   * @param array $arrGroups
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function updateResourceGroups($intResourceId, $arrGroups){
+    try{
+      $this->getResourceGroupTable();
+
+      /**
+       * delete data
+       */
+      $strWhere = $this->objResourceGroupTable->getAdapter()->quoteInto('idResources = ?', $intResourceId);
+      $this->objResourceGroupTable->delete($strWhere);
+
+      if(count($arrGroups) > 0){
+        foreach($arrGroups as $intGroupId){
+          $arrData = array('idResources'  => $intResourceId,
+                           'idGroups'     => $intGroupId);
+
+          $this->objResourceGroupTable->insert($arrData);
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getResources
+   * @param integer $intGroupId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @version 1.0
+   */
+  public function getResources(){
+    try{
+      return $this->getResourceTable()->fetchAll();
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getResourceGroups
+   * @param integer $intResourceId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getResourceGroups($intResourceId){
+    try{
+      $objSelect = $this->getResourceGroupTable()->select()->where('idResources = ?', $intResourceId);
+      return $this->objResourceGroupTable->fetchAll($objSelect);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getResourcesGroups
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getResourcesGroups(){
+    try{
+      $objSelect = $this->getResourceTable()->select();
+
+      $objSelect->setIntegrityCheck(false);
+      $objSelect->from($this->objResourceTable, array('id', 'title', 'key'))
+                ->joinInner('resourceGroups', 'resourceGroups.idResources = resources.id', array())
+                ->joinInner('groups', 'groups.id = resourceGroups.idGroups', array('id AS groupId', 'title AS groupTitle', 'key AS groupKey'))
+                ->joinInner('groupPermissions', 'groupPermissions.idGroups = groups.id', array())
+                ->joinInner('permissions', 'permissions.id = groupPermissions.idPermissions', array('id AS permissionId', 'title AS permissionTitle'));
+
+      return $this->objResourceTable->fetchAll($objSelect);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -248,6 +507,22 @@ class Model_Users {
     }
 
     return $this->objUserTable;
+  }
+
+  /**
+   * getUserGroupTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getUserGroupTable(){
+
+    if($this->objUserGroupTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/tables/UserGroups.php';
+      $this->objUserGroupTable = new Model_Table_UserGroups();
+    }
+
+    return $this->objUserGroupTable;
   }
 
   /**
@@ -296,6 +571,22 @@ class Model_Users {
     }
 
     return $this->objResourceTable;
+  }
+
+  /**
+   * getResourceGroupTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getResourceGroupTable(){
+
+    if($this->objResourceGroupTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/tables/ResourceGroups.php';
+      $this->objResourceGroupTable = new Model_Table_ResourceGroups();
+    }
+
+    return $this->objResourceGroupTable;
   }
 }
 

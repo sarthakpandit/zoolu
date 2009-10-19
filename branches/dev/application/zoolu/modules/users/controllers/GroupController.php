@@ -86,7 +86,7 @@ class Users_GroupController extends AuthControllerAction {
 
     $objSelect = $this->getModelUsers()->getGroupTable()->select();
     $objSelect->setIntegrityCheck(false);
-    $objSelect->from($this->getModelUsers()->getGroupTable(), array('id', 'title'))
+    $objSelect->from($this->getModelUsers()->getGroupTable(), array('id', 'title', 'key'))
               ->joinInner('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'groups.changed'))
               ->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
@@ -148,6 +148,7 @@ class Users_GroupController extends AuthControllerAction {
           $this->objForm->setAction('/zoolu/users/group/edit');
 
           $arrGroupData['title'] = $this->getRequest()->getParam('title');
+          $arrGroupData['key'] = $this->getRequest()->getParam('key');
           $arrGroupData['description'] = $this->getRequest()->getParam('description');
           $intGroupId = $this->getModelUsers()->addGroup($arrGroupData);
 
@@ -183,8 +184,7 @@ class Users_GroupController extends AuthControllerAction {
 
     try{
 
-      $objSelect = $this->getModelUsers()->getGroupPermissionTable()->select()->where('idGroups = ?', $this->getRequest()->getParam('id'));
-      $arrPermissions = $this->getModelUsers()->getGroupPermissionTable()->fetchAll($objSelect);
+      $arrPermissions = $this->getModelUsers()->getGroupPermissions($this->getRequest()->getParam('id'));
       if(count($arrPermissions) > 0){
         $this->arrPermissions = array();
         foreach($arrPermissions as $objPermission){
@@ -244,6 +244,7 @@ class Users_GroupController extends AuthControllerAction {
           $intGroupId = $this->getRequest()->getParam('id');
 
           $arrGroupData['title'] = $this->getRequest()->getParam('title');
+          $arrGroupData['key'] = $this->getRequest()->getParam('key');
           $arrGroupData['description'] = $this->getRequest()->getParam('description');
           $intGroupId = $this->getModelUsers()->editGroup($intGroupId, $arrGroupData);
 
@@ -376,10 +377,11 @@ class Users_GroupController extends AuthControllerAction {
     $this->objForm->addElement('hidden', 'id', array('decorators' => array('Hidden')));
 
     $this->objForm->addElement('text', 'title', array('label' => $this->core->translate->_('title', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text keyfield', 'required' => true));
+    $this->objForm->addElement('text', 'key', array('label' => $this->core->translate->_('key', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text', 'required' => true));
 
     $this->objForm->addElement('textarea', 'description', array('label' => $this->core->translate->_('description', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text'));
 
-    $this->objForm->addDisplayGroup(array('title', 'description'), 'main-group', array('columns' => 9));
+    $this->objForm->addDisplayGroup(array('title', 'key', 'description'), 'main-group', array('columns' => 9));
     $this->objForm->getDisplayGroup('main-group')->setLegend('Allgemeine Informationen');
     $this->objForm->getDisplayGroup('main-group')->setDecorators(array('FormElements', 'Region'));
 
@@ -458,7 +460,7 @@ class Users_GroupController extends AuthControllerAction {
 
   /**
    * getModelUsers
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   protected function getModelUsers(){

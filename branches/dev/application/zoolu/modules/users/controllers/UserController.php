@@ -58,11 +58,16 @@ class Users_UserController extends Zend_Controller_Action {
    * @var Model_Users
    */
   protected $objModelUsers;
-  
+
   /**
    * @var Zend_Db_Table_Row
    */
   protected $objUser;
+
+  /**
+   * @var array
+   */
+  protected $arrGroups = array();
 
   /**
    * init
@@ -180,8 +185,16 @@ class Users_UserController extends Zend_Controller_Action {
           $arrFormData['idLanguages'] = $arrFormData['language'];
           unset($arrFormData['language']);
           unset($arrFormData['passwordConfirmation']);
-          
-          $this->getModelUsers()->addUser($arrFormData);
+
+          $arrUserGroups = array();
+          if(array_key_exists('groups', $arrFormData)){
+            $arrUserGroups = $arrFormData['groups'];
+            unset($arrFormData['groups']);
+          }
+
+          $intUserId = $this->getModelUsers()->addUser($arrFormData);
+
+          $this->getModelUsers()->updateUserGroups($intUserId, $arrUserGroups);
 
           $this->view->assign('blnShowFormAlert', true);
           $this->_forward('list', 'user', 'users');
@@ -191,19 +204,19 @@ class Users_UserController extends Zend_Controller_Action {
            */
           $this->objForm->setAction('/zoolu/users/user/add');
           $this->view->assign('blnShowFormAlert', false);
-          
+
           $this->view->form = $this->objForm;
 		      $this->view->formTitle = $this->core->translate->_('New_User');
-		
+
 		      $this->renderScript('form.phtml');
         }
       }
-      
+
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
   }
-  
+
   /**
    * editformAction
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -213,6 +226,14 @@ class Users_UserController extends Zend_Controller_Action {
     $this->core->logger->debug('users->controllers->UserController->editformAction()');
 
     try{
+
+      $arrGroups = $this->getModelUsers()->getUserGroups($this->getRequest()->getParam('id'));
+      if(count($arrGroups) > 0){
+        $this->arrGroups = array();
+        foreach($arrGroups as $objGroup){
+          $this->arrGroups[] = $objGroup->idGroups;
+        }
+      }
 
       $this->initForm();
       $this->objForm->setAction('/zoolu/users/user/edit');
@@ -225,7 +246,7 @@ class Users_UserController extends Zend_Controller_Action {
           $objElement->setValue($this->objUser->$name);
         }
       }
-      
+
       $this->objForm->getElement('language')->setValue($this->objUser->idLanguages);
 
       $this->view->form = $this->objForm;
@@ -258,13 +279,21 @@ class Users_UserController extends Zend_Controller_Action {
           $this->objForm->setAction('/zoolu/users/user/edit');
 
           $intUserId = $this->getRequest()->getParam('id');
-          
+
           $arrFormData['idLanguages'] = $arrFormData['language'];
           unset($arrFormData['language']);
           unset($arrFormData['id']);
           unset($arrFormData['passwordConfirmation']);
-          
+
+          $arrUserGroups = array();
+          if(array_key_exists('groups', $arrFormData)){
+            $arrUserGroups = $arrFormData['groups'];
+            unset($arrFormData['groups']);
+          }
+
           $this->getModelUsers()->editUser($intUserId, $arrFormData);
+
+          $this->getModelUsers()->updateUserGroups($intUserId, $arrUserGroups);
 
           $this->_forward('list', 'user', 'users');
           $this->view->assign('blnShowFormAlert', true);
@@ -378,6 +407,18 @@ class Users_UserController extends Zend_Controller_Action {
     $this->objForm->addDisplayGroup(array('password', 'passwordConfirmation'), 'password-group');
     $this->objForm->getDisplayGroup('password-group')->setLegend('Passwort neu setzen');
     $this->objForm->getDisplayGroup('password-group')->setDecorators(array('FormElements', 'Region'));
+
+    $arrGroups = array();
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups`")->fetchAll();
+    foreach($sqlStmt as $arrSql){
+      $arrGroups[$arrSql['id']] = $arrSql['title'];
+    }
+
+    $this->objForm->addElement('multiCheckbox', 'groups', array('label' => $this->core->translate->_('groups', false), 'value' => $this->arrGroups, 'decorators' => array('Input'), 'columns' => 6, 'class' => 'multiCheckbox', 'MultiOptions' => $arrGroups));
+
+    $this->objForm->addDisplayGroup(array('groups'), 'groups-group');
+    $this->objForm->getDisplayGroup('groups-group')->setLegend($this->core->translate->_('User_groups', false));
+    $this->objForm->getDisplayGroup('groups-group')->setDecorators(array('FormElements', 'Region'));
   }
 
   /**
@@ -466,8 +507,14 @@ class Users_UserController extends Zend_Controller_Action {
              */
             $objUsersData = $objDbAuthAdapter->getResultRowObject(array('id', 'idLanguages', 'username', 'fname', 'sname'));
             $objUsersData->languageId = $objUsersData->idLanguages;
+
+            $objSecurity = new Security();
+            $objSecurity->buildAcl();
+            Zend_Registry::set('Security', $objSecurity);
+
             unset($objUsersData->idLanguages);
             $objAuth->getStorage()->write($objUsersData);
+
             $_SESSION['sesTestMode'] = true;
             $this->_redirect('/zoolu/cms');
             break;
@@ -497,7 +544,7 @@ class Users_UserController extends Zend_Controller_Action {
 
   /**
    * getModelUsers
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   protected function getModelUsers(){

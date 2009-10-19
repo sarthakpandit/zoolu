@@ -45,7 +45,7 @@ class Model_Table_Groups extends Zend_Db_Table_Abstract {
   protected $_name = 'groups';
   protected $_primary = 'id';
 
-  protected $_dependentTables = array('BugsProducts');
+  protected $_dependentTables = array('GroupPermissions', 'ResourceGroups', 'UserGroups');
 }
 
 ?>
