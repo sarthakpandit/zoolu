@@ -55,6 +55,16 @@ class Users_ResourceController extends AuthControllerAction {
   protected $objModelUsers;
 
   /**
+   * @var Zend_Db_Table_Row
+   */
+  protected $objResource;
+
+  /**
+   * @var array
+   */
+  protected $arrGroups = array();
+
+  /**
    * indexAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
@@ -133,25 +143,144 @@ class Users_ResourceController extends AuthControllerAction {
            */
           $this->objForm->setAction('/zoolu/users/resource/edit');
 
-          $arrFormData['idLanguages'] = $arrFormData['language'];
-          unset($arrFormData['language']);
-          unset($arrFormData['passwordConfirmation']);
-          $this->getModelUsers()->addResource($arrFormData);
+          $arrResourceGroups = array();
+          if(array_key_exists('groups', $arrFormData)){
+            $arrResourceGroups = $arrFormData['groups'];
+            unset($arrFormData['groups']);
+          }
+
+          $intResourceId = $this->getModelUsers()->addResource($arrFormData);
+
+          $this->getModelUsers()->updateResourceGroups($intResourceId, $arrResourceGroups);
 
           $this->view->assign('blnShowFormAlert', true);
+          $this->_forward('list', 'resource', 'users');
         }else{
           /**
            * set action
            */
           $this->objForm->setAction('/zoolu/users/resource/add');
           $this->view->assign('blnShowFormAlert', false);
+
+          $this->view->form = $this->objForm;
+          $this->view->formTitle = $this->core->translate->_('New_Resource');
+
+          $this->renderScript('form.phtml');
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * editformAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editformAction(){
+    $this->core->logger->debug('users->controllers->ResourceController->editformAction()');
+
+    try{
+
+      $arrGroups = $this->getModelUsers()->getResourceGroups($this->getRequest()->getParam('id'));
+      if(count($arrGroups) > 0){
+        $this->arrGroups = array();
+        foreach($arrGroups as $objGroup){
+          $this->arrGroups[] = $objGroup->idGroups;
+        }
+      }
+
+      $this->initForm();
+      $this->objForm->setAction('/zoolu/users/resource/edit');
+
+      $this->objResource = $this->getModelUsers()->getResourceTable()->find($this->getRequest()->getParam('id'))->current();
+
+      foreach($this->objForm->getElements() as $objElement){
+        $name = $objElement->getName();
+        if(isset($this->objResource->$name)){
+          $objElement->setValue($this->objResource->$name);
         }
       }
 
       $this->view->form = $this->objForm;
-      $this->view->formTitle = $this->core->translate->_('New_Resource');
+      $this->view->formTitle = $this->core->translate->_('Edit_Resource');
 
       $this->renderScript('form.phtml');
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * editAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function editAction(){
+    $this->core->logger->debug('users->controllers->ResourceController->editAction()');
+
+    try{
+
+      $this->initForm();
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $arrFormData = $this->getRequest()->getPost();
+        if($this->objForm->isValid($arrFormData)){
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/resource/edit');
+
+          $intResourceId = $this->getRequest()->getParam('id');
+
+          $arrResourceGroups = array();
+          if(array_key_exists('groups', $arrFormData)){
+            $arrResourceGroups = $arrFormData['groups'];
+            unset($arrFormData['groups']);
+          }
+
+          $this->getModelUsers()->editResource($intResourceId, $arrFormData);
+
+          $this->getModelUsers()->updateResourceGroups($intResourceId, $arrResourceGroups);
+
+          $this->_forward('list', 'resource', 'users');
+          $this->view->assign('blnShowFormAlert', true);
+        }else{
+          /**
+           * set action
+           */
+          $this->objForm->setAction('/zoolu/users/resource/edit');
+          $this->view->assign('blnShowFormAlert', false);
+
+          $this->view->form = $this->objForm;
+          $this->view->formTitle = $this->core->translate->_('Edit_Resource');
+
+          $this->renderScript('form.phtml');
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * deleteAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteAction(){
+    $this->core->logger->debug('users->controllers->ResourceController->deleteAction()');
+
+    try{
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $this->getModelUsers()->deleteResource($this->getRequest()->getParam("id"));
+      }
+
+      $this->_forward('list', 'resource', 'users');
+      $this->view->assign('blnShowFormAlert', true);
+
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -203,17 +332,31 @@ class Users_ResourceController extends AuthControllerAction {
 
     $this->objForm->setAttrib('id', 'genForm');
     $this->objForm->setAttrib('onsubmit', 'return false;');
+    $this->objForm->addElement('hidden', 'id', array('decorators' => array('Hidden')));
 
     $this->objForm->addElement('text', 'title', array('label' => $this->core->translate->_('title', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text keyfield', 'required' => true));
+    $this->objForm->addElement('text', 'key', array('label' => $this->core->translate->_('key', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text', 'required' => true));
 
-    $this->objForm->addDisplayGroup(array('title'), 'main-resource');
-    $this->objForm->getDisplayGroup('main-resource')->setLegend('Allgemeine Resourcepen Informationen');
+    $this->objForm->addDisplayGroup(array('title', 'key'), 'main-resource');
+    $this->objForm->getDisplayGroup('main-resource')->setLegend('Allgemeine Resourcen Informationen');
     $this->objForm->getDisplayGroup('main-resource')->setDecorators(array('FormElements', 'Region'));
+
+    $arrGroups = array();
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups`")->fetchAll();
+    foreach($sqlStmt as $arrSql){
+      $arrGroups[$arrSql['id']] = $arrSql['title'];
+    }
+
+    $this->objForm->addElement('multiCheckbox', 'groups', array('label' => $this->core->translate->_('groups', false), 'value' => $this->arrGroups, 'decorators' => array('Input'), 'columns' => 6, 'class' => 'multiCheckbox', 'MultiOptions' => $arrGroups));
+
+    $this->objForm->addDisplayGroup(array('groups'), 'groups-group');
+    $this->objForm->getDisplayGroup('groups-group')->setLegend($this->core->translate->_('Resource_groups', false));
+    $this->objForm->getDisplayGroup('groups-group')->setDecorators(array('FormElements', 'Region'));
   }
 
   /**
    * getModelUsers
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   protected function getModelUsers(){

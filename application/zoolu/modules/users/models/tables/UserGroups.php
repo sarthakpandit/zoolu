@@ -31,21 +31,32 @@
  */
 
 /**
- * Model_Table_Users
+ * Model_Table_UserGroups
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-10-06: Thomas Schedler
+ * 1.0, 2009-10-19: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Model_Table_Users extends Zend_Db_Table_Abstract {
+class Model_Table_UserGroups extends Zend_Db_Table_Abstract {
 
-  protected $_name = 'users';
-  protected $_primary = 'id';
+  protected $_name = 'userGroups';
 
-  protected $_dependentTables = array('UserGroups');
+  protected $_referenceMap    = array(
+      'User' => array(
+          'columns'           => array('idUsers'),
+          'refTableClass'     => 'users',
+          'refColumns'        => array('id')
+      ),
+      'Group' => array(
+          'columns'           => array('idGroups'),
+          'refTableClass'     => 'groups',
+          'refColumns'        => array('id')
+      )
+  );
+
 }
 
 ?>

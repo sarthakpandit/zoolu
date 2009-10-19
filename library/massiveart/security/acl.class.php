@@ -24,28 +24,60 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.users.models.tables
+ * @package    library.massiveart.security
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * Model_Table_Users
+ * Acl
  *
  * Version history (please keep backward compatible):
- * 1.0, 2009-10-06: Thomas Schedler
+ * 1.0, 2009-10-19: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
+ * @package massiveart.security
+ * @subpackage Acl
  */
 
-class Model_Table_Users extends Zend_Db_Table_Abstract {
+class Acl extends Zend_Acl {
 
-  protected $_name = 'users';
-  protected $_primary = 'id';
+  /**
+   * isAllowed
+   * @param RoleProvider|string $mixedRoleProvider
+   * @param string $strResourceKey
+   * @param string $strPrivilege
+   * @see library/Zend/Zend_Acl#isAllowed()
+   * @return boolean
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function isAllowed($mixedRoleProvider, $strResourceKey, $strPrivilege = null){
+    if($mixedRoleProvider instanceof RoleProvider){
+      $blnIsAllowed = false;
+      foreach($mixedRoleProvider as $objRole){
+        $blnIsAllowed = parent::isAllowed($objRole, $strResourceKey, $strPrivilege);
+        if($blnIsAllowed === true){
+          break;
+        }
+      }
+      return $blnIsAllowed;
+    }else{
+      return parent::isAllowed($mixedRoleProvider, $strResourceKey, $strPrivilege);
+    }
+  }
 
-  protected $_dependentTables = array('UserGroups');
+  /**
+   * deny
+   * @see library/Zend/Zend_Acl#deny()
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function deny(){
+    throw new Exception('This ACL supports no deny!');
+  }
+
 }
-
 ?>
