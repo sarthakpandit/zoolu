@@ -273,7 +273,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
 
         $objCache->remove($strCacheId);
 
-        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('StartPage', 'PageType'.$this->core->sysConfig->page_types->overview->id));
+        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartPage', 'PageType'.$this->core->sysConfig->page_types->overview->id));
       }
       return $this->setup->getElementId();
     }catch (Exception $exc) {
