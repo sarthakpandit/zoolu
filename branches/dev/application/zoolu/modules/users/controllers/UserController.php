@@ -409,7 +409,7 @@ class Users_UserController extends Zend_Controller_Action {
     $this->objForm->getDisplayGroup('password-group')->setDecorators(array('FormElements', 'Region'));
 
     $arrGroups = array();
-    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups`")->fetchAll();
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups` ORDER BY `title`")->fetchAll();
     foreach($sqlStmt as $arrSql){
       $arrGroups[$arrSql['id']] = $arrSql['title'];
     }
@@ -508,9 +508,18 @@ class Users_UserController extends Zend_Controller_Action {
             $objUsersData = $objDbAuthAdapter->getResultRowObject(array('id', 'idLanguages', 'username', 'fname', 'sname'));
             $objUsersData->languageId = $objUsersData->idLanguages;
 
+            $objUserRoleProvider = new RoleProvider();
+            $arrUserGroups = $this->getModelUsers()->getUserGroups($objUsersData->id);
+            if(count($arrUserGroups) > 0){
+              foreach($arrUserGroups as $objUserGroup){
+                $objUserRoleProvider->addRole(new Zend_Acl_Role($objUserGroup->key), $objUserGroup->key);
+              }
+            }
+
             $objSecurity = new Security();
-            $objSecurity->buildAcl();
-            Zend_Registry::set('Security', $objSecurity);
+            $objSecurity->setRoleProvider($objUserRoleProvider);
+            $objSecurity->buildAcl($this->getModelUsers());
+            Security::save($objSecurity);
 
             unset($objUsersData->idLanguages);
             $objAuth->getStorage()->write($objUsersData);

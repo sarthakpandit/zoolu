@@ -259,18 +259,15 @@ Massiveart.Navigation = Class.create({
       this.levelArray.push(this.currLevel);
       
       var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
-      new Insertion.Bottom('divNaviCenterInner', levelContainer);
-      
-    }else{
-      
+      new Insertion.Bottom('divNaviCenterInner', levelContainer);      
+    }else{      
       myCore.addBusyClass('navlevel'+this.currLevel);   
       $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
       
       var levelPos = this.levelArray.indexOf(this.currLevel);
       for(var i = levelPos; i < this.levelArray.length; i++){
         if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
-      }
-      
+      }      
     }
     
     if(Prototype.Browser.IE){
@@ -287,22 +284,22 @@ Massiveart.Navigation = Class.create({
     } 
     
     if(elType == this.constFolder){    
-	    new Ajax.Updater('navlevel'+this.currLevel, this.constRequestChildNav, {
-	      parameters: { 
-	        folderId: this.currItemId,
-	        currLevel: this.currLevel
-	      },      
-	      evalScripts: true,     
-	      onComplete: function() {        
-	        myCore.removeBusyClass('navlevel'+this.currLevel);
-	        this.initFolderHover();
-	        this.initPageHover();
-	        this.initAddMenuHover();
+      new Ajax.Updater('navlevel'+this.currLevel, this.constRequestChildNav, {
+        parameters: { 
+  	      folderId: this.currItemId,
+	      currLevel: this.currLevel
+	    },      
+	    evalScripts: true,     
+	    onComplete: function() {        
+	      myCore.removeBusyClass('navlevel'+this.currLevel);
+	      this.initFolderHover();
+	      this.initPageHover();
+	      this.initAddMenuHover();
           //this.createSortableNavLevel(this.currLevel);
           this.scrollNavigationBar();
           this.updateCurrentFolder();
-	      }.bind(this)
-	    });
+	    }.bind(this)
+	  });
     }
   },
   
@@ -777,7 +774,7 @@ Massiveart.Navigation = Class.create({
     myCore.addBusyClass('divWidgetMetaInfos');
     
     strAjaxAction = '';    
-    if(elType == this.constFolder){
+    if(elType == this.constFolder){      
       strAjaxAction = '/zoolu/core/folder/geteditform';
     } else {
       strAjaxAction = '/zoolu/cms/page/geteditform';

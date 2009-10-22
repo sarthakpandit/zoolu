@@ -24,44 +24,60 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.core.media.controllers
+ * @package    application.zoolu.modules.core.models
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * Media_IndexController
+ * Model_Modules
  *
  * Version history (please keep backward compatible):
- * 1.0, 2008-11-06: Thomas Schedler
+ * 1.0, 2009-10-19: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Media_IndexController extends AuthControllerAction {
+class Model_Modules {
 
   /**
-   * The default action - show the home page
+   * @var Model_Table_Modules
    */
-  public function indexAction(){
+  protected $objModuleTable;
 
-    $this->_helper->viewRenderer->setNoRender();
+  /**
+   * @var Core
+   */
+  private $core;
 
-    Zend_Layout::startMvc(array(
-      'layout' => 'media',
-      'layoutPath' => '../application/zoolu/layouts'
-    ));
+  /**
+   * Constructor
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function __construct(){
+    $this->core = Zend_Registry::get('Core');
+  }
 
-    $objLayout = Zend_Layout::getMvcInstance();
-    $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'media'));
-    $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
-    $objLayout->assign('modules', $this->view->action('navtop', 'Modules', 'core', array('module' => $this->core->sysConfig->modules->media)));
+  public function getModules(){
+    return $this->getModuleTable()->fetchAll();
+  }
 
-    $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
-    $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
-    $this->view->assign('module', $this->core->sysConfig->modules->media);
+  /**
+   * getModuleTable
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getModuleTable(){
+
+    if($this->objModuleTable === null){
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/Modules.php';
+      $this->objModuleTable = new Model_Table_Modules();
+    }
+
+    return $this->objModuleTable;
   }
 }
 

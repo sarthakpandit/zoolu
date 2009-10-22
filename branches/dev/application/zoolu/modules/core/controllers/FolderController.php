@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -378,7 +378,6 @@ class Core_FolderController extends AuthControllerAction {
       $this->_forward('geteditform');
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
-      exit();
     }
   }
 
@@ -391,6 +390,7 @@ class Core_FolderController extends AuthControllerAction {
     if(is_object($this->objForm) && $this->objForm instanceof GenericForm){
       $this->view->isurlfolder = $this->objForm->Setup()->getUrlFolder();
       $this->view->showinnavigation = $this->objForm->Setup()->getShowInNavigation();
+      $this->view->folderId = $this->objForm->Setup()->getElementId();
       $this->view->version = $this->objForm->Setup()->getFormVersion();
       $this->view->publisher = $this->objForm->Setup()->getPublisherName();
       $this->view->changeUser = $this->objForm->Setup()->getChangeUserName();
@@ -420,6 +420,44 @@ class Core_FolderController extends AuthControllerAction {
     }
 
     $this->renderScript('folder/form.phtml');
+  }
+
+  /**
+   * securityAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function securityAction(){
+    $this->core->logger->debug('core->controllers->FolderController->securityAction()');
+    try{
+      $intFolderId = $this->objRequest->getParam('folderId');
+      $this->view->folderSecurity = $this->getModelFolders()->getFolderSecurity($intFolderId);
+      $this->view->folderId = $intFolderId;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * securityupdateAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function securityupdateAction(){
+    $this->core->logger->debug('core->controllers->FolderController->securityupdateAction()');
+    try{
+      $intFolderId = $this->objRequest->getParam('folderId');
+
+      $arrZooluSecurity = $this->objRequest->getParam('ZooluSecurity', array());
+      $this->getModelFolders()->updateFolderSecurity($intFolderId, $arrZooluSecurity, $this->core->sysConfig->environment->zoolu);
+
+      $arrWebsiteSecurity = $this->objRequest->getParam('WebsiteSecurity', array());
+      $this->getModelFolders()->updateFolderSecurity($intFolderId, $arrWebsiteSecurity, $this->core->sysConfig->environment->website);
+
+      $this->_forward('security');
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
   }
 
   /**

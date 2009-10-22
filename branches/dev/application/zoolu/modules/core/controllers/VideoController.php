@@ -65,11 +65,11 @@ class Core_VideoController extends AuthControllerAction {
 
       $objRequest = $this->getRequest();
       $intChannelId = $objRequest->getParam('channelId');
-      $strChannelUserId = $objRequest->getParam('channelUserId', '');
+      $strChannelUserId = $objRequest->getParam('channelUserId');
       $strElementId = $objRequest->getParam('elementId');
       $strValue = $objRequest->getParam('value');
       $strSearchQuery = $objRequest->getParam('searchString');
-
+   
       switch($intChannelId){
       	/*
       	 * Vimeo Controller
@@ -82,30 +82,32 @@ class Core_VideoController extends AuthControllerAction {
 
           $arrChannelUser = $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
           $intIdVideoType = 1;
-          
-          if(array_key_exists('id', $arrChannelUser)){
-            // Now lets do the user search query. We will get an response object containing everything we need
-            $objResponse = VimeoVideosRequest::getList($this->core->sysConfig->video_channels->vimeo->users->user->id);
-
-            // We want the result videos as an array of objects
-            $arrVideos = $objResponse->getVideos();
-          }else if($strChannelUserId !== ''){
-          	if(is_array($arrChannelUser)) {
-	          	foreach($arrChannelUser AS $chUser){
-	          		if($chUser['id'] == $strChannelUserId) {
-	          			// Now lets do the user search query. We will get an response object containing everything we need
-			            $objResponse = VimeoVideosRequest::getList($strChannelUserId);
-			
-			            // We want the result videos as an array of objects
-			            $arrVideos = $objResponse->getVideos();
-	          		}
-	          	}      
-          	}      
-          }
-          
-          // Set Channel Users
-          $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array() : $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
-      	break;
+          $arrVideos = array();
+    
+          /**
+           * Get the vimeo video list
+           */
+          if($strChannelUserId !== '' && $strChannelUserId !== 'publicAccess' && $strSearchQuery == ''){
+      
+           if(is_array($arrChannelUser)){
+                foreach($arrChannelUser AS $chUser){
+                  if($chUser['id'] == $strChannelUserId){
+                    $objResponse = VimeoVideosRequest::getList($strChannelUserId);
+                  }
+                }
+           }
+           $arrVideos = $objResponse->getVideos(); 
+          }else if($strChannelUserId !== '' && isset($strSearchQuery)){  
+           if($strChannelUserId == 'publicAccess'){
+             $objResponse = VimeoVideosRequest::search($strSearchQuery);  
+            }else{              
+             $objResponse = VimeoVideosRequest::search($strSearchQuery, $strChannelUserId);   
+            }
+            $arrVideos = $objResponse->getVideos(); 
+          }   
+          // Set channel Users 
+          $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array(0 => $arrChannelUser) : $this->core->sysConfig->video_channels->vimeo->users->user->toArray();
+         break;
       	
       	/**
       	 * Youtube Controller
@@ -113,38 +115,114 @@ class Core_VideoController extends AuthControllerAction {
       	case $this->core->sysConfig->video_channels->youtube->id :
       		$arrChannelUser = $this->core->sysConfig->video_channels->youtube->users->user->toArray();
           $intIdVideoType = 2;
-          	
+                                	
           $objResponse = new Zend_Gdata_YouTube();
 				  $objResponse->setMajorProtocolVersion(2);
-					  
-				  if(array_key_exists('id', $arrChannelUser) && $strSearchQuery === ''){
-				  	$arrVideos = $objResponse->getuserUploads($this->core->sysConfig->video_channels->youtube->users->user->id);
-				  }else if($strChannelUserId !== ''){
-				  	$arrVideos = $objResponse->getuserUploads($strChannelUserId);
-				  }else if($strSearchQuery !== ''){
-				  	$query = $objResponse->newVideoQuery();
-					  $query->setOrderBy('viewCount');
-					  $query->setSafeSearch('none');
-					  $query->setVideoQuery($strSearchQuery);
-					  $arrVideos = $objResponse->getVideoFeed($query->getQueryUrl(2));
+				  
+				  if($strChannelUserId !== '' && $strSearchQuery == '' && $strChannelUserId !== 'publicAccess'){
+				    $arrVideos = $objResponse->getuserUploads($strChannelUserId);
+				  }else if(isset($strChannelUserId) && isset($strSearchQuery)){
+			      if($strChannelUserId !== 'publicAccess'){
+				      $arrVideos = $objResponse->getVideoFeed('http://gdata.youtube.com/feeds/api/users/'.$strChannelUserId.'/uploads?q='.urlencode($strSearchQuery));
+				    }else{
+				     $objQuery = $objResponse->newVideoQuery();
+             $objQuery->setOrderBy('viewCount');
+             $objQuery->setSafeSearch('none');
+             $objQuery->setVideoQuery($strSearchQuery);
+				     $arrVideos = $objResponse->getVideoFeed($objQuery->getQueryUrl(2));
+				    }
 				  }
-					  
 				  // Set Channel Users
-				  $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array() : $this->core->sysConfig->video_channels->youtube->users->user->toArray();
-      	break;
-          
+				  $this->view->channelUsers = (array_key_exists('id', $arrChannelUser)) ? array(0 => $arrChannelUser) : $this->core->sysConfig->video_channels->youtube->users->user->toArray();
+ 				  break;    
       }
+           
       $this->view->idVideoType = $intIdVideoType;
       $this->view->elements = $arrVideos;
       $this->view->channelUserId = $strChannelUserId;
       $this->view->value = $strValue;
       $this->view->elementId = $strElementId;
+      $this->view->SearchQuery = $strSearchQuery;
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
       exit();
     }
   }
+  
+  /**
+   * getselectedvideoAction
+   * @author Dominik Mößlang <dmo@massiveart.com>
+   * @version 1.0
+   */
+  public function getselectedvideoAction(){
+    $this->core->logger->debug('core->controllers->VideoController->getselectedvideoAction()');
+
+     $strVideoTypeName = '';
+     $intIdVideoType = '';
+     $objSelectedVideo = '';
+    
+    try{
+      
+      $objRequest = $this->getRequest();
+      $intChannelId = $objRequest->getParam('channelId');
+      $strElementId = $objRequest->getParam('elementId');
+      $strValue = $objRequest->getParam('value');
+      $strChannelUserId = $objRequest->getParam('channelUserId');
+      $arrSelectedVideo = array();
+     
+      switch($intChannelId){
+         /**
+         * Vimeo Controller
+         */
+        case $this->core->sysConfig->video_channels->vimeo->id :
+          require_once(GLOBAL_ROOT_PATH.'library/vimeo/vimeo.class.php');
+          $intIdVideoType = 1;
+          $strVideoTypeName = "Vimeo";
+                  
+          /**
+           * Get the selected Video
+           */
+          if(isset($strValue)){
+           $objResponse = VimeoVideosRequest::getInfo($strValue);
+           $objSelectedVideo = $objResponse->getVideo(); 
+          }
+          
+          break;
+         /**
+         * Youtube Controller
+         */
+        case $this->core->sysConfig->video_channels->youtube->id :
+          $intIdVideoType = 2;
+          $strVideoTypeName = "YouTube";
+                                  
+          $objResponse = new Zend_Gdata_YouTube();
+          $objResponse->setMajorProtocolVersion(2);
+                    
+           /**
+           * Get the selected Video
+           */
+          if(isset($strValue)){
+           $objSelectedVideo = $objResponse->getVideoEntry($strValue); 
+          }
+              
+          break;
+        
+      }
+            
+      $this->view->strVideoTypeName = $strVideoTypeName;
+      $this->view->intIdVideoType = $intIdVideoType;
+      $this->view->objSelectedVideo = $objSelectedVideo;
+      $this->view->strValue = $strValue;
+      $this->view->strIdElementId = $strElementId;
+      $this->view->strChannelUserId = $strChannelUserId;
+      
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+      exit();
+    }
+  }
+  
 }
 
 ?>

@@ -33,13 +33,20 @@
   $core = Zend_Registry::get('Core');
 
   /**
+   * top navigation
+   */
+  $core->translate->_('portals');
+  $core->translate->_('media');
+  $core->translate->_('user_administration');
+  $core->translate->_('settings');
+
+  /**
    * user list
    */
   $core->translate->_('fname');
   $core->translate->_('sname');
   $core->translate->_('editor');
   $core->translate->_('changed');
-
 
   /**
    * group list

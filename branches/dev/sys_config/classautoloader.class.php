@@ -49,6 +49,7 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'HtmlTranslate'             => '/library/massiveart/utilities/html.translate.class.php',
     'Security'                  => '/library/massiveart/security/security.class.php',
     'Acl'                       => '/library/massiveart/security/acl.class.php',
+    'RoleProvider'              => '/library/massiveart/security/role.provider.class.php',
     'phMagick'                  => '/library/phmagick/phMagick.php',
     'PluginLoader'              => '/library/massiveart/loader/pluginLoader.class.php',
     'FormElementXhtmlAbstract'  => '/library/massiveart/generic/forms/fields/form.element.xhtml.abstract.class.php',

@@ -46,7 +46,7 @@ require_once(dirname(__FILE__).'/classautoloader.class.php');
 if (isset($_POST["PHPSESSID"])) {
   session_id($_POST["PHPSESSID"]);
 }
-  
+
 Zend_Session::start(); // TODO Zend_Session ????
 
 /**

@@ -23,7 +23,7 @@
     <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
     <?php echo $this->jsPlugins; ?>
-    
+
   </head>
   <body id="myBody">
 
@@ -53,29 +53,7 @@
       </div>
 
       <div id="navtopwrapper">
-        <div id="navtopinner">
-          <div class="navtop">
-            <div class="navtopcorner_on"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink_on" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'"><?php echo strtoupper($this->translate->_('Portals')); ?></div>
-            <div class="navtopcorner_on"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="navtop">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'"><?php echo strtoupper($this->translate->_('Media')); ?></div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="navtopinnerright">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'"><?php echo $this->translate->_('Settings'); ?></div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="navtopinnerright">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/users'"><?php echo $this->translate->_('User_administration'); ?></div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="clear"></div>
-        </div>
+        <?php echo $this->layout()->modules; ?>
         <div id="navtopbreadcrumb" style="display:none;"></div>
       </div>
 

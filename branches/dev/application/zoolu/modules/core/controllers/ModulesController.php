@@ -24,60 +24,69 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.security
+ * @package    application.zoolu.modules.core.controllers
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * Acl
+ * ModulesController
  *
  * Version history (please keep backward compatible):
  * 1.0, 2009-10-19: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
- * @package massiveart.security
- * @subpackage Acl
  */
 
-class Acl extends Zend_Acl {
+class Core_ModulesController extends AuthControllerAction {
 
   /**
-   * isAllowed
-   * @param RoleProvider|string $mixedRole
-   * @param string $strResourceKey
-   * @param string $strPrivilege
-   * @see library/Zend/Zend_Acl#isAllowed()
-   * @return boolean
+   * @var Model_Modules
+   */
+  protected $objModelModules;
+
+  /**
+	 * The default action - show the home page
+	 */
+  public function indexAction(){ }
+
+ /**
+   * navtopAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function isAllowed($mixedRole, $strResourceKey, $strPrivilege = null){
-    if($mixedRole instanceof RoleProvider){
-      $blnIsAllowed = false;
-      foreach($mixedRole as $objRole){
-        $blnIsAllowed = parent::isAllowed($objRole, $strResourceKey, $strPrivilege);
-        if($blnIsAllowed === true){
-          break;
-        }
-      }
-      return $blnIsAllowed;
-    }else{
-      return parent::isAllowed($mixedRole, $strResourceKey, $strPrivilege);
+  public function navtopAction(){
+    $this->core->logger->debug('core->controllers->ModulesController->navtopAction()');
+    try{
+
+      $this->view->modules = $this->getModelModules()->getModules();
+      $this->view->module = $this->getRequest()->getParam('module', 0);
+
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+      exit();
     }
   }
 
   /**
-   * deny
-   * @see library/Zend/Zend_Acl#deny()
+   * getModelModules
+   * @return Model_Modules
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function deny(){
-    throw new Exception('This ACL supports no deny!');
-  }
+  protected function getModelModules(){
+    if (null === $this->objModelModules) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Modules.php';
+      $this->objModelModules = new Model_Modules();
+    }
 
+    return $this->objModelModules;
+  }
 }
-?>

@@ -24,72 +24,67 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.controllers
+ * @package    application.zoolu.modules.core.views.helpers
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * AuthControllerAction
- *
- * Check authentification before starting controller actions
+ * ModulesNavigationHelper
  *
  * Version history (please keep backward compatible):
- * 1.0, 2008-10-10: Cornelius Hansjakob
+ * 1.0, 2009-10-19: Thomas Schedler
  *
- * @author Cornelius Hansjakob <cha@massiveart.com>
+ * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class AuthControllerAction extends Zend_Controller_Action {
+class ModulesNavigationHelper {
 
   /**
    * @var Core
    */
-  protected $core;
+  private $core;
 
   /**
-   * Init
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * Constructor
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function init(){
+  public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
 
-	/**
-   * ensure that no other actions are accessible if you are not logged in
+  /**
+   * getTopNavigation
+   * @param Zend_Db_Table_Rowset_Abstract $objRowset
+   * @param integer $strModule
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
    */
-  public function preDispatch(){
+  function getTopNavigation($objRowset, $intModuleId = 0) {
+    $this->core->logger->debug('core->views->helpers->NavigationHelper->getTopNavigation()');
 
-  	/**
-  	 * set default encoding to view
-  	 */
-  	$this->view->setEncoding($this->core->sysConfig->encoding->default);
+    $strOutput = '';
 
-  	/**
-  	 * set translate obj
-  	 */
-    $this->view->translate = $this->core->translate;
+    if(count($objRowset) > 0){
+      foreach($objRowset as $objRow){
+        if(Security::get()->isAllowed($objRow->resourceKey, 'view')){
 
-  	/**
-     * check if user is authenticated, else redirect to login form
-     */
-    $auth = Zend_Auth::getInstance();
+          $strItemClass = ($objRow->id == $intModuleId) ? 'navtoplink_on' : 'navtoplink';
 
-    if(!$auth->hasIdentity()){
-      if($this->getRequest()->isXmlHttpRequest()){
-        echo '<script type="text/javascript">
-              //<![CDATA[
-                window.location.reload();
-              //]]>
-              </script>';
-        exit();
-      }else{
-        $this->_redirect('/zoolu/users/user/login');
+          $strOutput .= '
+          <div class="'.$objRow->cssClass.'">
+            <div class="'.$strItemClass.'" onmouseover="this.style.cursor=\'pointer\';" onclick="location.href=\'/zoolu/'.$objRow->title.'\'">'.$this->core->translate->_($objRow->resourceKey).'</div>
+          </div>';
+        }
       }
     }
+
+    return $strOutput;
   }
+
 }
+
 ?>

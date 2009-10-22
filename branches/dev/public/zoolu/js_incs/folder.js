@@ -35,6 +35,9 @@ Massiveart.Folder = Class.create({
     });
   },
   
+  /**
+   * selectParentFolder
+   */
   selectParentFolder: function(parentFolderId){
     myCore.addBusyClass('overlayGenContent');
   
@@ -69,6 +72,9 @@ Massiveart.Folder = Class.create({
     });
   },
   
+  /**
+   * selectParentRootFolder
+   */
   selectParentRootFolder: function(rootFolderId){
     myCore.addBusyClass('overlayGenContent');
       
@@ -115,6 +121,47 @@ Massiveart.Folder = Class.create({
         myCore.removeBusyClass(myForm.updateContainer);
       } 
     });
-  }
+  },
+    
+  /**
+   * getCurrentFolderSecurity
+   */
+  getCurrentFolderSecurity: function(){
+    $(myForm.updateOverlayContainer).innerHTML = '';
+    
+    myCore.putCenter('overlayGenContentWrapper');
+    $('overlayGenContentWrapper').show();    
+    
+    new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/core/folder/security', { 
+      parameters: { folderId: this.folderId },
+      evalScripts: true,
+      onComplete: function(){
+        myCore.putOverlayCenter('overlayGenContentWrapper');
+      } 
+    });
+  },
   
+  /**
+   * updateFolderSecurity
+   */
+  updateFolderSecurity: function(){
+        
+    if($('folderSecurityForm')){
+      
+      myCore.addBusyClass(myForm.updateOverlayContainer);
+      
+      /**
+       * serialize generic form
+       */
+      var serializedForm = $('folderSecurityForm').serialize();
+    
+      new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/core/folder/securityupdate', {
+        parameters: serializedForm,
+        evalScripts: true,
+        onComplete: function() {         
+          myCore.removeBusyClass(myForm.updateOverlayContainer);
+        }.bind(this)
+      });
+    }
+  }  
 });

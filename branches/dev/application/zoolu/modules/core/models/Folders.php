@@ -50,6 +50,11 @@ class Model_Folders {
   protected $objFolderTable;
 
   /**
+   * @var Model_Table_FolderPermissions
+   */
+  protected $objFolderPermissionTable;
+
+  /**
    * @var Model_Table_RootLevels
    */
   protected $objRootLevelTable;
@@ -963,8 +968,8 @@ class Model_Folders {
 
   /**
    * deleteFolderNode
-   * @author Thomas Schedler <tsh@massiveart.com>
    * @param integer $intFolderId
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function deleteFolderNode($intFolderId){
@@ -983,9 +988,9 @@ class Model_Folders {
 
   /**
    * moveFolderToLastChildOf
-   * @author Thomas Schedler <tsh@massiveart.com>
    * @param integer $intFolderId
    * @param integer $intParentFolderId
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function moveFolderToLastChildOf($intFolderId, $intParentFolderId){
@@ -1002,9 +1007,9 @@ class Model_Folders {
 
   /**
    * moveFolderToLastChildOfRootFolder
-   * @author Thomas Schedler <tsh@massiveart.com>
    * @param integer $intFolderId
    * @param integer $intRootFolderId
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function moveFolderToLastChildOfRootFolder($intFolderId, $intRootFolderId){
@@ -1025,6 +1030,81 @@ class Model_Folders {
   }
 
   /**
+   * updateFolderSecurity
+   * @param integer $intFolderId
+   * @param integer $arrGroups
+   * @param integer $intEnvironment
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function updateFolderSecurity($intFolderId, $arrGroups, $intEnvironment){
+    $this->core->logger->debug('core->models->Folders->updateFolderSecurity('.$intFolderId.', '.$arrGroups.', '.$intEnvironment.')');
+
+    try{
+      $this->getFolderPermissionTable();
+
+      /**
+       * delete data
+       */
+      $strWhere = $this->objFolderPermissionTable->getAdapter()->quoteInto('idFolders = ?', $intFolderId);
+      $strWhere .= $this->objFolderPermissionTable->getAdapter()->quoteInto('AND environment = ?', $intEnvironment);
+      $this->objFolderPermissionTable->delete($strWhere);
+
+      if(count($arrGroups) > 0){
+        foreach($arrGroups as $intGroupId){
+          $arrData = array('idFolders'    => $intFolderId,
+                           'environment'  => $intEnvironment,
+                           'idGroups'     => $intGroupId);
+          $this->objFolderPermissionTable->insert($arrData);
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getFolderSecurity
+   * @param integer $intFolderId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getFolderSecurity($intFolderId){
+    $this->core->logger->debug('core->models->Folders->getFolderSecurity('.$intFolderId.')');
+
+    $objSelect = $this->getFolderPermissionTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objFolderPermissionTable, array('idGroups', 'environment'))
+              ->joinInner('groups', 'groups.id = folderPermissions.idGroups', array('id', 'title', 'key'))
+              ->where('idFolders = ?', $intFolderId);
+    return $this->objFolderPermissionTable->fetchAll($objSelect);
+  }
+
+  /**
+   * getFoldersPermissions
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getFoldersPermissions(){
+    $this->core->logger->debug('core->models->Folders->getFoldersPermissions()');
+
+    $objSelect = $this->getFolderPermissionTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objFolderPermissionTable, array('idGroups', 'environment'))
+              ->joinInner('folders', 'folders.id = folderPermissions.idFolders', array('id'))
+              ->joinInner('groups', 'groups.id = folderPermissions.idGroups', array('id AS groupId', 'title AS groupTitle', 'key AS groupKey'))
+              ->joinInner('groupPermissions', 'groupPermissions.idGroups = groups.id', array())
+              ->joinInner('permissions', 'permissions.id = groupPermissions.idPermissions', array('id AS permissionId', 'title AS permissionTitle'));
+
+    return $this->objFolderPermissionTable->fetchAll($objSelect);
+  }
+
+  /**
    * getFolderTable
    * @return Model_Table_Folders
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -1039,6 +1119,23 @@ class Model_Folders {
 
     return $this->objFolderTable;
   }
+
+  /**
+   * getFolderPermissionTable
+   * @return Model_Table_FolderPermissions
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getFolderPermissionTable(){
+
+    if($this->objFolderPermissionTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/FolderPermissions.php';
+      $this->objFolderPermissionTable = new Model_Table_FolderPermissions();
+    }
+
+    return $this->objFolderPermissionTable;
+  }
+
 
   /**
    * getRootLevelTable

@@ -342,7 +342,7 @@ class Users_ResourceController extends AuthControllerAction {
     $this->objForm->getDisplayGroup('main-resource')->setDecorators(array('FormElements', 'Region'));
 
     $arrGroups = array();
-    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups`")->fetchAll();
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups` ORDER BY `title`")->fetchAll();
     foreach($sqlStmt as $arrSql){
       $arrGroups[$arrSql['id']] = $arrSql['title'];
     }
