@@ -17,6 +17,8 @@ Massiveart.Overlay = Class.create({
     
     this.areaId;
     this.fieldId;
+    
+    this.activeTabId = null;
   },
   
   /**
@@ -304,6 +306,27 @@ Massiveart.Overlay = Class.create({
 	      }
 	    }
     }         
+  },
+  
+  /**
+   * selectTab
+   * @param tabId
+   */
+  selectTab: function(tabId){
+    if($('divTab_'+this.activeTabId)){
+      $('divTab_'+this.activeTabId).hide();
+      $('tabNavItem_'+this.activeTabId).removeClassName('selected');
+    }
+    $('divTab_'+tabId).show();
+    $('tabNavItem_'+tabId).addClassName('selected');
+    this.setActiveTab(tabId);
+  },
+  
+  /**
+   * selectTab
+   */
+  setActiveTab: function(tabId){
+    this.activeTabId = tabId;    
   }
   
 });

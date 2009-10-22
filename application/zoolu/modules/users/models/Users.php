@@ -212,7 +212,12 @@ class Model_Users {
    */
   public function getUserGroups($intUserId){
     try{
-      $objSelect = $this->getUserGroupTable()->select()->where('idUsers = ?', $intUserId);
+      $objSelect = $this->getUserGroupTable()->select();
+
+      $objSelect->setIntegrityCheck(false);
+      $objSelect->from($this->objUserGroupTable, array('idUsers', 'idGroups'))
+                ->joinInner('groups', 'groups.id = userGroups.idGroups', array('key'))
+                ->where('userGroups.idUsers = ?', $intUserId);
       return $this->objUserGroupTable->fetchAll($objSelect);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

@@ -56,6 +56,12 @@
 	              <td class="tdNormal"><input type="checkbox" name="urlfolder" id="urlfolder"<?php ($this->isurlfolder == 1) ? print(' checked="checked"') : print(''); ?> onclick="$('isUrlFolder').value = this.checked ? '1' : '0'"/></td>
 	              <td><label for="urlfolder">in URL-Pfad &uuml;bernehmen</label></td>
 	            </tr>
+              <?php if($this->folderId) : ?>
+              <tr>
+                <td></td>
+                <td><a href="#" onclick="myFolder.getCurrentFolderSecurity(); return false;">Ordner Berechtigung</a></td>
+              </tr>
+              <?php endif; ?>
 	            <?php if($this->version > 0) : ?>
 	            <!--<tr>
 	              <td class="tdNormal">Version:</td>
@@ -92,5 +98,6 @@
           myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
           myForm.selectNavigationItemNow = <?php echo (($this->selectNavigationItemNow && $this->selectNavigationItemNow == true) ? 'true' : 'false') ?>;
           <?php if($this->itemId): ?>myNavigation.itemId = '<?php echo $this->itemId ?>';<?php endif; ?>
+          <?php if($this->folderId): ?>myFolder.folderId = <?php echo $this->folderId ?>;<?php endif; ?>
         //]]>
         </script>

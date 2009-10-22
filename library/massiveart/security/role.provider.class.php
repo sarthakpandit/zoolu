@@ -64,7 +64,7 @@ class RoleProvider implements Iterator, Countable {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function addRole(Role $objRole, $strName){
+  public function addRole(Zend_Acl_Role_Interface $objRole, $strName){
     $this->arrRoles[$strName] = $objRole;
   }
 

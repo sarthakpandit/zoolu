@@ -21,17 +21,20 @@ Massiveart.Navigation.Cms = Class.create(Massiveart.Navigation, {
   initModuleCMS: function(rootLevelId){
     if(typeof(rootLevelId) != 'undefined' && rootLevelId != ''){
       if($('portal'+rootLevelId)) $('portal'+rootLevelId).onclick();
+      this.loadDashboard();
     }else{
       var blnFirst = true;
       $$('#divNaviLeftMain div.portal').each(function(elDiv){
-	      if($(elDiv.id) && blnFirst){
-	        $(elDiv.id).onclick();
-	        blnFirst = false;
-	      }	      
-	    }.bind(this));
+	    if($(elDiv.id) && blnFirst){
+	      $(elDiv.id).onclick();
+	      blnFirst = false;
+	    }	      
+	  }.bind(this));
+      
+      if(blnFirst == true){
+        this.loadDashboard();
+      }
     }
-    
-    this.loadDashboard();
   },
   
   /**

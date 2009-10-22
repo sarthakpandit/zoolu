@@ -21,15 +21,15 @@
     <!-- libaries -->
     <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
-    
+
   </head>
   <body id="myBody">
 
     <!-- navigation top -->
     <div id="navigation-top">
-      
+
       <div id="top">
-        
+
         <div class="toplogo">
           <a href="/zoolu">
             <img src="/zoolu/images/main/logo_zoolu_small.png" width="69" height="17" alt="ZOOLU"/>
@@ -40,81 +40,59 @@
           <div class="faqicon"><img src="/zoolu/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
-        
-        <div class="clear"></div>        
+
+        <div class="clear"></div>
       </div>  <!-- END top -->
-      
+
       <?php echo $this->layout()->userinfo; ?>
-      
-      <!-- 
+
+      <!--
       <div id="navtopleft">
         <img id="navtopleftimg" width="5" height="40" src="/zoolu/images/main/bg_navigation_left.png"/>
       </div>
        -->
-       
+
       <div id="navtopleftclient">
         <img id="navtopleftimgclient" width="42" height="40" src="/zoolu/images/zoolu_client_logo.png"/>
       </div>
-      
+
       <div id="navtopwrapper">
-        <div id="navtopinner">
-          <div class="navtop">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'"><?php echo strtoupper($this->translate->_('Portals')); ?></div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="navtop">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'"><?php echo strtoupper($this->translate->_('Media')); ?></div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="navtopinnerright">
-            <div class="navtopcorner_on"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink_on" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'"><?php echo $this->translate->_('Settings'); ?></div>
-            <div class="navtopcorner_on"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="navtopinnerright">
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
-            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/users'"><?php echo $this->translate->_('User_administration'); ?></div>
-            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
-          </div>
-          <div class="clear"></div>
-        </div>
+        <?php echo $this->layout()->modules; ?>
         <div id="navtopbreadcrumb" style="display:none;"></div>
       </div>
-      
+
       <div id="navtopright">
         <img id="navtoprightimg" width="5" height="40" src="/zoolu/images/main/bg_navigation_right.png"/>
       </div>
 
-    </div> 
+    </div>
     <!-- END navigation top -->
 
     <?php echo $this->layout()->navigation; ?>
 
     <!-- content -->
     <div id="content">
-        
+
       <!-- content edit -->
       <div id="genFormContainer" class="contentedit" style="display:none;">
       </div>
-        
+
       <!-- content function widget -->
       <div id="genFormSaveContainer" class="contentfunction" style="display:none;">
 
       <!-- widget: save, delete, infos, ... -->
       <div class="widgetfunctions">
         <div class="widget224content">
-          <div class="widgetcontenttop">               
-                
+          <div class="widgetcontenttop">
+
             <!-- alerts for saving, editing, deleting, ... -->
             <div id="divFormSaveLoader" class="alertsave" style="display:none;">
               <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
-            </div>                
+            </div>
             <div id="divFormSaveSucces" class="alertsavesucces" style="display:none;">Gespeichert!</div>
             <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
             <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;">Gel&ouml;scht!</div>
-                
+
             <!-- save button -->
             <div id="buttonsave" onclick="myForm.save();">
               <div class="button25leftOn"></div>
@@ -140,19 +118,19 @@
             <div class="clear"></div>
           </div>
 
-          <div class="widgetcontentmain" id="divWidgetMetaInfos">                
+          <div class="widgetcontentmain" id="divWidgetMetaInfos">
           </div>
-              
+
           </div>
         </div>
-      </div>        
+      </div>
     </div> <!-- END content -->
 
     <!-- overlay transparent-->
-    <div id="overlayTrans" class="overlaytrans" style="display:none;"></div>    
+    <div id="overlayTrans" class="overlaytrans" style="display:none;"></div>
     <!-- overlay black 75% -->
     <div id="overlayBlack75" class="overlayblack75" style="display:none;"></div>
-    
+
     <!-- overlay for generated content -->
     <div id="overlayGenContentWrapper" class="overlaycontentwrapper" style="display:none;">
       <table>
@@ -188,7 +166,7 @@
         </tbody>
       </table>
     </div>
-    
+
     <!-- libaries -->
     <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- ext.js includes -->
@@ -207,21 +185,21 @@
     <script type="text/javascript" src="/zoolu/js_incs/overlay.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- TinyMCE Texteditor -->
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
-    
+
     <script type="text/javascript">//<![CDATA[
       var myCore = new Massiveart.Core();
       var myNavigation = new Massiveart.Navigation.Properties();
       var myForm = new Massiveart.Form.Properties();
       var myOverlay = new Massiveart.Overlay();
-      
-      document.observe('dom:loaded', function() { 
+
+      document.observe('dom:loaded', function() {
         myNavigation.initPortalHover();
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('Settings'); ?>';
         myNavigation.module = <?php echo $this->module; ?>;
 
-        new Draggable('overlayGenContentWrapper', {handle: 'handle', scroll: window });    
-      }); 
-                
+        new Draggable('overlayGenContentWrapper', {handle: 'handle', scroll: window });
+      });
+
     //]]>
     </script>
   </body>

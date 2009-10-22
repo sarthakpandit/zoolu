@@ -1,0 +1,28 @@
+ <?php
+require_once (dirname(__FILE__).'/../../helpers/NavigationHelper.php');
+$objHelper = new ModulesNavigationHelper();
+?>
+        <div id="navtopinner">
+          <?php echo $objHelper->getTopNavigation($this->modules, $this->module); ?>
+          <!-- <div class="navtop">
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/cms'"><?php echo strtoupper($this->translate->_('Portals')); ?></div>
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
+          </div>
+          <div class="navtop">
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/media'"><?php echo strtoupper($this->translate->_('Media')); ?></div>
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
+          </div>
+          <div class="navtopinnerright">
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/properties'"><?php echo $this->translate->_('Settings'); ?></div>
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
+          </div>
+          <div class="navtopinnerright">
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_left.png"/></div>
+            <div class="navtoplink" onmouseover="this.style.cursor='pointer';" onclick="location.href='/zoolu/users'"><?php echo $this->translate->_('User_administration'); ?></div>
+            <div class="navtopcorner"><img width="5" height="30" src="/zoolu/images/main/bg_navelement_right.png"/></div>
+          </div> -->
+          <div class="clear"></div>
+        </div>

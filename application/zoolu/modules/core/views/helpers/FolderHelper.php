@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -32,40 +32,40 @@
 
 /**
  * FolderHelper
- * 
+ *
  * Version history (please keep backward compatible):
  * 1.0, 2009-02-23: Thomas Schedler
- * 
+ *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
 class FolderHelper {
-  
+
   /**
    * @var Core
    */
   private $core;
-    
+
   /**
-   * Constructor 
+   * Constructor
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
-  
+
   /**
-   * getFolderTree 
+   * getFolderTree
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function getFolderTree($objRowset, $intFolderId) {
     $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderTree()');
-    
+
     $strOutput = '';
-    
+
     if(count($objRowset) > 0){
       $blnFolderChilds = false;
       $intMainFolderDepth = 0;
@@ -74,8 +74,8 @@ class FolderHelper {
                          <a href="#" onclick="myFolder.selectParentRootFolder('.$objRowset[0]->idRootLevels.'); return false;"><div class="icon img_folder_on"></div>'.htmlentities($objRowset[0]->rootLevelTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
                        </div>
                      </div>';
-     
-      foreach ($objRowset as $objRow){           
+
+      foreach ($objRowset as $objRow){
         if($objRow->id == $intFolderId){
           $intMainFolderDepth = $objRow->depth;
           $blnFolderChilds = true;
@@ -90,30 +90,30 @@ class FolderHelper {
         }
       }
     }
-    
+
     /**
      * return html output
      */
     return $strOutput;
   }
-  
+
   /**
    * getFolderContentList
    * @param object $objRowset
-   * @param integer $intFolderId 
+   * @param integer $intFolderId
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
   public function getFolderContentList($objRowset, $intFolderId){
     $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderContentList()');
-    
+
     $strOutput = '';
-    
+
     if(count($objRowset) > 0){
       foreach($objRowset as $objRow){
-        
+
       	$strStatus = ($objRow->pageStatus == $this->core->sysConfig->status->live) ? 'on' : 'off' ;
-      	
+
         if($objRow->isStartPage){
           $strOutput .= '
                       <tr class="listrow" id="Row'.$objRow->idPage.'">
@@ -121,7 +121,7 @@ class FolderHelper {
                         <td class="rowicon"><div class="img_startpage_'.$strStatus.'"></div></td>
                         <td class="rowtitle">'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).' (Startseite)</td>
                         <td class="rowauthor" colspan="2"></td>
-                      </tr>';	
+                      </tr>';
         }else{
           $strOutput .= '
                       <tr class="listrow" id="Row'.$objRow->idPage.'">
@@ -129,18 +129,80 @@ class FolderHelper {
                         <td class="rowicon"><div class="img_page_'.$strStatus.'"></div></td>
                         <td class="rowtitle">'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>
                         <td class="rowauthor" colspan="2"></td>
-                      </tr>';	
+                      </tr>';
         }
-      	  	
-      }	
+
+      }
     }
-    
+
     /**
      * return html output
      */
     return $strOutput;
-  	
-  	
+  }
+
+
+  /**
+   * getFolderSecurity
+   * @param Zend_Db_Table_Rowset_Abstract $objRowset
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getFolderSecurity($objRowset){
+    $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderSecurity()');
+
+    $strOutput = '';
+
+    $arrZooluSecurity = array();
+    $arrWebsiteSecurity = array();
+    foreach($objRowset as $objRow){
+      if($this->core->sysConfig->environment->zoolu == $objRow->environment){
+        $arrZooluSecurity[] = $objRow->id;
+      }else if($this->core->sysConfig->environment->website == $objRow->environment){
+        $arrWebsiteSecurity[] = $objRow->id;
+      }
+    }
+
+    $arrGroups = array();
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groups` ORDER BY `title`")->fetchAll();
+    foreach($sqlStmt as $arrSql){
+      $arrGroups[$arrSql['id']] = $arrSql['title'];
+    }
+
+    $objZooluSecurityElement = new Zend_Form_Element_MultiCheckbox('ZooluSecurity', array(
+        'value' => $arrZooluSecurity,
+        'label' => $this->core->translate->_('groups', false),
+        'multiOptions' => $arrGroups,
+        'columns' => 6,
+        'class' => 'multiCheckbox'
+      ));
+    $objZooluSecurityElement->addPrefixPath('Form_Decorator', GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/decorators/', 'decorator');
+    $objZooluSecurityElement->setDecorators(array('Input'));
+
+    $objWebsiteSecurityElement = new Zend_Form_Element_MultiCheckbox('WebsiteSecurity', array(
+        'value' => $arrWebsiteSecurity,
+        'label' => $this->core->translate->_('groups', false),
+        'multiOptions' => $arrGroups,
+        'columns' => 6,
+        'class' => 'multiCheckbox'
+      ));
+
+    $objWebsiteSecurityElement->addPrefixPath('Form_Decorator', GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/decorators/', 'decorator');
+    $objWebsiteSecurityElement->setDecorators(array('Input'));
+
+    $strOutput .= '
+    <div id="divTab_ZOOLU">
+      '.$objZooluSecurityElement->render().'
+    </div>
+    <div id="divTab_Website" style="display:none;">
+      '.$objWebsiteSecurityElement->render().'
+    </div>';
+
+
+    /**
+     * return html output
+     */
+    return $strOutput;
   }
 }
 

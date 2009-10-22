@@ -44,15 +44,12 @@
 
 class Security {
 
-  /**
-   * @var Core
-   */
-  private $core;
+  const RESOURCE_FOLDER_PREFIX = 'folder_';
 
   /**
-   * @var Model_Users
+   * @var Security
    */
-  protected $objModelUsers;
+  private static $objInstance;
 
   /**
    * @var Acl
@@ -60,67 +57,147 @@ class Security {
   private $objAcl;
 
   /**
+   * @var RoleProvider
+   */
+  private $objRoleProvider;
+
+  /**
    * Constructor
    */
-  public function __construct(){
-    $this->core = Zend_Registry::get('Core');
-  }
+  public function __construct(){ }
 
   /**
    * buildAcl
+   * @param Model_Users $objModelUsers
+   * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
-   * @return void
    */
-  public function buildAcl(){
+  public function buildAcl(Model_Users $objModelUsers){
     try{
       $this->objAcl = new Acl();
 
       /**
        * add groups
        */
-      $arrGroups = $this->getModelUsers()->getGroups();
+      $arrGroups = $objModelUsers->getGroups();
       foreach($arrGroups as $objGroup){
         $this->objAcl->addRole(new Zend_Acl_Role($objGroup->key));
-        //$this->core->logger->debug('$this->objAcl->addRole(new Zend_Acl_Role('.$objGroup->key.'));');
       }
 
       /**
        * add resources & groups & privileges
        */
-      $arrResources = $this->getModelUsers()->getResourcesGroups();
+      $arrResources = $objModelUsers->getResourcesGroups();
       foreach($arrResources as $objResource){
         if(!$this->objAcl->has($objResource->key)){
           $this->objAcl->add(new Zend_Acl_Resource($objResource->key));
         }
 
         $this->objAcl->allow($objResource->groupKey, $objResource->key, $objResource->permissionTitle);
-        //$this->core->logger->debug('$this->objAcl->allow('.$objResource->groupKey.', '.$objResource->key.', '.$objResource->permissionTitle.');');
       }
 
     }catch (Exception $exc) {
-      $this->core->logger->err($exc);
+      Zend_Registry::get('Core')->logger->err($exc);
     }
   }
 
   /**
-   * getModelUsers
+   * addFoldersToAcl
+   * @param Model_Folders $objModelFolders
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function getModelUsers(){
-    if (null === $this->objModelUsers) {
-      /**
-       * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it
-       * from its modules path location.
-       */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/Users.php';
-      $this->objModelUsers = new Model_Users();
-    }
+  public function addFoldersToAcl(Model_Folders $objModelFolders){
+    try{
+      if(!$this->objAcl instanceof Acl) $this->objAcl = new Acl();
 
-    return $this->objModelUsers;
+      /**
+       * add resources & groups & privileges
+       */
+      $arrResources = $objModelFolders->getFoldersPermissions();
+      foreach($arrResources as $objResource){
+        if(!$this->objAcl->has(Security::RESOURCE_FOLDER_PREFIX.$objResource->id)){
+          $this->objAcl->add(new Zend_Acl_Resource(Security::RESOURCE_FOLDER_PREFIX.$objResource->id));
+        }
+
+        $this->objAcl->allow($objResource->groupKey, Security::RESOURCE_FOLDER_PREFIX.$objResource->id, $objResource->permissionTitle);
+      }
+
+    }catch (Exception $exc) {
+      Zend_Registry::get('Core')->logger->err($exc);
+    }
   }
+
+  /**
+   * setRoleProvider
+   * @param RoleProvider $objRoleProvider
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function setRoleProvider(RoleProvider $objRoleProvider){
+    $this->objRoleProvider = $objRoleProvider;
+  }
+
+  /**
+   * isAllowed
+   * @param string $strResourceKey
+   * @param string $strPrivilege
+   * @see library/Zend/Zend_Acl#isAllowed()
+   * @return boolean
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function isAllowed($strResourceKey, $strPrivilege = null){
+    if($this->objAcl->has($strResourceKey)){
+      return $this->objAcl->isAllowed($this->objRoleProvider, $strResourceKey, $strPrivilege);
+    }else{
+      return true;
+    }
+  }
+
+  /**
+   * save
+   * @param Security $objSecurity
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public static function save(Security &$objSecurity){
+    self::clearInstance();
+    $objSecuritySesNam = new Zend_Session_Namespace('Security');
+    $objSecuritySesNam->security = $objSecurity;
+  }
+
+  /**
+   * get
+   * @return Security
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public static function get(){
+    if(self::$objInstance === null){
+      $objSecuritySesNam = new Zend_Session_Namespace('Security');
+      if(isset($objSecuritySesNam->security)){
+        self::$objInstance = $objSecuritySesNam->security;
+      }else{
+        throw new Exception('There is no security object stored in the the session namespace!');
+      }
+    }
+    return self::$objInstance;
+  }
+
+  /**
+   * clearInstance
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  private static function clearInstance(){
+    self::$objInstance = null;
+  }
+
 }
 
 ?>

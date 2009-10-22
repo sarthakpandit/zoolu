@@ -385,6 +385,12 @@
       </paths>
     </media>
     
+    <!-- ENVIRONMENT -->    
+    <environment>
+      <zoolu>1</zoolu>
+      <website>2</website>
+    </environment>
+    
     <!-- PARENT TYPES -->
     <!-- table: parentTypes -->
     <parent_types>
@@ -562,6 +568,7 @@
       			<id>GoogleDevelopers</id>
       			<name>GoogleDevelopers</name>
       		</user>
+      	
       	</users>
       </youtube>
     </video_channels>

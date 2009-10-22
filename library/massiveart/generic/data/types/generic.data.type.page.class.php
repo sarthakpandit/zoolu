@@ -265,9 +265,9 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
 
         // getting a Zend_Cache_Core object
         $objCache = Zend_Cache::factory('Output',
-                                              'File',
-                                              $arrFrontendOptions,
-                                              $arrBackendOptions);
+                                        'File',
+                                        $arrFrontendOptions,
+                                        $arrBackendOptions);
 
         $strCacheId = 'page'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
 

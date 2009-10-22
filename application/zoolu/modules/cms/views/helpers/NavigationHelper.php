@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -120,6 +120,7 @@ class NavigationHelper {
     if(count($objRowset) > 0){
     	foreach ($objRowset as $objRow){
 
+
     		//$objRow->sortPosition
     		$strPageTitle = ($objRow->pageLinkTitle != '' & $objRow->pageLinkTitle != -1 && $objRow->pageType == $this->core->sysConfig->page_types->link->id) ? $objRow->pageLinkTitle : $objRow->title;
 
@@ -205,16 +206,18 @@ class NavigationHelper {
 
           $counter++;
         }else{
-    			/**
-	         * get values of the row and create default output
-	         */
-	        $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
-            <div id="divNavigationEdit_'.$objRow->id.'" class="icon img_'.$objRow->type.'_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'" ondblclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.'); return false;"></div>
-            <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_'.$objRow->type.'_'.$objRow->id.'" id="pos_'.$objRow->type.'_'.$objRow->id.'" value="'.$counter.'" onfocus="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;" onkeyup="if(event.keyCode==13){ myNavigation.updateSortPosition(\'pos_'.$objRow->type.'_'.$objRow->id.'\',\''.$objRow->type.'\','.$currLevel.'); myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false; }" onblur="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;"/></div>
-            <div id="divNavigationTitle_'.$objRow->type.$objRow->id.'" class="title" onclick="myNavigation.selectNavigationItem('.$currLevel.', \''.$objRow->type.'\','.$objRow->id.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
-          </div>';
+          if(Security::get()->isAllowed(Security::RESOURCE_FOLDER_PREFIX.$objRow->id, 'view')){
+      			/**
+  	         * get values of the row and create default output
+  	         */
+  	        $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
+              <div id="divNavigationEdit_'.$objRow->id.'" class="icon img_'.$objRow->type.'_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'" ondblclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.'); return false;"></div>
+              <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_'.$objRow->type.'_'.$objRow->id.'" id="pos_'.$objRow->type.'_'.$objRow->id.'" value="'.$counter.'" onfocus="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;" onkeyup="if(event.keyCode==13){ myNavigation.updateSortPosition(\'pos_'.$objRow->type.'_'.$objRow->id.'\',\''.$objRow->type.'\','.$currLevel.'); myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false; }" onblur="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->id.'\'); return false;"/></div>
+              <div id="divNavigationTitle_'.$objRow->type.$objRow->id.'" class="title" onclick="myNavigation.selectNavigationItem('.$currLevel.', \''.$objRow->type.'\','.$objRow->id.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            </div>';
+          }
 
-	        $counter++;
+          $counter++;
     		}
     	}
 
