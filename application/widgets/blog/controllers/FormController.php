@@ -51,6 +51,11 @@ class Blog_FormController extends AuthControllerAction {
 	private $objModelBlogEntry;
 	
 	/**
+	 * @var Model_BlogEntryComment
+	 */
+	private $ObjModelBlogEntryComment;
+	
+	/**
 	 * @var Model_WidgetInstanceProperties
 	 */
 	private $objModelWidgetInstanceProperties;
@@ -230,7 +235,7 @@ class Blog_FormController extends AuthControllerAction {
 	 * @version 1.0
 	 */
 	public function deleteAction() {
-		$this->core->logger->debug('widgets->blog->Model_BlogEntry->deleteAction()');
+		$this->core->logger->debug('widgets->blog->FormController->deleteAction()');
 		
 		try {
 			$this->getModelBlogEntry();
@@ -241,6 +246,26 @@ class Blog_FormController extends AuthControllerAction {
 			}
 			
 			$this->renderScript('page/form.phtml');
+		} catch(Exception $exc) {
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
+	 * deletecommentAction
+	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
+	 * @version 1.0
+	 */
+	public function deletecommentAction() {
+		$this->core->logger->debug('widgets->blog->FormController->deleteCommentAction');
+		
+		try {
+			$this->getModelBlogEntryComment();
+			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+				$this->ObjModelBlogEntryComment->deleteBlogEntryComment($this->objRequest->getParam('id'));
+				//TODO: Complete
+			}
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
@@ -430,6 +455,7 @@ class Blog_FormController extends AuthControllerAction {
    * getModelBlogEntry
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
+   * @return Model_BlogEntry
    */
   protected function getModelBlogEntry(){
     if (null === $this->objModelBlogEntry) {
@@ -443,6 +469,19 @@ class Blog_FormController extends AuthControllerAction {
     }
     
     return $this->objModelBlogEntry;
+  }
+  
+  /**
+   * getModelBlogEntryComment
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   * @return Model_BlogEntryComments
+   */
+  protected function getModelBlogEntryComment() {
+  	if(null === $this->ObjModelBlogEntryComment) {
+  		require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntryComment.php';
+  		$this->ObjModelBlogEntryComments = new Model_BlogEntryComment();
+  	}
   }
   
   /**
