@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -43,12 +43,12 @@
  */
 
 class GenericData {
-  
+
   /**
    * @var Core
    */
   protected $core;
-  
+
   /**
    * @var GenericSetup
    */
@@ -60,29 +60,29 @@ class GenericData {
   public function Setup(){
     return $this->setup;
   }
-     
+
   /**
    * @var GenericDataTypeAbstract
-   */ 
+   */
   protected $objDataType;
-  
+
   /**
    * @var Model_Templates
    */
   protected $objModelTemplates;
-  
+
   /**
    * Constructor
    */
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
-    
+
     /**
      * new generic setup object
      */
     $this->setup = new GenericSetup();
-  }  
-  
+  }
+
   /**
    * addStartPage
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -97,18 +97,18 @@ class GenericData {
       $this->initDataTypeObject();
       $this->setup->loadGenericForm();
       $this->setup->loadGenericFormStructure();
-      
+
       $this->setup->getCoreField('title')->setValue($strPageTitle);
-      $this->setup->setIsStartPage(true);
-      
-      
+      $this->setup->setIsStartElement(true);
+
+
       $this->objDataType->save();
-      
+
      }catch (Exception $exc) {
       $this->core->logger->err($exc);
-    }    
+    }
   }
-  
+
   /**
    * loadData
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -117,7 +117,7 @@ class GenericData {
   public function loadData(){
     $this->core->logger->debug('massiveart->generic->data->GenericData->loadData()');
     try{
-      
+
     	/**
        * load the generic data
        */
@@ -125,12 +125,12 @@ class GenericData {
       $this->setup->loadGenericForm();
       $this->setup->loadGenericFormStructure();
       $this->objDataType->load();
-    	
+
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
   }
-  
+
   /**
    * indexData
    * @param string $strIndexPath
@@ -141,10 +141,10 @@ class GenericData {
   public function indexData($strIndexPath, $strKey){
     $this->core->logger->debug('massiveart->generic->data->GenericData->indexData('.$strIndexPath.', '.$strKey.')');
     if($this->objDataType instanceof GenericDataTypeAbstract){
-      $this->objDataType->updateIndex($strIndexPath, $strKey);
+      $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId());
     }
   }
-  
+
   /**
    * changeTemplate
    * @param integer $intNewTemplateId
@@ -154,9 +154,9 @@ class GenericData {
   public function changeTemplate($intNewTemplateId){
     $this->core->logger->debug('massiveart->generic->data->GenericData->changeTemplate('.$intNewTemplateId.')');
     try{
-      
+
       $objTemplateData = $this->getModelTemplates()->loadTemplateById($intNewTemplateId);
-      
+
       if(count($objTemplateData) == 1){
         $objTemplate = $objTemplateData->current();
 
@@ -167,16 +167,16 @@ class GenericData {
         $intNewFormVersion = $objTemplate->version;
         $intNewFormTypeId = $objTemplate->formTypeId;
       }else{
-        throw new Exception('Not able to change template, because there is no new form id!');            
+        throw new Exception('Not able to change template, because there is no new form id!');
       }
-      
+
       /**
        * check, if the new and the old form type are the same
        */
       if($intNewFormTypeId != $this->setup->getFormTypeId()){
         throw new Exception('Not able to change template, because there are different form types!');
       }
-      
+
       /**
        * load the "old" generic data
        */
@@ -184,16 +184,16 @@ class GenericData {
       $this->setup->loadGenericForm();
       $this->setup->loadGenericFormStructure();
       $this->objDataType->load();
-      
+
       /**
-       * check, if the new template is based on another form 
+       * check, if the new template is based on another form
        */
       if($strNewFormId != $this->setup->getFormId() || $intNewFormVersion != $this->setup->getFormVersion()){
-        
+
         /**
          * clone the old generic setup object and change some properties
          */
-        $objNewGenericSetup = clone $this->setup;        
+        $objNewGenericSetup = clone $this->setup;
         $objNewGenericSetup->setFormId($strNewFormId);
         $objNewGenericSetup->setFormVersion($intNewFormVersion);
         $objNewGenericSetup->setFormTypeId($intNewFormTypeId);
@@ -202,25 +202,25 @@ class GenericData {
         $objNewGenericSetup->loadGenericForm();
         $objNewGenericSetup->resetGenericStructure();
         $objNewGenericSetup->loadGenericFormStructure();
-        
+
        /**
          * get new data object
          */
         $objNewDataType = GenericSetup::getDataTypeObject($objNewGenericSetup->getFormTypeId());
         $objNewDataType->setGenericSetup($objNewGenericSetup);
-        $objNewDataType->load();        
-        
+        $objNewDataType->load();
+
         /**
          * now compare values of the fields
          */
         $this->compareGenericFieldValues($objNewGenericSetup);
-        
-        $objNewDataType->save();  
+
+        $objNewDataType->save();
 
         $this->setup = $objNewGenericSetup;
       }else{
         $this->setup->setActionType($this->core->sysConfig->generic->actions->change_template_id);
-        $this->setup->setTemplateId($intNewTemplateId);        
+        $this->setup->setTemplateId($intNewTemplateId);
         $this->setup->resetGenericStructure();
         $this->setup->loadGenericFormStructure();
         $this->objDataType->load();
@@ -230,7 +230,7 @@ class GenericData {
       $this->core->logger->err($exc);
     }
   }
-  
+
   /**
    * compareGenericFieldValues
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -249,7 +249,7 @@ class GenericData {
           }
         }
       }
-      
+
       if(count($objGenericSetup->FileFields()) > 0){
         /**
          * for each file field, try to get the "old" value
@@ -260,7 +260,7 @@ class GenericData {
           }
         }
       }
-      
+
       if(count($objGenericSetup->InstanceFields()) > 0){
         /**
          * for each instance field, try to get the "old" values
@@ -271,28 +271,28 @@ class GenericData {
           }
         }
       }
-      
+
       // TODO : compare special fields
-        
+
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
   }
-  
+
   /**
    * initDataTypeObject
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function initDataTypeObject(){  
-    
+  public function initDataTypeObject(){
+
     $this->objDataType = GenericSetup::getDataTypeObject($this->setup->getFormTypeId());
-    
+
     if($this->objDataType instanceof GenericDataTypeAbstract){
       $this->objDataType->setGenericSetup($this->setup);
-    }   
+    }
   }
-  
+
   /**
    * getModelTemplates
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -306,7 +306,7 @@ class GenericData {
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Templates.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Templates.php';
       $this->objModelTemplates = new Model_Templates();
     }
 
