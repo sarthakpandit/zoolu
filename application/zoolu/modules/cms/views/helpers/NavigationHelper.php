@@ -206,7 +206,7 @@ class NavigationHelper {
 
           $counter++;
         }else{
-          if(Security::get()->isAllowed(Security::RESOURCE_FOLDER_PREFIX.$objRow->id, 'view')){
+          if(Security::get()->isAllowed(Security::RESOURCE_FOLDER_PREFIX.$objRow->id, Security::PRIVILEGE_VIEW)){
       			/**
   	         * get values of the row and create default output
   	         */

@@ -135,7 +135,7 @@ $front->dispatch();
 
 /**
  * profiling sql queries
- */
+
 if($core->sysConfig->logger->priority == Zend_Log::DEBUG){
   $objDbhProfiler = $core->dbh->getProfiler();
   $totalTime    = $objDbhProfiler->getTotalElapsedSecs();
@@ -156,4 +156,5 @@ if($core->sysConfig->logger->priority == Zend_Log::DEBUG){
   $core->logger->debug('Longest query length: '.$longestTime);
   $core->logger->debug('Longest query: '.$longestQuery);
 }
+ */
 ?>

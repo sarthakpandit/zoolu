@@ -66,7 +66,7 @@ class ListHelper {
     $this->core->logger->debug('users->views->helpers->ListHelper->getList()');
 
     $strThead = '<thead>';
-    $strTbody = '<tbody>';
+    $strTbody = '<tbody id="listEntries">';
 
     $intCounter = 0;
     foreach ($objPaginator as $objItem) {
@@ -76,12 +76,12 @@ class ListHelper {
         $strThead .= '
             <tr>
               <th class="topcornerleft"></th>
-              <th class="topcheckbox"></th>';
+              <th class="topcheckbox"><input type="checkbox" class="listSelectAll" name="listSelectAll" id="listSelectAll"/></th>';
       }
 
       $strTbody .= '
-            <tr class="listrow">
-              <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="16" name="listSelect16" id="listSelect16"/></td>';
+            <tr id="Row'.$objItem->id.'" class="listrow">
+              <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objItem->id.'" name="listSelect" id="listSelect'.$objItem->id.'"/></td>';
 
       $arrItem = $objItem->toArray();
       $intColumCounter = 0;
@@ -89,11 +89,20 @@ class ListHelper {
       $intColums = count($arrItem);
       foreach($arrItem as $column => $value){
         $intColumCounter++;
-        if($intCounter == 1) $strThead .= '<th class="top'.$column.'">'.$this->core->translate->_($column).'</th>';
+        
+        if($intCounter == 1){
+        	$strSortOrderClass = '';
+        	$strOrderColumnClass = '';
+        	if($column == $strOrderColumn){
+        		$strSortOrderClass = ' class="'.$strSortOrder.'"';
+        		$strOrderColumnClass = ' sort';
+        	}
+          $strThead .= '<th class="top'.$column.$strOrderColumnClass.'"><div'.$strSortOrderClass.' onclick="myList.sort(\''.$column.'\''.(($column == $strOrderColumn && $strSortOrder == 'asc') ? ', \'desc\'' : ', \'asc\'').'); return false;">'.$this->core->translate->_($column).'</div></th>';
+        }
 
         $strColspan = ($intColumCounter == $intColums) ? ' colspan="2"' : '';
 
-        if($column == $strOrderColumn){
+        if($intColumCounter == 1){
           $strTbody .= '
               <td class="row'.$column.'"'.$strColspan.'><a href="#" onclick="myNavigation.getEditForm('.$objItem->id.'); return false;">'.htmlentities($value, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>';
         }else{

@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
   <head>
-    <title>ZOOLU - CMS</title>
+    <title>ZOOLU - <?php echo $this->translate->_('user_administration'); ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Language" content="de" />
     <meta name="language" content="de" />
@@ -150,6 +150,70 @@
 
       <div id="genTmpContainer" style="display:none;"></div>
     </div>
+    
+    <!-- overlay transparent-->
+    <div id="overlayTrans" class="overlaytrans" style="display:none;"></div>
+    <!-- overlay black 75% -->
+    <div id="overlayBlack75" class="overlayblack75" style="display:none;"></div>
+
+    <!-- overlay for generated content -->
+    <div id="overlayGenContentWrapper" class="overlaycontentwrapper" style="display:none;">
+      <table>
+        <thead>
+          <tr>
+            <td class="cornertopleft"></td>
+            <td class="topcenter"></td>
+            <td class="cornertopright"></td>
+          </tr>
+          <tr>
+            <td class="headerleft"></td>
+            <td class="headercenter handle">
+              <div class="headerclose" onclick="$('overlayGenContentWrapper').hide(); $('overlayBlack75').hide(); return false;"></div>
+              <div class="clear"></div>
+            </td>
+            <td class="headerright"></td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="contentleft"></td>
+            <td class="contentcenter">
+              <!-- cotnent -->
+              <div id="overlayGenContent" class="overlaycontent">                
+              </div>
+              <!-- buttons -->
+              <div id="overlayButtons" class="overlaycontent" style="display:none;">                
+                <div id="buttonOk">
+                  <div class="button25leftOn"></div>
+		              <div class="button25centerOn">
+		                <img width="13" height="13" src="/zoolu/images/icons/icon_ok_black.png" class="iconok"/>
+		                <div>Ok</div>
+		              </div>
+		              <div class="button25rightOn"></div>
+		              <div class="clear"></div>
+                </div>
+                <div id="buttonCancel">
+                  <div class="button25leftOff"></div>
+		              <div class="button25centerOff">
+		                <img width="11" height="14" src="/zoolu/images/icons/icon_cancel_white.png" class="iconcancel"/>
+		                <div>Abbrechen</div>
+		              </div>
+		              <div class="button25rightOff"></div>
+		              <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+              </div>              
+            </td>
+            <td class="contentright"></td>
+          </tr>
+          <tr>
+            <td class="cornerbottomleft"></td>
+            <td class="bottomcenter"></td>
+            <td class="cornerbottomright"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div> <!-- END overlay for generated content -->
 
     <!-- libaries -->
     <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
@@ -179,9 +243,9 @@
       var myForm = new Massiveart.Form.Users();
 
       document.observe('dom:loaded', function() {
-        myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('User_administration'); ?>';
         myNavigation.module = <?php echo $this->module; ?>;
+        new Draggable('overlayGenContentWrapper', {handle: 'handle', scroll: window });
       });
     //]]>
     </script>

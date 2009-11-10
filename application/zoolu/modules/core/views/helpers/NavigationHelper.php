@@ -70,13 +70,13 @@ class ModulesNavigationHelper {
 
     if(count($objRowset) > 0){
       foreach($objRowset as $objRow){
-        if(Security::get()->isAllowed($objRow->resourceKey, 'view')){
+        if(Security::get()->isAllowed($objRow->resourceKey, Security::PRIVILEGE_VIEW)){
 
           $strItemClass = ($objRow->id == $intModuleId) ? 'navtoplink_on' : 'navtoplink';
 
           $strOutput .= '
           <div class="'.$objRow->cssClass.'">
-            <div class="'.$strItemClass.'" onmouseover="this.style.cursor=\'pointer\';" onclick="location.href=\'/zoolu/'.$objRow->title.'\'">'.$this->core->translate->_($objRow->resourceKey).'</div>
+            <div class="'.$strItemClass.'" onmouseover="this.style.cursor=\'pointer\';" onclick="location.href=\'/zoolu/'.$objRow->title.'/\'">'.$this->core->translate->_($objRow->resourceKey).'</div>
           </div>';
         }
       }

@@ -48,7 +48,9 @@ Massiveart.Form.Users = Class.create(Massiveart.Form, {
             this.getFormSaveError();
             
             $(myNavigation.genFormContainer).update($(myNavigation.genTmpContainer).innerHTML);            
-          }          
+          }
+          myCore.initSelectAll();
+          myCore.initListHover();
         }.bind(this)
       });
     }
@@ -78,8 +80,10 @@ Massiveart.Form.Users = Class.create(Massiveart.Form, {
           $(myNavigation.genFormFunctions).hide();
           
           $(myNavigation.genListContainer).show();
-          $(myNavigation.genListFunctions).show();   
+          $(myNavigation.genListFunctions).show();
           
+          myCore.initSelectAll();
+          myCore.initListHover();          
         }.bind(this)
       });
     }    

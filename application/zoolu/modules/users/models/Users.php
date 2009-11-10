@@ -171,6 +171,35 @@ class Model_Users {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * deleteUsers
+   * @param array $arrUserIds
+   * @return integer the number of rows deleted
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteUsers($arrUserIds){
+    try{  
+    	$strWhere = '';
+    	$intCounter = 0;
+      if(count($arrUserIds) > 0){
+        foreach($arrUserIds as $intUserId){
+        	if($intUserId != ''){
+	        	if($intCounter == 0){
+	            $strWhere .= $this->getUserTable()->getAdapter()->quoteInto('id = ?', $intUserId);
+	          }else{
+	            $strWhere .= $this->getUserTable()->getAdapter()->quoteInto(' OR id = ?', $intUserId);
+	          }
+	          $intCounter++;
+          }
+        }
+      }  	
+      return $this->objUserTable->delete($strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
 
   /**
    * updateUserGroups
@@ -316,6 +345,28 @@ class Model_Users {
           }
         }
       }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getGroups
+   * @param integer $intGroupId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @version 1.0
+   */
+  public function getGroupsPermissions(){
+    try{
+      $objSelect = $this->getGroupTable()->select();
+
+      $objSelect->setIntegrityCheck(false);
+      $objSelect->from($this->objGroupTable, array('id', 'title', 'key'))
+                ->joinInner('groupPermissions', 'groupPermissions.idGroups = groups.id', array())
+                ->joinInner('permissions', 'permissions.id = groupPermissions.idPermissions', array('id AS permissionId', 'title AS permissionTitle'));
+
+      return $this->objGroupTable->fetchAll($objSelect);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }

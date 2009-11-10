@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
   <head>
-    <title>ZOOLU - MEDIEN</title>
+    <title>ZOOLU - <?php echo $this->translate->_('media'); ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Language" content="de" />
     <meta name="language" content="de" />
@@ -172,7 +172,7 @@
 
           <div id="mediaslider" style="display:none;">
             <div class="slidermediasmall"></div>
-	          <div id="divMediaSliderTrack" class="slidertrack" style="position:absolute; top:0px; left:14px; width:151px; height: 19px;">
+            <div id="divMediaSliderTrack" class="slidertrack" style="position:absolute; top:0px; left:14px; width:151px; height: 19px;">
               <div id="divMediaSliderBall" style="width:19px; height:19px;">
                 <img src="/zoolu/images/slider/icon_slider_ball.png" width="19" height="19" />
               </div>
@@ -260,21 +260,21 @@
                 <div class="oltitle">Medien hochladen</div>
                 <div class="spacer1"></div>
                 <form id="uploadForm" action="/zoolu/media/upload" method="post" enctype="multipart/form-data">
-				          <div id="divSWFUploadUI"><!-- myMedia.constSWFUploadUI --></div>
-				          <noscript style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px;">
-				            We're sorry. SWFUpload could not load. You must have JavaScript enabled to enjoy SWFUpload.
-				          </noscript>
-				          <div id="divLoadingContent" class="content" style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px; display: none;">
-				            SWFUpload is loading. Please wait a moment...
-				          </div>
-				          <div id="divLongLoading" class="content" style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px; display: none;">
-				            SWFUpload is taking a long time to load or the load has failed. Please make sure that the Flash Plugin is enabled and that a working version of the Adobe Flash Player is installed.
-				          </div>
-				          <div id="divAlternateContent" class="content" style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px; display: none;">
-				            We're sorry. SWFUpload could not load. You may need to install or upgrade Flash Player.
-				            Visit the <a href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash">Adobe website</a> to get the Flash Player.
-				          </div>
-				        </form>
+                  <div id="divSWFUploadUI"><!-- myMedia.constSWFUploadUI --></div>
+                  <noscript style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px;">
+                    We're sorry. SWFUpload could not load. You must have JavaScript enabled to enjoy SWFUpload.
+                  </noscript>
+                  <div id="divLoadingContent" class="content" style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px; display: none;">
+                    SWFUpload is loading. Please wait a moment...
+                  </div>
+                  <div id="divLongLoading" class="content" style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px; display: none;">
+                    SWFUpload is taking a long time to load or the load has failed. Please make sure that the Flash Plugin is enabled and that a working version of the Adobe Flash Player is installed.
+                  </div>
+                  <div id="divAlternateContent" class="content" style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px; display: none;">
+                    We're sorry. SWFUpload could not load. You may need to install or upgrade Flash Player.
+                    Visit the <a href="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash">Adobe website</a> to get the Flash Player.
+                  </div>
+                </form>
               </div>
             </td>
             <td class="contentright"></td>
@@ -302,6 +302,8 @@
     <script type="text/javascript" src="/zoolu/js_incs/navigation.media.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- media -->
     <script type="text/javascript" src="/zoolu/js_incs/media.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- folder -->
+    <script type="text/javascript" src="/zoolu/js_incs/folder.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- form -->
     <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- TinyMCE Texteditor -->
@@ -316,6 +318,7 @@
     <script type="text/javascript">//<![CDATA[
       var myCore = new Massiveart.Core();
       var myMedia = new Massiveart.Media();
+      var myFolder = new Massiveart.Folder();
       var myNavigation = new Massiveart.Navigation.Media();
       var myForm = new Massiveart.Form();
 

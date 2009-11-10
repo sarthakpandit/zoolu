@@ -1,0 +1,32 @@
+<?php
+
+  require_once (dirname(__FILE__).'/../../helpers/ListHelper.php');
+  $objHelper = new ListHelper();
+
+?>
+        <div class="spacer2"></div>
+        <?php echo $objHelper->getList($this->productPaginator, $this->orderColumn, $this->sortOrder); ?>
+        <div class="listfooter">
+          <div class="listfootercornerleft"></div>
+          <div class="listfootercornerright"></div>
+          <div class="listfootercontent">
+            <div class="listpagination">
+              <?php echo $this->paginationControl($this->productPaginator, 'Sliding', 'pagination.phtml'); ?>
+            </div>
+          </div>
+        </div>
+        <div class="spacer2"></div>
+        <script type="text/javascript">//<![CDATA[
+          if(typeof(myForm) != 'undefined' && typeof(myCore) != 'undefined'){
+            myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
+            myCore.deleteAlertMultiMessage = 'Wollen Sie diese %i Produkte l&ouml;schen?';
+            myCore.deleteAlertSingleMessage = 'Wollen Sie dieses Produkt l&ouml;schen?';
+          }else{
+            document.observe('dom:loaded', function() {
+              myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
+              myCore.deleteAlertMultiMessage = 'Wollen Sie diese %i Produkte l&ouml;schen?';
+              myCore.deleteAlertSingleMessage = 'Wollen Sie dieses Produkt l&ouml;schen?';
+            });
+          }
+        //]]>
+        </script>

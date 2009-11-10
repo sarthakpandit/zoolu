@@ -57,7 +57,6 @@ class Users_IndexController extends AuthControllerAction {
     $objLayout = Zend_Layout::getMvcInstance();
     $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'users'));
     $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
-    $objLayout->assign('modules', $this->view->action('navtop', 'Modules', 'core'));
     $objLayout->assign('modules', $this->view->action('navtop', 'Modules', 'core', array('module' => $this->core->sysConfig->modules->users)));
 
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);

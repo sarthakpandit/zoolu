@@ -338,7 +338,7 @@ Massiveart.Media = Class.create({
     var strFileIds = this.getStringFileIds();
    
     if(strFileIds != ''){
-	    myCore.addBusyClass(this.constOverlayGenContent);
+	  myCore.addBusyClass(this.constOverlayGenContent);
       
       myCore.putCenter('overlayGenContentWrapper');
       

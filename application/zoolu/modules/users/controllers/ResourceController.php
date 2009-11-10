@@ -81,8 +81,8 @@ class Users_ResourceController extends AuthControllerAction {
   public function listAction(){
     $this->core->logger->debug('users->controllers->ResourceController->listAction()');
 
-    $strOrderColumn = $this->getRequest()->getParam('order', 'title');
-    $strSortOrder = $this->getRequest()->getParam('sort', 'asc');
+    $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'title');
+    $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
 
     $objSelect = $this->getModelUsers()->getResourceTable()->select();
     $objSelect->setIntegrityCheck(false);

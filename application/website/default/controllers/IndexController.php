@@ -107,7 +107,7 @@ class IndexController extends Zend_Controller_Action {
 
         $arrTags = array();
 
-        if($this->objPage->getIsStartPage(false) == true)
+        if($this->objPage->getIsStartElement(false) == true)
           $arrTags[] = 'StartPage';
 
         $arrTags[] = 'PageType'.$this->objPage->getPageTypeId();

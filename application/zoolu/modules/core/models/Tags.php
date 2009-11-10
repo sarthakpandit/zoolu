@@ -139,6 +139,23 @@ class Model_Tags {
       }
     }
   }
+  
+  
+  /**
+   * loadAllTags
+   * @return Zend_Db_Table_Rowset
+   * @author Dominik Mößlang <dmo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadAllTags(){
+
+    $objSelect = $this->getTagsTable()->select();
+    $objSelect->setIntegrityCheck(false);
+    $objSelect->from('tags', array('id', 'title'));
+    $objSelect->order(array('title ASC'));
+
+    return $this->objTagsTable->fetchAll($objSelect);
+  }
 
   /**
    * loadMostUsedTags

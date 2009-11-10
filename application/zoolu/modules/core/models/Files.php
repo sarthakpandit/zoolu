@@ -155,7 +155,9 @@ class Model_Files {
 	      $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
 	      $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));  	
-	      $objSelect->where('files.id IN ('.trim($strIds, ',').')');      
+	      $objSelect->where('files.id IN ('.trim($strIds, ',').')');
+	      $objSelect->order('FIND_IN_SET(files.id,\''.trim($strIds, ',').'\')');
+	    
 	      
 	      return $this->objFileTable->fetchAll($objSelect);
 	    }

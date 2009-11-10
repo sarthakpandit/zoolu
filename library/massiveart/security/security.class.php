@@ -47,6 +47,17 @@ class Security {
   const RESOURCE_FOLDER_PREFIX = 'folder_';
 
   /**
+   * Privileges
+   */
+  const PRIVILEGE_VIEW = 'view';
+  const PRIVILEGE_ADD = 'add';
+  const PRIVILEGE_UPDATE = 'update';
+  const PRIVILEGE_DELETE = 'delete';
+  const PRIVILEGE_ARCHIVE = 'archive';
+  const PRIVILEGE_LIVE = 'live';
+  const PRIVILEGE_SECURITY = 'security';
+
+  /**
    * @var Security
    */
   private static $objInstance;
@@ -82,7 +93,9 @@ class Security {
        */
       $arrGroups = $objModelUsers->getGroups();
       foreach($arrGroups as $objGroup){
-        $this->objAcl->addRole(new Zend_Acl_Role($objGroup->key));
+        if(!$this->objAcl->hasRole($objGroup->key)){
+          $this->objAcl->addRole(new Zend_Acl_Role($objGroup->key));
+        }
       }
 
       /**

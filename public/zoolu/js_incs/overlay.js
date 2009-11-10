@@ -35,7 +35,7 @@ Massiveart.Overlay = Class.create({
       var iconRemoveId = fieldId+'_remove'+id;
       
       // create new media item container
-      var mediaItemContainer = '<div id="'+fieldId+'_mediaitem'+id+'" fileid="'+id+'" class="mediaitem" style="display:none; position:relative;">' + $(itemId).innerHTML + '</div>'; 
+      var mediaItemContainer = '<div id="'+fieldId+'_mediaitem_'+id+'" fileid="'+id+'" class="mediaitem" style="display:none; position:relative;">' + $(itemId).innerHTML + '</div>'; 
       if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
       new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
       
@@ -47,14 +47,17 @@ Massiveart.Overlay = Class.create({
         $(fieldId).value = $(fieldId).value + '[' + id + ']';
       } 
       
-      $(fieldId+'_mediaitem'+id).appear({ duration: 0.5 });
+      // add the scriptaculous sortable funcionality to the parent container
+      myForm.initSortable(fieldId, this.areaId, 'mediaitem', 'div', 'fileid','both'); 
+      
+      $(fieldId+'_mediaitem_'+id).appear({ duration: 0.5 });
       $(itemId).fade({ duration: 0.5 });
       
       // add remove method to remove icon
       if($(iconRemoveId)){
         $(iconRemoveId).show();
         $(iconRemoveId).onclick = function(){
-          myForm.removeItem(fieldId, fieldId+'_mediaitem'+id, id);
+          myForm.removeItem(fieldId, fieldId+'_mediaitem_'+id, id);
         }
       }
     }
@@ -74,7 +77,7 @@ Massiveart.Overlay = Class.create({
       var iconRemoveId = fieldId+'_remove'+id;
       
       // create new media item container
-      var mediaItemContainer = '<div id="'+fieldId+'_docitem'+id+'" fileid="'+id+'" class="docitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
+      var mediaItemContainer = '<div id="'+fieldId+'_docitem_'+id+'" fileid="'+id+'" class="docitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
       if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
       new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
       
@@ -84,16 +87,18 @@ Massiveart.Overlay = Class.create({
       // insert file id to hidden field - only 1 insert is possible
       if($(fieldId).value.indexOf('[' + id + ']') == -1){
         $(fieldId).value = $(fieldId).value + '[' + id + ']';
-      } 
-      
-      $(fieldId+'_docitem'+id).appear({ duration: 0.5 });
+      }
+      // add the scriptaculous sortable funcionality to the parent container
+      myForm.initSortable(fieldId, this.areaId, 'docitem', 'div', 'fileid','vertical'); 
+            
+      $(fieldId+'_docitem_'+id).appear({ duration: 0.5 });
       $(itemId).fade({ duration: 0.5 });
       
       // add remove method to remove icon
       if($(iconRemoveId)){
         $(iconRemoveId).show();
         $(iconRemoveId).onclick = function(){
-          myForm.removeItem(fieldId, fieldId+'_docitem'+id, id);
+          myForm.removeItem(fieldId, fieldId+'_docitem_'+id, id);
         }
       }
     }    
@@ -143,7 +148,7 @@ Massiveart.Overlay = Class.create({
       var iconRemoveId = fieldId+'_remove'+id;
       
       // create new media item container
-      var mediaItemContainer = '<div id="'+fieldId+'_page'+id+'" pageid="'+pageId+'" class="pageitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
+      var mediaItemContainer = '<div id="'+fieldId+'_page_'+pageId+'" pageid="'+pageId+'" class="pageitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
       if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
       new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
       
@@ -153,19 +158,22 @@ Massiveart.Overlay = Class.create({
       }
       if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
            
+      // add the scriptaculous sortable funcionality to the parent container
+      myForm.initSortable(fieldId, this.areaId, 'pageitem', 'div', 'pageid', 'vertical'); 
+      
       // insert file id to hidden field - only 1 insert is possible
       if($(fieldId).value.indexOf('[' + pageId + ']') == -1){
         $(fieldId).value = $(fieldId).value + '[' + pageId + ']';
       } 
       
-      $(fieldId+'_page'+id).appear({ duration: 0.5 });
+      $(fieldId+'_page_'+pageId).appear({ duration: 0.5 });
       $(itemId).fade({ duration: 0.5 });
       
       // add remove method to remove icon
       if($(iconRemoveId)){
         $(iconRemoveId).show();
         $(iconRemoveId).onclick = function(){
-          myForm.removeItem(fieldId, fieldId+'_page'+id, pageId);
+          myForm.removeItem(fieldId, fieldId+'_page_'+pageId, pageId);
         }
       }
     }    
@@ -250,7 +258,6 @@ Massiveart.Overlay = Class.create({
       } else {
         strAjaxAction = '/zoolu/cms/overlay/listview';
       }
-      
       var fieldname = this.areaId.substring(this.areaId.indexOf('_')+1);
       new Ajax.Updater(this.updateContainer, strAjaxAction, {
        parameters: { 

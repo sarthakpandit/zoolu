@@ -62,7 +62,9 @@ class Model_Modules {
   }
 
   public function getModules(){
-    return $this->getModuleTable()->fetchAll();
+    $objSelect = $this->getModuleTable()->select();
+    $objSelect->order('order');
+    return $this->objModuleTable->fetchAll($objSelect);
   }
 
   /**

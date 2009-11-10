@@ -114,7 +114,7 @@ class Model_Pages {
 
   	$objSelect = $objPagePluginTable->select();
   	$objSelect->from($objPagePluginTable, $arrFields);
-  	$objSelect->join('pages', 'pages.pageId = pageGmaps.pageId AND pages.version = pageGmaps.version', array());
+  	$objSelect->join('pages', 'pages.pageId = '.$objPagePluginTable->info(Zend_Db_Table_Abstract::NAME).'.pageId AND pages.version = '.$objPagePluginTable->info(Zend_Db_Table_Abstract::NAME).'.version', array());
   	$objSelect->where('pages.id = ?', $intElementId)
   	          ->where('idLanguages = ?', $this->getLanguageId());
 
@@ -241,8 +241,9 @@ class Model_Pages {
     $arrLinkedPageIds = split('\]\[', $strTmpLinkedPageIds);
 
     if(count($arrLinkedPageIds) > 0){
-      foreach($arrLinkedPageIds as $strLinkedPageId){
+      foreach($arrLinkedPageIds as $sortPosition => $strLinkedPageId){
         $arrData['linkedPageId'] = $strLinkedPageId;
+        $arrData['sortPosition'] = $sortPosition + 1;
         $this->getPageInternalLinksTable()->insert($arrData);
       }
     }
@@ -273,8 +274,9 @@ class Model_Pages {
     $arrCollectedPageIds = split('\]\[', $strTmpCollectedPageIds);
 
     if(count($arrCollectedPageIds) > 0){
-      foreach($arrCollectedPageIds as $strCollectedPageId){
+      foreach($arrCollectedPageIds as $sortPosition => $strCollectedPageId){
         $arrData['collectedPageId'] = $strCollectedPageId;
+        $arrData['sortPosition'] = $sortPosition + 1;
         $this->getPageCollectionTable()->insert($arrData);
       }
     }
@@ -390,11 +392,12 @@ class Model_Pages {
     $objSelect->setIntegrityCheck(false);
 
     $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'idStatus'));
-    $objSelect->join('pageInternalLinks', 'pageInternalLinks.linkedPageId = pages.pageId AND pageInternalLinks.pageId = \''.$strElementId.'\' AND pageInternalLinks.version = '.$intVersion.' AND pageInternalLinks.idLanguages = '.$this->intLanguageId, array());
+    $objSelect->join('pageInternalLinks', 'pageInternalLinks.linkedPageId = pages.pageId AND pageInternalLinks.pageId = \''.$strElementId.'\' AND pageInternalLinks.version = '.$intVersion.' AND pageInternalLinks.idLanguages = '.$this->intLanguageId, array('sortPosition'));
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent IS NULL', array('url'));
     $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
+    $objSelect->order('pageInternalLinks.sortPosition ASC');
 
     return $this->objPageInternalLinksTable->fetchAll($objSelect);
   }
@@ -416,12 +419,13 @@ class Model_Pages {
     $objSelect->setIntegrityCheck(false);
 
     $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'idStatus'));
-    $objSelect->join('pageCollections', 'pageCollections.collectedPageId = pages.pageId AND pageCollections.pageId = \''.$strElementId.'\' AND pageCollections.version = '.$intVersion.' AND pageCollections.idLanguages = '.$this->intLanguageId, array());
+    $objSelect->join('pageCollections', 'pageCollections.collectedPageId = pages.pageId AND pageCollections.pageId = \''.$strElementId.'\' AND pageCollections.version = '.$intVersion.' AND pageCollections.idLanguages = '.$this->intLanguageId, array('sortPosition'));
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->join('genericForms', 'genericForms.id = pages.idGenericForms', array('genericFormId', 'version AS genericFormVersion'));
     $objSelect->joinleft('pageUrls', 'pageUrls.pageId = pages.pageId AND pageUrls.version = pages.version AND pageUrls.idLanguages = '.$this->intLanguageId.' AND pageUrls.idParent = '.$intParentId.' AND pageUrls.idParentTypes = '.$intParentTypeId, array('url'));
     $objSelect->joinleft('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
+    $objSelect->order('pageCollections.sortPosition ASC');
 
     return $this->objPageCollectionTable->fetchAll($objSelect);
   }
@@ -885,18 +889,31 @@ class Model_Pages {
    */
   public function insertPageUrl($strUrl, $strPageId, $intVersion){
     $this->core->logger->debug('cms->models->Model_Pages->insertPageUrl('.$strUrl.', '.$strPageId.', '.$intVersion.')');
-
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
-
-    $arrData = array('pageId'      => $strPageId,
+   
+    $arrDataInsert = array('pageId'      => $strPageId,
                      'version'     => $intVersion,
+                     'isMain'      => '1',
                      'idLanguages' => $this->intLanguageId,
                      'url'         => $strUrl,
                      'idUsers'     => $intUserId,
                      'creator'     => $intUserId,
                      'created'     => date('Y-m-d H:i:s'));
 
-    return $objSelect = $this->getPageUrlTable()->insert($arrData);
+    return $objSelect = $this->getPageUrlTable()->insert($arrDataInsert);
+  }
+  
+  
+  public function updatePageUrlIsMain($strPageId){
+    $this->core->logger->debug('cms->models->Model_Pages->updatePageUrlIsMain('.$strPageId.')');
+   
+    $arrDataUpdate = array(
+    'isMain'      => 0,
+    );
+    
+    $strWhere = $this->getPageUrlTable()->getAdapter()->quoteInto('pageId = ?', $strPageId);
+    
+    return $this->getPageUrlTable()->update($arrDataUpdate, $strWhere);
   }
 
   /**
@@ -914,13 +931,89 @@ class Model_Pages {
     $objSelect->setIntegrityCheck(false);
 
     $objSelect->from($this->objPageUrlTable, array('url'));
+    $objSelect->join('pages', 'pages.pageId = pageUrls.pageId', array('isStartPage'));
+    $objSelect->joinleft('folders', 'pages.idParent = folders.id AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('depth','idParentFolder'));
     $objSelect->join('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
     $objSelect->where('pageUrls.pageId = ?', $strPageId)
               ->where('pageUrls.version = ?', $intVersion)
+              ->where('pageUrls.isMain = 1')
               ->where('pageUrls.idLanguages = ?', $this->intLanguageId)
               ->where('pageUrls.idParent IS NULL');
 
     return $this->objPageUrlTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadPageUrl
+   * @param str $strPageId
+   * @param integer $intLanguageId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Dominik Mößlang <dmo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadPageUrlHistory($intPageId, $intLanguageId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadPageUrlHistory('.$intPageId.', '.$intLanguageId.')');
+    
+    $objSelect = $this->getPageUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objPageUrlTable, array('url','id'));
+    $objSelect->join('pages', 'pages.id = '.$intPageId, array('pageId','version','isStartpage'));
+    $objSelect->join('languages', 'languages.id = pageUrls.idLanguages', array('languageCode'));
+    $objSelect->where('pageUrls.pageId = pages.pageId')
+              ->where('pageUrls.version = pages.version')
+              ->where('pageUrls.isMain = 0')
+              ->where('pageUrls.idLanguages = ?', $intLanguageId)
+              ->where('pageUrls.idParent IS NULL')
+              ->order('pageUrls.created DESC');
+                
+    return $this->objPageUrlTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadParentFolderData
+   * @param integer $intPageId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Dominik Mößlang <dmo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadParentFolderData($intPageId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadParentFolderData('.$intPageId.')');
+      
+    $objSelect = $this->getPageUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objPageUrlTable, array('url','id'));
+    $objSelect->join('pages', 'pages.pageId = pageUrls.pageId', array('pageId','version','isStartpage'));
+    $objSelect->where('pageUrls.version = pages.version')
+              ->where('pageUrls.isMain = 1')
+              ->where('pageUrls.idLanguages = ?', $this->intLanguageId)
+              ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
+              ->where('pages.idParent = (SELECT idParent FROM pages WHERE id = '.$intPageId.')')
+              ->where('pages.isStartPage = 1');
+              
+              echo $objSelect;
+                
+    return $this->objPageUrlTable->fetchAll($objSelect);
+  }
+  
+  
+  /**
+   * removeUrlHistoryEntry
+   * @param integer $intUrlId
+   * @param str $strPageId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Dominik Mößlang <dmo@massiveart.com>
+   * @version 1.0
+   */
+  public function removeUrlHistoryEntry($intUrlId,$strPageId){
+    $this->core->logger->debug('cms->models->Model_Pages->removeUrlHistoryEntry('.$intUrlId.', '.$strPageId.')');
+
+    $strWhere = $this->getPageUrlTable()->getAdapter()->quoteInto('pageId = ?', $strPageId);
+    $strWhere .= $this->objPageUrlTable->getAdapter()->quoteInto(' AND id = ?', $intUrlId);
+   
+    return $this->objPageUrlTable->delete($strWhere);
+  
   }
 
   /**
@@ -1054,7 +1147,7 @@ class Model_Pages {
    * @version 1.0
    */
   public function removeVideo($intElementId){
-    $this->core->logger->debug('cms->models->Model_Pages->addVideo('.$intElementId.')');
+    $this->core->logger->debug('cms->models->Model_Pages->removeVideo('.$intElementId.')');
 
     $objPageData = $this->loadPage($intElementId);
 

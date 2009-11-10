@@ -84,12 +84,12 @@ class GenericData {
   }
 
   /**
-   * addStartPage
+   * addFolderStartElement
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function addStartPage($strPageTitle){
-    $this->core->logger->debug('massiveart->generic->data->GenericData->addStartPage()');
+  public function addFolderStartElement($strPageTitle){
+    $this->core->logger->debug('massiveart->generic->data->GenericData->addFolderStartElement()');
      try{
       /**
        * load the generic structure
