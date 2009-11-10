@@ -181,7 +181,7 @@ class Core {
         );
 
         $objCache = Zend_Cache::factory('Core',
-                                        'Memcached',
+                                        'File',//Memcached
                                         $arrFrontendOptions,
                                         $arrBackendOptions);
 

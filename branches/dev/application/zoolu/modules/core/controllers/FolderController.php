@@ -59,14 +59,9 @@ class Core_FolderController extends AuthControllerAction {
   protected $objModelFolders;
 
   /**
-   * @var Model_Pages
+   * @var CommandChain
    */
-  protected $objModelPages;
-
-  /**
-   * @var Model_Templates
-   */
-  protected $objModelTemplates;
+  protected $objCommandChain;
 
   /**
    * init
@@ -77,6 +72,19 @@ class Core_FolderController extends AuthControllerAction {
   public function init(){
     parent::init();
     $this->objRequest = $this->getRequest();
+    $this->initCommandChain();
+  }
+
+  /**
+   * initCommandChain
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   * @return void
+   */
+  private function initCommandChain(){
+    $this->objCommandChain = new CommandChain();
+    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->portals) $this->objCommandChain->addCommand(new PageCommand());
+    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->products) $this->objCommandChain->addCommand(new ProductCommand());
   }
 
   /**
@@ -167,47 +175,10 @@ class Core_FolderController extends AuthControllerAction {
 
         $this->view->assign('blnShowFormAlert', true);
 
-        /**
-         * add defautl start page
-         */
-        if(array_key_exists("rootLevelTypeId", $arrFormData) && $arrFormData["rootLevelTypeId"] == $this->core->sysConfig->root_level_types->portals){
-
-          $intTemplateId = $this->core->sysConfig->page_types->page->startpage_templateId;
-          $this->getModelTemplates();
-          $objTemplateData = $this->objModelTemplates->loadTemplateById($intTemplateId);
-
-          if(count($objTemplateData) == 1){
-            $objTemplate = $objTemplateData->current();
-
-            /**
-             * set form id from template
-             */
-            $strFormId = $objTemplate->genericFormId;
-            $intFormVersion = $objTemplate->version;
-            $intFormTypeId = $objTemplate->formTypeId;
-          }else{
-            throw new Exception('Not able to create a generic data object, because there is no form id!');
-          }
-
-          $objGenericData = new GenericData();
-          $objGenericData->Setup()->setFormId($strFormId);
-          $objGenericData->Setup()->setFormVersion($intFormVersion);
-          $objGenericData->Setup()->setFormTypeId($intFormTypeId);
-          $objGenericData->Setup()->setTemplateId($intTemplateId);
-          $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->add);
-          $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-          $objGenericData->Setup()->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
-
-          $objGenericData->Setup()->setParentId($intFolderId);
-          $objGenericData->Setup()->setRootLevelId($this->objForm->Setup()->getRootLevelId());
-          $objGenericData->Setup()->setElementTypeId($this->core->sysConfig->page_types->page->id);
-          $objGenericData->Setup()->setCreatorId($this->objForm->Setup()->getCreatorId());
-          $objGenericData->Setup()->setStatusId($this->objForm->Setup()->getStatusId());
-          $objGenericData->Setup()->setShowInNavigation($this->objForm->Setup()->getShowInNavigation());
-          $objGenericData->Setup()->setModelSubPath('cms/models/');
-
-          $objGenericData->addStartPage($this->objForm->Setup()->getCoreField('title')->getValue());
-
+        $arrArgs = array('ParentId'         => $intFolderId,
+                         'LanguageId'       => $this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id),
+                         'GenericSetup'     => $this->objForm->Setup());
+        if($this->objCommandChain->runCommand('addFolderStartElement', $arrArgs)){
           $this->view->assign('selectNavigationItemNow', true);
           $this->view->assign('itemId', 'folder'.$intFolderId);
         }
@@ -317,33 +288,12 @@ class Core_FolderController extends AuthControllerAction {
         $this->objForm->saveFormData();
 
         /**
-         * update start page
+         * update the folder start element
          */
-        if(array_key_exists("rootLevelTypeId", $arrFormData) && $arrFormData["rootLevelTypeId"] == $this->core->sysConfig->root_level_types->portals){
-
-          $intFolderId = $this->objForm->Setup()->getElementId();
-          $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
-
-          $arrProperties = array('idUsers'          => $intUserId,
-                                 'creator'          => $this->objForm->Setup()->getCreatorId(),
-                                 'idStatus'         => $this->objForm->Setup()->getStatusId(),
-                                 'showInNavigation' => $this->objForm->Setup()->getShowInNavigation(),
-                                 'changed'     => date('Y-m-d H:i:s'));
-
-          $arrTitle = array('idUsers'     => $intUserId,
-                            'creator'     => $this->objForm->Setup()->getCreatorId(),
-                            'title'       => $this->objForm->Setup()->getCoreField('title')->getValue(),
-                            'idLanguages' => $this->objForm->Setup()->getLanguageId(),
-                            'changed'     => date('Y-m-d H:i:s'));
-
-          $this->getModelPages()->updateStartPageMainData($intFolderId,
-                                                          $arrProperties,
-                                                          $arrTitle);
-
-          //$this->view->assign('selectNavigationItemNow', true);
-          //$this->view->assign('itemId', 'folder'.$intFolderId);
-        }
-
+        $arrArgs = array('LanguageId'       => $this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id),
+                         'GenericSetup'     => $this->objForm->Setup());
+        $this->objCommandChain->runCommand('editFolderStartElement', $arrArgs);
+        
         $this->view->assign('blnShowFormAlert', true);
       }else{
       	$this->view->assign('blnShowFormAlert', false);
@@ -396,10 +346,10 @@ class Core_FolderController extends AuthControllerAction {
       $this->view->changeUser = $this->objForm->Setup()->getChangeUserName();
       $this->view->publishDate = $this->objForm->Setup()->getPublishDate('d. M. Y');
       $this->view->changeDate = $this->objForm->Setup()->getChangeDate('d. M. Y, H:i');
-      $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
+      $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
       $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
 
-      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objRequest->getParam('zoolu_module') != 2) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getLanguageId());
+      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objRequest->getParam('zoolu_module') != 2) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getFormLanguageId());
     }
   }
 
@@ -642,47 +592,6 @@ class Core_FolderController extends AuthControllerAction {
     }
 
     return $this->objModelFolders;
-  }
-
-  /**
-   * getModelPages
-   * @return Model_Pages
-   * @author Cornelius Hansjakob <cha@massiveart.com>
-   * @version 1.0
-   */
-  protected function getModelPages(){
-    if (null === $this->objModelPages) {
-      /**
-       * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it
-       * from its modules path location.
-       */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
-      $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-    }
-
-    return $this->objModelPages;
-  }
-
-  /**
-   * getModelTemplates
-   * @return Model_Templates
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  protected function getModelTemplates(){
-    if (null === $this->objModelTemplates) {
-      /**
-       * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it
-       * from its modules path location.
-       */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Templates.php';
-      $this->objModelTemplates = new Model_Templates();
-    }
-
-    return $this->objModelTemplates;
   }
 }
 

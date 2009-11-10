@@ -41,8 +41,7 @@ Massiveart.Form = Class.create({
    * save
    */
   save: function(){
-      
-    if($(this.formId)){
+      if($(this.formId)){
       
       /**
        * write/save texteditor content to generic form
@@ -103,13 +102,14 @@ Massiveart.Form = Class.create({
       var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
       var elType = $('elementType').getValue();
       var elementId = $('id').getValue();
+      var linkId = ($('linkId')) ? $F('linkId') : -1;
       var parentFolderId = ($('parentFolderId')) ? $F('parentFolderId') : 0;
             
       // loader
       this.getFormSaveLoader();
       
       new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'delete', {
-        parameters: { id: elementId },
+        parameters: { id: elementId, linkId: linkId },
         evalScripts: true,
         onComplete: function() {
           //deleted
@@ -138,8 +138,9 @@ Massiveart.Form = Class.create({
    * @param string strType
    */
   loadFileFieldsContent: function(strType){
+	
     if(strType != ''){
-      
+    	
       var strViewType = 0;
       if(strType == 'document'){
         strViewType = 2; // viewtypes->list constant of config.xml
@@ -153,16 +154,25 @@ Massiveart.Form = Class.create({
           if($(fileFieldId).value != ''){
             myCore.addBusyClass(elDiv.id);            
             new Ajax.Updater(elDiv.id, '/zoolu/cms/page/getfiles', {
-			        parameters: { 
-			          fileIds: $(fileFieldId).value,
-			          fileFieldId: fileFieldId,
-			          viewtype: strViewType  
-			        },
-			        evalScripts: true,
-			        onComplete: function() {
-			          myCore.removeBusyClass(elDiv.id);			           
-			        }.bind(this)
-			      });
+	          parameters: { 
+	            fileIds: $(fileFieldId).value,
+	            fileFieldId: fileFieldId,
+	            viewtype: strViewType  
+	          },
+	          evalScripts: true,
+	          onComplete: function(){
+	            // add the scriptaculous sortable functionality to the parent container
+	            switch(strViewType){
+	            case 1:
+	              this.initSortable(fileFieldId, elDiv.id, 'mediaitem', 'div', 'fileid', 'both');  
+	             break;
+	            case 2:
+	              this.initSortable(fileFieldId, elDiv.id, 'docitem', 'div', 'fileid', 'vertical');  
+	             break;
+	            }
+	        myCore.removeBusyClass(elDiv.id);	
+	        }.bind(this)
+	      });
           }          
         }
       }.bind(this));
@@ -432,7 +442,7 @@ Massiveart.Form = Class.create({
     
     var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
     var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
-            
+                
     new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'changeLanguage', {
       parameters: {
         templateId: $F('templateId'),
@@ -445,12 +455,13 @@ Massiveart.Form = Class.create({
         rootLevelId: $F('rootLevelId'),
         rootLevelTypeId: $F('rootLevelTypeId'),
         parentFolderId: $F('parentFolderId'),
-        elementType: $F('elementType')               
+        elementType: $F('elementType')
       },
       evalScripts: true,
       onComplete: function() {    
         myCore.removeBusyClass(this.updateContainer);
-        
+        this.writeMetaInfos();
+
         // load medias
         this.loadFileFieldsContent('media');
         // load documents
@@ -663,20 +674,153 @@ Massiveart.Form = Class.create({
   },
   
   /**
+   * initSortable
+   * Adds the scriptaculous sortable functionality to a container
+   */
+  initSortable: function(elementId, containerId, nodeClass, nodeTag, nodeName, constraint){
+    if($(containerId) && nodeClass != '' && nodeTag != '' && nodeName != '' && constraint != ''){
+    	if(constraint == 'both'){
+    		constraint = false;
+    	}
+    	
+      Sortable.create(containerId,{onChange: function(){
+        var itemOrder = '';
+        Sortable.sequence(containerId, {tag:nodeTag, name:nodeName}).each(function(id){
+          itemOrder+='['+id+']';
+        });
+        $(elementId).value = itemOrder; 
+      }, 
+      elements:$$('#'+containerId+' .'+nodeClass),
+      constraint:constraint,
+      only:nodeClass
+      });
+    }
+  },
+  /**
+   * edit the page Url
+   */
+  editUrl: function(elementId){
+	if($(elementId) && $F(elementId) !== ''){
+      $(elementId+'_UrlValue').innerHTML = '<input style="width:40%;" id="'+elementId+'_tmpUrl" type="text" value="'+$F(elementId+'_EditableUrl')+'"></input>';
+      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.addUrl(\''+elementId+'\'); return false;">OK</span>';
+      $(elementId+'_tmpUrl').focus();
+      this.intValidUrlObserver(elementId+'_tmpUrl', elementId);
+	}
+  },
+  /**
+   * add page url
+   */
+  addUrl: function(elementId){
+	if($(elementId) && $F(elementId+'_tmpUrl') !== ''){  
+      $(elementId).value = $F(elementId+'_FixedUrl')+$F(elementId+'_tmpUrl');
+      $(elementId+'_EditableUrl').value = $F(elementId+'_tmpUrl');
+      
+      this.stopValidUrlObserver(elementId+'_tmpUrl');
+      
+      $(elementId+'_UrlValue').innerHTML = $F(elementId+'_tmpUrl');
+      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.editUrl(\''+elementId+'\'); return false;">Editieren</span>';
+	}
+  },
+  /**
+   * toggleUrlHistory
+   */
+  toggleUrlHistory: function(elementId){
+    if($(elementId)){
+    	
+      $(elementId+'_ToggleUrlHistory').toggle();
+
+      myCore.addBusyClass(elementId+'_ToggleUrlHistory');
+          
+      new Ajax.Updater(elementId+'_ToggleUrlHistory', '/zoolu/core/url/geturlhistory', {
+        parameters:{ 
+          elementId: elementId,
+          pageId: $F('id'),
+          languageId: $F('languageId')
+        },
+        evalScripts: true,
+        onComplete: function(){
+          myCore.removeBusyClass(elementId+'_ToggleUrlHistory');
+   	    }.bind(this)
+      }); 	
+    }
+  }, 
+  
+  /**
+   * removeUrlHistoryEntry
+   */
+  removeUrlHistoryEntry: function(urlId, pageId, elementId){
+    if(urlId && pageId && elementId){
+      var Check = confirm("Alte Url unwiederruflich löschen?");
+      
+      if(Check == true){
+        new Ajax.Request('/zoolu/core/url/removeUrlHistoryEntry', {
+          parameters:{ 
+            urlId: urlId,
+            pageId: pageId
+          },
+          evalScripts: true,
+          onComplete: function(){
+        	  $(urlId+'_'+elementId).remove();
+          }.bind(this)
+        }); 
+      }
+    }
+  },
+  /**
+   * initValidUrlObserver
+   */
+  intValidUrlObserver: function(inputId, elementId){
+    if($(elementId) && $(inputId))
+    {   
+      $(inputId).observe('keypress', function(event){
+    	var intCharCode = event.charCode;  
+    	var intKeyCode = event.keyCode; 
+       
+    	if(intCharCode == 0 || intCharCode == undefined){
+    	  // return	
+    	  if(intKeyCode == 13){
+    	    this.addUrl(elementId);
+    	  }else{
+            return true;
+          }	
+    	}else{
+    	  // allow: capital letters || small letters || numbers || underscore || hyphen
+          if(intCharCode >= 65 && intCharCode <= 90 || intCharCode >= 97 && intCharCode <= 123 || intCharCode >= 48 && intCharCode <= 57 || intCharCode == 95 || intCharCode == 45){
+            return true;
+          }else{
+            Event.stop(event);
+            return false;
+          }
+    	}
+      }.bind(this));
+    }
+  },
+  /**
+   * stopValidUrlObserver
+   */
+  stopValidUrlObserver: function(elementId){
+    if($(elementId))
+    {   
+      $(elementId).stopObserving();
+    }
+  },
+  
+   /**
    * initVideoChannelObserver
    */
   initVideoChannelObserver: function(elementId){
     if($(elementId+'TypeId')){
       $(elementId+'TypeId').observe('change', function(event){
-        if(Event.element(event).value != '' && Event.element(event).value > 0){
-          this.getVideoChannelSelect(elementId, Event.element(event).value);
-        }
+	    if(Event.element(event).value != '' && Event.element(event).value > 0){
+	      this.getVideoChannelSelect(elementId, Event.element(event).value);
+	    }
       }.bind(this));
-      
+	
       if($F(elementId+'TypeId') != '' && $F(elementId+'TypeId') > 0){
-        this.getVideoChannelSelect(elementId, $F(elementId+'TypeId'))
-      }
-    }
+	    channelUserId = ($(elementId+'User') ? $F(elementId+'User') : '');
+		this.getVideoChannelSelect(elementId, $F(elementId+'TypeId'), channelUserId);
+	  }
+	}
   },
   
   /**
@@ -684,37 +828,39 @@ Massiveart.Form = Class.create({
    */
   getVideoChannelSelect: function(elementId, channelId, channelUserId){
     if($('div_'+elementId)){
+    	
       $('div_'+elementId).show();
-      myCore.addBusyClass('div_'+elementId);
-      
-      if(typeof(channelUserId) == 'undefined'){ 
-        if($(elementId+'User')){
-          channelUserId = $F(elementId+'User');
-        }else{
-          channelUserId = null;
-        }
-      }
-      
-      new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getvideoselect', {
-        parameters: { 
-          elementId: elementId,
-          channelId: channelId,
-          channelUserId: channelUserId,
-          value: $F(elementId)  
-        },
-        evalScripts: true,
-        onComplete: function() {
-          myCore.removeBusyClass('div_'+elementId);
-          // TODO: scroll to element
-        }.bind(this)
-      });
-    }
+	  myCore.addBusyClass('div_'+elementId);
+	  
+	  if(typeof(channelUserId) == 'undefined'){       
+	    channelUserId = null;
+	  }else{
+	    if($(elementId+'User') && $F(elementId+'User') != ''){
+		  channelUserId = $F(elementId+'User');
+		}else{
+		  channelUserId = null;  
+		}  
+	  } 
+		   
+	  new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getvideoselect', {
+	  parameters: { 
+	    elementId: elementId,
+	    channelId: channelId,
+		channelUserId: channelUserId,
+	    value: $F(elementId)  
+	  },
+	  evalScripts: true,
+	  onComplete: function(){
+	    myCore.removeBusyClass('div_'+elementId);
+	  }.bind(this)
+	  });
+	}
   },
   
   /**
    * initVideoChannelUserObserver
    */
-   initVideoChannelUserObserver: function(elementId){
+  initVideoChannelUserObserver: function(elementId){
     if($(elementId+'User')){
       $(elementId+'User').observe('change', function(event){
         if(Event.element(event).value != ''){
@@ -725,23 +871,36 @@ Massiveart.Form = Class.create({
   },
   
   /**
+   * initVideoResetSearchObserver
+   */
+  initVideoResetSearchObserver: function(elementId){
+    if($(elementId+'SearchReset')){
+      $(elementId+'SearchReset').observe('click', function(event){
+    	if($F(elementId+'User')){
+           this.getVideoChannelSelect(elementId, $F(elementId+'TypeId'), $F(elementId+'User'));
+    	}
+      }.bind(this));
+    }
+  },
+  
+  /**
    * getVideoSearchSelect
    */
   getVideoSearchSelect: function(elementId, channelId, searchString, channelUserId){
-  	if($('div_'+elementId)){
-  		new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getvideoselect', {
-        parameters: { 
-          elementId: elementId,
-          channelId: channelId,
-          channelUserId: channelUserId,
-          searchString: searchString,
-          value: $F(elementId)
-        },
-        evalScripts: true,
-        onComplete: function() {
-          myCore.removeBusyClass('div_'+elementId);
-          // TODO: scroll to element
-        }.bind(this)
+    if($('div_'+elementId)){
+      myCore.addBusyClass('div_'+elementId);
+      new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getvideoselect',{ 
+      parameters: { 
+	    elementId: elementId,
+	    channelId: channelId,
+	    channelUserId: channelUserId,
+	    searchString: searchString,
+	    value: $F(elementId)
+      },
+      evalScripts: true,
+      onComplete: function(){
+        myCore.removeBusyClass('div_'+elementId);
+      }.bind(this)
       });
   	}
   },
@@ -750,15 +909,13 @@ Massiveart.Form = Class.create({
    * initVideoSearch
    */
   initVideoSearch: function(elementId) {
-	  if($(elementId+'Search')){
-      $(elementId+'SearchButton').observe('click', function(event){
-       if($F(elementId+'Search') != ''){
-    	
-    	   this.getVideoSearchSelect(elementId, $F(elementId+'TypeId'), $F(elementId+'Search'),($(elementId+'User')? $F(elementId+'User'): '')); 
-       }
+    if($(elementId+'Search')){
+      $(elementId+'SearchButton').observe('click', function(event){ 
+        if($F(elementId+'Search') != ''){
+          this.getVideoSearchSelect(elementId, $F(elementId+'TypeId'), $F(elementId+'Search'),($(elementId+'User')? $F(elementId+'User'): '')); 
+        }
       }.bind(this)); 
-      
-	  }
+    }
   },
   
   /**
@@ -766,14 +923,62 @@ Massiveart.Form = Class.create({
    */
   selectVideo: function(elementId, videoId){
     if($(elementId)){
-      $(elementId).value = videoId;
-      $(elementId+'Thumb').value = $('thumb_'+elementId+'_'+videoId).value;
-            
-      $$('.videoItem').each(function(el){
-        el.removeClassName('selected');        
-      });
-      if($('div_'+elementId+'_'+videoId)) $('div_'+elementId+'_'+videoId).addClassName('selected');
-    }
+      if($(elementId+'SelectedService') && $(elementId+'User') && $(elementId+'TypeId')){ 	  
+    	  
+	    var intIndexType = $(elementId+'TypeId').selectedIndex;
+	    var serviceName = $(elementId+'TypeId').options[intIndexType].text;
+	    var intIndexUser = $(elementId+'User').selectedIndex;
+	    var serviceUser = $(elementId+'User').options[intIndexUser].text;
+	    
+	    $(elementId).value = videoId;
+	    $(elementId+'Thumb').value = $F('thumb_'+elementId+'_'+videoId);
+	    $(elementId+'TypeCur').value = $F(elementId+'TypeId');
+		$(elementId+'UserCur').value = $F(elementId+'User');
+			  
+        $(elementId+'SelectedService').update(serviceName+'/'+serviceUser);
+        $('div_selected'+elementId).update($('div_'+elementId+'_'+videoId).innerHTML);      
+        $('div_selected'+elementId).down('.buttonSelectVideo').setStyle({display:'none'});
+        $('div_selected'+elementId).down('.buttonUnselectVideo').setStyle({display:'inline'});
+      }
+	}
+  },
+  
+  /**
+   * getSelectedVideo
+   */
+  getSelectedVideo: function(elementId){
+	    
+	  if($(elementId+'SelectedContainer') && $F(elementId+'TypeCur') != '' && $F(elementId) != '' && $F(elementId+'UserCur') != '') {
+	
+		  myCore.addBusyClass('div_selected'+elementId);
+	  		
+		  new Ajax.Updater('div_'+elementId, '/zoolu/core/video/getselectedvideo', {
+		  parameters: { 
+			  elementId: elementId,
+			  channelId: $F(elementId+'TypeCur'),
+			  channelUserId: $F(elementId+'UserCur'),
+			  value: $F(elementId)
+		  },
+		  evalScripts: true,
+		  onComplete: function(){
+			  myCore.removeBusyClass('div_selected'+elementId);
+		  }.bind(this)
+		  });
+	 }
+  },
+
+  /**
+   * unselect a selected video
+   */
+  unselectVideo: function(elementId, videoId){
+	  if($(elementId)){
+		  if($(elementId)){
+			  $(elementId).value = '';
+			  $(elementId+'Thumb').value = '';
+			  $('div_selected'+elementId).update('');
+			  $(elementId+'SelectedService').update('');
+		  }
+	  }
   },
   
   /**

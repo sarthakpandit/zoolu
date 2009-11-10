@@ -23,6 +23,7 @@ Massiveart.Navigation = Class.create({
     this.constFolder = 'folder';
     this.constPage = 'page';
     this.constStartPage = 'startpage';
+    this.constProduct = 'product';
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
     this.constRequestChildNav = '/zoolu/cms/navigation/childnavigation';
@@ -221,6 +222,75 @@ Massiveart.Navigation = Class.create({
         //this.createSortableNavLevel(this.currLevel);
       }.bind(this)
     });
+  },
+  
+  /**
+   * getRootLevelTreeStart 
+   */
+  getRootLevelTreeStart: function(){
+    this.selectRootLevel(this.rootLevelId);
+  },
+  
+  /**
+   * selectPortal
+   * @param integer rootLevelId
+   */
+   selectRootLevel: function(rootLevelId){            
+    this.currLevel = 1;
+    
+    this.hideCurrentFolder();
+    
+    $(this.genFormContainer).hide();
+    $(this.genFormSaveContainer).hide();    
+    
+    this.makeSelected('naviitem'+rootLevelId);
+    if($(this.preSelectedPortal) && ('naviitem'+rootLevelId) != this.preSelectedPortal){ 
+      this.makeDeselected(this.preSelectedPortal);
+    }  
+            
+    this.preSelectedPortal = 'naviitem'+rootLevelId;
+    this.rootLevelId = rootLevelId;
+    
+    $('divNaviCenterInner').innerHTML = '';
+    this.levelArray = [];
+    
+    var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+    new Insertion.Bottom('divNaviCenterInner', levelContainer);
+    
+    if(Prototype.Browser.IE){
+      newNavHeight = $('divNaviCenter').getHeight();
+      $$('.navlevel').each(function(elDiv){
+        $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
+      });
+    }
+    else if(Prototype.Browser.WebKit){
+      newNavHeight = $('divNaviCenter').getHeight();
+      $$('.navlevel').each(function(elDiv){
+        $(elDiv).setStyle({height: (newNavHeight-40) + 'px'});
+      });
+    }          
+        
+    new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
+      parameters: { 
+        rootLevelId: this.rootLevelId,
+        currLevel: this.currLevel},      
+      evalScripts: true,     
+      onComplete: function() {
+        myCore.removeBusyClass('navlevel'+this.currLevel);
+        this.levelArray.push(this.currLevel);
+        this.initFolderHover();
+        this.initPageHover();
+        this.initAddMenuHover();
+      }.bind(this)
+    });
+  },
+  
+  
+  /**
+   * getRootLevelList 
+   */
+  getRootLevelList: function(){
+    
   },
   
   /**
@@ -513,8 +583,14 @@ Massiveart.Navigation = Class.create({
     var intPosLastUnderscore = posElement.lastIndexOf('_');
     var itemId = posElement.substring(intPosLastUnderscore + 1);
     var parentId = $('navlevel'+level).readAttribute('parentid');
+
+    if(elType == this.constProduct) {
+      strAjaxAction = '/zoolu/products/navigation/updateposition';
+    } else {
+      strAjaxAction = '/zoolu/cms/navigation/updateposition';
+    }
   
-    new Ajax.Updater('navlevel'+level, '/zoolu/cms/navigation/updateposition', {
+    new Ajax.Updater('navlevel'+level, strAjaxAction, {
 		  parameters: {
 		    id: itemId,
 		    elementType: elType,
@@ -714,9 +790,9 @@ Massiveart.Navigation = Class.create({
   
   /**
    * getEditForm
-   * @param integer itemId, string elType, integer formId, integer version, (integer templateId)
+   * @param integer itemId, string elType, integer formId, integer version, (integer templateId), (integer linkId)
    */
-  getEditForm: function(itemId, elType, formId, version, templateId){
+  getEditForm: function(itemId, elType, formId, version, templateId, linkId){
     $(this.genFormContainer).innerHTML = '';
     $('divWidgetMetaInfos').innerHTML = '';
     // hide media container
@@ -724,7 +800,10 @@ Massiveart.Navigation = Class.create({
         
     //check if templateId is assigned 
     templateId = (typeof(templateId) != 'undefined') ? templateId : -1;
-            
+
+    //check if linkId is assigned
+    linkId = (typeof(linkId) != 'undefined') ? linkId : -1;
+
     var element = elType+itemId;
     this.currItemId = itemId;
     
@@ -775,9 +854,11 @@ Massiveart.Navigation = Class.create({
     
     strAjaxAction = '';    
     if(elType == this.constFolder){      
-      strAjaxAction = '/zoolu/core/folder/geteditform';
+      strAjaxAction = '/zoolu/core/' + elType + '/geteditform';
+    } else if(elType == this.constProduct) {
+      strAjaxAction = '/zoolu/products/' + elType + '/geteditform';
     } else {
-      strAjaxAction = '/zoolu/cms/page/geteditform';
+      strAjaxAction = '/zoolu/cms/' + elType + '/geteditform';
     }
     
     new Ajax.Updater('genFormContainer', strAjaxAction, {
@@ -786,6 +867,7 @@ Massiveart.Navigation = Class.create({
          formId: formId,         
          formVersion: version,
          templateId: templateId,
+         linkId: linkId,
          currLevel: currLevel,
          rootLevelId: this.rootLevelId,
          parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
@@ -815,6 +897,14 @@ Massiveart.Navigation = Class.create({
     if($('divThumbContainer')) $('divThumbContainer').hide();
     if($('divListContainer')) $('divThumbContainer').hide();
     if($('divFormContainer')) $('divFormContainer').show();
+  },
+
+  /**
+   * setRootLevelId
+   * @param integer rootLevelId
+   */
+  setRootLevelId: function(rootLevelId){
+    this.rootLevelId = rootLevelId;
   },
   
   /**

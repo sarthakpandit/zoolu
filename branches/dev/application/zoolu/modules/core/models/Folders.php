@@ -98,7 +98,7 @@ class Model_Folders {
      *  AND rootLevels.idModules = ?
      *  AND rootLevels.idRootLevelTypes = ?
      */
-    $objSelect->from('rootLevels', array('id', 'idRootLevelTypes'));
+    $objSelect->from('rootLevels', array('id', 'idRootLevelTypes', 'href'));
     $objSelect->join('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id', array('title'));
     $objSelect->where('rootLevelTitles.idLanguages = ?', $this->intLanguageId);
     $objSelect->where('rootLevels.idModules = ?', $intRootLevelModule);
@@ -187,6 +187,81 @@ class Model_Folders {
   }
 
   /**
+   * loadProductRootNavigation
+   * @param integer $intRootId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadProductRootNavigation($intRootId){
+    $this->core->logger->debug('core->models->Folders->loadProductRootNavigation('.$intRootId.')');
+
+    $objFolderSelect = $this->core->dbh->select();
+
+    /**
+     * SELECT `folders`.`id`, -1 AS `templateId`, `folders`.`idFolderTypes` AS `folderType`, -1 AS `productType`, -1 AS `isStartPage`, `folders`.`sortPosition`, `folders`.`sortTimestamp`, `folders`.`idStatus`, -1 AS `productLinkTitle`, `folderTitles`.`title`, `genericForms`.`genericFormId`, `genericForms`.`version`, `folderTypes`.`title` AS `type`
+     *  FROM `folders`
+     *    LEFT JOIN `folderTitles` ON
+     *      folderTitles.folderId = folders.folderId AND
+     *      folderTitles.version = folders.version AND
+     *      folderTitles.idLanguages = 1
+     *    INNER JOIN `genericForms` ON
+     *      genericForms.id = folders.idGenericForms
+     *    INNER JOIN `folderTypes` ON
+     *      folderTypes.id = folders.idFolderTypes
+     *  WHERE (folders.idRootLevels = '8' AND folders.idParentFolder = 0)
+     */
+    $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'idFolderTypes', 'productType' => new Zend_Db_Expr('-1'), 'isStartProduct' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'idStatus', 'linkProductId' => new Zend_Db_Expr('-1')));
+    $objFolderSelect->joinLeft('folderTitles', 'folderTitles.folderId = folders.folderId AND folderTitles.version = folders.version AND folderTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objFolderSelect->join('genericForms', 'genericForms.id = folders.idGenericForms', array('genericFormId', 'version'));
+    $objFolderSelect->join('folderTypes', 'folderTypes.id = folders.idFolderTypes', array('title AS type'));
+    $objFolderSelect->where('folders.idRootLevels = ? AND folders.idParentFolder = 0', $intRootId);
+
+
+    $objProductSelect = $this->core->dbh->select();
+
+    /**
+     * SELECT `products`.`id`, `productProperties`.`idTemplates` AS `templateId`, -1 AS `folderType`, `productProperties`.`idProductTypes` AS `productType`, `products`.`isStartProduct`, `products`.`sortPosition`, `products`.`sortTimestamp`, `productProperties`.`idStatus`, -1 AS `productLinkTitle`, `productTitles`.`title`, `genericForms`.`genericFormId`, `genericForms`.`version`, `productTypes`.`title` AS `type`
+     *  FROM `products`
+     *    INNER JOIN `productLinks` ON
+     *      productLinks.productId = products.productId
+     *    INNER JOIN `products` AS `lP` ON
+     *      lP.id = productLinks.idProducts
+     *    INNER JOIN `productProperties` ON
+     *      productProperties.productId = products.productId AND
+     *      productProperties.version = products.version AND
+     *      productProperties.idLanguages = 1
+     *    LEFT JOIN `productTitles` ON
+     *      productTitles.productId = products.productId AND
+     *      productTitles.version = products.version AND
+     *      productTitles.idLanguages = 1
+     *    INNER JOIN `genericForms` ON
+     *      genericForms.id = productProperties.idGenericForms
+     *    INNER JOIN `productTypes` ON
+     *      productTypes.id = productProperties.idProductTypes
+     *  WHERE (lP.idParent = '12') AND
+     *        (lP.idParentTypes = '1') AND
+     *        (products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1))
+     */
+    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'sortPosition', 'sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
+    $objProductSelect->join('productLinks', 'productLinks.productId = products.productId', array());
+    $objProductSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());
+    $objProductSelect->join('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->intLanguageId, array());
+    $objProductSelect->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objProductSelect->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version'));
+    $objProductSelect->join('productTypes', 'productTypes.id = productProperties.idProductTypes', array('title AS type'));
+    $objProductSelect->where('lP.idParent = ?', $intRootId);
+    $objProductSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
+    $objProductSelect->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
+
+    $objSelect = $this->getFolderTable()->select()
+                                        ->union(array($objFolderSelect, $objProductSelect))
+                                        ->order(array('sortPosition', 'sortTimestamp', 'id'));
+
+    return $this->getFolderTable()->fetchAll($objSelect);
+  }
+
+  /**
    * loadWebsiteRootNavigation
    * @param integer $intRootId
    * @return Zend_Db_Table_Rowset_Abstract
@@ -207,7 +282,7 @@ class Model_Folders {
                                         FROM (SELECT DISTINCT folders.id, folderTitles.title, folders.idStatus,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN pageUrls AS pU ON pU.pageId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                                 (SELECT pU.url FROM pageUrls AS pU WHERE pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                                 (SELECT pU.url FROM pageUrls AS pU WHERE pU.isMain = 1 AND pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
@@ -229,7 +304,7 @@ class Model_Folders {
                                               SELECT DISTINCT pages.id, pageTitles.title, pages.idStatus,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN pageUrls AS pU ON pU.pageId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                                 (SELECT pU.url FROM pageUrls AS pU WHERE pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                                 (SELECT pU.url FROM pageUrls AS pU WHERE pU.isMain = 1 AND pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
@@ -273,7 +348,7 @@ class Model_Folders {
                                                pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
                                                IF(pages.idPageTypes = ?,
                                                   (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN pageUrls AS pU ON pU.pageId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                  (SELECT pU.url FROM pageUrls AS pU WHERE pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                  (SELECT pU.url FROM pageUrls AS pU WHERE pU.isMain = 1 AND pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                           FROM folders
                                             INNER JOIN folderTitles ON
@@ -315,7 +390,7 @@ class Model_Folders {
                                                pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
                                                IF(pages.idPageTypes = ?,
                                                   (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN pageUrls AS pU ON pU.pageId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                  (SELECT pU.url FROM pageUrls AS pU WHERE pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                  (SELECT pU.url FROM pageUrls AS pU WHERE pU.isMain = 1 AND pU.pageId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                           FROM folders
                                             INNER JOIN folderTitles ON
@@ -375,6 +450,81 @@ class Model_Folders {
 																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+  }
+
+  /**
+   * loadProductChildNavigation
+   * @param integer $intFolderId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadProductChildNavigation($intFolderId){
+    $this->core->logger->debug('core->models->Folders->loadProductChildNavigation('.$intFolderId.')');
+
+    $objFolderSelect = $this->core->dbh->select();
+
+    /**
+     * SELECT `folders`.`id`, -1 AS `templateId`, `folders`.`idFolderTypes` AS `folderType`, -1 AS `productType`, -1 AS `isStartPage`, `folders`.`sortPosition`, `folders`.`sortTimestamp`, `folders`.`idStatus`, -1 AS `productLinkTitle`, `folderTitles`.`title`, `genericForms`.`genericFormId`, `genericForms`.`version`, `folderTypes`.`title` AS `type`
+     *  FROM `folders`
+     *    LEFT JOIN `folderTitles` ON
+     *      folderTitles.folderId = folders.folderId AND
+     *      folderTitles.version = folders.version AND
+     *      folderTitles.idLanguages = 1
+     *    INNER JOIN `genericForms` ON
+     *      genericForms.id = folders.idGenericForms
+     *    INNER JOIN `folderTypes` ON
+     *      folderTypes.id = folders.idFolderTypes
+     *  WHERE (folders.idParentFolder  = '8')
+     */
+    $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'idFolderTypes', 'productType' => new Zend_Db_Expr('-1'), 'isStartProduct' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'idStatus', 'linkProductId' => new Zend_Db_Expr('-1')));
+    $objFolderSelect->joinLeft('folderTitles', 'folderTitles.folderId = folders.folderId AND folderTitles.version = folders.version AND folderTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objFolderSelect->join('genericForms', 'genericForms.id = folders.idGenericForms', array('genericFormId', 'version'));
+    $objFolderSelect->join('folderTypes', 'folderTypes.id = folders.idFolderTypes', array('title AS type'));
+    $objFolderSelect->where('folders.idParentFolder  = ?', $intFolderId);
+
+
+    $objProductSelect = $this->core->dbh->select();
+
+    /**
+     * SELECT `products`.`id`, `productProperties`.`idTemplates` AS `templateId`, -1 AS `folderType`, `productProperties`.`idProductTypes` AS `productType`, `products`.`isStartProduct`, `products`.`sortPosition`, `products`.`sortTimestamp`, `productProperties`.`idStatus`, -1 AS `productLinkTitle`, `productTitles`.`title`, `genericForms`.`genericFormId`, `genericForms`.`version`, `productTypes`.`title` AS `type`
+     *  FROM `products`
+     *    INNER JOIN `productLinks` ON
+     *      productLinks.productId = products.productId
+     *    INNER JOIN `products` AS `lP` ON
+     *      lP.id = productLinks.idProducts
+     *    INNER JOIN `productProperties` ON
+     *      productProperties.productId = products.productId AND
+     *      productProperties.version = products.version AND
+     *      productProperties.idLanguages = 1
+     *    LEFT JOIN `productTitles` ON
+     *      productTitles.productId = products.productId AND
+     *      productTitles.version = products.version AND
+     *      productTitles.idLanguages = 1
+     *    INNER JOIN `genericForms` ON
+     *      genericForms.id = productProperties.idGenericForms
+     *    INNER JOIN `productTypes` ON
+     *      productTypes.id = productProperties.idProductTypes
+     *  WHERE (lP.idParent = '15') AND
+     *        (lP.idParentTypes = '2') AND
+     *        (products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1))
+     */
+    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'sortPosition', 'sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
+    $objProductSelect->join('productLinks', 'productLinks.productId = products.productId', array());
+    $objProductSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());
+    $objProductSelect->join('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->intLanguageId, array());
+    $objProductSelect->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objProductSelect->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version'));
+    $objProductSelect->join('productTypes', 'productTypes.id = productProperties.idProductTypes', array('title AS type'));
+    $objProductSelect->where('lP.idParent = ?', $intFolderId);
+    $objProductSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
+    $objProductSelect->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
+
+    $objSelect = $this->getFolderTable()->select()
+                                 ->union(array($objFolderSelect, $objProductSelect))
+                                 ->order(array('sortPosition', 'sortTimestamp', 'id'));
+
+    return $this->getFolderTable()->fetchAll($objSelect);
   }
 
   /**
@@ -480,7 +630,7 @@ class Model_Folders {
                                             INNER JOIN pageUrls ON
                                               pageUrls.pageId = pages.pageId AND
                                               pageUrls.version = pages.version AND
-                                              pageUrls.idLanguages = ?
+                                              pageUrls.idLanguages = ? 
                                             LEFT JOIN languages  ON
                                               languages.id = ?
                                           ,folders AS parent
@@ -570,7 +720,8 @@ class Model_Folders {
 																				  LEFT JOIN pageUrls ON
 																				    pageUrls.pageId = pages.pageId AND
 																				    pageUrls.version = pages.version AND
-																				    pageUrls.idLanguages = ?
+																				    pageUrls.idLanguages = ? AND
+																				    pageUrls.isMain = 1
 																				  LEFT JOIN pageExternals ON
 																				    pageExternals.pageId = pages.pageId AND
 																				    pageExternals.version = pages.version AND
@@ -586,7 +737,8 @@ class Model_Folders {
 																			    LEFT JOIN pageUrls AS plUrls ON
 																			      plUrls.pageId = pl.pageId AND
 																			      plUrls.version = pl.version AND
-																			      plUrls.idLanguages = ?
+																			      plUrls.idLanguages = ? AND
+																			      plUrls.isMain = 1
 																				  LEFT JOIN pageExternals AS plExternals ON
 																				    plExternals.pageId = pl.pageId AND
 																				    plExternals.version = pl.version AND
@@ -703,7 +855,8 @@ class Model_Folders {
                                             INNER JOIN pageUrls ON
                                               pageUrls.pageId = pages.pageId AND
                                               pageUrls.version = pages.version AND
-                                              pageUrls.idLanguages = ?
+                                              pageUrls.idLanguages = ? AND
+                                              pageUrls.isMain = 1
                                             INNER JOIN folderTitles ON
                                               folderTitles.folderId = folders.folderId AND
                                               folderTitles.version = folders.version AND

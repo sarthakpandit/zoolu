@@ -13,8 +13,14 @@ Massiveart.List = Class.create({
   initialize: function() {
     this.ItemsPerPage = 20;
     this.page = 1;
+    
+    this.sortColumn = '';
+    this.sortOrder = '';
   },
   
+  /**
+   * getListPage
+   */
   getListPage: function(page){
     if(myNavigation){      
       
@@ -23,20 +29,71 @@ Massiveart.List = Class.create({
       }
       
       new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/list', {
-        parameters: { rootLevelId: myNavigation.rootLevelId, page: this.page, itemsPerPage: this.ItemsPerPage },      
+        parameters: { 
+    	  rootLevelId: myNavigation.rootLevelId, 
+    	  page: this.page, 
+    	  itemsPerPage: this.ItemsPerPage,
+    	  order: this.sortColumn,
+    	  sort: this.sortOrder
+    	},      
         evalScripts: true,     
         onComplete: function() {
           $(myNavigation.genListContainer).show();
           $(myNavigation.genListFunctions).show();
+          myCore.initSelectAll();
+          myCore.initListHover();
         }.bind(this)
       });
     }
   },
   
-  deleteListItem: function(){
-    alert('In Arbeit!');    
+  /**
+   * sort
+   */
+  sort: function(sortColumn, sortOrder){
+    if(typeof(sortColumn != 'undefined')) this.sortColumn = sortColumn;
+    if(typeof(sortOrder != 'undefined')) this.sortOrder = sortOrder;
+    myList.getListPage();
   },
   
+  /**
+   * deleteListItem
+   */
+  deleteListItem: function(){
+    var arrEntries = [];
+    var strEntries = '';
+    var index = 0;
+	$$('#listEntries input').each(function(e){ 
+      if(e.type == 'checkbox'){
+        if(e.checked){
+          arrEntries[index] = e.value;
+          strEntries += '[' + e.value + ']';
+          index++;
+        }
+      }      
+	});
+	if(arrEntries.size() > 0){
+      myCore.showDeleteAlertMessage(arrEntries.size());
+      $('buttonOk').observe('click', function(event){
+        new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/listdelete', {
+    	  parameters: { 
+    	    values: strEntries   
+          },      
+    	  evalScripts: true,     
+    	  onComplete: function() {
+            myCore.hideDeleteAlertMessage();  
+    	  }.bind(this)
+    	});        
+      }.bind(this));
+      $('buttonCancel').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+      }.bind(this));
+	}
+  },
+  
+  /**
+   * toggleEditMenu
+   */
   toggleEditMenu: function(elementId){
     if($('buttonEditMenu')){
       Effect.toggle('buttonEditMenu', 'appear', { delay: 0, duration: 0.3 });

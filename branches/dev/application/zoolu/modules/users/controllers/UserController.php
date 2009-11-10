@@ -121,8 +121,8 @@ class Users_UserController extends Zend_Controller_Action {
   public function listAction(){
     $this->core->logger->debug('users->controllers->UserController->listAction()');
 
-    $strOrderColumn = $this->getRequest()->getParam('order', 'sname');
-    $strSortOrder = $this->getRequest()->getParam('sort', 'asc');
+    $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'sname');
+    $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
 
     $objSelect = $this->getModelUsers()->getUserTable()->select();
     $objSelect->from($this->getModelUsers()->getUserTable(), array('id', 'fname', 'sname'))
@@ -137,7 +137,7 @@ class Users_UserController extends Zend_Controller_Action {
 
     $this->view->assign('userPaginator', $objUsersPaginator);
     $this->view->assign('orderColumn', $strOrderColumn);
-    $this->view->assign('sortOrder', $strSortOrder);
+    $this->view->assign('sortOrder', $strSortOrder);    
   }
 
   /**
@@ -326,11 +326,41 @@ class Users_UserController extends Zend_Controller_Action {
     try{
 
       if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
-        $this->getModelUsers()->deleteUser($this->getRequest()->getParam("id"));
+        $this->getModelUsers()->deleteUser($this->getRequest()->getParam('id'));
       }
 
       $this->_forward('list', 'user', 'users');
       $this->view->assign('blnShowFormAlert', true);
+
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * listdeleteAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function listdeleteAction(){
+    $this->core->logger->debug('users->controllers->UserController->listdeleteAction()');
+
+    try{
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $strTmpUserIds = trim($this->getRequest()->getParam('values'), '[]');
+        $arrUserIds = array();
+        $arrUserIds = split('\]\[', $strTmpUserIds);
+        
+      	if(count($arrUserIds) > 1){      	  
+      		$this->getModelUsers()->deleteUsers($arrUserIds);	
+      	}else{
+      	  $this->getModelUsers()->deleteUser($arrUserIds[0]);	
+      	}
+      	
+      }
+
+      $this->_forward('list', 'user', 'users');
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -394,8 +424,8 @@ class Users_UserController extends Zend_Controller_Action {
 
     $this->objForm->addElement('text', 'fname', array('label' => $this->core->translate->_('fname', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text keyfield', 'required' => true));
     $this->objForm->addElement('text', 'sname', array('label' => $this->core->translate->_('sname', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text keyfield', 'required' => true));
-    $this->objForm->addElement('text', 'username', array('label' => $this->core->translate->_('username', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text keyfield', 'required' => true));
-    $this->objForm->addElement('select', 'language', array('label' => $this->core->translate->_('system_language', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'select keyfield', 'required' => true, 'MultiOptions' => $arrLanguageOptions));
+    $this->objForm->addElement('text', 'username', array('label' => $this->core->translate->_('username', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'text', 'required' => true));
+    $this->objForm->addElement('select', 'language', array('label' => $this->core->translate->_('system_language', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'select', 'required' => true, 'MultiOptions' => $arrLanguageOptions));
 
     $this->objForm->addDisplayGroup(array('fname', 'sname', 'username', 'language'), 'main-group');
     $this->objForm->getDisplayGroup('main-group')->setLegend('Allgemeine Bentuzer Informationen');

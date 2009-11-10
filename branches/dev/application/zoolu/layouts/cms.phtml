@@ -3,7 +3,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" >
   <head>
-    <title>ZOOLU - CMS</title>
+    <title>ZOOLU - <?php echo $this->translate->_('portals'); ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="Language" content="de" />
     <meta name="language" content="de" />
@@ -197,7 +197,7 @@
       document.observe('dom:loaded', function() {
         myNavigation.initPortalHover();
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('Portals'); ?>';
-        myNavigation.rootLevelTypeId = 1;
+        myNavigation.rootLevelTypeId = <?php echo $this->rootLevelTypeId; ?>;
         myNavigation.module = <?php echo $this->module; ?>;
         myNavigation.initModuleCMS();
 

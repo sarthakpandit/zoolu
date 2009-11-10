@@ -338,19 +338,19 @@ class Cms_PageController extends AuthControllerAction {
       $this->view->changeUser = $this->objForm->Setup()->getChangeUserName();
       $this->view->publishDate = $this->objForm->Setup()->getPublishDate('d. M. Y, H:i');
       $this->view->changeDate = $this->objForm->Setup()->getChangeDate('d. M. Y, H:i');
-      $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
+      $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
       $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
 
-      if($this->objForm->Setup()->getIsStartPage(false) == true){
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
+      if($this->objForm->Setup()->getIsStartElement(false) == true){
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }else{
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }
 
       $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
       $this->view->monthOptions = DateTimeHelper::getOptionsMonth(false, $this->objForm->Setup()->getPublishDate('n'));
 
-      $this->view->blnIsStartPage = $this->objForm->Setup()->getIsStartPage(false);
+      $this->view->blnIsStartPage = $this->objForm->Setup()->getIsStartElement(false);
 
       if($this->objForm->Setup()->getField('url')) $this->view->pageurl = $this->objForm->Setup()->getField('url')->getValue();
 
@@ -771,7 +771,7 @@ class Cms_PageController extends AuthControllerAction {
       $this->objForm->Setup()->setStatusId((($this->objRequest->getParam("idStatus") != '') ? $this->objRequest->getParam("idStatus") : $this->core->sysConfig->form->status->default));
       $this->objForm->Setup()->setRootLevelId((($this->objRequest->getParam("rootLevelId") != '') ? $this->objRequest->getParam("rootLevelId") : null));
       $this->objForm->Setup()->setParentId((($this->objRequest->getParam("parentFolderId") != '') ? $this->objRequest->getParam("parentFolderId") : null));
-      $this->objForm->Setup()->setIsStartPage((($this->objRequest->getParam("isStartPage") != '') ? $this->objRequest->getParam("isStartPage") : 0));
+      $this->objForm->Setup()->setIsStartElement((($this->objRequest->getParam("isStartPage") != '') ? $this->objRequest->getParam("isStartPage") : 0));
       $this->objForm->Setup()->setPublishDate((($this->objRequest->getParam("publishDate") != '') ? $this->objRequest->getParam("publishDate") : date('Y-m-d H:i:s')));
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("pageTypeId") != '') ? $this->objRequest->getParam("pageTypeId") : $this->core->sysConfig->page_types->page->id));
@@ -810,7 +810,7 @@ class Cms_PageController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'rootLevelTypeId', array('value' => $this->objForm->Setup()->getRootLevelTypeId(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objForm->Setup()->getParentId(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'pageTypeId', array('value' => $this->objForm->Setup()->getElementTypeId(), 'decorators' => array('Hidden')));
-      $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objForm->Setup()->getIsStartPage(), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objForm->Setup()->getIsStartElement(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'publishDate', array('value' => $this->objForm->Setup()->getPublishDate('Y-m-d H:i:s'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'parentTypeId', array('value' => $this->objForm->Setup()->getParentTypeId(), 'decorators' => array('Hidden')));
@@ -909,7 +909,7 @@ class Cms_PageController extends AuthControllerAction {
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Templates.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Templates.php';
       $this->objModelTemplates = new Model_Templates();
     }
 

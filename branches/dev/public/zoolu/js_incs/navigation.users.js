@@ -37,7 +37,9 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     }  
             
     this.preSelectedPortal = 'naviitem'+rootLevelId;
-        
+    
+    myList.sortColumn = '';
+    myList.sortOrder = '';
     myList.getListPage();
   },
   

@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
@@ -224,18 +224,20 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         $arrFileIds = split('\]\[', $strTmpFileIds);
 
         if(count($arrFileIds) > 0){
-          foreach($arrFileIds as $intFileId){
+          foreach($arrFileIds as $intSortPosition => $intFileId){
             if($intFileId != ''){
               if(isset($arrTypeProperties['Version'])){
-                $arrFileData = array($strType.'id' => $arrTypeProperties['Id'],
-                                     'version'     => $arrTypeProperties['Version'],
-                                     'idLanguages' => $this->setup->getLanguageId(),
-                                     'idFiles'     => $intFileId,
-                                     'idFields'    => $intFieldId);
+                $arrFileData = array($strType.'id'  => $arrTypeProperties['Id'],
+                                     'version'      => $arrTypeProperties['Version'],
+                                     'idLanguages'  => $this->setup->getLanguageId(),
+                                     'sortPosition' => $intSortPosition + 1,
+                                     'idFiles'      => $intFileId,
+                                     'idFields'     => $intFieldId);
               }else{
                 $arrFileData = array('id'.((substr($strType, strlen($strType) - 1) == 'y') ? ucfirst(rtrim($strType, 'y')).'ies' : ucfirst($strType).'s') => $arrTypeProperties['Id'],
-                                     'idFiles'     => $intFileId,
-                                     'idFields'    => $intFieldId);
+                                     'idFiles'      => $intFileId,
+                                     'idFields'     => $intFieldId,
+                                     'sortPosition' => $intSortPosition + 1);
               }
 
               $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-InstanceFiles')->insert($arrFileData);
@@ -513,18 +515,20 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         $arrFileIds = split('\]\[', $strTmpFileIds);
 
         if(count($arrFileIds) > 0){
-          foreach($arrFileIds as $intFileId){
+          foreach($arrFileIds as $intSortPosition => $intFileId){
             if($intFileId != ''){
               if(isset($arrTypeProperties['Version'])){
                 $arrFileData = array($strType.'id' => $arrTypeProperties['Id'],
                                      'version'     => $arrTypeProperties['Version'],
                                      'idLanguages' => $this->setup->getLanguageId(),
+                                     'sortPosition' => $intSortPosition+1,
                                      'idFiles'     => $intFileId,
                                      'idFields'    => $intFieldId);
               }else{
                 $arrFileData = array('id'.((substr($strType, strlen($strType) - 1) == 'y') ? ucfirst(rtrim($strType, 'y')).'ies' : ucfirst($strType).'s') => $arrTypeProperties['Id'],
                                      'idFiles'     => $intFileId,
-                                     'idFields'    => $intFieldId);
+                                     'idFields'    => $intFieldId,
+                                     'sortPosition' => $intSortPosition+1);
               }
 
               $objGenTable->insert($arrFileData);
@@ -766,6 +770,372 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         }
       }
 
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * loadCoreData
+   * @param string $strType
+   * @param array $arrTypeProperties
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  final protected function loadGenericData($strType, $arrTypeProperties){
+    
+    /**
+     * laod all generic data
+     */
+    $this->loadCoreData($strType, $arrTypeProperties);
+    $this->loadFileData($strType, $arrTypeProperties);
+    $this->loadMultiFieldData($strType, $arrTypeProperties);
+    $this->loadInstanceData($strType, $arrTypeProperties);
+    $this->loadMultiplyRegionData($strType, $arrTypeProperties);
+
+    /**
+     * now laod all data from the special fields
+     */
+    if(count($this->setup->SpecialFields()) > 0){
+      foreach($this->setup->SpecialFields() as $objField){
+        $objField->setGenericSetup($this->setup);
+        $objField->load($this->setup->getElementId(), $strType, $arrTypeProperties['Id'], $arrTypeProperties['Version']);
+      }
+    }
+  }
+
+  /**
+   * loadCoreData
+   * @param string $strType
+   * @param array $arrTypeProperties
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  final protected function loadCoreData($strType, $arrTypeProperties){
+    try{
+      /**
+       * generic form core fields
+       */
+      if(count($this->setup->CoreFields()) > 0){
+        /**
+         * for each core field, try to select the secondary table
+         */
+        foreach($this->setup->CoreFields() as $strField => $objField){
+
+          $objGenTable = $this->getModelGenericData()->getGenericTable($strType.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+          $objSelect = $objGenTable->select();
+
+          $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
+          $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+          $objSelect->where('version = ?', $arrTypeProperties['Version']);
+          $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+          $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+          if(count($arrGenFormsData) > 0){
+            $objField->blnHasLoadedData = true;
+            if(count($arrGenFormsData) > 1){
+              $arrFieldData = array();
+              foreach ($arrGenFormsData as $arrRowGenFormData) {
+                foreach ($arrRowGenFormData as $column => $value) {
+                  array_push($arrFieldData, $value);
+                }
+              }
+              if($column == $strField){
+                $objField->setValue($arrFieldData);
+              }else{
+                $objField->$column = $arrFieldData;
+              }
+            }else{
+              foreach ($arrGenFormsData as $arrRowGenFormData) {
+                foreach ($arrRowGenFormData as $column => $value) {
+                  if($column == $strField){
+                    $objField->setValue($value);
+                  }else{
+                    $objField->$column = $value;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * loadFileData
+   * @param string $strType
+   * @param array $arrTypeProperties
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  final protected function loadFileData($strType, $arrTypeProperties){
+    try{
+      /**
+       * generic form file fields
+       */
+      if(count($this->setup->FileFields()) > 0){
+
+        $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-InstanceFiles');
+        $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+        $objSelect = $objGenTable->select();
+        $objSelect->setIntegrityCheck(false);
+
+        $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFiles', 'sortPosition'));
+        $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+        $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+        $objSelect->where('version = ?', $arrTypeProperties['Version']);
+        $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+        $objSelect->order(array('sortPosition ASC'));
+
+        $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+        if(count($arrGenFormsData) > 0){
+          $this->blnHasLoadedFileData = true;
+          foreach($arrGenFormsData as $arrGenRowFormsData){
+            $strFileIds = $this->setup->getFileField($arrGenRowFormsData['name'])->getValue().'['.$arrGenRowFormsData['idFiles'].']';
+            $this->setup->getFileField($arrGenRowFormsData['name'])->setValue($strFileIds);
+          }
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * loadMultiFieldData
+   * @param string $strType
+   * @param array $arrTypeProperties
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  final protected function loadMultiFieldData($strType, $arrTypeProperties){
+    try{
+      /**
+       * generic form multi fields
+       */
+      if(count($this->setup->MultiFields()) > 0){
+
+        $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-InstanceMultiFields');
+        $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+        $objSelect = $objGenTable->select();
+        $objSelect->setIntegrityCheck(false);
+
+        $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idRelation', 'value'));
+        $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+        $objSelect->where('pageId = ?', $arrTypeProperties['Id']);
+        $objSelect->where('version = ?', $arrTypeProperties['Version']);
+        $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+        $arrGenFormsData = $objGenTable->fetchAll($objSelect);
+
+        if(count($arrGenFormsData) > 0){
+          $this->blnHasLoadedMultiFieldData = true;
+          foreach($arrGenFormsData as $arrGenRowFormsData){
+            $arrTmpRelationIds = $this->setup->getMultiField($arrGenRowFormsData->name)->getValue();
+            if(is_array($arrTmpRelationIds)){
+              array_push($arrTmpRelationIds, $arrGenRowFormsData->idRelation);
+            }else{
+              $arrTmpRelationIds = array($arrGenRowFormsData->idRelation);
+            }
+            $this->setup->getMultiField($arrGenRowFormsData->name)->setValue($arrTmpRelationIds);
+          }
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * loadInstanceData
+   * @param string $strType
+   * @param array $arrTypeProperties
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  final protected function loadInstanceData($strType, $arrTypeProperties){
+    try{
+      /**
+       * generic form instance fields
+       */
+      if(count($this->setup->InstanceFields()) > 0){
+        $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Instances');
+        $objSelect = $objGenTable->select();
+
+        $arrSelectFields = array();
+
+        /**
+         * for each instance field, add to select array data array
+         */
+        foreach($this->setup->InstanceFields() as $strField => $objField){
+          $arrSelectFields[] = $strField;
+        }
+
+        $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), $arrSelectFields);
+        $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+        $objSelect->where('version = ?', $arrTypeProperties['Version']);
+        $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+        $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+        if(count($arrGenFormsData) > 0){
+          $this->blnHasLoadedInstanceData = true;
+          foreach ($arrGenFormsData as $arrRowGenFormData) {
+            foreach ($arrRowGenFormData as $column => $value) {
+              if(is_array(json_decode($value))){
+                $this->setup->getInstanceField($column)->setValue(json_decode($value));
+              }else{
+                $this->setup->getInstanceField($column)->setValue($value);
+              }
+            }
+          }
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * loadMultiplyRegionData
+   * @param string $strType
+   * @param array $arrTypeProperties
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  final protected function loadMultiplyRegionData($strType, $arrTypeProperties){
+    try{
+
+      /**
+       * if the generic form, has multiply regions
+       */
+      if(count($this->setup->MultiplyRegionIds()) > 0){
+
+        /**
+         * for each multiply region, load region data
+         */
+        foreach($this->setup->MultiplyRegionIds() as $intRegionId){
+          $objRegion = $this->setup->getRegion($intRegionId);
+
+          $arrRegionInstanceIds = array();
+          $intRegionInstanceCounter = 0;
+
+          $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-Instances');
+          $objSelect = $objGenTable->select();
+
+          $arrSelectFields = array('id');
+          /**
+           * for each instance field, add to select array data array
+           */
+          foreach($objRegion->InstanceFieldNames() as $strField){
+            $arrSelectFields[] = $strField;
+          }
+
+          $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), $arrSelectFields);
+          $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+          $objSelect->where('version = ?', $arrTypeProperties['Version']);
+          $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+          $objSelect->order(array('sortPosition'));
+
+          $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+          if(count($arrGenFormsData) > 0){
+            //$this->blnHasLoadedInstanceData = true;
+
+            foreach ($arrGenFormsData as $arrRowGenFormData) {
+              $intRegionInstanceCounter++;
+              $intRegionInstanceId = $arrRowGenFormData['id'];
+              $arrRegionInstanceIds[$intRegionInstanceCounter] = $intRegionInstanceId;
+
+              $objRegion->addRegionInstanceId($intRegionInstanceCounter);
+              foreach ($arrRowGenFormData as $column => $value) {
+                if($column != 'id'){
+                  if(is_array(json_decode($value))){
+                    $objRegion->getField($column)->setInstanceValue($intRegionInstanceCounter, json_decode($value));
+                  }else{
+                    $objRegion->getField($column)->setInstanceValue($intRegionInstanceCounter, $value);
+                  }
+                }
+              }
+            }
+          }
+
+          /**
+           * generic multipy region file fields
+           */
+          if(count($objRegion->FileFieldNames()) > 0){
+
+            $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFiles');
+            $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+            $objSelect = $objGenTable->select();
+            $objSelect->setIntegrityCheck(false);
+
+            $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFiles', 'idRegionInstances'));
+            $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+            $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+            $objSelect->where('version = ?', $arrTypeProperties['Version']);
+            $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+            $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+            if(count($arrGenFormsData) > 0){
+              //$this->blnHasLoadedFileData = true;
+              foreach($arrGenFormsData as $arrGenRowFormsData){
+                $intRegionInstanceId = $arrGenRowFormsData['idRegionInstances'];
+                $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
+                if($intRegionPos !== false){
+                  $strFileIds = $objRegion->getField($arrGenRowFormsData['name'])->getInstanceValue($intRegionPos).'['.$arrGenRowFormsData['idFiles'].']';
+                  $objRegion->getField($arrGenRowFormsData['name'])->setInstanceValue($intRegionPos, $strFileIds);
+                }
+              }
+            }
+          }
+
+          /**
+           * generic multipy region multi fields
+           */
+          if(count($objRegion->MultiFieldNames()) > 0){
+
+            $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceMultiFields');
+            $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+            $objSelect = $objGenTable->select();
+            $objSelect->setIntegrityCheck(false);
+
+            $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idRelation', 'value', 'idRegionInstances'));
+            $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+            $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+            $objSelect->where('version = ?', $arrTypeProperties['Version']);
+            $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+            $arrGenFormsData = $objGenTable->fetchAll($objSelect);
+
+            if(count($arrGenFormsData) > 0){
+              //$this->blnHasLoadedMultiFieldData = true;
+              foreach($arrGenFormsData as $arrGenRowFormsData){
+                $intRegionInstanceId = $arrGenRowFormsData->idRegionInstances;
+                $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
+
+                $arrTmpRelationIds = $objRegion->getField($arrGenRowFormsData->name)->getInstanceValue($intRegionPos);
+                if(is_array($arrTmpRelationIds)){
+                  array_push($arrTmpRelationIds, $arrGenRowFormsData->idRelation);
+                }else{
+                  $arrTmpRelationIds = array($arrGenRowFormsData->idRelation);
+                }
+                $objRegion->getField($arrGenRowFormsData->name)->setInstanceValue($intRegionPos, $arrTmpRelationIds);
+              }
+            }
+          }
+        }
+      }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }

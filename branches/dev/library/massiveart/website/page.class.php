@@ -163,7 +163,7 @@ class Page {
         $this->setChangeUserName($objPage->changeUser);
         $this->setChangeDate($objPage->changed);
         $this->setPageTypeId($objPage->idPageTypes);
-        $this->setIsStartPage($objPage->isStartPage);
+        $this->setIsStartElement($objPage->isStartPage);
         $this->setShowInNavigation($objPage->showInNavigation);
         $this->setParentId($objPage->idParent);
         $this->setParentTypeId($objPage->idParentTypes);
@@ -1260,10 +1260,10 @@ class Page {
   }
 
   /**
-   * setIsStartPage
+   * setIsStartElement
    * @param boolean $blnIsStartPage
    */
-  public function setIsStartPage($blnIsStartPage, $blnValidate = true){
+  public function setIsStartElement($blnIsStartPage, $blnValidate = true){
     if($blnValidate == true){
       if($blnIsStartPage === true || $blnIsStartPage === 'true' || $blnIsStartPage == 1){
         $this->blnIsStartPage = true;
@@ -1276,10 +1276,10 @@ class Page {
   }
 
   /**
-   * getIsStartPage
+   * getIsStartElement
    * @return boolean $blnIsStartPage
    */
-  public function getIsStartPage($blnReturnAsNumber = true){
+  public function getIsStartElement($blnReturnAsNumber = true){
     if($blnReturnAsNumber == true){
       if($this->blnIsStartPage == true){
         return 1;

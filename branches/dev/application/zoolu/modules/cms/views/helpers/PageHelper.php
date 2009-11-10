@@ -72,7 +72,7 @@ class PageHelper {
     $this->core->logger->debug('cms->views->helpers->PageHelper->getFilesOutput()');
     
     $this->objViewHelper = new ViewHelper();
-    
+      
     $strOutput = '';
     foreach ($rowset as $row){
       if($strViewType != '' && $strViewType == $this->core->sysConfig->viewtypes->thumb){    
@@ -82,7 +82,7 @@ class PageHelper {
 	        }else{
 	          $strMediaSize = 'width="100"';  
 	        }  
-          $strOutput .= '<div style="position: relative;" class="mediaitem" fileid="'.$row->id.'" id="'.$strFieldName.'_mediaitem'.$row->id.'">
+          $strOutput .= '<div style="position: relative;" class="mediaitem" fileid="'.$row->id.'" id="'.$strFieldName.'_mediaitem_'.$row->id.'">
 	                         <table>
 	                           <tbody>
 	                             <tr>
@@ -92,22 +92,22 @@ class PageHelper {
 	                             </tr>
 	                           </tbody>
 	                         </table>                      
-	                         <div class="itemremovethumb" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_mediaitem'.$row->id.'\', '.$row->id.'); return false;"></div>
+	                         <div class="itemremovethumb" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_mediaitem_'.$row->id.'\', '.$row->id.'); return false;"></div>
 	                       </div>';
         }
       }else{
       	if($row->isImage){
-	      	$strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem'.$row->id.'">
+	      	$strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem_'.$row->id.'">
 						               <div class="oldocleft"></div>
-	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
+	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
 						               <div class="oldocitemicon"><img width="32" height="32" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
 						               <div class="oldocitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
 						               <div class="clear"></div>
 						             </div>';
       	}else{
-      	  $strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem'.$row->id.'">
+      	  $strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem_'.$row->id.'">
                            <div class="oldocleft"></div>
-      	                   <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
+      	                   <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
                            <div class="oldocitemicon"><img width="32" height="32" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
                            <div class="oldocitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
                            <div class="clear"></div>

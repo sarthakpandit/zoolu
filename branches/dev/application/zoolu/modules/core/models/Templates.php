@@ -24,7 +24,7 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.cms.models
+ * @package    application.zoolu.modules.core.models
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
@@ -87,7 +87,7 @@ class Model_Templates {
    * @version 1.0
    */
   public function loadTemplateById($intTemplateId){
-    $this->core->logger->debug('cms->models->Model_Templates->loadTemplateById('.$intTemplateId.')');
+    $this->core->logger->debug('core->models->Model_Templates->loadTemplateById('.$intTemplateId.')');
 
     $objSelect = $this->getTemplateTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -110,7 +110,7 @@ class Model_Templates {
    * @version 1.0
    */
   public function loadTemplateExcludedRegions($intTemplateId){
-    $this->core->logger->debug('cms->models->Model_Templates->loadTemplateExcludedRegions('.$intTemplateId.')');
+    $this->core->logger->debug('core->models->Model_Templates->loadTemplateExcludedRegions('.$intTemplateId.')');
 
     $objSelect = $this->getTemplateExcludedRegionsTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -129,7 +129,7 @@ class Model_Templates {
    * @version 1.0
    */
   public function loadTemplateExcludedFields($intTemplateId){
-    $this->core->logger->debug('cms->models->Model_Templates->loadTemplateExcludedFields('.$intTemplateId.')');
+    $this->core->logger->debug('core->models->Model_Templates->loadTemplateExcludedFields('.$intTemplateId.')');
 
     $objSelect = $this->getTemplateExcludedFieldsTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -148,7 +148,7 @@ class Model_Templates {
    * @version 1.0
    */
   public function loadTemplateRegionProperties($intTemplateId){
-    $this->core->logger->debug('cms->models->Model_Templates->loadTemplateRegionProperties('.$intTemplateId.')');
+    $this->core->logger->debug('core->models->Model_Templates->loadTemplateRegionProperties('.$intTemplateId.')');
 
     $objSelect = $this->getTemplateRegionPropertiesTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -169,7 +169,7 @@ class Model_Templates {
    * @version 1.0
    */
   public function loadActiveTemplates($blnIsStartPage = false, $intPageTypeId, $intParentTypeId){
-    $this->core->logger->debug('cms->models->Model_Templates->loadTemplates()');
+    $this->core->logger->debug('core->models->Model_Templates->loadTemplates()');
 
     $objSelect = $this->getTemplateTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -213,7 +213,7 @@ class Model_Templates {
   public function getTemplateTable(){
 
     if($this->objTemplateTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/Templates.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/Templates.php';
       $this->objTemplateTable = new Model_Table_Templates();
     }
 
@@ -228,7 +228,7 @@ class Model_Templates {
   public function getTemplateExcludedRegionsTable(){
 
     if($this->objTemplateExcludedRegionsTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/TemplateExcludedRegions.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/TemplateExcludedRegions.php';
       $this->objTemplateExcludedRegionsTable = new Model_Table_TemplateExcludedRegions();
     }
 
@@ -243,7 +243,7 @@ class Model_Templates {
   public function getTemplateExcludedFieldsTable(){
 
     if($this->objTemplateExcludedFieldsTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/TemplateExcludedFields.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/TemplateExcludedFields.php';
       $this->objTemplateExcludedFieldsTable = new Model_Table_TemplateExcludedFields();
     }
 
@@ -258,7 +258,7 @@ class Model_Templates {
   public function getTemplateRegionPropertiesTable(){
 
     if($this->objTemplateRegionPropertiesTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/TemplateRegionProperties.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/TemplateRegionProperties.php';
       $this->objTemplateRegionPropertiesTable = new Model_Table_TemplateRegionProperties();
     }
 

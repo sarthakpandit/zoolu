@@ -73,7 +73,7 @@ class GenericSetup {
 	protected $intRootLevelId;
 	protected $intRootLevelTypeId;
   protected $intElementTypeId;
-  protected $blnIsStartPage;
+  protected $blnIsStartElement;
   protected $blnShowInNavigation;
   protected $intUrlFolder;
 
@@ -181,6 +181,7 @@ class GenericSetup {
   const TYPE_CATEGORY = 3;
   const TYPE_UNIT = 4;
   const TYPE_CONTACT = 5;
+  const TYPE_PRODUCT = 6;
 
   /**
    * field type container
@@ -709,6 +710,9 @@ class GenericSetup {
       case GenericSetup::TYPE_CONTACT :
         require_once(dirname(__FILE__).'/data/types/generic.data.type.contact.class.php');
         return new GenericDataTypeContact();
+     case GenericSetup::TYPE_PRODUCT :
+        require_once(dirname(__FILE__).'/data/types/generic.data.type.product.class.php');
+        return new GenericDataTypeProduct();
     }
   }
 
@@ -764,7 +768,7 @@ class GenericSetup {
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Templates.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Templates.php';
       $this->objModelTemplates = new Model_Templates();
       $this->objModelTemplates->setLanguageId($this->intLanguageId);
     }
@@ -1108,34 +1112,34 @@ class GenericSetup {
 	}
 
   /**
-   * setIsStartPage
-   * @param boolean $blnIsStartPage
+   * setIsStartElement
+   * @param boolean $blnIsStartElement
    */
-  public function setIsStartPage($blnIsStartPage, $blnValidate = true){
+  public function setIsStartElement($blnIsStartElement, $blnValidate = true){
     if($blnValidate == true){
-      if($blnIsStartPage === true || $blnIsStartPage === 'true' || $blnIsStartPage == 1){
-        $this->blnIsStartPage = true;
+      if($blnIsStartElement === true || $blnIsStartElement === 'true' || $blnIsStartElement == 1){
+        $this->blnIsStartElement = true;
       }else{
-        $this->blnIsStartPage = false;
+        $this->blnIsStartElement = false;
       }
     }else{
-      $this->blnIsStartPage = $blnIsStartPage;
+      $this->blnIsStartElement = $blnIsStartElement;
     }
   }
 
   /**
-   * getIsStartPage
-   * @return boolean $blnIsStartPage
+   * getIsStartElement
+   * @return boolean $blnIsStartElement
    */
-  public function getIsStartPage($blnReturnAsNumber = true){
+  public function getIsStartElement($blnReturnAsNumber = true){
     if($blnReturnAsNumber == true){
-      if($this->blnIsStartPage == true){
+      if($this->blnIsStartElement == true){
         return 1;
       }else{
         return 0;
       }
     }else{
-      return $this->blnIsStartPage;
+      return $this->blnIsStartElement;
     }
   }
 

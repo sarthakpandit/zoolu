@@ -81,8 +81,8 @@ class Users_GroupController extends AuthControllerAction {
   public function listAction(){
     $this->core->logger->debug('users->controllers->GroupController->listAction()');
 
-    $strOrderColumn = $this->getRequest()->getParam('order', 'title');
-    $strSortOrder = $this->getRequest()->getParam('sort', 'asc');
+    $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'title');
+    $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
 
     $objSelect = $this->getModelUsers()->getGroupTable()->select();
     $objSelect->setIntegrityCheck(false);

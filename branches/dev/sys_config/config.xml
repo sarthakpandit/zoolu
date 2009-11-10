@@ -148,6 +148,18 @@
       <thumb>1</thumb>
       <list>2</list>
     </viewtypes>
+
+    <!-- PRODUCT -->
+    <product>
+      <rootLevels>
+        <list>
+          <id>11</id>
+        </list>
+        <tree>
+          <id>12</id>
+        </tree>
+      </rootLevels>
+    </product>
     
     <!-- UPLOAD -->
     <upload>      
@@ -405,6 +417,7 @@
       <media>2</media>
       <properties>3</properties>
       <users>4</users>
+      <products>5</products>
     </modules>
     
     <!-- ROOTLEVEL TYPES -->
@@ -420,6 +433,7 @@
       <users>8</users>
       <groups>9</groups>
       <resources>10</resources>
+      <products>11</products>
     </root_level_types>
     
     <!-- FOLDER TYPES -->
@@ -469,6 +483,24 @@
         <default_templateId>10</default_templateId>
       </collection>
     </page_types>
+    
+    <!-- PAGE TYPES -->
+    <!-- table: productTypes -->
+    <product_types>
+      <product>
+        <id>1</id>
+        <default_formId>DEFAULT_PRODUCT</default_formId>
+        <default_templateId>11</default_templateId>
+      </product>
+      <link>
+        <id>2</id>        
+      </link>
+      <overview>
+        <id>3</id>
+        <default_formId>DEFAULT_PRODUCT</default_formId>
+        <default_templateId>12</default_templateId>
+      </overview>
+    </product_types>
     
     <!-- REGION TYPES -->
     <!-- table: regionTypes -->

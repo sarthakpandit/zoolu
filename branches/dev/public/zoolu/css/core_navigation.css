@@ -445,7 +445,8 @@ Navigtion left */
 .portal .sysinternicon,
 .naviitem .usericon,
 .naviitem .groupicon,
-.naviitem .resourceicon {
+.naviitem .resourceicon,
+.naviitem .producticon {
   margin-top:0;
   margin-left:4px;  
   width:21px;
@@ -453,7 +454,8 @@ Navigtion left */
   float:left;
 }
 
-.portal .portalicon {
+.portal .portalicon,
+.naviitem .producticon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -188px;
 }
 
@@ -484,7 +486,8 @@ Navigtion left */
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -210px;
 }
 
-.selected .portalicon {
+.selected .portalicon,
+.selected .producticon  {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -167px;
 }
 
@@ -500,7 +503,10 @@ Navigtion left */
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -84px;
 }
 
-.selected .usericon {
+.selected .usericon,
+.selected .usericon,
+.selected .groupicon,
+.selected .resourceicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -126px;
 }
 
@@ -686,6 +692,7 @@ Navigtion center */
 }
 
 .page,
+.product,
 div.navlevelinner .contact {
   position:relative;
   padding-right:15px;
@@ -745,14 +752,16 @@ div.navlevelinner .contact {
 /* ----------------
 Icons */
 
-.img_startpage_on {
+.img_startpage_on,
+.img_startproduct_on {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -136px;
   position:relative;
   width:16px;
   height:16px;
 }
 
-.img_startpage_off {
+.img_startpage_off,
+.img_startproduct_off {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -153px;
   position:relative;
   width:16px;
@@ -814,14 +823,16 @@ Icons */
   height:16px;
 }
 
-.img_page_on {
+.img_page_on,
+.img_product_on {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -187px;
   position:relative;
   width:16px;
   height:16px;
 }
 
-.img_page_off {
+.img_page_off,
+.img_product_off {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -170px;
   position:relative;
   width:16px;

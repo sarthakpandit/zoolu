@@ -8,10 +8,12 @@
  * @version 1.0
  */
 
+
 var Tags = Class.create({
 
   initialize: function() {
-    this.tagsEditField = 'TagsEditField';
+	
+	this.tagsEditField = 'TagsEditField';
     this.cssClassSelectedTag = 'selectedtag';
     this.FormId = '';
     this.blnIsValidateForm = true;    
@@ -28,8 +30,43 @@ var Tags = Class.create({
     this.viewSection = null;
     this.viewFilterOnlyMy = null;
   },
+  
+  /**
+   * add a tag to the tagcloud
+   */
+  addTag: function(strElementId){
+    if($(strElementId) && $F(strElementId+'_Inp') !== ''){
+   	
+      var strTagTitle = $F(strElementId+'_Inp');
+   
+      if(!Selector.findChildElements($(strElementId+'SelectedTags'),['div[id='+strElementId+'_'+strTagTitle+']'])[0]){
+    	$(strElementId+'_WrapperClear').remove();
+    	$(strElementId+'SelectedTags').innerHTML += '<div id="'+strElementId+'_'+strTagTitle+'" class="tagpill"><div class="tagtitle">'+strTagTitle+'</div><div class="tagdelete" onclick="myTags.removeTag(\''+strElementId+'\',\''+strTagTitle+'\')">[x]</div><div class="clear"></div></div>'; 
+    	$(strElementId+'SelectedTags').innerHTML += '<div id="'+strElementId+'_WrapperClear" class="clear"></div>';
+    	$(strElementId).value +='['+strTagTitle+']';
+        $(strElementId+'_Inp').value = '';
+      }else{
+        new Effect.Highlight(strElementId+'_'+strTagTitle, {startcolor: '#ffd300', endcolor: '#E4E4E4'});
+      }
+    }
+  },
+  
+  /**
+   * remove a tag from the tagcloud
+   */
+  removeTag: function(strElementId,strTagTitle){
+    if(strElementId !== '' && strTagTitle !== ''){
+    	
+      $(strElementId+'_'+strTagTitle).remove();
+
+      var strTagCloud = $F(strElementId);
+      var strNewTagCloud = strTagCloud.replace('['+strTagTitle+']','');
+  
+      $(strElementId).value = strNewTagCloud;
+    }
+  },
     
-  addOrRemoveTag: function(tag, anchor, editField){
+  /*addOrRemoveTag: function(tag, anchor, editField){
     if(editField != ''){
       this.tagsEditField  = editField;  
     }
@@ -46,9 +83,9 @@ var Tags = Class.create({
       });
       
       if(!$(anchor).hasClassName(this.cssClassSelectedTag)){
-        /**
-         * try to add
-         */
+       
+         // try to add
+        
         if(blnHasTag == false){
           if($F(this.tagsEditField).blank()){
             $(this.tagsEditField).value = tag;          
@@ -58,9 +95,9 @@ var Tags = Class.create({
         }
         $(anchor).addClassName(this.cssClassSelectedTag);        
       }else{
-        /**
-         * try to remove
-         */
+        
+         // try to remove
+        
         if(blnHasTag == true){
           var actualTags = $(this.tagsEditField).value ;
           actualTags = ' ' + actualTags + ',';
@@ -79,7 +116,7 @@ var Tags = Class.create({
     $$('.'+this.cssClassSelectedTag).each(function(anchor){
       $(anchor).removeClassName(this.cssClassSelectedTag);
     }.bind(this));
-  },
+  },*/
   
   /**
    * updateTagCloud
@@ -224,3 +261,4 @@ var Tags = Class.create({
  * initialize Tags Object
  */
 var myTags = new Tags();
+
