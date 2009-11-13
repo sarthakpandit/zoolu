@@ -59,6 +59,8 @@ class ListHelper {
   /**
    * getList
    * @param Zend_Paginator $objPaginator
+   * @param string $strOrderColumn
+   * @param string $strSortOrder
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -127,7 +129,31 @@ class ListHelper {
               <table class="tablelist">
                 '.$strThead.'
                 '.$strTbody.'
-              </table';
+              </table>';
+
+    return $strOutput;
+  }
+
+  /**
+   * getSearchResultList
+   * @param Zend_Db_Table_Rowset_Abstract $objRowset
+   * @param string $strSearchValue
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getSearchResultList($objRowset, $strSearchValue){
+    $strOutput = '';
+    if($objRowset instanceof Zend_Db_Table_Rowset_Abstract && count($objRowset) > 0){
+      $strOutput .= '<ul>';
+      $intCounter = 0;
+      foreach($objRowset as $objRow){
+        $intCounter++;
+        $strOutput .= '<li class="modulus'.($intCounter % 2).'"><a href="#" onclick="myProduct.addProductLink(\''.$objRow->productId.'\'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></li>';
+      }
+      $strOutput .= '</ul>';
+    }else{
+      $strOutput .= '<ul><li>'.sprintf($this->core->translate->_('No_search_result'), $strSearchValue).'</li></ul>';
+    }
 
     return $strOutput;
   }

@@ -21,12 +21,6 @@
             myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
             myCore.deleteAlertMultiMessage = 'Wollen Sie diese %i Produkte l&ouml;schen?';
             myCore.deleteAlertSingleMessage = 'Wollen Sie dieses Produkt l&ouml;schen?';
-          }else{
-            document.observe('dom:loaded', function() {
-              myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
-              myCore.deleteAlertMultiMessage = 'Wollen Sie diese %i Produkte l&ouml;schen?';
-              myCore.deleteAlertSingleMessage = 'Wollen Sie dieses Produkt l&ouml;schen?';
-            });
           }
         //]]>
         </script>

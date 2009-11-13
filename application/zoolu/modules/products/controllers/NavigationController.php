@@ -107,6 +107,7 @@ class Products_NavigationController extends AuthControllerAction {
     $this->view->assign('productFormDefaultId', $this->core->sysConfig->product_types->product->default_formId);
     $this->view->assign('productTemplateDefaultId', $this->core->sysConfig->product_types->product->default_templateId);
     $this->view->assign('productTypeDefaultId', $this->core->sysConfig->product_types->product->id);
+    $this->view->assign('rootLevelId', $this->core->sysConfig->parent_types->rootlevel);
   }
 
   /**

@@ -48,6 +48,7 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
       $this->objModelTags->addTypeTags($strType, $this->arrNewTagIds, $strElementId, $intVersion);
 
       $this->objElement->tagIds = $this->arrNewTagIds;
+            
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -70,16 +71,16 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
 
       $objTagData = $this->objModelTags->loadTypeTags($strType, $strElementId, $intVersion);
 
-      if(count($objTagData) > 0){
+      /*if(count($objTagData) > 0){
         foreach($objTagData as $objTag){
           $this->strTags .= $objTag->title.', ';
           $this->arrTagIds[] = $objTag->id;
         }
         $this->strTags = rtrim($this->strTags, ', ');
-      }
-      $this->objElement->setValue($this->strTags);
+      }*/
+      
+      $this->objElement->setValue($objTagData);
 
-      $this->objElement->tagIds = $this->arrTagIds;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -95,7 +96,9 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
     $this->getModelTags();
 
     $this->arrNewTagIds = array();
-    $this->arrNewTags = preg_split('/[,|;]/', $this->objElement->getValue());
+    
+    $strTmpTagTitles = trim($this->objElement->getValue(), '[]');
+    $this->arrNewTags = split('\]\[', $strTmpTagTitles);
 
     /**
      * get tag ids

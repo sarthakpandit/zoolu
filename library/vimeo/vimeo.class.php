@@ -12,8 +12,8 @@
 * Enable debug to output raw request and response information
 */
 
-define('VIMEO_DEBUG_REQUEST', false);
-define('VIMEO_DEBUG_RESPONSE', false);
+define('VIMEO_DEBUG_REQUEST', true);
+define('VIMEO_DEBUG_RESPONSE', true);
 
 /**
 * Vimeo base class
@@ -58,10 +58,10 @@ class VimeoBase {
     */
     private static $sApiSecret = '8345b2970';
 
-    const VIMEO_REST_URL    = 'http://www.vimeo.com/api/rest/';
-    const VIMEO_AUTH_URL    = 'http://www.vimeo.com/services/auth/';
-    const VIMEO_UPLOAD_URL  = 'http://www.vimeo.com/services/upload/';
-    const VIMEO_LOGIN_URL   = 'http://www.vimeo.com/log_in';
+    const VIMEO_REST_URL    = 'http://vimeo.com/api/rest/';
+    const VIMEO_AUTH_URL    = 'http://vimeo.com/services/auth/';
+    const VIMEO_UPLOAD_URL  = 'http://vimeo.com/services/upload/';
+    const VIMEO_LOGIN_URL   = 'http://vimeo.com/log_in';
 
     /**
     * You can choose between the following engines:
@@ -76,18 +76,29 @@ class VimeoBase {
     const PERMISSION_WRITE              = 'write';
     const PERMISSION_DELETE             = 'delete';
     
-    const COOKIE_FILE                   = 'curl_cookies';
+    const COOKIE_FILE                   = '/tmp/simplevimeo.cookies';
+    
+    const DEBUG_ENABLE          = false;
+    const DEBUG_LOGFILE         = '/tmp/simplevimeo.debug';
     
     /**
     * Debug output function
     */
     public static function debug($sTitle, $sContent) {
-        $sHTML  = '<table class="debug">';
-        $sHTML .= '<caption>' . $sTitle . '</caption>';
-        $sHTML .= '<tr><td><pre>' . $sContent . '</pre></td></tr>';
-        $sHTML .= '</table>';
-        
-        return $sHTML;
+      if(self::DEBUG_ENABLE) {
+      $sMessage = 'DEBUG ' . date('Y-m-d H:i:s', time()) . "\n";
+      $sMessage .= 'CONTENT: ' . $sContent . "\n";
+      $sMesasge .= $sContent . "\n\n";
+      
+      $fhLog = fopen(self::DEBUG_LOGFILE, 'a+');
+      
+      if(!$fhLog) {
+        throw new VimeoBaseException('Debug Logfile "' . self::DEBUG_LOGFILE . '" could not be found or written');
+      } else {
+        fputs($fhLog, $sMessage);
+        fclose($fhLog);
+      }
+      }
     }
     
     /**
@@ -201,15 +212,13 @@ class VimeoBase {
 
         // Debug request
         if(defined('VIMEO_DEBUG_REQUEST') && VIMEO_DEBUG_REQUEST) {
-            echo self::debug('API request', print_r($aArgs, true));
+            self::debug('API request', print_r($aArgs, true));
         }
         
         // Debug response
         if(defined('VIMEO_DEBUG_RESPONSE') && VIMEO_DEBUG_RESPONSE) {
-            echo self::debug('API response', print_r($aResponse, true));
+            self::debug('API response', print_r($aResponse, true));
         }
-        
-        
         
         // Transform the result into a result class
         $oResult = new $sTargetClass($aResponse);
@@ -458,7 +467,6 @@ class VimeoBase {
             'perms' => $ePermission,
             'accept' => 'yes'
         );
-        
         $ch = curl_init(VimeoBase::buildAuthenticationUrl($ePermission));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -476,7 +484,6 @@ class VimeoBase {
             $sResponseUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
             
         }
-        
         return $sPageContent;
     }
     
@@ -512,6 +519,7 @@ class VimeoBase {
         curl_setopt($ch, CURLOPT_COOKIEJAR, VimeoBase::COOKIE_FILE);
         
         $sPageContent = curl_exec($ch);
+        
         if(curl_errno($ch)) {
             throw new VimeoRequestException('Error: Tried to login failed ' . curl_error($ch), curl_errno($ch));
             return false;
@@ -1406,6 +1414,8 @@ class VimeoThumbnailEntity {
         return (int) $this->iHeight;
     }
     
+    
+    // Added by dmo
     public function getContent() {
         return $this->sContent;
     }
@@ -2387,8 +2397,21 @@ class VimeoVideosSearchResponse extends VimeoResponse {
             
             // Parse videos
             if(isset($aResponse->videos->video)) {
-                foreach($aResponse->videos->video as $aVideoInformation) {
+              // We should check if the subelement is an object (single hit) or an result array (multiple hits)
+              if(is_array($aResponse->videos->video)) {
+          // We got a couple of results
+          $aParseableData = $aResponse->videos->video;
+              } else {
+                // We only got one result
+          $aParseableData = array(
+            0 => $aResponse->videos->video
+          );
+              }
+
+              // Parse the results
+                foreach($aParseableData as $aVideoInformation) {
                     $oVideo = new VimeoVideoEntity($aVideoInformation);
+
                     $this->aoVideos->add($oVideo, $oVideo->getID());
                 }
             }

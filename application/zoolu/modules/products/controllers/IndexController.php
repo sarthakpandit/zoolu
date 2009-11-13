@@ -65,12 +65,12 @@ class Products_IndexController extends AuthControllerAction {
 
     $objLayout = Zend_Layout::getMvcInstance();
     $objLayout->assign('navigation', $this->view->action('list', 'Navigation', 'products'));
-    $objLayout->assign('productlist', $this->view->action('list', 'Product', 'products'));
     $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
     $objLayout->assign('modules', $this->view->action('navtop', 'Modules', 'core', array('module' => $this->core->sysConfig->modules->products)));
 
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
     $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
+    $this->view->assign('module', $this->core->sysConfig->modules->products);
     $this->view->assign('module', $this->core->sysConfig->modules->products);
   }
 

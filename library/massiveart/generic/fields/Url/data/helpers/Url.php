@@ -59,6 +59,12 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
 
   private $strUrl;
 
+
+  /**
+   * @var $strParentPageUrl
+   */
+  private $strParentPageUrl;
+
   /**
    * save()
    * @param integer $intElementId
@@ -76,15 +82,69 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       $objPageData = $this->objModelPages->loadPage($intElementId);
 
       if(count($objPageData) > 0){
+        
         $objPage = $objPageData->current();
-
         $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
 
+        $this->strParentPageUrl = '';
+
+        // load the url from the parent page
+        if($objPage->idParentTypes == $this->core->sysConfig->parent_types->folder){
+          if($objPage->isStartPage == 1){
+            $objParentFolderData = $this->objModelPages->loadStartPageParentUrl($intElementId);
+          }else{
+            $objParentFolderData = $this->objModelPages->loadParentUrl($intElementId);
+          }
+
+          if(count($objParentFolderData) > 0){
+            $objParentFolderUrl = $objParentFolderData->current();
+            $this->strParentPageUrl = $objParentFolderUrl->url;
+          }
+        }
+
         if(count($objUrlData) > 0){
+            
           $objUrl = $objUrlData->current();
-          $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
+          $strUrlCurrent = $objUrl->url;
+          $strUrlNew = '';
+
+          // get the new url
+          if(array_key_exists($this->objElement->name.'_EditableUrl', $_POST)){
+            $strUrlNew = $_POST[$this->objElement->name.'_EditableUrl'];
+            $strUrlNew = $this->makeUrlConform($strUrlNew);
+          }
+          
+          // compare the new url with the url from the db and check if there is a new url
+          if(strcmp($strUrlCurrent, $this->strParentPageUrl.$strUrlNew) !== 0 && $strUrlNew != ''){
+            //urls are unequal
+            
+            $strUrlNew = $this->checkUrlUniqueness($this->strParentPageUrl.$strUrlNew);
+
+            // set all page urls to isMain 0
+            $this->objModelPages->updatePageUrlIsMain($objPage->pageId); 
+                      
+            if($objPage->isStartPage == 1){
+              //logic for rootnodes 
+              $this->objModelPages->insertPageUrl($strUrlNew.'/', $objPage->pageId, $objPage->version); 
+            }else{
+              //logic for childnodes
+              $this->objModelPages->insertPageUrl($strUrlNew, $objPage->pageId, $objPage->version);   
+            }
+          }
+
         }else{
+              	
+          /**
+          // if no url is saved
+
+          if($this->strParentPageUrl != ''){
+            $this->strUrl = $this->strParentPageUrl;
+          }else{
+            $this->strUrl = '';
+          }*/
+
           $this->strUrl = '';
+
 
           $objParentFoldersData = $this->objModelPages->loadParentFolders($intElementId);
 
@@ -110,18 +170,27 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
               }
             }
           }
-
+          
           $this->strUrl = $this->checkUrlUniqueness($this->strUrl);
 
-          $this->objModelPages->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
+          /**
+          if($objPage->isStartPage == 1 && $this->strUrl != ''){
+          	$this->objModelPages->insertPageUrl($this->strUrl.'/', $objPage->pageId, $objPage->version);
+          }else{
+            $this->objModelPages->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
+          }*/
 
-          $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
-          if(count($objUrlData) > 0){
-            $objUrl = $objUrlData->current();
-            $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
-            $this->objElement->url = $objUrl->url;
-          }
+          $this->objModelPages->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
         }
+
+        $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
+        $objUrl = $objUrlData->current();
+        $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
+        $this->objElement->url = $objUrl->url;
+        $this->objElement->isStartPage = $objUrl->isStartPage;
+        $this->objElement->idParentFolder = $objUrl->idParentFolder;
+        $this->objElement->depth = $objUrl->depth;
+
       }
 
     }catch (Exception $exc) {
@@ -147,7 +216,10 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       if(count($objUrlData) > 0){
         $objUrl = $objUrlData->current();
         $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
+        $this->objElement->isStartPage = $objUrl->isStartPage;
         $this->objElement->url = $objUrl->url;
+        $this->objElement->idParentFolder = $objUrl->idParentFolder;
+        $this->objElement->depth = $objUrl->depth;
       }
 
     }catch (Exception $exc) {

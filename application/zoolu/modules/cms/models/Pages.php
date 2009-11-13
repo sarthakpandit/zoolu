@@ -237,6 +237,9 @@ class Model_Pages {
                      'creator'     => $intUserId,
                      'created'     => date('Y-m-d H:i:s'));
 
+     print_r($arrData);
+
+
     $strTmpLinkedPageIds = trim($strLinkedPageIds, '[]');
     $arrLinkedPageIds = split('\]\[', $strTmpLinkedPageIds);
 
@@ -860,7 +863,7 @@ class Model_Pages {
       if(count(scandir($strIndexPath)) > 2){
         $this->objIndex = Zend_Search_Lucene::open($strIndexPath);
 
-        $objTerm = new Zend_Search_Lucene_Index_Term($strPageId, 'key');
+        $objTerm = new Zend_Search_Lucene_Index_Term($strPageId.'_'.$this->intLanguageId, 'key');
         $objQuery = new Zend_Search_Lucene_Search_Query_Term($objTerm);
 
         $objHits = $this->objIndex->find($objQuery);
@@ -971,15 +974,15 @@ class Model_Pages {
   }
   
   /**
-   * loadParentFolderData
+   * loadParentUrl
    * @param integer $intPageId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Dominik Mößlang <dmo@massiveart.com>
    * @version 1.0
    */
-  public function loadParentFolderData($intPageId){
-    $this->core->logger->debug('cms->models->Model_Pages->loadParentFolderData('.$intPageId.')');
-      
+  public function loadParentUrl($intPageId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadParentUrl('.$intPageId.')');
+    
     $objSelect = $this->getPageUrlTable()->select();
     $objSelect->setIntegrityCheck(false);
 
@@ -991,13 +994,36 @@ class Model_Pages {
               ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
               ->where('pages.idParent = (SELECT idParent FROM pages WHERE id = '.$intPageId.')')
               ->where('pages.isStartPage = 1');
-              
-              echo $objSelect;
-                
+
     return $this->objPageUrlTable->fetchAll($objSelect);
   }
-  
-  
+
+  /**
+   * loadStartPageParentUrl
+   * @param integer $intPageId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Dominik Mößlang <dmo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadStartPageParentUrl($intPageId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadStartPageParentUrl('.$intPageId.')');
+
+    $objSelect = $this->getPageUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objPageUrlTable, array('url','id'));
+    $objSelect->join('pages', 'pages.pageId = pageUrls.pageId', array('pageId','version','isStartpage'));
+    $objSelect->join('folders', 'folders.id = (SELECT idParent FROM pages WHERE id = '.$intPageId.')', array());
+    $objSelect->where('pageUrls.version = pages.version')
+              ->where('pageUrls.isMain = 1')
+              ->where('pageUrls.idLanguages = ?', $this->intLanguageId)
+              ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
+              ->where('pages.idParent = folders.idParentFolder')
+              ->where('pages.isStartPage = 1');
+
+    return $this->objPageUrlTable->fetchAll($objSelect);
+  }
+ 
   /**
    * removeUrlHistoryEntry
    * @param integer $intUrlId
@@ -1253,6 +1279,8 @@ class Model_Pages {
                                                  folders.rgt >= parent.rgt AND
                                                  folders.idRootLevels = parent.idRootLevels
                                              ORDER BY folders.rgt', array($this->intLanguageId, $intPageId, $this->core->sysConfig->parent_types->folder));
+
+
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }

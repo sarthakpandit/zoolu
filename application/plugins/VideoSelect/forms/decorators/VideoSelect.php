@@ -119,19 +119,37 @@ class Plugin_FormDecorator_VideoSelect extends Zend_Form_Decorator_Abstract {
     $videoSelect  = $this->buildVideoSelect();
     $errors       = $this->buildErrors();
     $desc         = $this->buildDescription();
-
-    $strOutput = '<div class="field-3">';
-    $strOutput .= '<div class="field">'
-                    .$label
-                    .$desc
-                    .$videoSelect
-                    .$errors
-                 .'</div>
-                   <div id="div_'.$element->getName().'_users" class="field"><input type="hidden" id="'.$element->getName().'User" name="'.$element->getName().'User" value="'.$element->strVideoUserId.'"></div>
-                 </div>
-                 <div class="field-'.($element->getAttrib('columns') - 3).'">
-                   <div class="field videoContainer" id="div_'.$element->getName().'">&nbsp;<br/></div>
-                 </div>';
+    
+    $userSelect = $this->buildVideoSelect();
+    
+    $strOutput = '<div class="field-12">
+                    <input type="hidden" id="'.$element->getName().'TypeCur" name="'.$element->getName().'TypeCur" value="'.$element->intVideoTypeId.'">
+                    <input type="hidden" id="'.$element->getName().'UserCur" name="'.$element->getName().'UserCur" value="'.$element->strVideoUserId.'">
+                    <div id="'.$element->getName().'SelectedContainer" class="field ">
+                    
+                      <div id="'.$element->getName().'SelectedService" class="field-12"></div>
+                      <div class="selectedVideo bg2">
+                        <div id="div_selected'.$element->getName().'"></div>
+                        <div class="videoItem bg1">
+                          <div class="videoThumb"><img src="/zoolu/images/icons/icon_novideo.png" witdh="100" style="border-right:1px solid #ccc;"/></div>
+                          <div class="videoInfos"><strong>Kein Video</strong></div>   
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field-3">
+                   ' .$label
+                     .$desc
+                     .$videoSelect
+                     .$errors
+                     .'
+                    </div>
+                    <div id="div_'.$element->getName().'_users" >
+                     
+                    </div>
+                  </div>
+                  <div class="field-'.($element->getAttrib('columns')).'">
+                    <div class="field videoContainer" id="div_'.$element->getName().'">&nbsp;<br/></div>
+                  </div>';
 
     switch ($placement) {
       case (self::PREPEND):

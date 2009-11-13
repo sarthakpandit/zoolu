@@ -70,6 +70,11 @@ class Model_Products {
   protected $objModelFolders;
 
   /**
+   * @var Model_Table_ProductVideosTable
+   */
+  protected $objProductVideosTable;
+
+  /**
    * @var Core
    */
   private $core;
@@ -102,6 +107,31 @@ class Model_Products {
     $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = productProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
     $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = productProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
     $objSelect->where('products.id = ?', $intElementId);
+    
+    return $this->getProductTable()->fetchAll($objSelect);
+  }
+
+  /**
+   * search
+   * @param string $strSearchValue
+   * @return Zend_Db_Table_Rowset_Abstract Product
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   *
+   */
+  public function search($strSearchValue){
+
+    $objSelect = $this->getProductTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('products', array('id', 'productId', 'version', 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.idStatus', 'productProperties.creator'));
+    $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'));
+    $objSelect->where('productTitles.title LIKE ?', '%'.$strSearchValue.'%')
+              ->where('idParent = ?', $this->core->sysConfig->product->rootLevels->list->id)
+              ->where('idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel)
+              ->where('isStartProduct = 0')
+              ->order('productTitles.title');
 
     return $this->getProductTable()->fetchAll($objSelect);
   }
@@ -109,17 +139,17 @@ class Model_Products {
   /**
    * add
    * @param GenericSetup $objGenericSetup
-   * @return object Product
+   * @return stdClass Product
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function add(GenericSetup &$objGenericSetup){
     $this->core->logger->debug('products->models->Model_Products->add()');
 
-    $objPrduct = new stdClass();
-    $objPrduct->productId = uniqid();
-    $objPrduct->version = 1;
-    $objPrduct->sortPosition = GenericSetup::DEFAULT_SORT_POSITION;
+    $objProduct = new stdClass();
+    $objProduct->productId = uniqid();
+    $objProduct->version = 1;
+    $objProduct->sortPosition = GenericSetup::DEFAULT_SORT_POSITION;
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
     /**
@@ -129,19 +159,19 @@ class Model_Products {
                          'idParentTypes'    => $this->core->sysConfig->parent_types->rootlevel,
                          'isStartProduct'   => $objGenericSetup->getIsStartElement(),
                          'idUsers'          => $intUserId,
-                         'sortPosition'     => $objPrduct->sortPosition,
+                         'sortPosition'     => $objProduct->sortPosition,
                          'sortTimestamp'    => date('Y-m-d H:i:s'),
-                         'productId'        => $objPrduct->productId,
-                         'version'          => $objPrduct->version,
+                         'productId'        => $objProduct->productId,
+                         'version'          => $objProduct->version,
                          'creator'          => $objGenericSetup->getCreatorId(),
                          'created'          => date('Y-m-d H:i:s'));
-    $objPrduct->id = $this->getProductTable()->insert($arrMainData);
+    $objProduct->id = $this->getProductTable()->insert($arrMainData);
 
     /**
      * insert language specific properties
      */
-    $arrProperties = array('productId'        => $objPrduct->productId,
-                           'version'          => $objPrduct->version,
+    $arrProperties = array('productId'        => $objProduct->productId,
+                           'version'          => $objProduct->version,
                            'idLanguages'      => $this->intLanguageId,
                            'idGenericForms'   => $objGenericSetup->getGenFormId(),
                            'idTemplates'      => $objGenericSetup->getTemplateId(),
@@ -159,47 +189,64 @@ class Model_Products {
      * if is tree add, make alis now
      */
     if($objGenericSetup->getRootLevelId() == $this->core->sysConfig->product->rootLevels->tree->id){
-
-      $objPrduct->linkProductId = uniqid();
-
-      /**
-       * check if parent element is rootlevel or folder and get sort position
-       */
-      if($objGenericSetup->getParentId() != '' && $objGenericSetup->getParentId() > 0){
-        $objGenericSetup->setParentTypeId($this->core->sysConfig->parent_types->folder);
-        $objNaviData = $this->getModelFolders()->loadProductChildNavigation($objGenericSetup->getParentId());
-      }else{
-        if($objGenericSetup->getRootLevelId() != '' && $objGenericSetup->getRootLevelId() > 0){
-          $objGenericSetup->setParentId($objGenericSetup->getRootLevelId());
-        }else{
-          $this->core->logger->err('zoolu->modules->products->models->Model_Products->add(): intRootLevelId is empty!');
-        }
-        $objGenericSetup->setParentTypeId($this->core->sysConfig->parent_types->rootlevel);
-        $objNaviData = $this->getModelFolders()->loadProductRootNavigation($objGenericSetup->getRootLevelId());
-      }
-      $objPrduct->sortPosition = count($objNaviData);
-
-      /**
-       * insert main data
-       */
-      $arrMainData = array('idParent'         => $objGenericSetup->getParentId(),
-                           'idParentTypes'    => $objGenericSetup->getParentTypeId(),
-                           'isStartProduct'   => $objGenericSetup->getIsStartElement(),
-                           'idUsers'          => $intUserId,
-                           'sortPosition'     => $objPrduct->sortPosition,
-                           'sortTimestamp'    => date('Y-m-d H:i:s'),
-                           'productId'        => $objPrduct->linkProductId,
-                           'version'          => $objPrduct->version,
-                           'creator'          => $objGenericSetup->getCreatorId(),
-                           'created'          => date('Y-m-d H:i:s'));
-      $objPrduct->linkId = $this->getProductTable()->insert($arrMainData);
-
-      $arrLinkedProduct = array('idProducts'  => $objPrduct->linkId,
-                                'productId'   => $objPrduct->productId);
-      $this->getProductLinkTable()->insert($arrLinkedProduct);
+      $objProduct->parentId = $objGenericSetup->getParentId();
+      $objProduct->rootLevelId = $objGenericSetup->getRootLevelId();
+      $objProduct->isStartElement = $objGenericSetup->getIsStartElement();
+      $this->addLink($objProduct);
+      
     }
 
-    return $objPrduct;
+    return $objProduct;
+  }
+
+  /**
+   * addLink
+   * @param stdClass $objProduct
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addLink(&$objProduct){
+    $this->core->logger->debug('products->models->Model_Products->add()');
+    
+    $objProduct->linkProductId = uniqid();
+    $objProduct->version = 1;
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    /**
+     * check if parent element is rootlevel or folder and get sort position
+     */
+    if($objProduct->parentId != '' && $objProduct->parentId > 0){
+      $objProduct->parentTypeId = $this->core->sysConfig->parent_types->folder;
+      $objNaviData = $this->getModelFolders()->loadProductChildNavigation($objProduct->parentId);
+    }else{
+      if($objProduct->rootLevelId != '' && $objProduct->rootLevelId > 0){
+        $objProduct->parentId = $objProduct->rootLevelId;
+      }else{
+        $this->core->logger->err('zoolu->modules->products->models->Model_Products->addLink(): intRootLevelId is empty!');
+      }
+      $objProduct->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
+      $objNaviData = $this->getModelFolders()->loadProductRootNavigation($objProduct->rootLevelId);
+    }
+    $objProduct->sortPosition = count($objNaviData);
+
+    /**
+     * insert main data
+     */
+    $arrMainData = array('idParent'         => $objProduct->parentId,
+                         'idParentTypes'    => $objProduct->parentTypeId,
+                         'isStartProduct'   => $objProduct->isStartElement,
+                         'idUsers'          => $intUserId,
+                         'sortPosition'     => $objProduct->sortPosition,
+                         'sortTimestamp'    => date('Y-m-d H:i:s'),
+                         'productId'        => $objProduct->linkProductId,
+                         'version'          => $objProduct->version,
+                         'creator'          => $intUserId,
+                         'created'          => date('Y-m-d H:i:s'));
+    $objProduct->linkId = $this->getProductTable()->insert($arrMainData);
+
+    $arrLinkedProduct = array('idProducts'  => $objProduct->linkId,
+                              'productId'   => $objProduct->productId);
+    $this->getProductLinkTable()->insert($arrLinkedProduct);
   }
 
   /**
@@ -209,13 +256,13 @@ class Model_Products {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function update(GenericSetup &$objGenericSetup, $objPrduct){
+  public function update(GenericSetup &$objGenericSetup, $objProduct){
     $this->core->logger->debug('products->models->Model_Products->update()');
 
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
-    $strWhere = $this->getProductTable()->getAdapter()->quoteInto('productId = ?', $objPrduct->productId);
-    $strWhere .= $this->getProductTable()->getAdapter()->quoteInto(' AND version = ?', $objPrduct->version);
+    $strWhere = $this->getProductTable()->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
+    $strWhere .= $this->getProductTable()->getAdapter()->quoteInto(' AND version = ?', $objProduct->version);
 
     $this->getProductTable()->update(array('idUsers'          => $intUserId,
                                            'changed'          => date('Y-m-d H:i:s')), $strWhere);
@@ -236,8 +283,8 @@ class Model_Products {
      * insert language specific product properties
      */
     if($intNumOfEffectedRows == 0){      
-      $arrProperties = array('productId'        => $objPrduct->productId,
-                             'version'          => $objPrduct->version,
+      $arrProperties = array('productId'        => $objProduct->productId,
+                             'version'          => $objProduct->version,
                              'idLanguages'      => $this->intLanguageId,
                              'idGenericForms'   => $objGenericSetup->getGenFormId(),
                              'idTemplates'      => $objGenericSetup->getTemplateId(),
@@ -381,6 +428,7 @@ class Model_Products {
     return $this->objProductUrlTable;
   }
 
+
   /**
    * Returns a table for a plugin
    * @param string $type The type of the plugin
@@ -429,6 +477,106 @@ class Model_Products {
    */
   public function getLanguageId(){
     return $this->intLanguageId;
+  }
+
+  /**
+   * getProductVideosTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getProductVideosTable(){
+
+    if($this->objProductVideosTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/ProductVideos.php';
+      $this->objProductVideosTable = new Model_Table_ProductVideos();
+    }
+
+    return $this->objProductVideosTable;
+  }
+
+
+   /**
+   * loadVideo
+   * @param string $intElementId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadVideo($intElementId){
+    $this->core->logger->debug('cms->products->models->Model_Products->loadVideo('.$intElementId.')');
+
+    $objSelect = $this->getProductVideosTable()->select();
+    $objSelect->from($this->objProductVideosTable, array('userId', 'videoId', 'idVideoTypes', 'thumb'));
+    $objSelect->join('products', 'products.productId = productVideos.productId AND products.version = productVideos.version', array());
+    $objSelect->where('products.id = ?', $intElementId)
+              ->where('idLanguages = ?', $this->getLanguageId());
+
+    return $this->objProductVideosTable->fetchAll($objSelect);
+  }
+
+  /**
+   * addVideo
+   * @param  integer $intElementId
+   * @param  mixed $mixedVideoId
+   * @param  integer $intVideoTypeId
+   * @param  string $strVideoUserId
+   * @param  string $strVideoThumb
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addVideo($intElementId, $mixedVideoId, $intVideoTypeId, $strVideoUserId, $strVideoThumb){
+   $this->core->logger->debug('cms->products->models->Model_Products->addVideo('.$intElementId.','.$mixedVideoId.','.$intVideoTypeId.','.$strVideoUserId.','.$strVideoThumb.')');
+
+    $objProductData = $this->load($intElementId);
+
+    if(count($objProductData) > 0){
+      $objProduct = $objProductData->current();
+
+      $this->getProductVideosTable();
+
+      $strWhere = $this->objProductVideosTable->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
+      $strWhere .= 'AND '.$this->objProductVideosTable->getAdapter()->quoteInto('version = ?', $objProduct->version);
+      $this->objProductVideosTable->delete($strWhere);
+
+      if($mixedVideoId != ''){
+        $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+        $arrData = array('productId'       => $objProduct->productId,
+                         'version'      => $objProduct->version,
+                         'idLanguages'  => $this->intLanguageId,
+                         'userId'       => $strVideoUserId,
+                         'videoId'      => $mixedVideoId,
+                         'idVideoTypes' => $intVideoTypeId,
+                         'thumb'        => $strVideoThumb,
+                         'creator'      => $intUserId);
+        return $objSelect = $this->objProductVideosTable->insert($arrData);
+      }
+    }
+  }
+
+  /**
+   * removeVideo
+   * @param  integer $intElementId
+   * @return integer affected rows
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function removeVideo($intElementId){
+    $this->core->logger->debug('cms->products->models->Model_Products->removeVideo('.$intElementId.')');
+
+    $objProductData = $this->load($intElementId);
+
+    if(count($objProductData) > 0){
+      $objProduct = $objProductData->current();
+
+      $this->getProductVideosTable();
+
+      $strWhere = $this->objProductVideosTable->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
+      $strWhere .= 'AND '.$this->objProductVideosTable->getAdapter()->quoteInto('version = ?', $objProduct->version);
+
+      return $this->objProductVideosTable->delete($strWhere);
+    }
   }
 }
 

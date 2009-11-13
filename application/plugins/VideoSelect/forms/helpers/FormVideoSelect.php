@@ -54,7 +54,8 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
 
     // build the list of options
     $list = array();
-
+    $list[] = '<option label="Bitte w&auml;hlen" value="" selected="selected">Bitte w&auml;hlen</option>';
+           
     foreach ($attribs['MultiOptions'] as $opt_value => $opt_label) {
       if (is_array($opt_label)) {
         $opt_disable = '';
@@ -86,6 +87,7 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
     $xhtml .= '
     <script type="text/javascript" language="javascript">
       myForm.initVideoChannelObserver(\''.$this->view->escape($id).'\');
+      myForm.getSelectedVideo(\''.$this->view->escape($id).'\');
     </script>';
 
     return $xhtml;
@@ -108,11 +110,6 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
     $opt = '<option'
            . ' value="' . $this->view->escape($value) . '"'
            . ' label="' . $this->view->escape($label) . '"';
-
-    // selected?
-    if (in_array((string) $value, $selected)) {
-     $opt .= ' selected="selected"';
-    }
 
     // disabled?
     if (in_array($value, $disable)) {

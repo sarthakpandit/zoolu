@@ -64,15 +64,15 @@ Massiveart.Form = Class.create({
         onComplete: function() {         
           if(this.blnShowFormAlert){
             if($('rootLevelId') && $F('rootLevelId') != '' && $F('rootLevelId') > 0){
-	          myNavigation.updateNavigationLevel();
-	        }
-            
-	        //saved
-	        this.getFormSaveSucces();
-	          
-	        if($('isStartPage') && $F('isStartPage') == 0){
-	          $('buttondelete').show();
-	        }
+              myNavigation.updateNavigationLevel();
+            }
+
+            //saved
+            this.getFormSaveSucces();
+
+            if($('isStartPage') && $F('isStartPage') == 0){
+              $('buttondelete').show();
+            }
           }else{
             this.getFormSaveError();
           }
@@ -82,7 +82,7 @@ Massiveart.Form = Class.create({
           this.loadFileFieldsContent('document');
           // load contacts
           this.loadContactFieldsContent();
-          
+
           if(this.selectNavigationItemNow == true){
             myNavigation.selectItem();
           }
@@ -711,8 +711,7 @@ Massiveart.Form = Class.create({
    * add page url
    */
   addUrl: function(elementId){
-	if($(elementId) && $F(elementId+'_tmpUrl') !== ''){  
-      $(elementId).value = $F(elementId+'_FixedUrl')+$F(elementId+'_tmpUrl');
+    if($(elementId) && $F(elementId+'_tmpUrl') !== ''){
       $(elementId+'_EditableUrl').value = $F(elementId+'_tmpUrl');
       
       this.stopValidUrlObserver(elementId+'_tmpUrl');
