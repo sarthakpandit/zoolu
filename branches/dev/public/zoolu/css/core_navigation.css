@@ -373,7 +373,7 @@ Navigtion left */
   padding-top:5px;
 }
 
-#divNaviLeftMain {
+#divNaviLeft #divNaviLeftMain {
   position:absolute;
   z-index:20;
   bottom:0;

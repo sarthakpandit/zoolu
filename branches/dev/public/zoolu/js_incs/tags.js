@@ -41,7 +41,7 @@ var Tags = Class.create({
    
       if(!Selector.findChildElements($(strElementId+'SelectedTags'),['div[id='+strElementId+'_'+strTagTitle+']'])[0]){
     	$(strElementId+'_WrapperClear').remove();
-    	$(strElementId+'SelectedTags').innerHTML += '<div id="'+strElementId+'_'+strTagTitle+'" class="tagpill"><div class="tagtitle">'+strTagTitle+'</div><div class="tagdelete" onclick="myTags.removeTag(\''+strElementId+'\',\''+strTagTitle+'\')">[x]</div><div class="clear"></div></div>'; 
+    	$(strElementId+'SelectedTags').innerHTML += '<div id="'+strElementId+'_'+strTagTitle+'" class="tagpill"><div class="tagdelete" onclick="myTags.removeTag(\''+strElementId+'\',\''+strTagTitle+'\')">[x]</div><div class="tagtitle">'+strTagTitle+'</div><div class="clear"></div></div>';
     	$(strElementId+'SelectedTags').innerHTML += '<div id="'+strElementId+'_WrapperClear" class="clear"></div>';
     	$(strElementId).value +='['+strTagTitle+']';
         $(strElementId+'_Inp').value = '';

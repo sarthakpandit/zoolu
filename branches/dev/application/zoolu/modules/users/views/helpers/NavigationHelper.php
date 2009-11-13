@@ -58,6 +58,7 @@ class NavigationHelper {
 
   /**
    * getModuleRootLevels
+   * @param Zend_Db_Table_Rowset_Abstract $objRowset
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */

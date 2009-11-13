@@ -99,7 +99,6 @@ class Products_ProductController extends AuthControllerAction {
    */
   public function indexAction(){ }
 
-
   /**
    * listAction
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -692,6 +691,53 @@ class Products_ProductController extends AuthControllerAction {
       exit();
     }
   }
+  
+  /**
+   * getoverlaysearchAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getoverlaysearchAction(){
+    $this->core->logger->debug('products->controllers->ProductController->getoverlaysearchAction()');
+
+    $this->view->currLevel = $this->objRequest->getParam('currLevel');
+    $this->view->overlaytitle = $this->core->translate->_('Search_Product');
+  }
+  
+  /**
+   * overlaysearchAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function overlaysearchAction(){
+    $this->core->logger->debug('products->controllers->ProductController->getoverlaysearchAction()');
+
+    $strSearchValue = $this->objRequest->getParam('searchValue');
+
+    if($strSearchValue != ''){
+      $this->view->searchResult = $this->getModelProducts()->search($strSearchValue);      
+    }
+
+    $this->view->searchValue = $strSearchValue;
+    $this->view->currLevel = $this->objRequest->getParam('currLevel');
+  }
+
+  /**
+   * addproductlinkAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addproductlinkAction(){
+    $this->_helper->viewRenderer->setNoRender(true);
+
+    $objProduct = new stdClass();
+    $objProduct->parentId = $this->objRequest->getParam('parentFolderId');
+    $objProduct->rootLevelId = $this->objRequest->getParam('rootLevelId');
+    $objProduct->isStartElement = $this->objRequest->getParam('isStartProduct');
+    $objProduct->productId = $this->objRequest->getParam('linkId');
+
+    $this->getModelProducts()->addLink($objProduct);
+  }
 
   /**
    * getForm
@@ -806,6 +852,7 @@ class Products_ProductController extends AuthControllerAction {
 
   /**
    * getModelProducts
+   * @return Model_Products
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */

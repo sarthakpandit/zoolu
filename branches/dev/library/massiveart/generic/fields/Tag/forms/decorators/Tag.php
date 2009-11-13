@@ -106,9 +106,9 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php';
     $objModelTags = new Model_Tags();
     
-    $objMostUsedTags = $objModelTags->loadMostUsedTags(GenericSetup::getFormTypeHandle($element->formTypeId));
+    $objAllTags = $objModelTags->loadAllTags();
         
-    $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objMostUsedTags, $element->tagIds);
+    $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objAllTags, $element->tagIds);
     
     return $strOutput;
   }
@@ -155,13 +155,33 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
     $desc      = $this->buildDescription();
     
     $strOutput = '<div class="field-'.$element->getAttrib('columns').'">';
-    $strOutput .= '<div class="field">'
+    $strOutput .= '<div>'
                     .$label
                     .$desc
-                    .$tags
+                    .$tags[0]
                     .$errors
                  .'</div>
                  </div>';
+                 
+    $strOutput .= '<script type="text/javascript" language="javascript">
+     '.$tags[1].'
+     new Autocompleter.Local(\''.$element->getName().'_Inp\', \''.$element->getName().'_Suggest\', arr'.$element->getName().'TagList, { tokens: new Array(\',\',\'\n\'), fullSearch: true, partialSearch: true});
+     Event.observe(\''.$element->getName().'_Inp\', "keypress", function (event){
+       if(event.keyCode == Event.KEY_RETURN){
+         if($F(\''.$element->getName().'_Inp\') !== ""){
+           myTags.addTag(\''.$element->getName().'\');    
+         }
+       }  
+     });
+     
+     Event.observe(\''.$element->getName().'_Suggest\', "click", function (event){
+       if($F(\''.$element->getName().'_Inp\') !== ""){
+         myTags.addTag(\''.$element->getName().'\');
+       }
+     });
+     
+     </script>';
+                 
 
     switch ($placement) {
       case (self::PREPEND):

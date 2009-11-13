@@ -86,7 +86,7 @@
           <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
           <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;">Gel&ouml;scht!</div>
 
-          <div id="genListFunctions">
+          <div id="genListFunctions" style="display:none;">
             <!-- new button -->
             <div id="buttonsave" onclick="myNavigation.getAddForm();">
               <div class="button25leftOn"></div>
@@ -146,7 +146,7 @@
 
       <div id="genFormContainer" class="contentedit2" style="display:none;"></div>
 
-      <div id="genListContainer" class="contentedit2"><?php echo $this->layout()->productlist ?></div>
+      <div id="genListContainer" class="contentedit2" style="display:none;"></div>
 
       <div id="genTmpContainer" style="display:none;"></div>
     </div>
@@ -228,10 +228,10 @@
     <script type="text/javascript" src="/zoolu/js_incs/navigation.products.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- list -->
     <script type="text/javascript" src="/zoolu/js_incs/list.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- users -->
-    <script type="text/javascript" src="/zoolu/js_incs/users.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- form -->
     <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <!-- product -->
+    <script type="text/javascript" src="/zoolu/js_incs/product.js?v=<?php echo $this->jsVersion; ?>"></script>
     <!-- TinyMCE Texteditor -->
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
 
@@ -239,6 +239,7 @@
       var myCore = new Massiveart.Core();
       var myNavigation = new Massiveart.Navigation.Products();
       var myList = new Massiveart.List();
+      var myProduct = new Massiveart.Product();
       var myForm = new Massiveart.Form();
 
       document.observe('dom:loaded', function() {

@@ -54,7 +54,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
    * @param mixed $options   
    * @version 1.0
    */
-  public function formUrl($name, $value = null, $attribs = null, $options = null){
+  public function formUrl($name, $value = null, $attribs = null, $isStartPage = null, $options = null, $idParentFolder = null, $depth = null){
     $info = $this->_getInfo($name, $value, $attribs);
     extract($info); // name, value, attribs, options, listsep, disable
     
@@ -63,17 +63,52 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
     if (($this->view instanceof Zend_View_Abstract) && !$this->view->doctype()->isXhtml()) {
       $endTag= '>';
     }
-    
-    $strOutput = '';
-    if($value != ''){
-      // build the element
-      $strOutput = '
+
+    $strValue = ltrim($this->view->escape($value), '/');
+    $arrUrl = explode('/', $strValue);
+
+    $strLanguage = array_shift($arrUrl);
+        
+    if(is_null($idParentFolder) && is_null($depth) && $isStartPage == 1){
+      $strOutput = '<div class="urlwrapper">
+                      <span class="gray666 bold">Adresse:/'.$strLanguage.'/</span>
+                    </div>';
+    }else{     
+      $strOutput = '';
+      if($value != ''){
+     	  
+        if(count($arrUrl) >= 1){
+        	
+          /**
+           * if is start page, delete last empty array element
+           */
+          if($isStartPage == 1){                      
+            array_pop($arrUrl);            
+          }
+          
+          $strUrlEditable = array_pop($arrUrl);
+                     
+          if(count($arrUrl) != 0){
+            $strUrlFixed = implode('/',$arrUrl).'/';
+            $strUrlShown = '/'.$strLanguage.'/'.implode('/',$arrUrl).'/'; 
+          }else{
+            $strUrlFixed = '';
+            $strUrlShown = '/'.$strLanguage.'/'; 
+          }
+           
+          $strOutput = '
                   <div class="urlwrapper">
-                    <span class="gray666 bold">Adresse: </span><span class="gray666">'.$this->view->escape($value).'</span>
-                    <input type="hidden" value="'.$this->view->escape($value).'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
+                    <span class="gray666 bold">Adresse: '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($isStartPage == 1) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">Editieren</a></span>
+                    <input type="hidden" value="'.$value.'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
+                    <input type="hidden" value="'.$strUrlEditable.'" id="'.$this->view->escape($id).'_EditableUrl" name="'.$this->view->escape($name).'_EditableUrl" '.$endTag.'
                   </div>';
+        }
+        
+        $strOutput .= '
+                  <div id="'.$this->view->escape($id).'_UrlHistory" class="urlTop" onclick="myForm.toggleUrlHistory(\''.$this->view->escape($id).'\')"><div class="urlTopTitle">Url-History</div></div>
+                  <div id="'.$this->view->escape($id).'_ToggleUrlHistory" class="urlHistoryContainer" style="display:none"></div>';    
+      }
     }
-    
     return $strOutput;
   }
 }

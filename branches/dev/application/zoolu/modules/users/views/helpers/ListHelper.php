@@ -59,10 +59,12 @@ class ListHelper {
   /**
    * getList
    * @param Zend_Paginator $objPaginator
+   * @param string $strOrderColumn
+   * @param string $strSortOrder
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  function getList($objPaginator, $strOrderColumn, $strSortOrder) {
+  public function getList($objPaginator, $strOrderColumn, $strSortOrder) {
     $this->core->logger->debug('users->views->helpers->ListHelper->getList()');
 
     $strThead = '<thead>';
@@ -127,11 +129,10 @@ class ListHelper {
               <table class="tablelist">
                 '.$strThead.'
                 '.$strTbody.'
-              </table';
+              </table>';
 
     return $strOutput;
   }
-
 }
 
 ?>

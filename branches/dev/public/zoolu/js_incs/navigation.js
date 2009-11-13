@@ -284,13 +284,12 @@ Massiveart.Navigation = Class.create({
       }.bind(this)
     });
   },
-  
-  
+    
   /**
    * getRootLevelList 
    */
   getRootLevelList: function(){
-    
+    if((typeof(myList) != 'undefined')) myList.getListPage();
   },
   
   /**

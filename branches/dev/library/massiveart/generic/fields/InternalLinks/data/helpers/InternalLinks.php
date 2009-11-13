@@ -49,7 +49,9 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
   /**
    * @var Model_Pages
    */
-  private $objModelPages;
+  private $objModel;
+
+  private $strType;
 
   /**
    * save()
@@ -62,12 +64,13 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
    */
   public function save($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
+      $this->strType = $strType;
 
-      $this->getModelPages();
+      $this->getModel();
 
-      $this->objModelPages->deletePageInternalLinks($strElementId, $intVersion);
+      $this->objModel->deletePageInternalLinks($strElementId, $intVersion);
 
-      $this->objModelPages->addPageInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
+      $this->objModel->addPageInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
 
       $this->load($intElementId, $strType, $strElementId, $intVersion);
 
@@ -87,9 +90,11 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
    */
   public function load($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
-      $this->getModelPages();
+      $this->strType = $strType;
+      
+      $this->getModel();
 
-      $objPageInternalLinksData = $this->objModelPages->loadPageInternalLinks($strElementId, $intVersion);
+      $objPageInternalLinksData = $this->objModel->loadPageInternalLinks($strElementId, $intVersion);
 
       if(count($objPageInternalLinksData) > 0){
         $this->objElement->objPageInternalLinks = $objPageInternalLinksData;
@@ -106,25 +111,30 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
     }
   }
 
-  /**
-   * getModelPages
-   * @return Model_Pages
+   /**
+   * getModel
+   * @return type Model
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function getModelPages(){
-    if (null === $this->objModelPages) {
+  protected function getModel(){
+    if($this->objModel === null) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
-      $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->objElement->Setup()->getLanguageId());
+      $strModelFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.$this->objElement->Setup()->getModelSubPath().((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s').'.php';
+      if(file_exists($strModelFilePath)){
+        require_once $strModelFilePath;
+        $strModel = 'Model_'.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s');
+        $this->objModel = new $strModel();
+        $this->objModel->setLanguageId($this->objElement->Setup()->getLanguageId());
+      }else{
+        throw new Exception('Not able to load type specific model, because the file didn\'t exist! - strType: "'.$this->strType.'"');
+      }
     }
-
-    return $this->objModelPages;
+    return $this->objModel;
   }
 }
 ?>

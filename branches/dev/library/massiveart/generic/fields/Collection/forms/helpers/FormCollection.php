@@ -68,8 +68,8 @@ class Form_Helper_FormCollection extends Zend_View_Helper_FormElement {
     if(isset($element->objPageCollection)){
       foreach($element->objPageCollection as $objPageInternalLink){
         $strPageCollection .= '
-                      <div id="'.$this->view->escape($name).'_page'.$objPageInternalLink->id.'" class="pageitem" pageid="'.$objPageInternalLink->pageId.'">
-                        <div id="'.$this->view->escape($name).'_remove'.$objPageInternalLink->id.'" onclick="myForm.removeItem(\''.$this->view->escape($name).'\', \''.$this->view->escape($name).'_page'.$objPageInternalLink->id.'\', \''.$objPageInternalLink->pageId.'\')" class="itemremovelist2"></div>
+                      <div id="'.$this->view->escape($name).'_page_'.$objPageInternalLink->pageId.'" class="pageitem" pageid="'.$objPageInternalLink->pageId.'">
+                        <div id="'.$this->view->escape($name).'_remove'.$objPageInternalLink->id.'" onclick="myForm.removeItem(\''.$this->view->escape($name).'\', \''.$this->view->escape($name).'_page_'.$objPageInternalLink->pageId.'\', \''.$objPageInternalLink->pageId.'\')" class="itemremovelist2"></div>
                         <div id="Page'.$objPageInternalLink->id.'">
                           <div class="icon img_'.(($objPageInternalLink->isStartPage == 1) ? 'startpage' : 'page').'_'.(($objPageInternalLink->idStatus == $core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objPageInternalLink->title, ENT_COMPAT, $core->sysConfig->encoding->default).'
                         </div>
@@ -88,6 +88,13 @@ class Form_Helper_FormCollection extends Zend_View_Helper_FormElement {
                     </div>
                     <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>
                   </div>';
+    
+     /**
+     * add the scriptaculous sortable funcionality to the parent containert
+     */
+     $strOutput .= '<script type="text/javascript" language="javascript">/* <![CDATA[ */
+     myForm.initSortable(\''.$this->view->escape($id).'\', \'divCollectionContainer_'.$this->view->escape($id).'\', \'pageitem\', \'div\', \'pageid\', \'vertical\');
+     /* ]]> */</script>';
 
     return $strOutput;
   }

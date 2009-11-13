@@ -1151,6 +1151,18 @@ Overlay Inner */
 }
 
 /* --- overlay content --- */
+.olnavigationwrapper ul li{
+  padding:2px 5px 2px 5px;
+}
+
+.olnavigationwrapper ul li.modulus0{
+  background-color:#efefef;
+}
+
+.olnavigationwrapper ul li.modulus1{
+  background-color:#fff;
+}
+
 .olcontentwrapper, .olcontentwrappertab {
   background-color:#ccc;
   height:200px;
@@ -1303,10 +1315,9 @@ video select */
 
 .buttonSelectVideo {
 	cursor: pointer;
-	position: relative;
 	float: right;
-	padding-right: 5px;
-	padding-top: 20px;
+  margin-top:20px;
+  margin-right:5px;
 }
 
 .videoItem{
@@ -1375,7 +1386,6 @@ video select */
   font-weight:bold;
 }
 
-
 .urlHistoryContainer{
   padding-top:4px;
   padding-bottom:8px;
@@ -1385,11 +1395,7 @@ video select */
   min-height:32px;
 }
 
-
 .urlHistoryEntry{
-  position:relative;
-  float:left;
-  width:100%;
   margin-left:10px;
   padding-top:4px;
   padding-bottom:4px;
@@ -1405,13 +1411,12 @@ video select */
 .urlHistoryName{
   padding-left:4px;
   width:90%;
+  position:relative;
   float:left;
   white-space: nowrap;
 }
 
 /* @end, Url definition */
-
-
 
 /* @start, tab definition */
 

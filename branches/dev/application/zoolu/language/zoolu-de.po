@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-29 17:47+0100\n"
+"POT-Creation-Date: 2009-11-12 16:02+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -26,36 +26,36 @@ msgstr "Neuen Benutzer anlegen"
 msgid "Edit_User"
 msgstr "Benutzer bearbeiten"
 
-#: application/zoolu/modules/users/controllers/UserController.php:395
+#: application/zoolu/modules/users/controllers/UserController.php:425
 msgid "fname"
 msgstr "Vorname"
 
-#: application/zoolu/modules/users/controllers/UserController.php:396
+#: application/zoolu/modules/users/controllers/UserController.php:426
 msgid "sname"
 msgstr "Nachname"
 
-#: application/zoolu/modules/users/controllers/UserController.php:397
+#: application/zoolu/modules/users/controllers/UserController.php:427
 msgid "username"
 msgstr "Benutzername"
 
-#: application/zoolu/modules/users/controllers/UserController.php:398
+#: application/zoolu/modules/users/controllers/UserController.php:428
 msgid "system_language"
 msgstr "Systemsprache"
 
-#: application/zoolu/modules/users/controllers/UserController.php:404
+#: application/zoolu/modules/users/controllers/UserController.php:434
 msgid "password"
 msgstr "Passwort"
 
-#: application/zoolu/modules/users/controllers/UserController.php:405
+#: application/zoolu/modules/users/controllers/UserController.php:435
 msgid "Confirm_password"
 msgstr "Bestätigen Sie Ihr neues Passwort"
 
-#: application/zoolu/modules/users/controllers/UserController.php:417
+#: application/zoolu/modules/users/controllers/UserController.php:447
 #: application/zoolu/modules/users/controllers/ResourceController.php:350
 msgid "groups"
 msgstr "Gruppen"
 
-#: application/zoolu/modules/users/controllers/UserController.php:420
+#: application/zoolu/modules/users/controllers/UserController.php:450
 msgid "User_groups"
 msgstr "Benutzergruppen"
 
@@ -106,6 +106,14 @@ msgstr "Ressource bearbeiten"
 #: application/zoolu/modules/users/controllers/ResourceController.php:353
 msgid "Resource_groups"
 msgstr "Ressourcengruppen"
+
+#: application/zoolu/modules/products/controllers/ProductController.php:704
+msgid "Search_Product"
+msgstr "Produkt Suche"
+
+#: application/zoolu/modules/products/views/helpers/ListHelper.php:148
+msgid "No_search_result"
+msgstr "Ihre Suche nach \"%s\" ergab leider keinen Treffer."
 
 #: application/zoolu/language/addon-language-keys.php:38
 msgid "portals"
@@ -161,11 +169,47 @@ msgstr "Meine Einstellungen"
 msgid "Logout"
 msgstr "Log Out"
 
+#: application/zoolu/modules/products/views/scripts/product/getoverlaysearch.phtml:9
+msgid "Search"
+msgstr "Suchen"
+
+#: application/zoolu/modules/products/views/scripts/product/getoverlaysearch.phtml:15
+msgid "Reset"
+msgstr "Reset"
+
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:14
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:14
+msgid "Show_Add_Menu"
+msgstr "Hinzufügen"
+
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:23
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:24
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:23
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:24
+msgid "New_Product"
+msgstr "Neues Produkt"
+
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:28
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:29
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:28
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:29
+msgid "New_Product_Link"
+msgstr "Neuer Produktlink"
+
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:33
+#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:34
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:33
+#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:34
+msgid "New_Folder"
+msgstr "Neuer Ordner"
+
 #: application/zoolu/layouts/media.phtml:40
 #: application/zoolu/layouts/index.phtml:34
 #: application/zoolu/layouts/products-tree.phtml:41
 #: application/zoolu/layouts/users.phtml:40
 #: application/zoolu/layouts/cms.phtml:41
+#: application/zoolu/layouts/products-list.phtml:40
+#: application/zoolu/layouts/properties.phtml:39
 msgid "Report_bugs"
 msgstr "Fehler melden"
 
@@ -174,6 +218,8 @@ msgstr "Fehler melden"
 #: application/zoolu/layouts/products-tree.phtml:41
 #: application/zoolu/layouts/users.phtml:40
 #: application/zoolu/layouts/cms.phtml:41
+#: application/zoolu/layouts/products-list.phtml:40
+#: application/zoolu/layouts/properties.phtml:39
 msgid "Help_and_FAQ"
 msgstr "Hilfe & FAQ"
 
@@ -182,10 +228,11 @@ msgid "Media"
 msgstr "Medien"
 
 #: application/zoolu/layouts/products-tree.phtml:200
+#: application/zoolu/layouts/products-list.phtml:246
 msgid "Products"
 msgstr "Produkte"
 
-#: application/zoolu/layouts/users.phtml:182
+#: application/zoolu/layouts/users.phtml:244
 msgid "User_administration"
 msgstr "Benutzerverwaltung"
 
