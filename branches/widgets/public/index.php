@@ -36,7 +36,6 @@
  * @version 1.0
  */
 
-
 /**
  * include general (autoloader, config)
  */

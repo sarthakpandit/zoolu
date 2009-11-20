@@ -253,26 +253,6 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
 	/**
-	 * deletecommentAction
-	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
-	 * @version 1.0
-	 */
-	public function deletecommentAction() {
-		$this->core->logger->debug('widgets->blog->FormController->deleteCommentAction');
-		
-		try {
-			$this->getModelBlogEntryComment();
-			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
-				$this->ObjModelBlogEntryComment->deleteBlogEntryComment($this->objRequest->getParam('id'));
-				//TODO: Complete
-			}
-		} catch(Exception $exc) {
-			$this->core->logger->err($exc);
-			exit();
-		}
-	}
-	
-	/**
 	 * getwidgetpropertiesAction
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
