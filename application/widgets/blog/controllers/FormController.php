@@ -60,6 +60,11 @@ class Blog_FormController extends AuthControllerAction {
 	 */
 	private $objModelWidgetInstanceProperties;
 	
+	/**
+	 * @var Model_Widgets
+	 */
+	private $objModelWidgets;
+	
 	const PREFIX_PROPERTY = 'prop_';
 	
 	/**
@@ -121,7 +126,11 @@ class Blog_FormController extends AuthControllerAction {
 					$this->objForm->Setup()->setElementId($intSubWidgetId);
 					$this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
 					$this->objForm->getElement('id')->setValue($intSubWidgetId);
-					$this->core->logger->debug($this->objForm->Setup()->getElementId());
+			
+					// Add WidgetForm Url
+					$strSubwidgetUrl = $this->getModelWidgets()->prepareSubwidgetUrl($arrFormData['title'], $arrFormData['widgetInstanceId'], 1);
+					$this->getModelWidgets()->insertWidgetUrl($strSubwidgetUrl, $arrFormData['widgetInstanceId'], '1');
+					
 					$this->view->assign('blnShowFormAlert', true);
 				} else {
 					$this->objForm->setAction('widget/blog/form/addsubwidget');
@@ -476,6 +485,20 @@ class Blog_FormController extends AuthControllerAction {
       $this->objModelWidgetInstanceProperties = new Model_WidgetInstanceProperties();
   	}
   	return $this->objModelWidgetInstanceProperties;
+  }
+  
+	/**
+   * getModelWidgets
+   * @return Model_Widgets
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelWidgets(){
+  	if($this->objModelWidgets == NULL){
+  		require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
+      $this->objModelWidgets = new Model_Widgets();
+  	}
+  	return $this->objModelWidgets;
   }
 }
 ?>

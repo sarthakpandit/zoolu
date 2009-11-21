@@ -161,8 +161,6 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     }
     */
     
-  	
-    
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/navigation.inc.php';
     Zend_Registry::set('Navigation', $objNavigation);
 
