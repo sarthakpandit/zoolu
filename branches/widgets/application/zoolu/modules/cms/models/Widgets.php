@@ -62,6 +62,16 @@ class Model_Widgets {
 	protected $objWidgetInstancesTable;
 	
 	/**
+	 * @var Model_Table_UrlReplacers
+	 */
+	protected $objUrlReplacersTable;
+	
+	/**
+	 * @var Object_Url_Replacers
+	 */
+	protected $objUrlReplacers;
+	
+	/**
 	 * @var Model_Table_Url
 	 */
 	protected $objUrlTable;
@@ -70,11 +80,6 @@ class Model_Widgets {
 	 * @var number
 	 */
 	private $intLanguageId;
-	
-	/**
-	 * @var Model_Table_Urlreplacers
-	 */
-	protected $objUrlReplacersTable;
 	
 	/**
 	 * UrlType Widget
@@ -286,6 +291,29 @@ class Model_Widgets {
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
   
+  /**
+   * prepareSubwidgetUrl
+   * @param string strPostUrl
+   * @param string $strWidgetInstanceId
+   * @param integer $intVersion
+   * @return string $subwidgetUrl
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function prepareSubwidgetUrl($strPostUrl, $strWidgetInstanceId, $intVersion=1){
+  	$this->core->logger->debug('cms->models->Model_Widgets->prepareSubwidgetUrl()');
+  	
+  	//todo: get version and language id dynamic
+  	$intVersion=1;
+  	$this->setLanguageId(1);
+  	
+  	$objWidgetUrl = $this->loadWidgetUrl($strWidgetInstanceId, $intVersion);
+  	$objUrl = $objWidgetUrl->current();
+  	$strUrl = $objUrl->url.'/'.$this->makeUrlConform($strPostUrl);
+  	
+  	return $strUrl;
+  }
+  
 	/**
    * insertWidgetUrl
    * @param string $strUrl
@@ -383,6 +411,42 @@ class Model_Widgets {
 	public function setLanguage($intLanguageId) {
 		$this->intLanguageId = $intLanguageId;
 	}
+	
+	/**
+   * makeUrlConform()
+   * @param string $strUrlPart
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  private function makeUrlConform($strUrlPart){
+
+    $this->getUrlReplacers();
+    $strUrlPart = strtolower($strUrlPart);
+
+    if(count($this->objUrlReplacers) > 0){
+      foreach($this->objUrlReplacers as $objUrlReplacer){
+        $strUrlPart = str_replace(utf8_encode($objUrlReplacer->from), $objUrlReplacer->to, $strUrlPart);
+      }
+    }
+
+    $strUrlPart = strtolower($strUrlPart);
+    $strUrlPart = urlencode(preg_replace('/([^A-za-z0-9\s-_])/', '_', $strUrlPart));
+    $strUrlPart = str_replace('+', '-', $strUrlPart);
+
+    return $strUrlPart;
+  }
+  
+ 	/**
+   * getUrlReplacers()
+   * @param string $strUrlPart
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  private function getUrlReplacers(){
+    if($this->objUrlReplacers === null) {
+      $this->objUrlReplacers = $this->loadUrlReplacers();
+    }
+  }
 	
 	/**
    * getUrlTable
