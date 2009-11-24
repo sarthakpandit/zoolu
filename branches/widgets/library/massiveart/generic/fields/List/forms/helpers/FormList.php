@@ -65,7 +65,7 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 		$xhtml.='<tbody>';
 		foreach($options as $id=>$option)
 		{
-			$xhtml.='<tr>';
+			$xhtml.='<tr id="list'.$id.'">';
 			$xhtml.='<td><input type="checkbox" value="'.$id.'" name="listSelect'.$id.'" id="listSelect'.$id.'"/></td>';
 			$xhtml.='<td>';
 			$xhtml.=$option;
@@ -74,6 +74,7 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 		}
 		$xhtml.='</tbody>';
 		$xhtml.= '</table>';
+		$xhtml.='<input type="button" name="delete" value="Löschen">';
 		
 		return $xhtml;
 	}
