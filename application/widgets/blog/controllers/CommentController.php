@@ -56,7 +56,7 @@ class Blog_CommentController extends WidgetControllerAction {
 			if($this->objRequest->getPost() && $this->objRequest->isXmlHttpRequest()) {
 				
 				$arrFormData = $this->objRequest->getPost();
-				//TODO: Replace the keys from the $arrFormData Array with the correct ones
+				//TODO: Replace the keys from the $arrFormData Array with the correct ones from the forms
 				$arrData = array('idWidget_BlogEntries' => $arrFormData['idBlogEntry'],
 				                  'title' => $arrFormData['title'],
 				                  'text' => $arrFormData['text'],
