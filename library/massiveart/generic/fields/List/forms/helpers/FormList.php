@@ -57,16 +57,20 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
      */
 	public function formList($name, $value = null, $attribs = null, $options = null)
 	{
+		//FIXME: Making it work with multiple instances on one formular
 		$info = $this->_getInfo($name, $value, $attribs, $options);
 		extract($info);
 
-		$xhtml = '<table>';
+		$xhtml = '<script type="text/javascript">';
+		$xhtml .= 'myList = new List('.count($options).');';
+		$xhtml .= '</script>';
+		$xhtml .= '<table>';
 		
 		$xhtml.='<tbody>';
 		foreach($options as $id=>$option)
 		{
-			$xhtml.='<tr id="list'.$id.'">';
-			$xhtml.='<td><input type="checkbox" value="'.$id.'" name="listSelect'.$id.'" id="listSelect'.$id.'"/></td>';
+			$xhtml.='<tr id="line'.$id.'">';
+			$xhtml.='<td><input type="checkbox" value="'.$id.'" name="element'.$id.'" id="element'.$id.'"/></td>';
 			$xhtml.='<td>';
 			$xhtml.=$option;
 			$xhtml.='</td>';
@@ -74,7 +78,7 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 		}
 		$xhtml.='</tbody>';
 		$xhtml.= '</table>';
-		$xhtml.='<input type="button" name="delete" value="Löschen">';
+		$xhtml.='<input type="button" name="delete" value="Löschen" onclick="myList.deleteSelectedElements()">';
 		
 		return $xhtml;
 	}
