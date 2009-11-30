@@ -57,6 +57,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 		
 		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
 		$this->view->assign('objEntries',$objEntry);
+		
 		//plugin_css$this->view->assign('test', 'hey hey hey');
 	}
 	
@@ -69,6 +70,10 @@ class Blog_IndexController extends WidgetControllerAction  {
   	//$this->strTemplateFile = 'template.php';
   	$objBlogEntries = $this->getBlogEntries();
   	
+		$this->addCssFile('blog_view');
+		$this->addCssFile('blog_asdfview');
+		$this->addCssFile('blog_23view');
+		
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
   	$strTitle = $arrParams[4];

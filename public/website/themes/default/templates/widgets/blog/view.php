@@ -10,12 +10,12 @@
 				von <em><?php if (isset($this->objEntry->username)): print $this->objEntry->username; endif; ?></em> am <?php if (isset($this->objEntry->created)): print date("d.m.Y\, H:i \\U\\h\\r",strtotime($this->objEntry->created)); endif; ?><br/><br/>
 				<?php print $this->objEntry->text; ?>
 				
-				<form name="addComment" method="post">
+				<form name="addComment" method="post" id="blogWidgetCommentForm">
 					<strong>Eine Antwort schreiben</strong><br/>
-					<input type="text" name="name"/> Name<br/>
-					<input type="text" name="email"/> Email<br/>
+					<label for="name">Name</label><input type="text" name="name"/><br/>
+					<label for="mail">E-Mail</label><input type="text" name="mail"/><br/>
 					<textarea name="text"></textarea><br/>
-					<input type="submit" value="Absenden"/>
+					<input type="submit" name="submit" value="Absenden"/>
 				</form>
         <div class="clear"></div>
       </div>  

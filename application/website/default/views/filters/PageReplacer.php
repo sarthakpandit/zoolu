@@ -50,7 +50,7 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
    * css
    */
   const PLACEHOLDER_TEMPLATE_CSS = '<%template_css%>';
-  const PLACEHOLDER_PLUGIN_CSS = '<%plugin_css%>';
+  const PLACEHOLDER_WIDGET_CSS = '<%widget_css%>';
   
   /**
    * js
@@ -64,7 +64,7 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
     $this->replaceTemplateCssPlaceholder();
     $this->replaceTemplateJsPlaceholder();
     
-    $this->replacePluginCssPlaceholder();
+    $this->replaceWidgetCssPlaceholder();
     $this->replacePluginJsPlaceholder();
         
     return $this->response;
@@ -82,12 +82,12 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
   }
   
   /**
-   * replacePluginCssPlaceholder
-   * @author Thomas Schedler <tsh@massiveart.com>
+   * replaceWidgetCssPlaceholder
+   * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  private function replacePluginCssPlaceholder(){
-    $this->response = str_replace(self::PLACEHOLDER_PLUGIN_CSS, '', $this->response);     
+  private function replaceWidgetCssPlaceholder(){
+    $this->response = str_replace(self::PLACEHOLDER_WIDGET_CSS, Zend_Registry::get('WidgetCss'), $this->response);     
   }
   
   /**
