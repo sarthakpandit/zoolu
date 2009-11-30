@@ -42,6 +42,9 @@
 
 class WidgetControllerAction extends Zend_Controller_Action  {
 	
+	/**
+	 * @var Core
+	 */
 	protected $core;
 	
 	/**
@@ -75,6 +78,8 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   protected $strWidgetArgs;
   protected $strWidgetParams;
   
+  static $objWidgetCss = array();
+  
 	/**
    * init
    * @author Florian Mathis <flo@massiveart.com>
@@ -83,6 +88,11 @@ class WidgetControllerAction extends Zend_Controller_Action  {
    */
   public function init(){
     parent::init();
+    
+    // Add Default FilterPath and PageReplacer Filter
+    $this->view->addBasePath('../application/website/default/views','Zend_View');
+    $this->view->addFilter('PageReplacer');
+    
     $this->objRequest = $this->getRequest();
     $this->core = Zend_Registry::get('Core');
     
@@ -175,7 +185,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     /**
      * set values for replacers
      */
-    Zend_Registry::set('WidgetCss', '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$this->objTheme->path.'/css/startpage.css"></link>');
+    Zend_Registry::set('WidgetCss', $this->getCssFiles());
     Zend_Registry::set('PluginJs', ($this->objWidget->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
 
     Zend_Registry::set('Widget', $this->objWidget);
@@ -183,6 +193,44 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$this->objTheme->path.'/');
     $this->renderScript('master.php');
   }
+  
+	/**
+	 * addCssFile
+	 * @param string strPath
+	 * @param string strMedia
+	 * @return array objWidgetCss
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addCssFile($strPath = NULL, $strMedia = 'all'){
+		$strWidgetPath = '/website/themes/'.$this->objTheme->path.'/templates/widgets/'.Zend_Registry::get('Widget')->getWidgetName().'/css/'.$strPath.'.css';
+
+		if(isset($strPath)) {
+			$this->objWidgetCss[$strMedia][] = $strWidgetPath;
+		}
+		return $this->objWidgetCss;
+	}
+	
+	/**
+	 * getCssFiles
+	 * @return strOutput
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getCssFiles() {
+		$strOutput='';
+		
+		if(isset($this->objWidgetCss)) {
+			foreach ($this->objWidgetCss AS $media => $files) {
+				foreach($files AS $path) {
+					if(file_exists(GLOBAL_ROOT_PATH.'public'.$path)) {
+						$strOutput .= '<link type="text/css" rel="stylesheet" media="'. $media .'" href="'. $path .'" />';
+					}
+				}
+			}
+		}
+		return $strOutput;
+	}
   
   /**
    * getModelFolders
