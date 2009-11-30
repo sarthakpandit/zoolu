@@ -38,12 +38,32 @@
  * @author Daniel Rotter <daniel.rotter@massiveart.at>
  * @version 1.0
  */
-class Blog_CommentController extends WidgetControllerAction {
+class Blog_CommentController extends Zend_Controller_Action {
 	
 	 /**
    * @var Model_BlogEntryComment
    */
   private $ObjModelBlogEntryComment;
+  
+  /**
+   * @var Core
+   */
+  protected $core;
+  
+  /**
+   * @var Zend_Controller_Request_Abstract
+   */
+  private $objRequest;
+  
+  /**
+   * Init
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function init(){
+  	$this->core = Zend_Registry::get('Core');
+  	$this->objRequest = $this->getRequest();
+  }
   
 	/**
 	 * addAction
