@@ -61,11 +61,13 @@ function getCoreObject(){
 
 /**
  * get_template_file
+ * @param string strPrefix
+ * @return string templateFilePath
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_template_file(){
-  return getPageObject()->getTemplateFile();
+function get_template_file($strPrefix){
+  return $strPrefix . getPageObject()->getTemplateFile();
 }
 
 /**

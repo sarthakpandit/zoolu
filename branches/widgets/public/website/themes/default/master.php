@@ -45,7 +45,7 @@
   <!-- Header Section -->
   <?php include dirname(__FILE__).'/includes/header.inc.php'; ?>
   <!-- Template Content -->  
-  <?php include dirname(__FILE__).'/templates/'.get_template_file(); ?>  
+  <?php include get_template_file(dirname(__FILE__).'/templates/'); ?>  
   <!-- Footer Section -->  
   <?php include dirname(__FILE__).'/includes/footer.inc.php'; ?>
 		
