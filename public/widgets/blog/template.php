@@ -2,9 +2,7 @@
   <div class="wrapper content">
     <div class="subwrapper">
       <div class="inner detail">        
-        <!-- Sub Navigation -->
-        <?php include dirname(__FILE__).'/../../../includes/subnavigation.inc.php'; ?>
-        
+        <!-- Sub Navigation -->        
         <!-- Main Content -->
         <?php foreach($this->objEntries AS $entry): ?>
 	        <div class="divContentContainer">
