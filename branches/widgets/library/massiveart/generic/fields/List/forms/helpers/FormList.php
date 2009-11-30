@@ -61,16 +61,16 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 		$info = $this->_getInfo($name, $value, $attribs, $options);
 		extract($info);
 
-		$xhtml = '<script type="text/javascript">';
-		$xhtml .= 'myList = new List('.count($options).');';
-		$xhtml .= '</script>';
-		$xhtml .= '<table>';
+		$xhtml='<script type="text/javascript">';
+		$xhtml.='myList = new List();';
+		$xhtml.='</script>';
+		$xhtml.='<table>';
 		
 		$xhtml.='<tbody>';
 		foreach($options as $id=>$option)
 		{
-			$xhtml.='<tr id="line'.$id.'">';
-			$xhtml.='<td><input type="checkbox" value="'.$id.'" name="element'.$id.'" id="element'.$id.'"/></td>';
+			$xhtml.='<tr>';
+			$xhtml.='<td><input type="checkbox" value="'.$id.'" name="listElement" /></td>';
 			$xhtml.='<td>';
 			$xhtml.=$option;
 			$xhtml.='</td>';
