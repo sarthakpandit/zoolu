@@ -87,7 +87,11 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
    * @version 1.0
    */
   private function replaceWidgetCssPlaceholder(){
-    $this->response = str_replace(self::PLACEHOLDER_WIDGET_CSS, Zend_Registry::get('WidgetCss'), $this->response);     
+  	if(Zend_Registry::isRegistered('WidgetCss')){
+  		$this->response = str_replace(self::PLACEHOLDER_WIDGET_CSS, Zend_Registry::get('WidgetCss'), $this->response);   
+  	} else {
+  		$this->response = str_replace(self::PLACEHOLDER_WIDGET_CSS, '', $this->response); 
+  	}
   }
   
   /**

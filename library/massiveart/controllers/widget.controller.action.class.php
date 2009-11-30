@@ -164,13 +164,6 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     $objNavigation->setRootLevelId($this->objTheme->idRootLevels);
     $objNavigation->setLanguageId($this->intLanguageId);
     
-    /*$this->getModelWidgets();
-    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($objTheme->idRootLevels, Zend_Registry::get('Widget')->getNavigationUrl());
-    foreach($this->objUrlsData as $objPageData){
-      $this->objUrlsData = $objPageData;
-    }
-    */
-    
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/navigation.inc.php';
     Zend_Registry::set('Navigation', $objNavigation);
 
