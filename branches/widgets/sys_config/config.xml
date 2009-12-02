@@ -72,9 +72,9 @@
       <adapter>Pdo_Mysql</adapter>
       <params>
         <host>localhost</host>
-        <username>widgets</username>
-        <password>widgets</password>
-        <dbname>widgets</dbname>
+        <username>zoolu</username>
+        <password>zoolu</password>
+        <dbname>zoolu</dbname>
       </params>
     </database>
     

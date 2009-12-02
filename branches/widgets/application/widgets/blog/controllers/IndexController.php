@@ -56,6 +56,13 @@ class Blog_IndexController extends WidgetControllerAction  {
 		$objEntries = $this->getBlogEntries();
 		
 		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
+		
+		$page=$this->_getParam('page',1);
+    $paginator = Zend_Paginator::factory($objEntry);
+    $paginator->setItemCountPerPage(2);
+    $paginator->setCurrentPageNumber($page);
+    $this->view->paginator=$paginator;
+		
 		$this->view->assign('objEntries',$objEntry);
 		
 		//widget.inc.php$this->view->assign('test', 'hey hey hey');
@@ -81,6 +88,14 @@ class Blog_IndexController extends WidgetControllerAction  {
   	$objEntry = $objBlogEntries->getBlogEntryByDateAndTitle($strDate, $strTitle);
   	$this->view->assign('objEntry',$objEntry);
   	//$objEntries = $objBlogEntries->getBlogEntry();
+  }
+  
+  public function rssAction(){
+//  	$arrData = array();
+//  	
+//  	$objFeed = Zend_Feed::importArray($arrData, 'rss');
+//  	$objFeed->send();
+  	$this->view->assign('text', 'text');
   }
   
 	/**
