@@ -192,8 +192,33 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     Zend_Registry::set('Widget', $this->objWidget);
     
   	require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/widget.inc.php';
+  	$this->loadWidgetHelpers();
+  	
   	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$this->objTheme->path.'/');
     $this->renderScript('master.php');
+  }
+  
+  /**
+   * loadWidgetHelpers
+   * @return unknown_type
+   */
+  public function loadWidgetHelpers(){
+  	$strWidgetHelperPath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.Zend_Registry::get('Widget')->getWidgetName().'/views/helpers/';
+		$handle = opendir($strWidgetHelperPath);
+		
+		while ($file = readdir ($handle)) {
+			if($file != "." && $file != "..") {
+		  	if(!is_dir($strWidgetHelperPath."/".$file)) {
+		    	$compl = $strWidgetHelperPath."/".$file;
+		      $file_info=pathinfo($compl);
+		      if($file_info["extension"] == 'php') {
+		      	require_once $compl;
+		      }
+		    }
+			}
+		}
+		
+		closedir($handle);
   }
   
 	/**
@@ -205,10 +230,11 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 	 * @version 1.0
 	 */
 	public function addCssFile($strPath = NULL, $strMedia = 'all'){
-		$strWidgetPath = '/widgets/'.Zend_Registry::get('Widget')->getWidgetName().'/css/'.$strPath.'.css';
-		if(isset($strPath)) { $this->objWidgetCss[$strMedia][] = $strWidgetPath; }
-		
-		return $this->objWidgetCss;
+		if(isset($strPath)) { 
+			$strWidgetPath = '/widgets/'.Zend_Registry::get('Widget')->getWidgetName().'/css/'.$strPath.'.css';
+			$this->objWidgetCss[$strMedia][] = $strWidgetPath; 
+			return $this->objWidgetCss;
+		}
 	}
 	
 	/**
@@ -218,8 +244,9 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 	 * @version 1.0
 	 */
 	public function getCssFiles() {
-		$strOutput='';		
+		//TODO: implement minify
 		if(isset($this->objWidgetCss)) {
+			$strOutput='';		
 			foreach ($this->objWidgetCss AS $media => $files) {
 				foreach($files AS $path) {
 					if(file_exists(GLOBAL_ROOT_PATH.'public'.$path)) {
@@ -227,9 +254,8 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 					}
 				}
 			}
-		}
-		
 		return $strOutput;
+		}
 	}
   
   /**
