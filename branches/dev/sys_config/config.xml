@@ -526,6 +526,13 @@
       <portal_startpage>4</portal_startpage>
       <collection>5</collection>
     </types>
+
+    <!-- URL TYPES -->
+    <!-- table: urlTypes -->
+    <url_types>
+      <page>1</page>
+      <product>2</product>
+    </url_types>
     
     <!-- table: categories / idRootCategory=11, idCategoryTypes=2 -->
     <sort>

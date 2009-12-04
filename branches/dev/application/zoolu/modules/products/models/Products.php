@@ -70,9 +70,14 @@ class Model_Products {
   protected $objModelFolders;
 
   /**
+   * @var Model_Table_ProductInternalLinks
+   */
+  protected $objProductInternalLinkTable;
+
+  /**
    * @var Model_Table_ProductVideosTable
    */
-  protected $objProductVideosTable;
+  protected $objProductVideoTable;
 
   /**
    * @var Core
@@ -264,8 +269,8 @@ class Model_Products {
     $strWhere = $this->getProductTable()->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
     $strWhere .= $this->getProductTable()->getAdapter()->quoteInto(' AND version = ?', $objProduct->version);
 
-    $this->getProductTable()->update(array('idUsers'          => $intUserId,
-                                           'changed'          => date('Y-m-d H:i:s')), $strWhere);
+    $this->getProductTable()->update(array('idUsers'  => $intUserId,
+                                           'changed'  => date('Y-m-d H:i:s')), $strWhere);
     /**
      * update language specific product properties
      */
@@ -279,6 +284,7 @@ class Model_Products {
                                                                            'idStatus'         => $objGenericSetup->getStatusId(),
                                                                            'published'        => $objGenericSetup->getPublishDate(),
                                                                            'changed'          => date('Y-m-d H:i:s')), $strWhere);
+    
     /**
      * insert language specific product properties
      */
@@ -365,6 +371,187 @@ class Model_Products {
   }
 
   /**
+   * addInternalLinks
+   * @param string $strLinkedProductIds
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addInternalLinks($strLinkedProductIds, $strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Products->addInternalLinks('.$strLinkedProductIds.', '.$strElementId.', '.$intVersion.')');
+
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    $arrData = array('productId'   => $strElementId,
+                     'version'     => $intVersion,
+                     'idLanguages' => $this->intLanguageId,
+                     'idUsers'     => $intUserId,
+                     'creator'     => $intUserId,
+                     'created'     => date('Y-m-d H:i:s'));
+
+    $strTmpLinkedProductIds = trim($strLinkedProductIds, '[]');
+    $arrLinkedProductIds = split('\]\[', $strTmpLinkedProductIds);
+
+    if(count($arrLinkedProductIds) > 0){
+      foreach($arrLinkedProductIds as $sortPosition => $strLinkedProductId){
+        $arrData['linkedProductId'] = $strLinkedProductId;
+        $arrData['sortPosition'] = $sortPosition + 1;
+        $this->getProductInternalLinkTable()->insert($arrData);
+      }
+    }
+  }
+
+  /**
+   * loadInternalLinks
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadInternalLinks($strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Products->loadInternalLinks('.$strElementId.','.$intVersion.')');
+
+    $objSelect = $this->getProductInternalLinkTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('products', array('products.id', 'products.productId', 'products.version', 'productProperties.idProductTypes', 'products.isStartProduct', 'productProperties.idStatus'));
+    $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->join('productInternalLinks', 'productInternalLinks.linkedProductId = products.productId AND productInternalLinks.productId = '.$this->core->dbh->quote($strElementId).' AND productInternalLinks.version = '.$this->core->dbh->quote($intVersion, Zend_Db::INT_TYPE).' AND productInternalLinks.idLanguages = '.$this->intLanguageId, array('sortPosition'));
+    $objSelect->join('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'));
+    $objSelect->joinLeft('productUrls', 'productUrls.productId = products.productId AND productUrls.version = products.version AND productUrls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND productUrls.idParent IS NULL', array('url'));
+    $objSelect->joinLeft('languages', 'languages.id = productUrls.idLanguages', array('languageCode'));
+    $objSelect->where('products.id = (SELECT p.id FROM products AS p WHERE products.productId = p.productId ORDER BY p.version DESC LIMIT 1)');
+    $objSelect->order('productInternalLinks.sortPosition ASC');
+
+    return $this->objProductInternalLinkTable->fetchAll($objSelect);
+  }
+
+  /**
+   * deleteInternalLinks
+   * @param string $strElementId
+   * @param integer $intVersion
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @param integer $intElementId
+   * @version 1.0
+   */
+  public function deleteInternalLinks($strElementId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Products->deleteInternalLinks('.$strElementId.','.$intVersion.')');
+
+    $strWhere = $this->getProductInternalLinkTable()->getAdapter()->quoteInto('productId = ?', $strElementId);
+    $strWhere .= $this->objProductInternalLinkTable->getAdapter()->quoteInto(' AND version = ?', $intVersion);
+    $strWhere .= $this->objProductInternalLinkTable->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
+
+    return $this->objProductInternalLinkTable->delete($strWhere);
+  }
+
+   /**
+   * loadVideo
+   * @param string $intElementId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadVideo($intElementId){
+    $this->core->logger->debug('cms->products->models->Model_Products->loadVideo('.$intElementId.')');
+
+    $objSelect = $this->getProductVideoTable()->select();
+    $objSelect->from($this->objProductVideoTable, array('userId', 'videoId', 'idVideoTypes', 'thumb'));
+    $objSelect->join('products', 'products.productId = productVideos.productId AND products.version = productVideos.version', array());
+    $objSelect->where('products.id = ?', $intElementId)
+              ->where('idLanguages = ?', $this->getLanguageId());
+
+    return $this->objProductVideoTable->fetchAll($objSelect);
+  }
+
+  /**
+   * addVideo
+   * @param  integer $intElementId
+   * @param  mixed $mixedVideoId
+   * @param  integer $intVideoTypeId
+   * @param  string $strVideoUserId
+   * @param  string $strVideoThumb
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addVideo($intElementId, $mixedVideoId, $intVideoTypeId, $strVideoUserId, $strVideoThumb){
+   $this->core->logger->debug('cms->products->models->Model_Products->addVideo('.$intElementId.','.$mixedVideoId.','.$intVideoTypeId.','.$strVideoUserId.','.$strVideoThumb.')');
+
+    $objProductData = $this->load($intElementId);
+
+    if(count($objProductData) > 0){
+      $objProduct = $objProductData->current();
+
+      $this->getProductVideoTable();
+
+      $strWhere = $this->objProductVideoTable->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
+      $strWhere .= 'AND '.$this->objProductVideoTable->getAdapter()->quoteInto('version = ?', $objProduct->version);
+      $this->objProductVideoTable->delete($strWhere);
+
+      if($mixedVideoId != ''){
+        $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+        $arrData = array('productId'       => $objProduct->productId,
+                         'version'      => $objProduct->version,
+                         'idLanguages'  => $this->intLanguageId,
+                         'userId'       => $strVideoUserId,
+                         'videoId'      => $mixedVideoId,
+                         'idVideoTypes' => $intVideoTypeId,
+                         'thumb'        => $strVideoThumb,
+                         'creator'      => $intUserId);
+        return $objSelect = $this->objProductVideoTable->insert($arrData);
+      }
+    }
+  }
+
+  /**
+   * removeVideo
+   * @param  integer $intElementId
+   * @return integer affected rows
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function removeVideo($intElementId){
+    $this->core->logger->debug('cms->products->models->Model_Products->removeVideo('.$intElementId.')');
+
+    $objProductData = $this->load($intElementId);
+
+    if(count($objProductData) > 0){
+      $objProduct = $objProductData->current();
+
+      $this->getProductVideoTable();
+
+      $strWhere = $this->objProductVideoTable->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
+      $strWhere .= 'AND '.$this->objProductVideoTable->getAdapter()->quoteInto('version = ?', $objProduct->version);
+
+      return $this->objProductVideoTable->delete($strWhere);
+    }
+  }
+
+  /**
+   * getModelFolders
+   * @return Model_Folders
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelFolders(){
+    if (null === $this->objModelFolders) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
+      $this->objModelFolders = new Model_Folders();
+      $this->objModelFolders->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelFolders;
+  }
+
+  /**
    * getProductTable
    * @return Zend_Db_Table_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -428,6 +615,37 @@ class Model_Products {
     return $this->objProductUrlTable;
   }
 
+  /**
+   * getProductInternalLinkTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getProductInternalLinkTable(){
+
+    if($this->objProductInternalLinkTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'products/models/tables/ProductInternalLinks.php';
+      $this->objProductInternalLinkTable = new Model_Table_ProductInternalLinks();
+    }
+
+    return $this->objProductInternalLinkTable;
+  }
+
+  /**
+   * getProductVideoTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getProductVideoTable(){
+
+    if($this->objProductVideoTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'products/models/tables/ProductVideos.php';
+      $this->objProductVideoTable = new Model_Table_ProductVideos();
+    }
+
+    return $this->objProductVideoTable;
+  }
 
   /**
    * Returns a table for a plugin
@@ -440,28 +658,7 @@ class Model_Products {
     require_once(GLOBAL_ROOT_PATH.'application/plugins/'.$type.'/data/models/Product'.$type.'.php');
     $strClass = 'Model_Table_Product'.$type;
     return new $strClass();
-  }
-
-  /**
-   * getModelFolders
-   * @return Model_Folders
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  protected function getModelFolders(){
-    if (null === $this->objModelFolders) {
-      /**
-       * autoload only handles "library" compoennts.
-       * Since this is an application model, we need to require it
-       * from its modules path location.
-       */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
-      $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->intLanguageId);
-    }
-
-    return $this->objModelFolders;
-  }
+  }  
 
   /**
    * setLanguageId
@@ -477,106 +674,6 @@ class Model_Products {
    */
   public function getLanguageId(){
     return $this->intLanguageId;
-  }
-
-  /**
-   * getProductVideosTable
-   * @return Zend_Db_Table_Abstract
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function getProductVideosTable(){
-
-    if($this->objProductVideosTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/ProductVideos.php';
-      $this->objProductVideosTable = new Model_Table_ProductVideos();
-    }
-
-    return $this->objProductVideosTable;
-  }
-
-
-   /**
-   * loadVideo
-   * @param string $intElementId
-   * @return Zend_Db_Table_Rowset_Abstract
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function loadVideo($intElementId){
-    $this->core->logger->debug('cms->products->models->Model_Products->loadVideo('.$intElementId.')');
-
-    $objSelect = $this->getProductVideosTable()->select();
-    $objSelect->from($this->objProductVideosTable, array('userId', 'videoId', 'idVideoTypes', 'thumb'));
-    $objSelect->join('products', 'products.productId = productVideos.productId AND products.version = productVideos.version', array());
-    $objSelect->where('products.id = ?', $intElementId)
-              ->where('idLanguages = ?', $this->getLanguageId());
-
-    return $this->objProductVideosTable->fetchAll($objSelect);
-  }
-
-  /**
-   * addVideo
-   * @param  integer $intElementId
-   * @param  mixed $mixedVideoId
-   * @param  integer $intVideoTypeId
-   * @param  string $strVideoUserId
-   * @param  string $strVideoThumb
-   * @return Zend_Db_Table_Rowset_Abstract
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function addVideo($intElementId, $mixedVideoId, $intVideoTypeId, $strVideoUserId, $strVideoThumb){
-   $this->core->logger->debug('cms->products->models->Model_Products->addVideo('.$intElementId.','.$mixedVideoId.','.$intVideoTypeId.','.$strVideoUserId.','.$strVideoThumb.')');
-
-    $objProductData = $this->load($intElementId);
-
-    if(count($objProductData) > 0){
-      $objProduct = $objProductData->current();
-
-      $this->getProductVideosTable();
-
-      $strWhere = $this->objProductVideosTable->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
-      $strWhere .= 'AND '.$this->objProductVideosTable->getAdapter()->quoteInto('version = ?', $objProduct->version);
-      $this->objProductVideosTable->delete($strWhere);
-
-      if($mixedVideoId != ''){
-        $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
-        $arrData = array('productId'       => $objProduct->productId,
-                         'version'      => $objProduct->version,
-                         'idLanguages'  => $this->intLanguageId,
-                         'userId'       => $strVideoUserId,
-                         'videoId'      => $mixedVideoId,
-                         'idVideoTypes' => $intVideoTypeId,
-                         'thumb'        => $strVideoThumb,
-                         'creator'      => $intUserId);
-        return $objSelect = $this->objProductVideosTable->insert($arrData);
-      }
-    }
-  }
-
-  /**
-   * removeVideo
-   * @param  integer $intElementId
-   * @return integer affected rows
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function removeVideo($intElementId){
-    $this->core->logger->debug('cms->products->models->Model_Products->removeVideo('.$intElementId.')');
-
-    $objProductData = $this->load($intElementId);
-
-    if(count($objProductData) > 0){
-      $objProduct = $objProductData->current();
-
-      $this->getProductVideosTable();
-
-      $strWhere = $this->objProductVideosTable->getAdapter()->quoteInto('productId = ?', $objProduct->productId);
-      $strWhere .= 'AND '.$this->objProductVideosTable->getAdapter()->quoteInto('version = ?', $objProduct->version);
-
-      return $this->objProductVideosTable->delete($strWhere);
-    }
   }
 }
 

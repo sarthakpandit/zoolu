@@ -420,7 +420,7 @@ class Page {
 
       $this->getModelPages();
       $this->objModelPages->setLanguageId($this->intLanguageId);
-      return $this->objModelPages->loadPageInternalLinks($this->strPageId, $this->intPageVersion);
+      return $this->objModelPages->loadInternalLinks($this->strPageId, $this->intPageVersion);
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

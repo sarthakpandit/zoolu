@@ -71,6 +71,21 @@ class Core {
    * @var HtmlTranslate
    */
   public $translate;
+  
+  /**
+   * @var Zend_Session_Namespace
+   */
+  public $objCoreSession;
+  
+  /**
+   * @var integer
+   */
+  public $intLanguageId;
+
+  /**
+   * @var string
+   */
+  public $strLanguageCode;
 
   /**
    * Constructor
@@ -95,6 +110,74 @@ class Core {
      * initialize Zend_Log
      */
     $this->logger = new Zend_Log();
+    
+    /**
+     * initialize Zend_Session_Namespace
+     */
+    $this->objCoreSession = new Zend_Session_Namespace('Core');
+    
+    /**
+     * get language and set translate object
+     */
+    if(isset($_GET['language'])){
+      $this->strLanguageCode = trim($_GET['language'], '/');
+      foreach($this->webConfig->languages->language->toArray() as $arrLanguage){
+        if(array_key_exists('code', $arrLanguage) && $arrLanguage['code'] == strtolower($this->strLanguageCode)){
+          $this->intLanguageId = $arrLanguage['id'];
+          break;
+        }
+      }
+      if($this->intLanguageId == null){
+        $this->intLanguageId = $this->sysConfig->languages->default->id;
+        $this->strLanguageCode = $this->sysConfig->languages->default->code;
+      }
+    }else if(isset($_SERVER['REQUEST_URI']) && preg_match('/^\/[a-zA-Z]{2}\//', $_SERVER['REQUEST_URI'])){
+      preg_match('/^\/[a-zA-Z]{2}\//', $_SERVER['REQUEST_URI'], $arrMatches);
+      $this->strLanguageCode = trim($arrMatches[0], '/');
+      foreach($this->webConfig->languages->language->toArray() as $arrLanguage){
+        if(array_key_exists('code', $arrLanguage) && $arrLanguage['code'] == strtolower($this->strLanguageCode)){
+          $this->intLanguageId = $arrLanguage['id'];
+          break;
+        }
+      }
+      if($this->intLanguageId == null){
+        $this->intLanguageId = $this->core->sysConfig->languages->default->id;
+        $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
+      }
+    }else if(isset($this->objCoreSession->languageId)){
+      $this->intLanguageId = $this->objCoreSession->languageId;
+      $this->strLanguageCode = $this->objCoreSession->languageCode;
+    }else if(file_exists(GLOBAL_ROOT_PATH.'/library/IP2Location/IP-COUNTRY.BIN')){
+
+      require_once(GLOBAL_ROOT_PATH.'/library/IP2Location/IP2Location.inc.php');
+      $ip = IP2Location_open(GLOBAL_ROOT_PATH.'/library/IP2Location/IP-COUNTRY.BIN', IP2LOCATION_STANDARD);
+      $record = IP2Location_get_all($ip, $_SERVER['REMOTE_ADDR']);
+
+      if($record->country_short == 'DE' || $record->country_short == 'AT' || $record->country_short == 'CH' || $record->country_short == 'FL'){
+        $this->intLanguageId = $this->sysConfig->languages->language->de->id;
+        $this->strLanguageCode = $this->sysConfig->languages->language->de->code;
+      }else{
+        $this->intLanguageId = $this->sysConfig->languages->language->en->id;
+        $this->strLanguageCode = $this->sysConfig->languages->language->en->code;
+      }
+      IP2Location_close($ip);
+    }else{
+      $this->intLanguageId = $this->sysConfig->languages->default->id;
+      $this->strLanguageCode = $this->sysConfig->languages->default->code;
+    }
+    
+    //$this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/'.$this->sysConfig->client.'-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);
+    
+    /**
+     * set up zoolu translate obj
+     */
+    $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);
+    
+    /**
+     * write language to session
+     */
+    $this->objCoreSession->languageId = $this->intLanguageId;
+    $this->objCoreSession->languageCode = $this->strLanguageCode;
 
     /**
      * create logfile extension for file writer

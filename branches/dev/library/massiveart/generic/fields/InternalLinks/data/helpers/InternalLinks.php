@@ -68,9 +68,9 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
 
       $this->getModel();
 
-      $this->objModel->deletePageInternalLinks($strElementId, $intVersion);
+      $this->objModel->deleteInternalLinks($strElementId, $intVersion);
 
-      $this->objModel->addPageInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
+      $this->objModel->addInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
 
       $this->load($intElementId, $strType, $strElementId, $intVersion);
 
@@ -94,7 +94,7 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
       
       $this->getModel();
 
-      $objPageInternalLinksData = $this->objModel->loadPageInternalLinks($strElementId, $intVersion);
+      $objPageInternalLinksData = $this->objModel->loadInternalLinks($strElementId, $intVersion);
 
       if(count($objPageInternalLinksData) > 0){
         $this->objElement->objPageInternalLinks = $objPageInternalLinksData;
@@ -111,7 +111,7 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
     }
   }
 
-   /**
+  /**
    * getModel
    * @return type Model
    * @author Thomas Schedler <tsh@massiveart.com>

@@ -91,7 +91,7 @@ class Products_NavigationController extends AuthControllerAction {
     $this->view->assign('productTemplateDefaultId', $this->core->sysConfig->product_types->product->default_templateId);
     $this->view->assign('productTypeDefaultId', $this->core->sysConfig->product_types->product->id);
   }
-
+  
   /**
    * listAction
    * @author Thomas Schedler <tsh@massiveart.com>

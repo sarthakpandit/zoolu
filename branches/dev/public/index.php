@@ -77,6 +77,9 @@ $router->addRoute('zooluWebController', $route);
 $route = new Zend_Controller_Router_Route('zoolu-website/:controller/:action/*');
 $router->addRoute('zooluWebControllerAction', $route);
 
+$route = new Zend_Controller_Router_Route('zoolu-website/:controller/:action/:id/*');
+$router->addRoute('zooluWebControllerActionParams', $route);
+
 /**
  * only throw exceptions in developement mode
  */

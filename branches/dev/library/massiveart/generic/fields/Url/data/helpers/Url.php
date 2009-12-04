@@ -48,14 +48,26 @@ require_once(dirname(__FILE__).'/../../../../data/helpers/Abstract.php');
 class GenericDataHelper_Url extends GenericDataHelperAbstract  {
 
   /**
-   * @var Model_Pages
+   * @var Model_Pages|Model_Products
    */
-  private $objModelPages;
+  private $objModel;
+  
+  private $strType;
+
+  /**
+   * @var Model_Urls
+   */
+  private $objModelUrls;
+  
+  /**
+   * @var Model_Utilities
+   */
+  private $objModelUtilities;
 
   /**
    * @var Zend_Db_Table_Rowset_Abstract
    */
-  private $objUrlReplacers;
+  private $objPathReplacers;
 
   private $strUrl;
 
@@ -76,24 +88,26 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    */
   public function save($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
+      $this->strType = $strType;
 
-      $this->getModelPages();
+      $this->getModel();
+      $this->getModelUrls();
 
-      $objPageData = $this->objModelPages->loadPage($intElementId);
+      $objPageData = $this->objModel->loadPage($intElementId);
 
       if(count($objPageData) > 0){
         
         $objPage = $objPageData->current();
-        $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
+        $objUrlData = $this->objModelUrls->loadUrl($objPage->pageId, $objPage->version, $this->core->sysConfig->url_types->page);
 
         $this->strParentPageUrl = '';
 
         // load the url from the parent page
         if($objPage->idParentTypes == $this->core->sysConfig->parent_types->folder){
           if($objPage->isStartPage == 1){
-            $objParentFolderData = $this->objModelPages->loadStartPageParentUrl($intElementId);
+            $objParentFolderData = $this->objModel->loadStartPageParentUrl($intElementId);
           }else{
-            $objParentFolderData = $this->objModelPages->loadParentUrl($intElementId);
+            $objParentFolderData = $this->objModel->loadParentUrl($intElementId);
           }
 
           if(count($objParentFolderData) > 0){
@@ -106,6 +120,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
             
           $objUrl = $objUrlData->current();
           $strUrlCurrent = $objUrl->url;
+          $this->core->logger->debug('UrlCurrent: '.$strUrlCurrent);
           $strUrlNew = '';
 
           // get the new url
@@ -121,14 +136,14 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
             $strUrlNew = $this->checkUrlUniqueness($this->strParentPageUrl.$strUrlNew);
 
             // set all page urls to isMain 0
-            $this->objModelPages->updatePageUrlIsMain($objPage->pageId); 
+            $this->objModel->updatePageUrlIsMain($objPage->pageId);
                       
             if($objPage->isStartPage == 1){
               //logic for rootnodes 
-              $this->objModelPages->insertPageUrl($strUrlNew.'/', $objPage->pageId, $objPage->version); 
+              $this->objModel->insertPageUrl($strUrlNew.'/', $objPage->pageId, $objPage->version);
             }else{
               //logic for childnodes
-              $this->objModelPages->insertPageUrl($strUrlNew, $objPage->pageId, $objPage->version);   
+              $this->objModel->insertPageUrl($strUrlNew, $objPage->pageId, $objPage->version);
             }
           }
 
@@ -146,7 +161,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
           $this->strUrl = '';
 
 
-          $objParentFoldersData = $this->objModelPages->loadParentFolders($intElementId);
+          $objParentFoldersData = $this->objModel->loadParentFolders($intElementId);
 
           if(count($objParentFoldersData) > 0){
             foreach($objParentFoldersData as $objParentFolder){
@@ -175,15 +190,15 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
 
           /**
           if($objPage->isStartPage == 1 && $this->strUrl != ''){
-          	$this->objModelPages->insertPageUrl($this->strUrl.'/', $objPage->pageId, $objPage->version);
+          	$this->objModel->insertPageUrl($this->strUrl.'/', $objPage->pageId, $objPage->version);
           }else{
-            $this->objModelPages->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
+            $this->objModel->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
           }*/
 
-          $this->objModelPages->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
+          $this->objModel->insertPageUrl($this->strUrl, $objPage->pageId, $objPage->version);
         }
 
-        $objUrlData = $this->objModelPages->loadPageUrl($objPage->pageId, $objPage->version);
+        $objUrlData = $this->objModel->loadUrl($objPage->pageId, $objPage->version);
         $objUrl = $objUrlData->current();
         $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
         $this->objElement->url = $objUrl->url;
@@ -209,9 +224,11 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    */
   public function load($intElementId, $strType, $strElementId = null, $intVersion = null){
     try{
-      $this->getModelPages();
+      $this->strType = $strType;
+      
+      $this->getModel();
 
-      $objUrlData = $this->objModelPages->loadPageUrl($strElementId, $intVersion);
+      $objUrlData = $this->objModel->loadUrl($strElementId, $intVersion);
 
       if(count($objUrlData) > 0){
         $objUrl = $objUrlData->current();
@@ -235,13 +252,13 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
    */
   public function makeUrlConform($strUrlPart){
 
-    $this->getUrlReplacers();
+    $this->getPathReplacers();
 
     $strUrlPart = strtolower($strUrlPart);
 
-    if(count($this->objUrlReplacers) > 0){
-      foreach($this->objUrlReplacers as $objUrlReplacer){
-        $strUrlPart = str_replace($objUrlReplacer->from, $objUrlReplacer->to, $strUrlPart);
+    if(count($this->objPathReplacers) > 0){
+      foreach($this->objPathReplacers as $objPathReplacer){
+        $strUrlPart = str_replace($objPathReplacer->from, $objPathReplacer->to, $strUrlPart);
       }
     }
 
@@ -255,27 +272,28 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
   }
 
   /**
-   * getUrlReplacers()
-   * @param string $strUrlPart
+   * getPathReplacers
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  private function getUrlReplacers(){
-    if($this->objUrlReplacers === null) {
-      $this->objUrlReplacers = $this->getModelPages()->loadUrlReplacers();
+  private function getPathReplacers(){
+    if($this->objPathReplacers === null) {
+      $this->objPathReplacers = $this->getModelUtilities()->loadPathReplacers();
     }
   }
 
   /**
    * checkUrlUniqueness()
+   * @param string $strUrl
+   * @param integer $intUrlAddon = 0
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function checkUrlUniqueness($strUrl, $intUrlAddon = 0){
-    $this->getModelPages();
+    $this->getModel();
 
     $strNewUrl = ($intUrlAddon > 0) ? $strUrl.'-'.$intUrlAddon : $strUrl;
-    $objPageUrlsData = $this->objModelPages->loadPageByUrl($this->objElement->Setup()->getRootLevelId(), $strNewUrl);
+    $objPageUrlsData = $this->objModel->loadByUrl($this->objElement->Setup()->getRootLevelId(), $strNewUrl);
 
     if(count($objPageUrlsData) > 0){
       return $this->checkUrlUniqueness($strUrl, $intUrlAddon + 1);
@@ -285,24 +303,71 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
   }
 
   /**
-   * getModelPages
-   * @return Model_Pages
+   * getModel
+   * @return type Model
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function getModelPages(){
-    if (null === $this->objModelPages) {
+  protected function getModel(){
+    if($this->objModel === null) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
-      $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->objElement->Setup()->getLanguageId());
+      $strModelFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.$this->objElement->Setup()->getModelSubPath().((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s').'.php';
+      if(file_exists($strModelFilePath)){
+        require_once $strModelFilePath;
+        $strModel = 'Model_'.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s');
+        $this->objModel = new $strModel();
+        $this->objModel->setLanguageId($this->objElement->Setup()->getLanguageId());
+      }else{
+        throw new Exception('Not able to load type specific model, because the file didn\'t exist! - strType: "'.$this->strType.'"');
+      }
+    }
+    return $this->objModel;
+  }
+
+  /**
+   * getModelUrls
+   * @return Model_Urls
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUrls(){
+    if (null === $this->objModelUrls) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Urls.php';
+      $this->objModelUrls = new Model_Urls();
+      $this->objModelUrls->setLanguageId($this->objElement->Setup()->getLanguageId());
     }
 
-    return $this->objModelPages;
+    return $this->objModelUrls;
   }
+  
+  /**
+   * getModelUtilities
+   * @return Model_Pages
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUtilities(){
+    if (null === $this->objModelUtilities) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Utilities.php';
+      $this->objModelUtilities = new Model_Utilities();
+      $this->objModelUtilities->setLanguageId($this->objElement->Setup()->getLanguageId());
+    }
+
+    return $this->objModelUtilities;
+  } 
 }
 ?>

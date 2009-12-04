@@ -192,7 +192,7 @@ class IndexController extends Zend_Controller_Action {
       require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
       Zend_Registry::set('Navigation', $objNavigation);
 
-      $this->objPageUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
+      $this->objPageUrlsData = $this->objModelPages->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 
       if(count($this->objPageUrlsData) > 0){
         $this->objPageUrlsData = current($this->objPageUrlsData);
