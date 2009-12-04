@@ -62,6 +62,7 @@ class Widget{
   protected $strWidgetInstanceId;
   protected $strActionName;
   protected $strWidgetName;
+  protected $strWidgetTitle;
   
   /**
    * setRootLevelId
@@ -212,6 +213,23 @@ class Widget{
    */
   public function getWidgetName(){
   	return $this->strWidgetName;
+  }
+  
+  /**
+   * setWidgetTitle
+   * @param $strWidgetName
+   * @return string $strWidgetName
+   */
+  public function setWidgetTitle($strWidgetTitle){
+    $this->strWidgetTitle = $strWidgetTitle;
+  }
+  
+  /**
+   * getWidgetTitle
+   * @return string $strWidgetName
+   */
+  public function getWidgetTitle(){
+    return $this->strWidgetTitle;
   }
 }
  

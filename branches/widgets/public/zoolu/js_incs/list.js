@@ -10,7 +10,7 @@
 var List = Class.create({
   
   initialize: function(){
-    this.constRequest = '/../widget/blog/comment/delete'; //TODO Not blogspecific!
+    this.constRequest = '/widget/blog/comment/delete'; //FIXME Not blogspecific!
   },
   
   deleteSelectedElements: function(){

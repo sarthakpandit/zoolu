@@ -240,8 +240,9 @@ class Model_Widgets {
 	
 	    $objSelect->from($this->objUrlTable, array('url'));
 	    $objSelect->join('widgetInstances', 'widgetInstances.widgetInstanceId = urls.urlId 
-	    																		 AND widgetInstances.version = urls.version', array());
+	    																		 AND widgetInstances.version = urls.version', array('widgetInstanceId'));
 	   $objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id');
+	   $objSelect->join('widgetInstanceTitles', 'widgetInstances.widgetInstanceId = widgetInstanceTitles.widgetInstanceId', array('title'));
 	   $objSelect->where('urls.url = ?', $strUrl)
 	   					 ->where('urls.idLanguages = ?', 1);
 	    

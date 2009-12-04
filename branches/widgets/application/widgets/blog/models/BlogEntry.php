@@ -65,7 +65,7 @@ class Model_BlogEntry {
 	public function getBlogEntries($strWidgetInstanceId, $intCount=5) {
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'created', 'text'));
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'created', 'created_ts' => 'UNIX_TIMESTAMP(created)', 'text'));
 		$objSelectForm->joinInner('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
 		$objSelectForm->where("widgetInstanceId=?",$strWidgetInstanceId);
 		$objSelectForm->limit($intCount,0);
