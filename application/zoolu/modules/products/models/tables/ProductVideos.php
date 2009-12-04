@@ -20,31 +20,31 @@
  * You should have received a copy of the GNU General Public License
  * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
  *
- * For further information visit our website www.getzoolu.org 
+ * For further information visit our website www.getzoolu.org
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.cms.models.tables
+ * @package    application.zoolu.modules.products.models.tables
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * Model_Table_UrlReplacers
- * 
+ * Model_Table_ProductVideos
+ *
  * Version history (please keep backward compatible):
- * 1.0, 2009-02-09: Thomas Schedler
- * 
+ * 1.0, 2009-12-02: Thomas Schedler
+ *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Model_Table_UrlReplacers extends Zend_Db_Table_Abstract {
-  
-  protected $_name = 'urlReplacers';
+class Model_Table_ProductVideos extends Zend_Db_Table_Abstract {
+
+  protected $_name = 'productVideos';
   protected $_primary = 'id';
-    
+
 }
 
 ?>

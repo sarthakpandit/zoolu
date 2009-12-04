@@ -71,6 +71,16 @@ class File {
    * @var Model_Files
    */
   protected $objModelFile;
+  
+  /**
+   * @var Model_Utilities
+   */
+  private $objModelUtilities;
+
+  /**
+   * @var Zend_Db_Table_Rowset_Abstract
+   */
+  private $objPathReplacers;
 
   /**
    * @var Zend_File_Transfer_Adapter_Abstract
@@ -113,7 +123,6 @@ class File {
     $this->core->logger->debug('massiveart.files.File->add()');
     try{
       $this->_FILE_NAME = $_FILE_NAME;
-      $this->strFileId = uniqid();
 
       $this->upload();
 
@@ -258,7 +267,17 @@ class File {
         $this->strTitle = $arrFileInfos['filename'];
         $this->dblSize = $this->objUpload->getFileSize($this->_FILE_NAME);
         $this->strMimeType = $this->objUpload->getMimeType($this->_FILE_NAME);
-
+        
+        /**
+         * make fileId conform
+         */
+        $this->strFileId = $this->makeFileIdConform($this->strTitle);        
+        
+        /**
+         * check uniqueness of fileId
+         */
+        $this->strFileId = $this->checkFileIdUniqueness($this->strFileId);
+        
         /**
          * receive file
          */
@@ -278,6 +297,64 @@ class File {
       }
     }catch(Exception $exc){
       $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * makeFileIdConform
+   * @param string $strFileId
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function makeFileIdConform($strFileId){
+    $this->core->logger->debug('massiveart.files.File->makeFileIdConform('.$strFileId.')');
+    
+    $this->getPathReplacers();
+
+    $strFileId = strtolower($strFileId);
+
+    if(count($this->objPathReplacers) > 0){
+      foreach($this->objPathReplacers as $objPathReplacer){
+        $strFileId = str_replace($objPathReplacer->from, $objPathReplacer->to, $strFileId);
+      }
+    }
+    $strFileId = strtolower($strFileId);
+    $strFileId = urlencode(preg_replace('/([^A-za-z0-9\s-_])/', '-', $strFileId));
+    $strFileId = str_replace('+', '-', $strFileId);
+    
+    return $strFileId;
+  }
+  
+  /**
+   * getPathReplacers
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  private function getPathReplacers(){
+  	if($this->objPathReplacers === null) {
+  		$this->objPathReplacers = $this->getModelUtilities()->loadPathReplacers();
+    }
+  }
+
+  /**
+   * checkFileIdUniqueness
+   * @param string $strFileId
+   * @param integer $intFileNameAddon = 0
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function checkFileIdUniqueness($strFileId, $intFileIdAddon = 0){
+    $this->core->logger->debug('massiveart.files.File->checkFileIdUniqueness('.$strFileId.','.$intFileIdAddon.')');
+  	
+  	$this->getModelFile();
+
+    $strNewFileId = ($intFileIdAddon > 0) ? $strFileId.'-'.$intFileIdAddon : $strFileId;
+    $objFileData = $this->objModelFile->loadFileByFileId($strNewFileId);
+
+    if(count($objFileData) > 0){
+      return $this->checkFileIdUniqueness($strFileId, $intFileIdAddon + 1);
+    }else{
+      return $strNewFileId;
     }
   }
 
@@ -328,6 +405,27 @@ class File {
     }
 
     return $this->objModelFile;
+  }
+  
+  /**
+   * getModelUtilities
+   * @return Model_Utilities
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUtilities(){
+    if (null === $this->objModelUtilities) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Utilities.php';
+      $this->objModelUtilities = new Model_Utilities();
+      $this->objModelUtilities->setLanguageId($this->core->intLanguageId);
+    }
+
+    return $this->objModelUtilities;
   }
 
   /**

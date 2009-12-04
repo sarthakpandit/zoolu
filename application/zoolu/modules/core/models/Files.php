@@ -166,6 +166,64 @@ class Model_Files {
     }  
   }
   
+  /**
+   * loadFileById 
+   * @param integer $intFileId
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadFileById($intFileId){
+    $this->core->logger->debug('core->models->Model_Files->loadFileById('.$intFileId.')');
+    try{
+      $this->getFileTable();
+      
+      if($intFileId != '' && $intFileId > 0){      	
+      	$objSelect = $this->objFileTable->select();   
+        $objSelect->setIntegrityCheck(false);
+      
+        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));
+        $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
+        $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+        $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));   
+        $objSelect->where('files.id = ?', $intFileId);
+               
+        return $this->objFileTable->fetchAll($objSelect);
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }  
+  }
+  
+  /**
+   * loadFileByFileId 
+   * @param string $strFileId
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadFileByFileId($strFileId){
+    $this->core->logger->debug('core->models->Model_Files->loadFileByFileId('.$strFileId.')');
+    try{
+      $this->getFileTable();
+      
+      if($strFileId != ''){       
+        $objSelect = $this->objFileTable->select();   
+        $objSelect->setIntegrityCheck(false);
+      
+        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));           
+        $objSelect->where('files.fileId = ?', $strFileId);
+        
+        return $this->objFileTable->fetchAll($objSelect);
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * getAllImageFiles 
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
   public function getAllImageFiles(){
   	$this->core->logger->debug('core->models->Model_Files->getAllImageFiles()');    
     try{

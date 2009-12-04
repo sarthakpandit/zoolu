@@ -149,7 +149,7 @@ class Media_UploadController extends AuthControllerAction  {
     $objImage->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private);
     $objImage->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->public);
     $objImage->setDefaultImageSizes($this->core->sysConfig->upload->images->default_sizes->default_size->toArray());
-    $objImage->add('Filedata');
+    $objImage->add(self::UPLOAD_FIELD);
 
   	$this->writeViewData($objImage);
   }
@@ -169,7 +169,6 @@ class Media_UploadController extends AuthControllerAction  {
     $objFile->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private);
     $objFile->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->public);
     $objFile->add(self::UPLOAD_FIELD);
-
 
     $this->writeViewData($objFile);
   }

@@ -616,9 +616,9 @@ Massiveart.Form = Class.create({
         plugins : "safari,table,advimage,advlink,media,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,inlinepopups",
                     
         // Theme options
-        theme_advanced_buttons1 : "bold,italic,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,anchor,|,fullscreen,code,|,tablecontrols",
-        //theme_advanced_buttons2 : "tablecontrols,|,image,media",
-        theme_advanced_buttons2 : "",
+        theme_advanced_buttons1 : "bold,italic,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,anchor,|,fullscreen,code",
+        theme_advanced_buttons2 : "tablecontrols",
+        //theme_advanced_buttons2 : "",
         theme_advanced_buttons3 : "",
         theme_advanced_buttons4 : "",                
         theme_advanced_toolbar_location : "top",

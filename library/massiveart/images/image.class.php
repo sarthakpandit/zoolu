@@ -71,7 +71,17 @@ class Image extends File {
         $this->strTitle = $arrFileInfos['filename'];
         $this->dblSize = $this->objUpload->getFileSize($this->_FILE_NAME);
         $this->strMimeType = $this->objUpload->getMimeType($this->_FILE_NAME);
-
+        
+        /**
+         * make fileId conform
+         */
+        $this->strFileId = $this->makeFileIdConform($this->strTitle);        
+        
+        /**
+         * check uniqueness of fileId
+         */
+        $this->strFileId = $this->checkFileIdUniqueness($this->strFileId);
+        
         /**
          * receive file
          */
@@ -132,16 +142,6 @@ class Image extends File {
             }
           }
         }
-
-
-        /* OLD
-          ----
-          // now render all imageformats defined in settings.inc
-          // Instantiate the correct object depending on type of image i.e jpg or png
-          $objResize = ImageResizeFactory::getInstanceOf($srcFile, $this->arrDefaultImageSizes);
-          // Call the method to resize the image and save
-          $objResize->createResizedImage($this->getPublicFilePath(), $this->strFileId);
-        */
       }
     }catch(Exception $exc){
       $this->core->logger->err($exc);
