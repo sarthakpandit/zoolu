@@ -52,7 +52,7 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
 	public function indexAction() {
-		$this->strTemplateFile = 'template.php';
+		$this->strTemplateFile = 'index.php';
 		$objEntries = $this->getBlogEntries();
 		
 		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
