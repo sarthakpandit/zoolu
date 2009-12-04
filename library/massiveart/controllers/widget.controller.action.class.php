@@ -72,6 +72,12 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   protected $strTemplateFile;
   
   /**
+   * Render with Masterpage or not?
+   * @var boolean
+   */
+  protected $blnRenderMaster = true;
+  
+  /**
    * @var Object objTheme
    */
   protected $objTheme;
@@ -195,7 +201,12 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   	$this->loadWidgetHelpers();
   	
   	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$this->objTheme->path.'/');
-    $this->renderScript('master.php');
+    if($this->blnRenderMaster){
+    	$this->renderScript('master.php');
+    }
+    else{
+    	$this->renderScript('empty.php');
+    }
   }
   
   /**

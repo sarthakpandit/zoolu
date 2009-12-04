@@ -90,12 +90,19 @@ class Blog_IndexController extends WidgetControllerAction  {
   	//$objEntries = $objBlogEntries->getBlogEntry();
   }
   
+  /**
+   * rssAction
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
   public function rssAction(){
-//  	$arrData = array();
-//  	
-//  	$objFeed = Zend_Feed::importArray($arrData, 'rss');
-//  	$objFeed->send();
-  	$this->view->assign('text', 'text');
+  	header('Content-type: application/rss+xml');
+  	$this->blnRenderMaster = false;
+  	
+  	require_once(dirname(__FILE__).'/../helpers/FeedBuilder.php');
+  	
+  	$objFeed = Zend_Feed::importBuilder(new Blog_FeedBuilder(Zend_Registry::get('Widget')), 'rss');
+  	$this->view->assign('text', $objFeed->saveXml());
   }
   
 	/**
