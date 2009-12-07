@@ -84,6 +84,7 @@ class GenericDataHelper_Collection extends GenericDataHelperAbstract  {
 
         $objUrlHelper = new GenericDataHelper_Url();
         $objUrlHelper->setElement($this->objElement);
+        $objUrlHelper->setType($strType);
 
         foreach($this->objElement->objPageCollection as $objPageCollection){
           $objPageCollection->url = $objUrlHelper->checkUrlUniqueness($strBaseUrl.$objUrlHelper->makeUrlConform($objPageCollection->title));

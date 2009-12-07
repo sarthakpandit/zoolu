@@ -73,14 +73,12 @@ class Model_Urls {
    * @version 1.0
    */
   public function loadUrl($strRelationId, $intVersion, $intUrlTypeId){
-    $this->core->logger->debug('core->models->Model_Urls->loadUrl('.$strRelationId.', '.$intVersion.','.$intUrlTypeId.')');
+    $this->core->logger->debug('core->models->Model_Urls->loadUrl('.$strRelationId.', '.$intVersion.', '.$intUrlTypeId.')');
 
     $objSelect = $this->getUrlTable()->select();
     $objSelect->setIntegrityCheck(false);
 
     $objSelect->from($this->objUrlTable, array('url'));
-    $objSelect->join('pages', 'pages.pageId = urls.relationId', array('isStartPage'));
-    $objSelect->joinleft('folders', 'pages.idParent = folders.id AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('depth','idParentFolder'));
     $objSelect->join('languages', 'languages.id = urls.idLanguages', array('languageCode'));
     $objSelect->where('urls.relationId = ?', $strRelationId)
               ->where('urls.version = ?', $intVersion)
@@ -90,6 +88,112 @@ class Model_Urls {
               ->where('urls.idParent IS NULL');
 
     return $this->objUrlTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadByUrl
+   * @param integer $intRootLevelId
+   * @param string $strUrl
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadByUrl($intRootLevelId, $strUrl){
+    $this->core->logger->debug('core->models->Model_Urls->loadByUrl('.$intRootLevelId.', '.$strUrl.')');
+    
+    $objFolderPageSelect = $this->core->dbh->select();
+    $objFolderPageSelect->from('urls', array('relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
+    $objFolderPageSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array());
+    $objFolderPageSelect->join('folders', 'folders.id = pages.idParent', array());
+    $objFolderPageSelect->where('urls.url = ?', $strUrl)
+											  ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
+											  ->where('urls.idLanguages = ?', $this->intLanguageId)
+											  ->where('folders.idRootLevels = ?', $intRootLevelId);
+    
+    $objRootLevelPageSelect = $this->core->dbh->select();
+    $objRootLevelPageSelect->from('urls', array('relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
+    $objRootLevelPageSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->rootlevel, array());
+    $objRootLevelPageSelect->join('rootLevels', ' rootLevels.id = pages.idParent', array());
+    $objRootLevelPageSelect->where('urls.url = ?', $strUrl)
+					                 ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
+					                 ->where('urls.idLanguages = ?', $this->intLanguageId)
+					                 ->where('rootLevels.id = ?', $intRootLevelId);
+	  
+    $objProductSelect = $this->core->dbh->select();
+    $objProductSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
+    $objProductSelect->join('products', 'products.productId = urls.relationId AND products.version = urls.version', array());
+    $objProductSelect->where('urls.url = ?', $strUrl)
+                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->product)
+                     ->where('urls.idLanguages = ?', $this->intLanguageId);
+    
+    $objSelect = $this->getUrlTable()->select()
+                                     ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objProductSelect));
+
+    return $this->objUrlTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * insertUrl
+   * @param string $strUrl
+   * @param string $strRelationId
+   * @param integer $intVersion
+   * @param integer $intUrlTypeId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function insertUrl($strUrl, $strRelationId, $intVersion, $intUrlTypeId){
+    $this->core->logger->debug('core->models->Model_Urls->insertUrl('.$strUrl.', '.$strRelationId.', '.$intVersion.', '.$intUrlTypeId.')');
+    
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+   
+    $arrDataInsert = array('relationId'   => $strRelationId,
+                           'version'      => $intVersion,
+                           'idUrlTypes'   => $intUrlTypeId,
+                           'isMain'       => '1',
+                           'idLanguages'  => $this->intLanguageId,
+                           'url'          => $strUrl,
+                           'idUsers'      => $intUserId,
+                           'creator'      => $intUserId,
+                           'created'      => date('Y-m-d H:i:s'));
+
+    return $objSelect = $this->getUrlTable()->insert($arrDataInsert);
+  }
+  
+  /**
+   * resetIsMainUrl
+   * @param string $strRelationId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function resetIsMainUrl($strRelationId, $intVersion, $intUrlTypeId){
+    $this->core->logger->debug('core->models->Model_Urls->resetIsMainUrl('.$strRelationId.', '.$intVersion.', '.$intUrlTypeId.')');
+   
+    $arrDataUpdate = array('isMain' => 0);
+    
+    $strWhere = $this->getUrlTable()->getAdapter()->quoteInto('relationId = ?', $strRelationId);
+    $strWhere .= $this->getUrlTable()->getAdapter()->quoteInto(' AND version = ?', $intVersion);
+    $strWhere .= $this->getUrlTable()->getAdapter()->quoteInto(' AND idUrlTypes = ?', $intUrlTypeId);
+    
+    return $this->getUrlTable()->update($arrDataUpdate, $strWhere);
+  }
+
+  /**
+   * removeUrlHistoryEntry
+   * @param integer $intUrlId
+   * @param string $strRelationId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function removeUrlHistoryEntry($intUrlId, $strRelationId){
+    $this->core->logger->debug('core->models->Model_Urls->removeUrlHistoryEntry('.$intUrlId.', '.$strRelationId.')');
+
+    $strWhere = $this->getUrlTable()->getAdapter()->quoteInto('relationId = ?', $strRelationId);
+    $strWhere .= $this->objUrlTable->getAdapter()->quoteInto(' AND id = ?', $intUrlId);
+   
+    return $this->objUrlTable->delete($strWhere);  
   }
   
    /**

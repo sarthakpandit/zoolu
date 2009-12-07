@@ -34,6 +34,7 @@
  *
  * Version history (please keep backward compatible):
  * 1.0, 2009-11-06: Dominik Mößlang
+ * 1.1, 2009-12-07: Thomas Schedler
  *
  * @author Dominik Mößlang <dmo@massiveart.com>
  * @version 1.0
@@ -41,12 +42,16 @@
 
 class Core_UrlController extends AuthControllerAction {
 
+	/**
+	 * @var Model_Urls
+	 */
+	protected $objModelUrls;
+	
   /**
    * @var Model Page
    */
   protected $objModelPage;
-  
-  
+    
   /**
    * indexAction
    * @author Dominik Mößlang <dmo@massiveart.com>
@@ -97,15 +102,33 @@ class Core_UrlController extends AuthControllerAction {
       $objRequest = $this->getRequest();
       $intUrlId = $objRequest->getParam('urlId');
       $strPageId = $objRequest->getParam('pageId');
-      
-      $this->getModelPage = $this->getModelPage();
-      
-      return $this->getModelPage->removeUrlHistoryEntry($intUrlId,$strPageId);
+            
+      return $this->getModelUrls()->removeUrlHistoryEntry($intUrlId, $strPageId);
                
     }catch (Exception $exc){
       $this->core->logger->err($exc);
       exit();
     }
+  }
+  
+  /**
+   * getModelUrls
+   * @return Model_Urls
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.1
+   */
+  protected function getModelUrls(){
+    if (null === $this->objModelUrls) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Urls.php';
+      $this->objModelUrls = new Model_Urls();      
+    }
+
+    return $this->objModelUrls;
   }
   
   /**
@@ -127,7 +150,6 @@ class Core_UrlController extends AuthControllerAction {
 
     return $this->objModelPage;
   }
-  
   
 }
 

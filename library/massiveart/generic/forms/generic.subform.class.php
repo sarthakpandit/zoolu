@@ -78,10 +78,9 @@ class GenericSubForm extends Zend_Form_SubForm {
                                                     'strLinkedPageBreadcrumb',
                                                     'intVideoTypeId',
                                                     'strVideoUserId',
-                                                    'idParentFolder',
-                                                    'depth',
-                                                    'isStartPage',
                                                     'strVideoThumb',
+                                                    'intParentId',
+                                                    'blnIsStartElement',                                                                                                   
                                                     'objPageInternalLinks',
                                                     'objPageCollection');
 

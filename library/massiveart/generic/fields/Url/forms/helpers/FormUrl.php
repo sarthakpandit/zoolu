@@ -54,7 +54,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
    * @param mixed $options   
    * @version 1.0
    */
-  public function formUrl($name, $value = null, $attribs = null, $isStartPage = null, $options = null, $idParentFolder = null, $depth = null){
+  public function formUrl($name, $value = null, $attribs = null, $blnIsStartElement = null, $options = null, $intParentId = null){
     $info = $this->_getInfo($name, $value, $attribs);
     extract($info); // name, value, attribs, options, listsep, disable
     
@@ -69,9 +69,9 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
 
     $strLanguage = array_shift($arrUrl);
         
-    if(is_null($idParentFolder) && is_null($depth) && $isStartPage == 1){
+    if(is_null($intParentId) && $blnIsStartElement == true){
       $strOutput = '<div class="urlwrapper">
-                      <span class="gray666 bold">Adresse:/'.$strLanguage.'/</span>
+                      <span class="gray666 bold">Adresse: /'.$strLanguage.'/</span>
                     </div>';
     }else{     
       $strOutput = '';
@@ -82,7 +82,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
           /**
            * if is start page, delete last empty array element
            */
-          if($isStartPage == 1){                      
+          if($blnIsStartElement == true){                      
             array_pop($arrUrl);            
           }
           
@@ -98,7 +98,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
            
           $strOutput = '
                   <div class="urlwrapper">
-                    <span class="gray666 bold">Adresse: '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($isStartPage == 1) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">Editieren</a></span>
+                    <span class="gray666 bold">Adresse: '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($blnIsStartElement == true) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">Editieren</a></span>
                     <input type="hidden" value="'.$value.'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
                     <input type="hidden" value="'.$strUrlEditable.'" id="'.$this->view->escape($id).'_EditableUrl" name="'.$this->view->escape($name).'_EditableUrl" '.$endTag.'
                   </div>';
