@@ -60,11 +60,6 @@ class Model_Products {
   protected $objProductLinkTable;
 
   /**
-   * @var Model_Table_ProductUrls
-   */
-  protected $objProductUrlTable;
-
-  /**
    * @var Model_Folders
    */
   protected $objModelFolders;
@@ -114,6 +109,33 @@ class Model_Products {
     $objSelect->where('products.id = ?', $intElementId);
     
     return $this->getProductTable()->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadByIdAndVersion
+   * @param string $strProductId
+   * @param integer $intVersion
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadByIdAndVersion($strProductId, $intVersion){
+    $this->core->logger->debug('products->models->Model_Products->loadByIdAndVersion('.$strProductId.', '.$intVersion.')');
+
+    $objSelect = $this->getProductTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('products', array('id', 'productId', 'version', 'isStartElement' => 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idTemplates', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.created', 'productProperties.idStatus'));
+    $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = productProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
+    $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = productProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
+    $objSelect->joinLeft(array('ucr' => 'users'), 'ucr.id = productProperties.creator', array('creator' => 'CONCAT(ucr.fname, \' \', ucr.sname)'));
+    $objSelect->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
+    $objSelect->join('templates', 'templates.id = productProperties.idTemplates', array('filename'));
+    $objSelect->where('products.productId = ?', $strProductId)
+              ->where('products.version = ?', $intVersion);
+    
+    return $this->getProductTable()->fetchAll($objSelect);   
   }
 
   /**
@@ -421,8 +443,8 @@ class Model_Products {
     $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->join('productInternalLinks', 'productInternalLinks.linkedProductId = products.productId AND productInternalLinks.productId = '.$this->core->dbh->quote($strElementId).' AND productInternalLinks.version = '.$this->core->dbh->quote($intVersion, Zend_Db::INT_TYPE).' AND productInternalLinks.idLanguages = '.$this->intLanguageId, array('sortPosition'));
     $objSelect->join('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'));
-    $objSelect->joinLeft('productUrls', 'productUrls.productId = products.productId AND productUrls.version = products.version AND productUrls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND productUrls.idParent IS NULL', array('url'));
-    $objSelect->joinLeft('languages', 'languages.id = productUrls.idLanguages', array('languageCode'));
+    $objSelect->joinLeft('urls', 'urls.relationId = products.productId AND urls.version = products.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->product.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL', array('url'));
+    $objSelect->joinLeft('languages', 'languages.id = urls.idLanguages', array('languageCode'));
     $objSelect->where('products.id = (SELECT p.id FROM products AS p WHERE products.productId = p.productId ORDER BY p.version DESC LIMIT 1)');
     $objSelect->order('productInternalLinks.sortPosition ASC');
 
@@ -597,22 +619,6 @@ class Model_Products {
     }
 
     return $this->objProductLinkTable;
-  }
-
-  /**
-   * getProductUrlTable
-   * @return Zend_Db_Table_Abstract
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function getProductUrlTable(){
-
-    if($this->objProductUrlTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'products/models/tables/ProductUrls.php';
-      $this->objProductUrlTable = new Model_Table_ProductUrls();
-    }
-
-    return $this->objProductUrlTable;
   }
 
   /**

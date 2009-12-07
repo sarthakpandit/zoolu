@@ -171,20 +171,20 @@ class Model_Pages {
   }
 
   /**
-   * loadPageById
+   * loadByIdAndVersion
    * @param string $strPageId
    * @param integer $intPageVersion
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPageById($strPageId, $intPageVersion){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPageById('.$strPageId.', '.$intPageVersion.')');
+  public function loadByIdAndVersion($strPageId, $intPageVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->loadByIdAndVersion('.$strPageId.', '.$intPageVersion.')');
 
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'idTemplates', 'idStatus', 'published', 'changed', 'created', 'idPageTypes', 'isStartPage', 'showInNavigation', 'idParent', 'idParentTypes',
+    $objSelect->from('pages', array('id', 'idTemplates', 'idStatus', 'published', 'changed', 'created', 'idPageTypes', 'isStartElement' => 'isStartPage', 'showInNavigation', 'idParent', 'idParentTypes',
                                     '(SELECT CONCAT(users.fname, \' \', users.sname) AS publisher FROM users WHERE users.id = pages.publisher) AS publisher',
                                     '(SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = pages.idUsers) AS changeUser',
                                     '(SELECT CONCAT(users.fname, \' \', users.sname) AS creator FROM users WHERE users.id = pages.creator) AS creator'));
@@ -304,8 +304,9 @@ class Model_Pages {
 
       foreach($objPageCollectionData as $objPageCollection){
 
-        $arrData['pageId'] = $objPageCollection->pageId;
+        $arrData['relationId'] = $objPageCollection->pageId;
         $arrData['version'] = $objPageCollection->version;
+        $arrData['idUrlTypes'] = $this->core->sysConfig->url_types->page;
         $arrData['url'] = $objPageCollection->url;
 
         $this->getPageUrlTable()->insert($arrData);
@@ -877,45 +878,7 @@ class Model_Pages {
     $strWhere = $this->objPageTable->getAdapter()->quoteInto('id = ?', $intElementId);
     return $this->objPageTable->delete($strWhere);
   }
-
-  /**
-   * insertPageUrl
-   * @param string $strUrl
-   * @param string $strPageId
-   * @param integer $intVersion
-   * @return Zend_Db_Table_Rowset_Abstract
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-   */
-  public function insertPageUrl($strUrl, $strPageId, $intVersion){
-    $this->core->logger->debug('cms->models->Model_Pages->insertPageUrl('.$strUrl.', '.$strPageId.', '.$intVersion.')');
-    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
-   
-    $arrDataInsert = array('relationId'  => $strPageId,
-                           'version'     => $intVersion,
-                           'isMain'      => '1',
-                           'idLanguages' => $this->intLanguageId,
-                           'url'         => $strUrl,
-                           'idUsers'     => $intUserId,
-                           'creator'     => $intUserId,
-                           'created'     => date('Y-m-d H:i:s'));
-
-    return $objSelect = $this->getPageUrlTable()->insert($arrDataInsert);
-  }
   
-  
-  public function updatePageUrlIsMain($strPageId){
-    $this->core->logger->debug('cms->models->Model_Pages->updatePageUrlIsMain('.$strPageId.')');
-   
-    $arrDataUpdate = array(
-    'isMain'      => 0,
-    );
-    
-    $strWhere = $this->getPageUrlTable()->getAdapter()->quoteInto('relationId = ?', $strPageId);
-    
-    return $this->getPageUrlTable()->update($arrDataUpdate, $strWhere);
-  }
-
   /**
    * loadUrl
    * @param string $strPageId
@@ -1023,25 +986,7 @@ class Model_Pages {
               ->where('pages.isStartPage = 1');
 
     return $this->objPageUrlTable->fetchAll($objSelect);
-  }
- 
-  /**
-   * removeUrlHistoryEntry
-   * @param integer $intUrlId
-   * @param str $strPageId
-   * @return Zend_Db_Table_Rowset_Abstract
-   * @author Dominik Mößlang <dmo@massiveart.com>
-   * @version 1.0
-   */
-  public function removeUrlHistoryEntry($intUrlId,$strPageId){
-    $this->core->logger->debug('cms->models->Model_Pages->removeUrlHistoryEntry('.$intUrlId.', '.$strPageId.')');
-
-    $strWhere = $this->getPageUrlTable()->getAdapter()->quoteInto('pageId = ?', $strPageId);
-    $strWhere .= $this->objPageUrlTable->getAdapter()->quoteInto(' AND id = ?', $intUrlId);
-   
-    return $this->objPageUrlTable->delete($strWhere);
-  
-  }
+  } 
 
   /**
    * loadByUrl

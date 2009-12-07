@@ -56,6 +56,11 @@ class IndexController extends Zend_Controller_Action {
    * @var Model_Folders
    */
   private $objModelFolders;
+  
+  /**
+   * @var Model_Urls
+   */
+  private $objModelUrls;
 
   /**
    * @var Zend_Cache_Frontend_Output
@@ -70,7 +75,7 @@ class IndexController extends Zend_Controller_Action {
   /**
    * @var Zend_Db_Table_Row_Abstract
    */
-  private $objPageUrlsData;
+  private $objUrlsData;
 
   private $blnCachingStart = false;
 
@@ -108,9 +113,9 @@ class IndexController extends Zend_Controller_Action {
         $arrTags = array();
 
         if($this->objPage->getIsStartElement(false) == true)
-          $arrTags[] = 'StartPage';
+          $arrTags[] = 'Start'.ucfirst($this->objPage->getType());
 
-        $arrTags[] = 'PageType'.$this->objPage->getPageTypeId();
+        $arrTags[] = ucfirst($this->objPage->getType()).'Type'.$this->objPage->getTypeId();
 
         $this->core->logger->debug($arrTags);
         $this->objCache->end($arrTags);
@@ -177,14 +182,16 @@ class IndexController extends Zend_Controller_Action {
                                           $arrFrontendOptions,
                                           $arrBackendOptions);
 
-    $strCacheId = 'page_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
+    $strCacheId = 'page_'.$objTheme->idRootLevels.'_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
 
     if($this->core->sysConfig->cache->page == 'false' ||
        ($this->core->sysConfig->cache->page == 'true' && $this->objCache->test($strCacheId) == false) ||
        ($this->core->sysConfig->cache->page == 'true' && isset($_SESSION['sesTestMode']))){
 
+      $this->getModelUrls();
+      
       $this->getModelPages();
-
+      
       $objNavigation = new Navigation();
       $objNavigation->setRootLevelId($objTheme->idRootLevels);
       $objNavigation->setLanguageId($this->intLanguageId);
@@ -192,10 +199,10 @@ class IndexController extends Zend_Controller_Action {
       require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
       Zend_Registry::set('Navigation', $objNavigation);
 
-      $this->objPageUrlsData = $this->objModelPages->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
+      $this->objUrlsData = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 
-      if(count($this->objPageUrlsData) > 0){
-        $this->objPageUrlsData = current($this->objPageUrlsData);
+      if(count($this->objUrlsData) > 0){
+        $objUrlData = $this->objUrlsData->current();
 
         $this->core->logger->debug('Cache: '.$this->core->sysConfig->cache->page);
         if($this->core->sysConfig->cache->page == 'true' && !isset($_SESSION['sesTestMode'])){
@@ -204,26 +211,35 @@ class IndexController extends Zend_Controller_Action {
           $this->blnCachingStart = true;
         }
 
-        $this->objPageRowData = $this->objPageUrlsData;
-
         $this->objPage = new Page();
         $this->objPage->setRootLevelId($objTheme->idRootLevels);
         $this->objPage->setRootLevelTitle($objTheme->title);
-        $this->objPage->setPageId($this->objPageRowData->pageId);
-        $this->objPage->setPageVersion($this->objPageRowData->version);
-        $this->objPage->setLanguageId($this->objPageRowData->idLanguages);
-
+        $this->objPage->setPageId($objUrlData->relationId);
+        $this->objPage->setPageVersion($objUrlData->version);
+        $this->objPage->setLanguageId($objUrlData->idLanguages);		        
+        
+        switch($objUrlData->idUrlTypes){
+          case $this->core->sysConfig->url_types->page:
+            $this->objPage->setType('page');      
+            $this->objPage->setModelSubPath('cms/models/');      
+            break;
+          case $this->core->sysConfig->url_types->product:
+            $this->objPage->setType('product');
+            $this->objPage->setModelSubPath('products/models/');         
+            break;
+        }
+         	
         /**
          * preset navigation parent properties
          * e.g. is a collection page
          */
-        if($this->objPageUrlsData->idParent !== null){
-          $this->objPage->setNavParentId($this->objPageUrlsData->idParent);
-          $this->objPage->setNavParentTypeId($this->objPageUrlsData->idParentTypes);
+        if($objUrlData->idParent !== null){
+          $this->objPage->setNavParentId($objUrlData->idParent);
+          $this->objPage->setNavParentTypeId($objUrlData->idParentTypes);
         }
-
+    
         $this->objPage->loadPage();
-
+            
         /**
          * set values for replacers
          */
@@ -298,6 +314,27 @@ class IndexController extends Zend_Controller_Action {
     }
 
     return $this->objModelFolders;
+  }
+  
+  /**
+   * getModelUrls
+   * @return Model_Urls
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUrls(){
+    if (null === $this->objModelUrls) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Urls.php';
+      $this->objModelUrls = new Model_Urls();
+      $this->objModelUrls->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelUrls;
   }
 }
 ?>

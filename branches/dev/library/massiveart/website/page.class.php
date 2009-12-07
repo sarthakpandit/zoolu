@@ -54,9 +54,9 @@ class Page {
   protected $core;
 
   /**
-   * @var Model_Pages
+   * @var Model_Pages|Model_Product
    */
-  private $objModelPages;
+  private $objModel;
 
   /**
    * @var Model_Folders
@@ -114,6 +114,7 @@ class Page {
   protected $strPageId;
   protected $intPageVersion;
   protected $intLanguageId;
+  protected $strType;
   protected $strTemplateFile;
   protected $intTemplateId;
 
@@ -125,7 +126,7 @@ class Page {
   protected $objChangeDate;
   protected $objCreateDate;
 
-  protected $intPageTypeId;
+  protected $intTypeId;
   protected $blnIsStartPage;
   protected $blnShowInNavigation;
   protected $intParentId;
@@ -148,7 +149,7 @@ class Page {
   public function loadPage(){
     try{
       $this->getModelPages();
-      $objPageData = $this->objModelPages->loadPageById($this->strPageId, $this->intPageVersion);
+      $objPageData = $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
 
       if(count($objPageData) > 0){
         $objPage = $objPageData->current();
@@ -162,8 +163,9 @@ class Page {
         $this->setCreateDate($objPage->created);
         $this->setChangeUserName($objPage->changeUser);
         $this->setChangeDate($objPage->changed);
-        $this->setPageTypeId($objPage->idPageTypes);
-        $this->setIsStartElement($objPage->isStartPage);
+        if(isset($objPage->idPageTypes)) $this->setTypeId($objPage->idPageTypes);
+        if(isset($objPage->idProductTypes)) $this->setTypeId($objPage->idProductTypes);
+        $this->setIsStartElement($objPage->isStartElement);
         $this->setShowInNavigation($objPage->showInNavigation);
         $this->setParentId($objPage->idParent);
         $this->setParentTypeId($objPage->idParentTypes);
@@ -188,14 +190,14 @@ class Page {
         $this->objGenericData->Setup()->setLanguageId($this->intLanguageId);
         $this->objGenericData->Setup()->setParentId($this->getParentId());
         $this->objGenericData->Setup()->setParentTypeId($this->getParentTypeId());
-        $this->objGenericData->Setup()->setModelSubPath('cms/models/');
+        $this->objGenericData->Setup()->setModelSubPath($this->getModelSubPath());
 
         $this->objGenericData->loadData();
 
         /**
          * page type based fallbacks
          */
-        switch($this->intPageTypeId){
+        switch($this->intTypeId){
           case  $this->core->sysConfig->page_types->external->id:
             if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
               header ('Location: '.$this->getFieldValue('external'));
@@ -419,8 +421,8 @@ class Page {
     try{
 
       $this->getModelPages();
-      $this->objModelPages->setLanguageId($this->intLanguageId);
-      return $this->objModelPages->loadInternalLinks($this->strPageId, $this->intPageVersion);
+      $this->objModel->setLanguageId($this->intLanguageId);
+      return $this->objModel->loadInternalLinks($this->strPageId, $this->intPageVersion);
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -521,7 +523,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -565,7 +567,7 @@ class Page {
     try{
       $this->getModelPages();
 
-      $objPages = $this->objModelPages->loadPages($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
+      $objPages = $this->objModel->loadPages($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
       return $objPages;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -610,7 +612,7 @@ class Page {
                 array_push($arrGenFormPageIds, $value);
               }
             }
-            $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+            $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
 
             /**
              * overwrite page entries
@@ -702,7 +704,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -765,7 +767,7 @@ class Page {
       $intSortType = $this->objGenericData->Setup()->getField('top_sorttype')->getValue();
       $intSortOrder = $this->objGenericData->Setup()->getField('top_sortorder')->getValue();
 
-      $objPages = $this->objModelPages->loadPagesByCategory($this->intRootLevelId, $intCategoryId, $intLabelId, $intLimitNumber, $intSortType, $intSortOrder);
+      $objPages = $this->objModel->loadPagesByCategory($this->intRootLevelId, $intCategoryId, $intLabelId, $intLimitNumber, $intSortType, $intSortOrder);
 
       return $objPages;
     }catch (Exception $exc) {
@@ -817,7 +819,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -855,7 +857,7 @@ class Page {
   public function getPagesByTemplate($intTemplateId, $intQuarter = 0, $intYear = 0){
     try{
       $this->getModelPages();
-      $objPages = $this->objModelPages->loadPagesByTemplatedId($intTemplateId, $intQuarter, $intYear);
+      $objPages = $this->objModel->loadPagesByTemplatedId($intTemplateId, $intQuarter, $intYear);
       return $objPages;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -871,7 +873,7 @@ class Page {
     try{
       $this->getModelPages();
 
-      $objPageRowset = $this->objModelPages->loadPageInstanceDataById($intPageId, $strGenForm);
+      $objPageRowset = $this->objModel->loadPageInstanceDataById($intPageId, $strGenForm);
       return $objPageRowset;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -885,18 +887,23 @@ class Page {
    * @version 1.0
    */
   protected function getModelPages(){
-    if (null === $this->objModelPages) {
+  	if($this->objModel === null) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
-      $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->intLanguageId);
+      $strModelFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.$this->getModelSubPath().((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s').'.php';
+      if(file_exists($strModelFilePath)){
+        require_once $strModelFilePath;
+        $strModel = 'Model_'.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s');
+        $this->objModel = new $strModel();
+        $this->objModel->setLanguageId($this->intLanguageId);
+      }else{
+        throw new Exception('Not able to load type specific model, because the file didn\'t exist! - strType: "'.$this->strType.'"');
+      }
     }
-
-    return $this->objModelPages;
+    return $this->objModel;    
   }
 
   /**
@@ -1098,6 +1105,38 @@ class Page {
   public function getLanguageId(){
     return $this->intLanguageId;
   }
+  
+  /**
+   * setType
+   * @param string $strType
+   */
+  public function setType($strType){
+    $this->strType = $strType;
+  }
+
+  /**
+   * getType
+   * @param string $strType
+   */
+  public function getType(){
+    return $this->strType;
+  }
+  
+  /**
+   * setModelSubPath
+   * @param string $strModelSubPath
+   */
+  public function setModelSubPath($strModelSubPath){
+    $this->strModelSubPath = $strModelSubPath;
+  }
+
+  /**
+   * getModelSubPath
+   * @param string $strModelSubPath
+   */
+  public function getModelSubPath(){
+    return $this->strModelSubPath;
+  }
 
   /**
    * setTemplateFile
@@ -1180,19 +1219,19 @@ class Page {
   }
 
   /**
-   * setPageTypeId
-   * @param integer $intPageTypeId
+   * setTypeId
+   * @param integer $intTypeId
    */
-  public function setPageTypeId($intPageTypeId){
-    $this->intPageTypeId = $intPageTypeId;
+  public function setTypeId($intTypeId){
+    $this->intTypeId = $intTypeId;
   }
 
   /**
-   * getPageTypeId
-   * @param integer $intPageTypeId
+   * getTypeId
+   * @param integer $intTypeId
    */
-  public function getPageTypeId(){
-    return $this->intPageTypeId;
+  public function getTypeId(){
+    return $this->intTypeId;
   }
 
   /**

@@ -103,7 +103,7 @@ class Form_Decorator_Url extends Zend_Form_Decorator_Abstract {
     $element = $this->getElement();
     $helper  = $element->helper;
   
-    $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->isStartPage, $element->options, $element->idParentFolder, $element->depth);
+    $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->blnIsStartElement, $element->options, $element->intParentId);
     
     return $strOutput;
   }

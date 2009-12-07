@@ -81,10 +81,9 @@ class GenericForm extends Zend_Form {
                                                     'strLinkedPageBreadcrumb',
                                                     'intVideoTypeId',
                                                     'strVideoUserId',
-                                                    'idParentFolder',
-                                                    'depth',  
-                                                    'isStartPage',
                                                     'strVideoThumb',
+                                                    'intParentId',
+                                                    'blnIsStartElement',                                                                                             
                                                     'objPageInternalLinks',
                                                     'objPageCollection');
 
