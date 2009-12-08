@@ -780,7 +780,7 @@ class Products_ProductController extends AuthControllerAction {
 
       $intFormVersion = ($this->objRequest->getParam("formVersion") != '') ? $this->objRequest->getParam("formVersion") : null;
       $intElementId = ($this->objRequest->getParam("id") != '') ? $this->objRequest->getParam("id") : null;
-
+      
       $objFormHandler = FormHandler::getInstance();
       $objFormHandler->setFormId($strFormId);
       $objFormHandler->setTemplateId($intTemplateId);
@@ -805,6 +805,7 @@ class Products_ProductController extends AuthControllerAction {
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("productTypeId") != '') ? $this->objRequest->getParam("productTypeId") : $this->core->sysConfig->product_types->product->id));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentTypeId") != '') ? $this->objRequest->getParam("parentTypeId") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setModelSubPath('products/models/');
+      $this->objForm->Setup()->setElementLinkId($this->objRequest->getParam("linkId", -1));
 
       /**
        * add currlevel hidden field
@@ -846,7 +847,7 @@ class Products_ProductController extends AuthControllerAction {
       /**
        * product link Id form the tree view
        */
-      $this->objForm->addElement('hidden', 'linkId', array('value' => $this->objRequest->getParam('linkId', -1), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'linkId', array('value' => $this->objForm->Setup()->getElementLinkId(), 'decorators' => array('Hidden')));
     }
   }
 

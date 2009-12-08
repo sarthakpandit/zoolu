@@ -80,7 +80,7 @@ class Model_Tags {
     $objSelect = $this->getTagsTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('tags', array('title'));
+    $objSelect->from('tags', array('id', 'title'));
     $objSelect->where('tags.id = ?', $intElementId);
 
     return $this->getTagsTable()->fetchAll($objSelect);

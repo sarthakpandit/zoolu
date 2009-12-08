@@ -47,7 +47,7 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
 
       $this->objModelTags->addTypeTags($strType, $this->arrNewTagIds, $strElementId, $intVersion);
 
-      $this->objElement->tagIds = $this->arrNewTagIds;
+      $this->load($intElementId, $strType, $strElementId, $intVersion);
             
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -70,14 +70,6 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
       $this->arrTagIds = array();
 
       $objTagData = $this->objModelTags->loadTypeTags($strType, $strElementId, $intVersion);
-
-      /*if(count($objTagData) > 0){
-        foreach($objTagData as $objTag){
-          $this->strTags .= $objTag->title.', ';
-          $this->arrTagIds[] = $objTag->id;
-        }
-        $this->strTags = rtrim($this->strTags, ', ');
-      }*/
       
       $this->objElement->setValue($objTagData);
 
@@ -97,17 +89,20 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
 
     $this->arrNewTagIds = array();
     
-    $strTmpTagTitles = trim($this->objElement->getValue(), '[]');
-    $this->arrNewTags = split('\]\[', $strTmpTagTitles);
+    $this->arrNewTags = split(',', $this->objElement->getValue());
 
     /**
      * get tag ids
      */
-    foreach($this->arrNewTags as $strTag){
-      $strTag = trim($strTag);
-      if($strTag != ''){
+    foreach($this->arrNewTags as $mixedTag){
+      $mixedTag = trim($mixedTag);
+      if($mixedTag != ''){
         try{
-          $objTagData = $this->objModelTags->loadTagByName($strTag);
+        	if(is_numeric($mixedTag)){
+        		$objTagData = $this->objModelTags->loadTag($mixedTag);
+        	}else{
+            $objTagData = $this->objModelTags->loadTagByName($mixedTag);	
+        	}          
 
           /**
            * if the tag exists
@@ -118,13 +113,15 @@ class GenericDataHelper_Tag extends GenericDataHelperAbstract  {
             /**
              * fill in tagIds array
              */
-            $this->arrNewTagIds[] = $objTag->id;
+            if(!in_array($objTag->id, $this->arrNewTagIds)) {
+              $this->arrNewTagIds[] = $objTag->id;
+            }
 
           }else{
             /**
              * else, insert new tag
              */
-            $this->arrNewTagIds[] = $this->objModelTags->addTag($strTag);
+            $this->arrNewTagIds[] = $this->objModelTags->addTag($mixedTag);
           }
         }catch (PDOException $exc) {
           $this->core->logger->logException($exc);

@@ -52,12 +52,13 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
    * @param string $value
    * @param array $attribs
    * @param mixed $options
-   * @param Zend_Db_Table_Rowset $objMostUsedTags
+   * @param Zend_Db_Table_Rowset $objAllTags
    * @param array $arrTagIds
    * @version 1.0
    */
   public function formTag($name, $value = null, $attribs = null, $options = null, $objAllTags, $arrTagIds = array()){
     $info = $this->_getInfo($name, $value, $attribs);
+    $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
     
     // XHTML or HTML end tag
@@ -68,84 +69,56 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
     }
        
     // build the element
-    $strSelTags = '';
     $strTags = '';
     
    if(is_object($value) || is_array($value)){
       foreach($value as $objTag){
-        $strTags .= '<div id="'.$this->view->escape($id).'_'.$objTag->title.'" class="tagpill"><div class="tagdelete" onclick="myTags.removeTag(\''.$this->view->escape($id).'\',\''.$objTag->title.'\')">[x]</div><div class="tagtitle">'.$objTag->title.'</div><div class="clear"></div></div>';
-        $strSelTags .= '['.$objTag->title.']';
-      }
-    }else{
-      $strTmpTagTitles = trim($value, '[]');
-      $arrTags = split('\]\[', $strTmpTagTitles);
-      
-      foreach($arrTags as $key => $strTagTitle){
-        $strTags .= '<div id="'.$this->view->escape($id).'_'.$strTagTitle.'" class="tagpill"><div class="tagdelete" onclick="myTags.removeTag(\''.$this->view->escape($id).'\',\''.$strTagTitle.'\')">[x]</div><div class="tagtitle">'.$strTagTitle.'</div><div class="clear"></div></div>';
-        $strSelTags .= '['.$strTagTitle.']';
+        $strTags .= '<li value="'.$objTag->id.'">'.htmlentities($objTag->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</li>';        
       }
     }
-    
-    $strOutput = '<div class="tagswrapper">
-                    <div class="field"><input type="text"  value="" id="'.$this->view->escape($id).'_Inp" name="'.$this->view->escape($name).'Inp" '.$this->_htmlAttribs($attribs).$endTag.
-                    '<a href="#" onclick="myTags.addTag(\''.$this->view->escape($id).'\'); return false;" id="'.$this->view->escape($id).'Add" name="'.$this->view->escape($name).'Add">Hinzufügen</a>
-                    </div><input type="hidden" value="'.$strSelTags.'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$this->_htmlAttribs($attribs).$endTag.
-                    '<div class="autocomplete" id="'.$this->view->escape($id).'_Suggest" style="display:none"></div>';
-    
-    $strOutput .= '<div id="'.$this->view->escape($id).'SelectedTags" class="selectedtagwrapper">';
-    $strOutput .= $strTags;
-   
-    $strAllTags = $this->getAllTags($objAllTags,$this->view->escape($id));
-       
-    $strOutput .= '<div id="'.$this->view->escape($id).'_WrapperClear" class="clear"></div></div><div class="clear"></div></div>';
-    
-    $arrReturn = array($strOutput,$strAllTags);
-  
-    return $arrReturn;
+        
+    $strOutput = '<div class="field">
+	                  <ol>        
+							        <li id="autocompletList" class="input-text">
+                        <input type="text" value="" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$this->_htmlAttribs($attribs).$endTag.'
+							          <div id="'.$this->view->escape($id).'_autocompleter" class="autocompleter">
+							            <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+							            <ul class="feed">
+							              '.$strTags.'
+							            </ul>
+							          </div>
+							        </li>
+							      </ol>
+						      </div>
+						      <script type="text/javascript" language="javascript">
+                    '.$this->view->escape($id).'_list = new FacebookList(\''.$this->view->escape($id).'\', \''.$this->view->escape($id).'_autocompleter\',{ newValues: true, regexSearch: true });
+                    '.$this->getAllTagsForAutocompleter($objAllTags, $id).'
+                  </script>';
+        
+    return $strOutput;
   }
     
   /**
-   * getAllTags
-   * @return string $strAllTags
-   * @author Dominik Mößlang <dmo@massiveart.com>
-   * @version 1.0
-   */
-  public function getAllTags($objAllTags,$intElementId){
-    $strAllTags = '';
-    if(count($objAllTags) > 0){
-      $strAllTags .= 'var arr'.$intElementId.'TagList =[ ';
-      foreach($objAllTags as $intKey => $objTag){
-        $strAllTags .= '"'.$objTag->title.'",';
-      }
-      $strAllTags = trim($strAllTags, ',');
-      $strAllTags .= '];';   
-    }
-    return $strAllTags;
-  }
-  
-/**
-   * getMostUsedTags
-   * @return string $strMostUsedTags
+   * getAllTagsForAutocompleter
+   * @return Zend_Db_Table_Rowset $objAllTags
+   * @return string $strElementId
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  private function getMostUsedTags($strFieldName, $objMostUsedTags, $arrTagIds, $value){
-    $strMostUsedTags = '';
-    
-    if(count($objMostUsedTags) > 0){
-      
-      foreach($objMostUsedTags as $objTag){
-        $strTagCssClass = '';
-        if((is_array($arrTagIds) && array_search($objTag->id, $arrTagIds) !== false) || (strpos($value, $objTag->title) !== false)){
-          $strTagCssClass = ' class="selectedtag"';
-        }
-        $strMostUsedTags.= '<a href="#"'.$strTagCssClass.' onclick="myTags.addOrRemoveTag(\''.addslashes($objTag->title).'\', this,\''.$strFieldName.'\'); return false;">'.$this->view->escape($objTag->title).'</a> ';
+  public function getAllTagsForAutocompleter($objAllTags, $strElementId){
+  	$core = Zend_Registry::get('Core');
+    $strAllTags = '';
+    if(count($objAllTags) > 0){
+      $strAllTags .= 'var '.$strElementId.'_json = [';
+      foreach($objAllTags as $objTag){
+        $strAllTags .= '{"caption":"'.htmlentities($objTag->title, ENT_COMPAT, $core->sysConfig->encoding->default).'","value":'.$objTag->id.'},';
       }
+      $strAllTags = trim($strAllTags, ',');
+      $strAllTags .= '];';
+      $strAllTags .= $strElementId.'_json.each(function(t){'.$strElementId.'_list.autoFeed(t)})';   
     }
-    
-    return $strMostUsedTags;
+    return $strAllTags;
   }
-  
 }
 
 ?>

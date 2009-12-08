@@ -220,7 +220,6 @@ class Model_Products {
       $objProduct->rootLevelId = $objGenericSetup->getRootLevelId();
       $objProduct->isStartElement = $objGenericSetup->getIsStartElement();
       $this->addLink($objProduct);
-      
     }
 
     return $objProduct;
@@ -390,6 +389,34 @@ class Model_Products {
       $strWhere = $this->getProductTable()->getAdapter()->quoteInto('id = ?', $intElementId);
       return $this->objProductTable->delete($strWhere);
     }
+  }
+  
+  /**
+   * loadParentFolders
+   * @param integer $intElementId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadParentFolders($intElementId){
+    $this->core->logger->debug('products->models->Model_Products->loadParentFolders('.$intElementId.')');
+
+    $sqlStmt = $this->core->dbh->query('SELECT folders.id, folders.isUrlFolder, folderTitles.title
+                                          FROM folders
+                                            INNER JOIN folderTitles ON
+                                              folderTitles.folderId = folders.folderId AND
+                                              folderTitles.version = folders.version AND
+                                              folderTitles.idLanguages = ?
+                                          ,folders AS parent
+                                            INNER JOIN products ON
+                                              products.id = ? AND
+                                              parent.id = products.idParent AND
+                                              products.idParentTypes = ?
+                                           WHERE folders.lft <= parent.lft AND
+                                                 folders.rgt >= parent.rgt AND
+                                                 folders.idRootLevels = parent.idRootLevels
+                                             ORDER BY folders.rgt', array($this->intLanguageId, $intElementId, $this->core->sysConfig->parent_types->folder));
+    return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
 
   /**

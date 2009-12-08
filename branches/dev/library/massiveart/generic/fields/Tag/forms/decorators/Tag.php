@@ -158,30 +158,10 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
     $strOutput .= '<div>'
                     .$label
                     .$desc
-                    .$tags[0]
+                    .$tags
                     .$errors
                  .'</div>
                  </div>';
-                 
-    $strOutput .= '<script type="text/javascript" language="javascript">
-     '.$tags[1].'
-     new Autocompleter.Local(\''.$element->getName().'_Inp\', \''.$element->getName().'_Suggest\', arr'.$element->getName().'TagList, { tokens: new Array(\',\',\'\n\'), fullSearch: true, partialSearch: true});
-     Event.observe(\''.$element->getName().'_Inp\', "keypress", function (event){
-       if(event.keyCode == Event.KEY_RETURN){
-         if($F(\''.$element->getName().'_Inp\') !== ""){
-           myTags.addTag(\''.$element->getName().'\');    
-         }
-       }  
-     });
-     
-     Event.observe(\''.$element->getName().'_Suggest\', "click", function (event){
-       if($F(\''.$element->getName().'_Inp\') !== ""){
-         myTags.addTag(\''.$element->getName().'\');
-       }
-     });
-     
-     </script>';
-                 
 
     switch ($placement) {
       case (self::PREPEND):
