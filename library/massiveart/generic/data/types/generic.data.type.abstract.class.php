@@ -792,16 +792,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
     $this->loadMultiFieldData($strType, $arrTypeProperties);
     $this->loadInstanceData($strType, $arrTypeProperties);
     $this->loadMultiplyRegionData($strType, $arrTypeProperties);
-
-    /**
-     * now laod all data from the special fields
-     */
-    if(count($this->setup->SpecialFields()) > 0){
-      foreach($this->setup->SpecialFields() as $objField){
-        $objField->setGenericSetup($this->setup);
-        $objField->load($this->setup->getElementId(), $strType, $arrTypeProperties['Id'], $arrTypeProperties['Version']);
-      }
-    }
+        
   }
 
   /**

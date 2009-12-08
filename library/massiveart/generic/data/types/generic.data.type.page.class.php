@@ -304,6 +304,16 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
         $this->setup->setParentTypeId($objPage->idParentTypes);
 
         parent::loadGenericData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
+        
+        /**
+		     * now laod all data from the special fields
+		     */
+		    if(count($this->setup->SpecialFields()) > 0){
+		      foreach($this->setup->SpecialFields() as $objField){
+		        $objField->setGenericSetup($this->setup);
+		        $objField->load($this->setup->getElementId(), 'page', $objPage->pageId, $objPage->version);
+		      }
+		    }
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

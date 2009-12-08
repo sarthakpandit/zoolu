@@ -151,19 +151,21 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
         // if no url is saved
         $this->strUrl = '';
         
-        if($this->strType == 'page'){
-          $objParentFoldersData = $this->objModel->loadParentFolders($intElementId);
-	        if(count($objParentFoldersData) > 0){
-	          foreach($objParentFoldersData as $objParentFolder){
-	            if($objParentFolder->isUrlFolder == 1){
-	              $this->strUrl = $this->makeUrlConform($objParentFolder->title).'/'.$this->strUrl;
-	            }
-	          }
-	        }
+        $objParentFoldersData = $this->objModel->loadParentFolders($intElementId);
+        if(count($objParentFoldersData) > 0){
+          foreach($objParentFoldersData as $objParentFolder){
+          	if($objParentFolder->isUrlFolder == 1){
+              $this->strUrl = $this->makeUrlConform($objParentFolder->title).'/'.$this->strUrl;
+            }
+          }
         }
         
-        if($this->objElement->Setup()->getIsStartElement(false) == true && $this->strType == 'page'){
-          $this->strUrl .= '';
+        if($this->objElement->Setup()->getIsStartElement(false) == true){
+	        if($this->objElement->Setup()->getField('title') && $this->strUrl == ''){
+	          $this->strUrl = $this->makeUrlConform($this->objElement->Setup()->getField('title')->getValue()).'/';         
+	        }else{
+	          $this->strUrl .= '';	
+	        }          
         }else{
           $objFieldData = $this->objElement->Setup()->getModelGenericForm()->loadFieldsWithPropery($this->core->sysConfig->fields->properties->url_field, $this->objElement->Setup()->getGenFormId());
 
@@ -176,15 +178,13 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
             }
           }
         }
-        
+                
         $this->strUrl = $this->checkUrlUniqueness($this->strUrl);
         $this->objModelUrls->insertUrl($this->strUrl, $strElementId, $intVersion, $this->core->sysConfig->url_types->$strType);     
       }
         
       $this->load($intElementId, $strType, $strElementId, $intVersion);
-
-     
-
+      
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -206,8 +206,6 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       $this->getModelUrls();
       
       $objUrlData = $this->objModelUrls->loadUrl($strElementId, $intVersion, $this->core->sysConfig->url_types->$strType);
-
-      $this->core->logger->debug(count($objUrlData));
       
       if(count($objUrlData) > 0){
         $objUrl = $objUrlData->current();
@@ -271,7 +269,12 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
   public function checkUrlUniqueness($strUrl, $intUrlAddon = 0){
     $this->getModel();
 
-    $strNewUrl = ($intUrlAddon > 0) ? $strUrl.'-'.$intUrlAddon : $strUrl;
+    if(rtrim($strUrl, '/') != $strUrl){
+    	$strNewUrl = ($intUrlAddon > 0) ? rtrim($strUrl, '/').'-'.$intUrlAddon.'/' : $strUrl;    	
+    }else{
+      $strNewUrl = ($intUrlAddon > 0) ? $strUrl.'-'.$intUrlAddon : $strUrl;	
+    }    
+    
     $objUrlsData = $this->objModelUrls->loadByUrl($this->objElement->Setup()->getRootLevelId(), $strNewUrl);
 
     if(count($objUrlsData) > 0){

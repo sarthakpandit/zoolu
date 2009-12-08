@@ -243,7 +243,7 @@ class Model_Folders {
      *        (lP.idParentTypes = '1') AND
      *        (products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1))
      */
-    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'sortPosition', 'sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
+    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'lP.sortPosition', 'lP.sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
     $objProductSelect->join('productLinks', 'productLinks.productId = products.productId', array());
     $objProductSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());
     $objProductSelect->join('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->intLanguageId, array());
@@ -256,7 +256,7 @@ class Model_Folders {
 
     $objSelect = $this->getFolderTable()->select()
                                         ->union(array($objFolderSelect, $objProductSelect))
-                                        ->order(array('sortPosition', 'sortTimestamp', 'id'));
+                                        ->order(array('sortPosition', 'sortTimestamp DESC', 'id'));
 
     return $this->getFolderTable()->fetchAll($objSelect);
   }
@@ -509,7 +509,7 @@ class Model_Folders {
      *        (lP.idParentTypes = '2') AND
      *        (products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1))
      */
-    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'sortPosition', 'sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
+    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'lP.sortPosition', 'lP.sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
     $objProductSelect->join('productLinks', 'productLinks.productId = products.productId', array());
     $objProductSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());
     $objProductSelect->join('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->intLanguageId, array());
@@ -522,7 +522,7 @@ class Model_Folders {
 
     $objSelect = $this->getFolderTable()->select()
                                  ->union(array($objFolderSelect, $objProductSelect))
-                                 ->order(array('sortPosition', 'sortTimestamp', 'id'));
+                                 ->order(array('sortPosition', 'sortTimestamp DESC', 'id'));
 
     return $this->getFolderTable()->fetchAll($objSelect);
   }

@@ -93,6 +93,7 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
         case $this->core->sysConfig->generic->actions->edit :
 
           $objProduct = $this->objModelProducts->load($this->setup->getElementId());
+          $objProduct->linkId = $this->setup->getElementLinkId();
           
           if(count($objProduct) > 0){
             $objProduct = $objProduct->current();
@@ -123,7 +124,11 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
       if(count($this->setup->SpecialFields()) > 0){
         foreach($this->setup->SpecialFields() as $objField){
           $objField->setGenericSetup($this->setup);
-          $objField->save($this->setup->getElementId(), 'product', $objProduct->productId, $objProduct->version);
+          if($objField->type == GenericSetup::FIELD_TYPE_URL){
+          	$objField->save($this->setup->getElementLinkId(), 'product', $objProduct->productId, $objProduct->version);
+          }else{
+            $objField->save($this->setup->getElementId(), 'product', $objProduct->productId, $objProduct->version);	
+          }
         }
       }
 
@@ -197,6 +202,20 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
         $this->setup->setParentTypeId($objProduct->idParentTypes);
 
         parent::loadGenericData('product', array('Id' => $objProduct->productId, 'Version' => $objProduct->version));
+        
+        /**
+		     * now laod all data from the special fields
+		     */
+		    if(count($this->setup->SpecialFields()) > 0){
+		      foreach($this->setup->SpecialFields() as $objField){
+		        $objField->setGenericSetup($this->setup);
+		        if($objField->type == GenericSetup::FIELD_TYPE_URL){
+		        	$objField->load($this->setup->getElementLinkId(), 'product', $objProduct->productId, $objProduct->version);
+	          }else{
+	            $objField->load($this->setup->getElementId(), 'product', $objProduct->productId, $objProduct->version); 
+	          }		        
+		      }
+		    }
 
       }
     }catch (Exception $exc) {

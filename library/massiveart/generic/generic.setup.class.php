@@ -67,6 +67,7 @@ class GenericSetup {
 
 	protected $intLanguageId;
 	protected $intElementId;
+	protected $intElementLinkId;
 
 	protected $intParentId;
 	protected $intParentTypeId;
@@ -200,6 +201,7 @@ class GenericSetup {
   const FIELD_TYPE_INTERNALLINK = 'internalLink';
   const FIELD_TYPE_INTERNALLINKS = 'internalLinks';
   const FIELD_TYPE_COLLECTION = 'collection';
+  const FIELD_TYPE_URL = 'url';
 
 	/*
    * FieldTypeGroups
@@ -1030,6 +1032,22 @@ class GenericSetup {
 	public function getElementId(){
 		return $this->intElementId;
 	}
+	
+  /**
+   * setElementLinkId
+   * @param integer $intElementLinkId
+   */
+  public function setElementLinkId($intElementLinkId){
+    $this->intElementLinkId = $intElementLinkId;
+  }
+
+  /**
+   * getElementLinkId
+   * @param integer $intElementLinkId
+   */
+  public function getElementLinkId(){
+    return $this->intElementLinkId;
+  }
 
 	/**
 	 * setParentId
