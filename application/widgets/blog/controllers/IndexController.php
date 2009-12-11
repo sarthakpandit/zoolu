@@ -47,8 +47,9 @@ class Blog_IndexController extends WidgetControllerAction  {
 	protected $objBlogEntries;
   
 	/**
-	 * Initialize WidgetController and add 
+	 * Initialize WidgetController action and add 
 	 * default css and js widget theme files
+	 * 
 	 * @see library/massiveart/controllers/WidgetControllerAction#init()
 	 * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
@@ -108,7 +109,6 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
   public function viewAction() {
-
   	$objBlogEntries = $this->getBlogEntries();
 		
   	$arrParams = $this->objRequest->getParams();
@@ -123,7 +123,8 @@ class Blog_IndexController extends WidgetControllerAction  {
 		  if (!$form->isValid($_POST)) {
 	      $this->view->form = $form;
 		 	} else {
-		 		//$this->_redirect('/widget/blog/comment/add/asdsdf');
+		 		// add id to _POST
+		 		$this->_forward('add','comment');
 		 	}
   	} else {
   		$this->view->form = $form;
