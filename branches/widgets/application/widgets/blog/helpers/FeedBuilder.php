@@ -71,6 +71,8 @@ class Blog_FeedBuilder implements Zend_Feed_Builder_Interface {
 	 */
 	protected $objBlogEntries;
 	
+	protected $intCount = 10;
+	
 	/**
 	 * Constructor
 	 * @param string $strWidgetInstanceId
@@ -99,12 +101,12 @@ class Blog_FeedBuilder implements Zend_Feed_Builder_Interface {
 	 * @version 1.0
 	 */
 	public function getEntries(){
-		$objBlogEntries = $this->getModelBlogEntries()->getBlogEntries($this->objWidget->getWidgetInstanceId(), 10);
+		$objBlogEntries = $this->getModelBlogEntries()->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->intCount);
 		
 		$arrEntry = array();
 		
 		foreach($objBlogEntries as $objBlogEntry){
-			$objEntry = new Zend_Feed_Builder_Entry($objBlogEntry->title, '', $objBlogEntry->text);
+			$objEntry = new Zend_Feed_Builder_Entry($objBlogEntry->title, '', $objBlogEntry->text); //FIXME URL
 			$objEntry->setLastUpdate($objBlogEntry->created_ts);
 			
 			$arrEntry[] = $objEntry;
