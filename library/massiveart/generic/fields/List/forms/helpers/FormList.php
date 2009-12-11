@@ -59,10 +59,11 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 	{
 		//FIXME: Making it work with multiple instances on one formular
 		$info = $this->_getInfo($name, $value, $attribs, $options);
+		Zend_Registry::get('Core')->logger->debug($info);
 		extract($info);
 
 		$xhtml='<script type="text/javascript">';
-		$xhtml.='myList = new List();';
+		$xhtml.='myList = new List("/widget/blog/comment/delete");';
 		$xhtml.='</script>';
 		$xhtml.='<table>';
 		

@@ -98,6 +98,7 @@ class Blog_CommentController extends Zend_Controller_Action {
 	 */
 	public function deleteAction() {
 		$this->core->logger->debug('widgets->blog->CommentController->deleteAction');
+		$this->_helper->viewRenderer->setNoRender();
 		try {
 			if($this->objRequest->getPost() && $this->objRequest->isXmlHttpRequest()) {
 				$this->getModelBlogEntryComment()->deleteBlogEntryComment($this->objRequest->getParam('id'));

@@ -9,8 +9,8 @@
  */
 var List = Class.create({
   
-  initialize: function(){
-    this.constRequest = '/widget/blog/comment/delete'; //FIXME Not blogspecific!
+  initialize: function(deleteAction){
+    this.constRequest = deleteAction; //FIXME Not blogspecific!
   },
   
   deleteSelectedElements: function(){
