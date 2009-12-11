@@ -256,6 +256,7 @@ class GenericSetup {
         $this->setGenFormId($objForm->id);
         $this->setFormTitle($objForm->title);
         $this->setFormVersion($objForm->version);
+        $this->core->logger->debug($objForm->idGenericFormTypes);
         $this->setFormTypeId($objForm->idGenericFormTypes);
         $this->setFormType($objForm->typeTitle);
 
@@ -307,7 +308,7 @@ class GenericSetup {
       );
 
       $arrBackendOptions = array(
-          'cache_dir' => GLOBAL_ROOT_PATH.'/tmp/cache/gen_forms/' // Directory where to put the cache files
+          'cache_dir' => GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->gen_forms // Directory where to put the cache files
       );
 
       // getting a Zend_Cache_Core object

@@ -78,6 +78,15 @@ function get_portal_title(){
 }
 
 /**
+ * get_static_component_domain
+ * @author Cornelius Hansjakob <cha@massiveart.com>
+ * @version 1.0
+ */
+function get_static_component_domain(){
+  echo getCoreObject()->webConfig->domains->static->components;
+}
+
+/**
  * get_meta_keywords
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
@@ -118,12 +127,13 @@ function get_meta_description(){
  */
 function get_zoolu_header(){
   $strHtmlOutput = '';
+  $core = getCoreObject();
 
   if(Zend_Auth::getInstance()->hasIdentity()){
     $strHtmlOutput .= '<div class="divModusContainer">
       <div class="divModusLogo">
         <a href="/zoolu/cms" target="_blank">
-          <img src="/zoolu/images/modus/logo_zoolu_modus.gif" alt="ZOOLU" />
+          <img src="'.$core->webConfig->domains->static->components.'/zoolu/images/modus/logo_zoolu_modus.gif" alt="ZOOLU" />
         </a>
       </div>
       <div class="divModusAdvice">Hinweis: Im Moment werden auch Seiten mit dem <strong>Status "Test"</strong> dargestellt.</div>
@@ -211,6 +221,85 @@ function get_abstract(){
 }
 
 /**
+ * get_sidebar
+ * @return string $strHtmlOutput
+ * @author Michael Trawetzky <mtr@massiveart.com>
+ * @version 1.0
+ * Description: Template Startpage, Template 1
+ */
+function get_sidebar($strContainerClass = 'sidebar', $strBlockClass = 'block'){
+  $core = getCoreObject();
+  $objPage = getPageObject();
+
+  $objMyMultiRegion = $objPage->getRegion(26); //26 is the default sidebar block region with block_title and block_description
+
+  $strHtmlOutput = '';
+
+  if($objMyMultiRegion instanceof GenericElementRegion){
+    if(count($objMyMultiRegion->RegionInstanceIds()) > 0){
+      $counter = 0;
+      foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+        $strBlockTitle = htmlentities($objMyMultiRegion->getField('sidebar_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
+        $strBlockDescription = $objMyMultiRegion->getField('sidebar_description')->getInstanceValue($intRegionInstanceId);
+        $counter++;
+        if(!($strBlockTitle == '' && $strBlockDescription == '')){
+          if($counter == 1) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
+          $strHtmlOutput .= '<div class="'.$strBlockClass.'">
+                               <h3>'.$strBlockTitle.'</h3>
+                               '.$strBlockDescription.'
+                             </div>';
+          if($counter == count($objMyMultiRegion->RegionInstanceIds())) $strHtmlOutput .= '</div>';
+        }
+      }
+    }
+  }
+  echo $strHtmlOutput;
+}
+
+/**
+ * get_sidebar_blocks
+ * @return string $strHtmlOutput
+ * @author Michael Trawetzky <mtr@massiveart.com>
+ * @version 1.1
+ * Description: Template Overview
+ */
+function get_sidebar_blocks($strContainerClass = 'sidebar', $strBlockClass = 'block', $strImageFolder = '219x'){
+  $core = getCoreObject();
+  $objPage = getPageObject();
+
+  $objMyMultiRegion = $objPage->getRegion(14); //14 is the default sidebar block region with block_title and block_description
+
+  $strHtmlOutput = '';
+
+  if($objMyMultiRegion instanceof GenericElementRegion){
+    if(count($objMyMultiRegion->RegionInstanceIds()) > 0){
+      $counter = 0;
+      foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+        $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
+        $strBlockDescription = $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
+        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
+        $counter++;
+
+        if(!($strBlockTitle == '' && $strBlockDescription == '')){
+          if($counter == 1) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
+								        if($objFiles != '' && count($objFiles) > 0){
+								          foreach($objFiles as $objFile){
+								            $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+								          }
+								        }
+          $strHtmlOutput .= '<div class="'.$strBlockClass.'">
+                               <h3>'.$strBlockTitle.'</h3>
+                               '.$strBlockDescription.'
+                             </div>';
+          if($counter == count($objMyMultiRegion->RegionInstanceIds())) $strHtmlOutput .= '</div>';
+        }
+      }
+    }
+  }
+  echo $strHtmlOutput;
+}
+
+/**
  * get_image_main
  * @param string $strImageFolder        define output folder
  * @param boolean $blnZoom              set if image should be enlargeable
@@ -221,7 +310,7 @@ function get_abstract(){
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_image_main($strImageFolder = '420x', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '660x', $strContainerClass = 'divMainImage'){
+function get_image_main($strImageFolder = '420x', $blnZoom = false, $blnUseLightbox = false, $strImageFolderZoom = '660x', $strContainerClass = 'divMainImage'){
   $core = getCoreObject();
   $objPage = getPageObject();
 
@@ -231,20 +320,43 @@ function get_image_main($strImageFolder = '420x', $blnZoom = true, $blnUseLightb
 
   if($objFiles != '' && count($objFiles) > 0){
     $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
+    $strJsImages = '';
+    $intCounter = 0;
+    $intTotla = count($objFiles);
     foreach($objFiles as $objFile){
-      if($blnZoom){
-        $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
-        if($blnUseLightbox){
-          $strHtmlOutput .= ' rel="lightbox[mainpics]"';
+      $intCounter++;
+      if($intCounter == 1){
+        if($blnZoom && $intTotla == 1){
+          $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
+          if($blnUseLightbox){
+            $strHtmlOutput .= ' rel="lightbox[mainpics]"';
+          }
+          $strHtmlOutput .= '>';
         }
-        $strHtmlOutput .= '>';
+
+        $strHtmlOutput .= '<img id="mainImages" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+        if($intTotla > 1) $strJsImages .= '"'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'", ';
+
+        if($blnZoom && $intTotla == 1){
+          $strHtmlOutput .= '</a>';
+        }
+      }else{
+        $strJsImages .= '"'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'", ';
       }
-      $strHtmlOutput .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
-      if($blnZoom){
-        $strHtmlOutput .= '</a>';
-      }
+
     }
     $strHtmlOutput .= '</div>';
+
+    if($strJsImages != ''){
+      $strHtmlOutput .= '
+                       <script type="text/javascript">//<![CDATA[
+                         var myMainImages = ['.trim($strJsImages, ', ').'];
+                         Event.observe(window, "load", function() {
+                           new Widget.Fader("mainImages", myMainImages);
+                         });
+                       //]]>
+                       </script>';
+    }
   }
   echo $strHtmlOutput;
 }
@@ -284,7 +396,7 @@ function get_image_gallery_title($strElement = 'h3', $blnShowDefaultTitle = true
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_image_gallery($intLimitNumber = 0, $strImageGalleryFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = 'divGallery', $strThumbContainerClass = 'divGalleryItem'){
+function get_image_gallery($intLimitNumber = 0, $strImageGalleryFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = 'gallery', $strThumbContainerClass = 'item', $intColNumber = 0){
   $core = getCoreObject();
   $objPage = getPageObject();
 
@@ -298,10 +410,14 @@ function get_image_gallery($intLimitNumber = 0, $strImageGalleryFolder = '', $bl
     foreach($objFiles as $objFile){
       if($intLimitNumber > 0 && $counter == $intLimitNumber){
         $strHtmlOutput .= '
-          <div id="divImageGalleryShowAll"><a onclick="myDefault.imgGalleryShowAll(\'divImageGalleryShowAll\'); return false;" href="#">Alle Bilder anzeigen</a></div>
-          <div id="divImageGallery" style="display:none;">';
+          <div id="showAll"><a onclick="myDefault.imgGalleryShowAll(\'showAll\'); return false;" href="#">Alle Bilder anzeigen</a></div>
+          <div id="div_image_gallery" style="display:none;">';
       }
-      $strHtmlOutput .= '<div class="'.$strThumbContainerClass.'">';
+      if($counter % $intColNumber == 3) {
+      	$strHtmlOutput .= '<div class="'.$strThumbContainerClass.' mBottom10">';
+      }else{
+      	$strHtmlOutput .= '<div class="'.$strThumbContainerClass.' mBottom10 mRight10">';
+      }
       if($blnZoom){
         $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
         if($blnUseLightbox){
@@ -309,7 +425,7 @@ function get_image_gallery($intLimitNumber = 0, $strImageGalleryFolder = '', $bl
         }
         $strHtmlOutput .= '>';
       }
-      $strHtmlOutput .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageGalleryFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+      $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageGalleryFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
       if($blnZoom){
         $strHtmlOutput .= '</a>';
       }
@@ -343,6 +459,197 @@ function has_image_gallery(){
   }else{
     return false;
   }
+}
+
+
+/**
+ * get_image_slogan_main
+ * @param string $strImageFolder        define output folder
+ * @param boolean $blnZoom              set if image should be enlargeable
+ * @param boolean $blnUseLightbox       set if image zoom should open in a lightbox
+ * @param string $strImageFolderZoom    define folder for zoom
+ * @param string $strContainerClass     css class for the div container
+ * @param string $strImageContainerClass
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com>
+ * @version 1.0
+ */
+function get_image_slogan_main($strImageFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = '', $strImageContainerClass = ''){
+  $core = getCoreObject();
+  $objPage = getPageObject();
+
+  $objMyMultiRegion = $objPage->getRegion(51); //51 is the default header block region
+
+  $strHtmlOutput = '';
+
+  if($objMyMultiRegion instanceof GenericElementRegion){
+
+    $strFirstSlogan = '';
+    $strJsSlogans = '';
+
+    $intCounter = 0;
+    $intTotla = count($objMyMultiRegion->RegionInstanceIds());
+
+    foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+
+      $strSlogan = '<div class="'.$strContainerClass.'">';
+
+      $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('header_pics')->getInstanceValue($intRegionInstanceId));
+
+      if($objFiles != '' && count($objFiles) > 0){
+        $strSlogan .= '<div class="'.$strImageContainerClass.'">';
+        foreach($objFiles as $objFile){
+          if($blnZoom && $strImageFolderZoom != ''){
+            $strSlogan .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
+            if($blnUseLightbox) $strSlogan .= ' rel="lightbox[textblocks]"';
+            $strSlogan .= '>';
+          }
+          $strSlogan .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+          if($blnZoom && $strImageFolderZoom != '') $strSlogan .= '</a>';
+        }
+        $strSlogan .= '</div>';
+      }
+      $strSlogan .= $objMyMultiRegion->getField('header_description')->getInstanceValue($intRegionInstanceId);
+      $strSlogan .= '<div class="clear"></div>';
+      $strSlogan .= '</div>';
+
+      $intCounter++;
+      if($intCounter == 1){
+        $strFirstSlogan = $strSlogan;
+      }
+      if($intTotla > 1) $strJsSlogans .= '\''.$strSlogan.'\', ';
+    }
+
+    if($strJsSlogans != ''){
+      $strHtmlOutput = '<div>
+                          <div id="slogan">'.$strFirstSlogan.'</div>
+                      </div>
+                      <script type="text/javascript">//<![CDATA[
+                         var mySlogans = ['.trim($strJsSlogans, ', ').'];
+                         Event.observe(window, "load", function() {
+                           new Widget.Fader("slogan", mySlogans, { fadeOutDuration: 0.5, fadeInDuration: 0.8, displayDuration:5, builder: Widget.Fader.textBuilder });
+                         });
+                       //]]>
+                       </script>';
+    }else{
+      $strHtmlOutput = $strSlogan;
+    }
+  }
+  echo $strHtmlOutput;
+}
+
+/**
+ * get_text_blocks_extended
+ * @param string $strImageFolder
+ * @param boolean $blnZoom
+ * @param boolean $blnUseLightbox
+ * @param string $strImageFolderZoom
+ * @param string $strContainerClass
+ * @param string $strImageContainerClass
+ * @param string $strDescriptionContainerClass
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com>
+ * @version 1.0
+ */
+function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = 'divTextBlock', $strImageContainerClass = 'divImgLeft'){
+  $core = getCoreObject();
+  $objPage = getPageObject();
+
+  $objMyMultiRegion = $objPage->getRegion(45); //45 is the default text block extended region
+
+  $strHtmlOutput = '';
+
+  if($objMyMultiRegion instanceof GenericElementRegion){
+    foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+
+      $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
+      if($strBlockTitle != ''){
+        $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
+
+        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
+
+        if($objFiles != '' && count($objFiles) > 0){
+          $strHtmlOutput .= '<div class="'.$strImageContainerClass.'">';
+          foreach($objFiles as $objFile){
+            if($blnZoom && $strImageFolderZoom != ''){
+              $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
+              if($blnUseLightbox) $strHtmlOutput .= ' rel="lightbox[textblocks]"';
+              $strHtmlOutput .= '>';
+            }
+            $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+            if($blnZoom && $strImageFolderZoom != '') $strHtmlOutput .= '</a>';
+          }
+          $strHtmlOutput .= '</div>';
+        }
+        $strHtmlOutput .= '<h3>'.$strBlockTitle.'</h3>';
+        $strHtmlOutput .= $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
+
+        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_docs')->getInstanceValue($intRegionInstanceId));
+        if($objFiles != '' && count($objFiles) > 0){
+          $strHtmlOutput .= '<div class="documents left">';
+          foreach($objFiles as $objFile){
+            $strHtmlOutput .= '<div class="item">
+                    <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+                    <div class="text">
+                      <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a>
+                    </div>
+                    <div class="clear"></div>
+                  </div>';
+          }
+          $strHtmlOutput .= '</div>';
+        }
+
+        $strHtmlOutput .= '<div class="clear"></div>';
+        $strHtmlOutput .= '</div>';
+      }
+    }
+  }
+  echo $strHtmlOutput;
+}
+
+/**
+ * get_block_documents
+ * @param string $strContainerCss
+ * @param string $strIconCss
+ * @param string $strTitleCss
+ * @return string $strHtmlOutput
+ * @author Cornelius Hansjakob <cha@massiveart.com>
+ * @version 1.0
+ */
+function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'divDocIcon', $strTitleCss = 'divDocInfos'){
+  $core = getCoreObject();
+  $objPage = getPageObject();
+
+  $objMyMultiRegion = $objPage->getRegion(47); //47 is the default block document region
+
+  $strHtmlOutput = '';
+
+  if($objMyMultiRegion instanceof GenericElementRegion){
+    foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+
+      $strBlockTitle = htmlentities($objMyMultiRegion->getField('docs_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
+      if($strBlockTitle != ''){
+        $strHtmlOutput .= '<h2>'.$strBlockTitle.'</h2>';
+
+        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('docs')->getInstanceValue($intRegionInstanceId));
+        if($objFiles != '' && count($objFiles) > 0){
+          $strHtmlOutput .= '<div class="documents">';
+          foreach($objFiles as $objFile){
+            $strHtmlOutput .= '<div class="item">
+                    <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+                    <div class="text">
+                      <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a>
+                    </div>
+                    <div class="clear"></div>
+                  </div>';
+          }
+          $strHtmlOutput .= '</div>';
+        }
+
+      }
+    }
+  }
+  echo $strHtmlOutput;
 }
 
 /**
@@ -387,7 +694,7 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
      */
     if($arrFieldProperties['intVideoTypeId'] == '1') {
     $strHtmlOutput .= '
-               <div class="divVideoContainer">
+               <div class="video mBottom20">
                  <object width="'.$intVideoWidth.'" height="'.$intVideoHeight.'">
                     <param value="true" name="allowfullscreen"/>
                     <param value="always" name="allowscriptaccess"/>
@@ -401,7 +708,7 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
      */
     else if($arrFieldProperties['intVideoTypeId'] == '2') {
       $strHtmlOutput .= '
-        <div class="divVideoContainer">
+        <div class="video mBottom20">
           <object width="'.$intVideoWidth.'" height="'.$intVideoHeight.'">
             <param name="movie" value="http://www.youtube.com/v/'.$mixedVideoId.'"></param>
             <param name="allowFullScreen" value="true"></param>
@@ -414,7 +721,7 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
         </div>';
     }
   }else if(getPageObject()->getFieldValue('video_embed_code') != ''){
-    $strHtmlOutput .= '<div class="divVideoContainer">'.getPageObject()->getFieldValue('video_embed_code').'</div>';
+    $strHtmlOutput .= '<div class="video mBottom20">'.getPageObject()->getFieldValue('video_embed_code').'</div>';
   }
 
   echo (($blnShowVideoTitle) ? get_video_title('h3', false) : '').$strHtmlOutput;
@@ -462,7 +769,7 @@ function get_documents($strContainerCss = 'divDocItem', $strIconCss = 'divDocIco
   if($objFiles != '' && count($objFiles) > 0){
     foreach($objFiles as $objFile){
       $strHtmlOutput .= '<div class="'.$strContainerCss.'">
-              <div class="'.$strIconCss.'"><img src="'.HtmlOutput::getIconByExtension($objFile->extension, '/website/themes/default/images/icons', 'gif').'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+              <div class="'.$strIconCss.'"><img src="'.$core->webConfig->domains->static->components.HtmlOutput::getIconByExtension($objFile->extension, '/website/themes/default/images/icons', 'gif').'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
               <div class="'.$strTitleCss.'">
                 <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a><br/>
                 <span>Format:</span> <span class="black">'.$objFile->extension.'</span> <span>Gr&ouml;&szlig;e:</span> <span class="black">'.HtmlOutput::getFormattedByteSize($objFile->size).'</span>
@@ -601,7 +908,7 @@ function get_text_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox 
               if($blnUseLightbox) $strHtmlOutput .= ' rel="lightbox[textblocks]"';
               $strHtmlOutput .= '>';
             }
-            $strHtmlOutput .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+            $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
             if($blnZoom && $strImageFolderZoom != '') $strHtmlOutput .= '</a>';
           }
           $strHtmlOutput .= '</div>';
@@ -638,7 +945,7 @@ function get_banner_static($strImageFolder = '80x80', $strContainerClass = 'divA
   if($objBannerFiles != '' && count($objBannerFiles) > 0){
     foreach($objBannerFiles as $objFile){
       if($counter == 0){
-        $strBannerImage .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+        $strBannerImage .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
       }
       $counter++;
     }
@@ -689,7 +996,7 @@ function get_banner_dynamic($strImageFolder = '80x80', $strContainerClass = 'div
       if($objFiles != '' && count($objFiles) > 0){
         foreach($objFiles as $objFile){
           if($imgCounter == 0){
-            $strBannerImage = '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+            $strBannerImage = '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
           }
           $imgCounter++;
         }
@@ -766,7 +1073,7 @@ function get_ad_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox = 
               if($blnUseLightbox) $strHtmlOutput .= ' rel="lightbox[adblocks]"';
               $strHtmlOutput .= '>';
             }
-            $strHtmlOutput .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+            $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile->filename.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
             if($blnZoom && $strImageFolderZoom != '') $strHtmlOutput .= '</a>';
           }
           $strHtmlOutput .= '</div>';
@@ -810,8 +1117,10 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
   if(count($arrOverview) > 0){
     foreach($arrOverview as $key => $objPageContainer){
       if(count($objPageContainer) > 0){
-        $strHtmlOutput .= '
+        if($objPageContainer->getContainerTitle() != ''){
+          $strHtmlOutput .= '
               <h3>'.htmlentities($objPageContainer->getContainerTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</h3>';
+        }
 
         $arrPageEntries = $objPageContainer->getEntries();
 
@@ -820,23 +1129,23 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
             foreach($arrPageEntries as $objPageEntry){
               $strDescription = '';
               if($objPageEntry->shortdescription != ''){
-                $strDescription = '<p>'.htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default).'</p>';
+                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
               }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 200){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 200))).' ...';
+                if(strlen($objPageEntry->description) > 300){
+                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
                 }else{
                   $strDescription = strip_tags($objPageEntry->description);
                 }
               }
 
               $strHtmlOutput .= '
-                <div class="divContentItem">
+                <div class="item">
                   <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
               if($strDescription != ''){
-                $strHtmlOutput .= $strDescription;
+                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
               }
               $strHtmlOutput .= '
-                  <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
+                  <a href="'.$objPageEntry->url.'">mehr</a>
                   <div class="clear"></div>
                 </div>';
             }
@@ -846,31 +1155,31 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
             foreach($arrPageEntries as $objPageEntry){
               $strDescription = '';
               if($objPageEntry->shortdescription != ''){
-                $strDescription = '<p>'.htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default).'</p>';
+                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
               }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 200){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 200))).' ...';
+                if(strlen($objPageEntry->description) > 300){
+                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
                 }else{
                   $strDescription = strip_tags($objPageEntry->description);
                 }
               }
 
               $strHtmlOutput .= '
-                <div class="divContentItem">
+                <div class="item">
                   <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
               if($objPageEntry->filename != ''){
                 $strHtmlOutput .= '
-                  <div class="divImgLeft">
+                  <div class="imgLeft">
                     <a href="'.$objPageEntry->url.'">
-                      <img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolderCol1.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
+                      <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolderCol1.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
                     </a>
                   </div>';
               }
               if($strDescription != ''){
-                $strHtmlOutput .= $strDescription;
+                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
               }
               $strHtmlOutput .= '
-                  <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
+                  <a href="'.$objPageEntry->url.'">mehr</a>
                   <div class="clear"></div>
                 </div>';
             }
@@ -879,29 +1188,29 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
           case $core->webConfig->viewtypes->col2->id:
 
             $strHtmlOutput .= '
-                <div class="divColContainer">';
+                <div class="col2">';
 
             $counter = 0;
             foreach($arrPageEntries as $objPageEntry){
               $strDescription = '';
               if($objPageEntry->shortdescription != ''){
-                $strDescription = '<p>'.htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default).'</p>';
+                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
               }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 100){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 100))).' ...';
+                if(strlen($objPageEntry->description) > 300){
+                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
                 }else{
                   $strDescription = strip_tags($objPageEntry->description);
                 }
               }
 
               $strHtmlOutput .= '
-                  <div class="divColItem left'.(($counter % 2 == 0) ? ' pright20' : '').'">
+                  <div class="item">
                     <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
               if($strDescription != ''){
-                $strHtmlOutput .= $strDescription;
+                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
               }
               $strHtmlOutput .= '
-                    <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
+                    <a href="'.$objPageEntry->url.'">mehr</a>
                   </div>';
               if($counter % 2 == 1){
                 $strHtmlOutput .= '
@@ -916,37 +1225,33 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
 
           case $core->webConfig->viewtypes->col2_img->id:
             $strHtmlOutput .= '
-                <div class="divColContainer">';
+                <div class="col2">';
 
             $counter = 0;
             foreach($arrPageEntries as $objPageEntry){
               $strDescription = '';
               if($objPageEntry->shortdescription != ''){
-                $strDescription = '<p>'.htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default).'</p>';
-              }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 100){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 100))).' ...';
-                }else{
-                  $strDescription = strip_tags($objPageEntry->description);
-                }
+                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
               }
 
               $strHtmlOutput .= '
-                  <div class="divColItem left'.(($counter % 2 == 0) ? ' pright20' : '').'">
-                    <h2 class="padding10"><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
+                  <div class="item">';
+
+              $strHtmlOutput .= '<h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
+
               if($objPageEntry->filename != ''){
                 $strHtmlOutput .= '
-                  <div class="divImgLeft">
+                  <div class="imgLeft">
                     <a href="'.$objPageEntry->url.'">
-                      <img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolderCol2.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
+                      <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolderCol2.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
                     </a>
                   </div>';
               }
               if($strDescription != ''){
-                $strHtmlOutput .= $strDescription;
+                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
               }
               $strHtmlOutput .= '
-                    <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
+                    <a href="'.$objPageEntry->url.'">mehr</a>
                   </div>';
               if($counter % 2 == 1){
                 $strHtmlOutput .= '
@@ -963,11 +1268,11 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
           case $core->webConfig->viewtypes->list->id:
 
             $strHtmlOutput .= '
-                <div class="divListContainer">';
+                <div class="list">';
             foreach($arrPageEntries as $objPageEntry){
               $strHtmlOutput .= '
-                  <div class="divListItem">
-                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
+                  <div class="item">
+                    <img src="'.$core->webConfig->domains->static->components.'/website/themes/gort/images/main/list_arrow.gif" />&nbsp;<a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
                   </div>';
             }
             $strHtmlOutput .= '
@@ -977,18 +1282,18 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
           case $core->webConfig->viewtypes->list_img->id:
 
             $strHtmlOutput .= '
-                <div class="divListContainer">';
+                <div class="list">';
             foreach($arrPageEntries as $objPageEntry){
               $strHtmlOutput .= '
-                  <div class="divListItemImg">';
+                  <div class="itemImg">';
               if($objPageEntry->filename != ''){
                 $strHtmlOutput .= '
-                    <div class="divListItemImgLeft">
+                    <div class="left">
                       <a href="'.$objPageEntry->url.'"><img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolderList.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/></a>
                     </div>';
               }
               $strHtmlOutput .= '
-                    <div class="divListItemImgRight">
+                    <div class="right">
                       <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
                     </div>
                     <div class="clear"></div>
@@ -1043,7 +1348,7 @@ function get_collection($strImageFolder = '80x80'){
         $strHtmlOutput .= '
           <div class="divImgLeft">
             <a href="'.$objPageEntry->url.'">
-              <img src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
+              <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
             </a>
           </div>';
       }
@@ -1131,7 +1436,7 @@ function get_video_overview($intVideoBigWidth = 640, $intVideoBigHeight = 360){
                 $strdivTopSidebarItemsHtmlOutput .= '
                           <div class="divTopSidebarItemThumb">
                             <a href="'.$objPageInstanceData->url.'">
-                              <img src="'.$objPageData->thumb.'" width="100" title="'.htmlentities($objPageData->title, ENT_COMPAT, $core->sysConfig->encoding->default).'" alt="'.htmlentities($objPageData->title, ENT_COMPAT, $core->sysConfig->encoding->default).'"/>
+                              <img src="'.$core->webConfig->domains->static->components.$objPageData->thumb.'" width="100" title="'.htmlentities($objPageData->title, ENT_COMPAT, $core->sysConfig->encoding->default).'" alt="'.htmlentities($objPageData->title, ENT_COMPAT, $core->sysConfig->encoding->default).'"/>
                             </a>
                           </div>';
               }
@@ -1217,7 +1522,7 @@ function get_pages_overview($strImageFolder = '80x80', $strThumbImageFolder = '4
                 if($objPageEntry->filename != ''){
                   $strTopPostHtmlOutput .= '
                    <div class="divImgLeft">
-                     <img alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'"/>
+                     <img alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objPageEntry->filename.'"/>
                    </div>';
                 }
                 $strTopPostHtmlOutput .= '
@@ -1233,7 +1538,7 @@ function get_pages_overview($strImageFolder = '80x80', $strThumbImageFolder = '4
                 if($objPageEntry->filename != ''){
                   $strLinkItemsHtmlOutput .= '
                       <div class="divListItemImgLeft">
-                        <a href="'.$objPageEntry->url.'"><img title="'.$objPageEntry->filetitle.'" alt="'.$objPageEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objPageEntry->filename.'"/></a>
+                        <a href="'.$objPageEntry->url.'"><img title="'.$objPageEntry->filetitle.'" alt="'.$objPageEntry->filetitle.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objPageEntry->filename.'"/></a>
                       </div>';
                 }
                 $strLinkItemsHtmlOutput .= '
@@ -1275,7 +1580,7 @@ function get_pages_overview($strImageFolder = '80x80', $strThumbImageFolder = '4
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_sidebar_blocks($strContainerClass = 'divSidebarContainer'){
+function get_sidebar_blocks_cha($strContainerClass = 'divSidebarContainer'){
   $core = getCoreObject();
   $objPage = getPageObject();
 
@@ -1407,7 +1712,7 @@ function get_events_overview($strImageFolder = '80x80', $intQuarter = 0, $intYea
             $strHtmlOutput .= '
                       <div class="divEventCalItemImage">
                         <a href="'.$objEventEntry->url.'">
-                          <img title="'.$objEventEntry->filetitle.'" alt="'.$objEventEntry->filetitle.'" src="'.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objEventEntry->filename.'"/>
+                          <img title="'.$objEventEntry->filetitle.'" alt="'.$objEventEntry->filetitle.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objEventEntry->filename.'"/>
                         </a>
                       </div>';
           }
@@ -1619,7 +1924,7 @@ function get_speakers($strThumbImageFolder = '80x80', $strZoomImageFolder = '420
         $strHtmlOutput .= '
                   <div class="divPresenterImage">
                     <a title="'.$objContact->title.'" href="'.$core->sysConfig->media->paths->imgbase.$strZoomImageFolder.'/'.$objContact->filename.'" rel="lightbox[speakers]">
-                      <img src="'.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>
+                      <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>
                     </a>
                   </div>';
       }
@@ -1671,7 +1976,7 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
               <div class="'.$strContainerClass.'">
                 <h3>Ihr Ansprechpartner</h3>
                 <p>Haben Sie Fragen zu diesem Artikel? Wir freuen uns von ihnen zu h&ouml;ren. Ihre Kontaktperson ist:</p>';
-        $strHtmlOutput .= '<div class="pbottom10"><img src="'.$core->sysConfig->media->paths->imgbase.$strBigContactImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/></div>';
+        $strHtmlOutput .= '<div class="pbottom10"><img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strBigContactImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/></div>';
         $strHtmlOutput .= '
                 <div class="divContactPerson">
                   <div class="divContactName">'.(($objContact->acTitle != '') ? $objContact->acTitle.' ' : '').$objContact->title.'</div>
@@ -1698,9 +2003,9 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
                   <div class="divContactDetail">
                     <div class="divContactImg">';
         if($objContact->filename != ''){
-          $strHtmlOutput .= '<img src="'.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>';
+          $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strThumbImageFolder.'/'.$objContact->filename.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>';
         }else{
-          $strHtmlOutput .= '<img src="/website/themes/default/images/contact_default.gif" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>';
+          $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/contact_default.gif" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>';
         }
         $strHtmlOutput .= '
                     </div>
@@ -1942,5 +2247,6 @@ function get_page_similar_page_links($intNumber = 5){
 
   echo $strHtmlOutput;
 }
+
 
 ?>

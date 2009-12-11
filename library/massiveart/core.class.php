@@ -259,7 +259,7 @@ class Core {
         );
 
         $arrBackendOptions  = array(
-          'cache_dir' => GLOBAL_ROOT_PATH.'/tmp/cache/tables/' // Directory where to put the cache files
+          'cache_dir' => GLOBAL_ROOT_PATH.$this->sysConfig->path->cache->tables // Directory where to put the cache files
           //'server' => $arrServer
         );
 
