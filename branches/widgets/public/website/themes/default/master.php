@@ -14,11 +14,10 @@
   
   <script type="text/javascript" src="/website/themes/default/js_incs/prototype/prototype.js"></script>
   <script type="text/javascript" src="/website/themes/default/js_incs/script.aculous/scriptaculous.js"></script>
-  <%plugin_js%>
   <script type="text/javascript" src="/website/themes/default/lightbox/js/lightbox.js"></script>
   <%template_js%>
   <script type="text/javascript" src="/website/themes/default/js_incs/default.js"></script>
-  
+<%widget_js%>
   <script type="text/javascript">//<![CDATA[
     var myDefault = new Default();
     document.observe('dom:loaded', function() { 
