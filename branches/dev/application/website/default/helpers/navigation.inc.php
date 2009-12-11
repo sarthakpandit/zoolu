@@ -66,7 +66,7 @@ function get_main_navigation($strElement = 'li', $mixedElementProperties = '', $
   $strHomeLink = '';
   
 	$objNavigation = getNavigationObject();
-	$objCore = Zend_Registry::get('Core');
+	$core = Zend_Registry::get('Core');
 	
 	$objNavigation->loadMainNavigation();
 	
@@ -105,20 +105,107 @@ function get_main_navigation($strElement = 'li', $mixedElementProperties = '', $
 	    
 	    if($objNavigationItem->isStartPage == 1 && $blnWithHomeLink == true){
 	      if($blnImageNavigation){
-	        $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="/website/themes/default/images/navigation/home_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $objCore->sysConfig->encoding->default).'"/></a></'.$strElement.'>';	
+	        $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/navigation/home_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
 	      }else{
-	        $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a></'.$strElement.'>';	
+	        $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></'.$strElement.'>';
 	      }
 	    }else{
 	    	if($blnImageNavigation){
-	    	  $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="/website/themes/default/images/navigation/'.$strImgFileTitle.'_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $objCore->sysConfig->encoding->default).'"/></a></'.$strElement.'>';	
+	    	  $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/navigation/'.$strImgFileTitle.'_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
 	    	}else{
-	    	  $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a></'.$strElement.'>';  
+	    	  $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></'.$strElement.'>';
 	    	}
 	    }
 	  }
 	}
 		
+  echo $strHomeLink.$strMainNavigation;
+}
+
+/**
+ * get_main_navigation_middle
+ * @author Michael Trawetzky <mtr@massiveart.com>
+ * @version 1.0
+ */
+function get_main_navigation_middle($strElement = 'li', $mixedElementProperties = '', $strSelectedClass = 'selected', $blnWithHomeLink = true, $blnImageNavigation = false, $strHomePrefix = ''){
+  $strMainNavigation = '';
+  $strHomeLink = '';
+
+  $objNavigation = getNavigationObject();
+  $core = Zend_Registry::get('Core');
+
+  $objNavigation->loadNavigation(1);
+
+  $strPageId = '';
+  if(is_object($objNavigation->Page())){
+    $strPageId = $objNavigation->Page()->getPageId();
+  }
+  $strFolderId = $objNavigation->getRootFolderId();
+
+  if(count($objNavigation->MainNavigation()) > 0){
+
+    $blnHomeActive = true;
+
+    foreach($objNavigation->MainNavigation() as $objNavi){
+      if($objNavi instanceof NavigationTree){
+
+        $strSelectedClassAddon = '';
+        $strSelectedItem = '';
+        if($strPageId == $objNavi->getItemId()){
+          $strSelectedItem = ' class="'.$strSelectedClass.'"';
+          $strSelectedClassAddon = ' '.$strSelectedClass;
+          $blnHomeActive = false;
+        }else if($strFolderId == $objNavi->getItemId()){
+          $strSelectedItem = ' class="'.$strSelectedClass.'"';
+          $strSelectedClassAddon = ' '.$strSelectedClass;
+          $blnHomeActive = false;
+        }
+
+        $strElementProperties = '';
+        if(is_array($mixedElementProperties)){
+          foreach($mixedElementProperties as $strProperty => $strValue){
+            $strElementProperties .= ' '.$strProperty.'="'.$strValue.'"';
+          }
+        }else if($mixedElementProperties != ''){
+          $strElementProperties = ' class="'.$mixedElementProperties.$strSelectedClassAddon.'"';
+        }
+
+        $strMainNavigation  .= '
+              <'.$strElement.$strElementProperties.' onclick="location.href=\''.$objNavi->getUrl().'\'">
+                <div class="middle">
+                  <a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
+						      if(count($objNavi) > 0){
+					          $strMainNavigation  .= '
+					                  <ul style="position:absolute; left: -15px; top: 14px;">';
+					          foreach($objNavi as $objSubNavi){
+					            $strMainNavigation  .= '
+					                    <li>
+					                      <div>
+					                        <a href="'.$objSubNavi->getUrl().'">'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
+					                      </div>
+					                    </li>';
+					          }
+					          $strMainNavigation  .= '
+					                  </ul>';
+					        }
+        $strMainNavigation  .= '
+                </div>';
+        $strMainNavigation  .= '
+              </'.$strElement.'>
+              <li><img src="'.$core->webConfig->domains->static->components.'/website/themes/ivoclarvivadent/images/mainnav_stripline.gif" alt="stripline" /></li>';
+      }
+    }
+
+    if($blnWithHomeLink){
+      $strHomeLink = '
+        <'.$strElement.' class="object'.(($blnHomeActive) ? ' '.$strSelectedClass : '').'" onclick="location.href=\'/\'">
+          <div class="middle">
+            <a class="home" href="/">'.$strHomePrefix.' Home</a>
+          </div>
+        </'.$strElement.'>
+        <li><img src="'.$core->webConfig->domains->static->components.'/website/themes/ivoclarvivadent/images/mainnav_stripline.gif" alt="stripline" /></li>';
+    }
+  }
   echo $strHomeLink.$strMainNavigation;
 }
 
@@ -129,7 +216,7 @@ function get_main_navigation($strElement = 'li', $mixedElementProperties = '', $
  */ 
 function get_main_navigation_title(){
   $objNavigation = getNavigationObject();
-  $objCore = Zend_Registry::get('Core');
+  $core = Zend_Registry::get('Core');
   
   $strHtmlOutput = '';
   
@@ -152,7 +239,7 @@ function get_main_navigation_title(){
       }
             
       if($blnIsSelected){
-	      $strHtmlOutput  .= htmlentities($objNavigationItem->title, ENT_COMPAT, $objCore->sysConfig->encoding->default);   
+	      $strHtmlOutput  .= htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default);
       }
     }
   }    
@@ -189,7 +276,7 @@ function get_static_one_column_sub_navigation($strElement = 'div', $mixedElement
   $strSubNavigation = '';
   
   $objNavigation = getNavigationObject();
-  $objCore = Zend_Registry::get('Core');
+  $core = Zend_Registry::get('Core');
     
   $objNavigation->loadStaticSubNavigation(2);
   
@@ -213,7 +300,7 @@ function get_static_one_column_sub_navigation($strElement = 'div', $mixedElement
       if($objNavi instanceof NavigationTree){
         $strSubNavigation  .= '
               <div class="divSubNavRegion">
-                <div class="divSubNavRegionTitle">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</div>';
+                <div class="divSubNavRegionTitle">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</div>';
         if(count($objNavi) > 0){
           foreach($objNavi as $objSubNavi){
             $arrProperies = $arrElementProperies;
@@ -223,7 +310,7 @@ function get_static_one_column_sub_navigation($strElement = 'div', $mixedElement
             
             $strSubNavigation  .= '
                 <'.$strElement.return_html_attributes($arrProperies).'>
-                  <div class="divSubNavLink"><a href="'.$objSubNavi->getUrl().'">'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a></div>
+                  <div class="divSubNavLink"><a href="'.$objSubNavi->getUrl().'">'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a></div>
                 </'.$strElement.'>'; 
           }   
         }else{
@@ -239,7 +326,7 @@ function get_static_one_column_sub_navigation($strElement = 'div', $mixedElement
          
         $strSubNavigation  .= '
               <'.$strElement.return_html_attributes($arrProperies).'>              
-                <div class="divSubNavLink"><a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a></div>
+                <div class="divSubNavLink"><a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a></div>
               </'.$strElement.'>';
       }
     }    
@@ -260,7 +347,7 @@ function get_static_sub_navigation($strElement = 'li', $mixedElementProperties =
   $strSubNavigation = '';
   
   $objNavigation = getNavigationObject();
-  $objCore = Zend_Registry::get('Core');
+  $core = Zend_Registry::get('Core');
     
   $objNavigation->loadStaticSubNavigation(2);
   
@@ -284,13 +371,13 @@ function get_static_sub_navigation($strElement = 'li', $mixedElementProperties =
       if($objNavi instanceof NavigationTree){
         $strSubNavigation  .= '
               <'.$strElement.'>
-                <a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a>';
+                <a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
         if(count($objNavi) > 0){
           $strSubNavigation  .= '<ul>';
         	foreach($objNavi as $objSubNavi){           
             $strSubNavigation  .= '
                 <'.$strElement.'>
-                  <a href="'.$objSubNavi->getUrl().'">'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a>
+                  <a href="'.$objSubNavi->getUrl().'">'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
                 </'.$strElement.'>'; 
           } 
           $strSubNavigation  .= '</ul>';  
@@ -302,7 +389,7 @@ function get_static_sub_navigation($strElement = 'li', $mixedElementProperties =
       }else{         
         $strSubNavigation  .= '
               <'.$strElement.'>              
-                <a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a>
+                <a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
               </'.$strElement.'>';
       }
     }    
@@ -341,20 +428,20 @@ function return_html_attributes($arrAttributes){
  */
 function return_sub_navigation_sub_tree($objNaviTree, $intLevel){
   $strSubNavigation = '';
-  $objCore = Zend_Registry::get('Core');
+  $core = Zend_Registry::get('Core');
   
   foreach($objNaviTree as $objNavi){
     if(is_object($objNavi) && $objNavi instanceof NavigationTree && ($objNavi->hasSubTrees() || $intLevel == 1)){
       $strSubNavigation  .= '
             <div class="divSubNavRegion">
-              <div class="divSubNavRegionTitle">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</div>';
+              <div class="divSubNavRegionTitle">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</div>';
       $strSubNavigation .= get_sub_navigation_sub_tree($objNavi, $intLevel + 1);      
       $strSubNavigation .= '
             </div>';      
     }else{
       $strSubNavigation  .= '
             <div class="divSubNavItem">
-              <div class="divSubNavLink"><a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</a></div>
+              <div class="divSubNavLink"><a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a></div>
             </div>';
     }
   }
@@ -374,22 +461,43 @@ function get_tree_sub_navigation(){
  * get_breadcrumb
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
- */ 
-function get_breadcrumb(){
+ */
+function get_breadcrumb($blnHomeLink = false, $strHomeUrl = ''){
   $strBreadcrumb = '';
- 
+
   $objNavigation = getNavigationObject();
-  $objCore = Zend_Registry::get('Core');
-  
+  $objPage = getPageObject();
+
+  $core = Zend_Registry::get('Core');
+
   if(count($objNavigation->ParentFolders()) > 0){
     $arrParentFolders = array_reverse($objNavigation->ParentFolders());
-    
-    foreach($arrParentFolders as $obFolder){
-      $strBreadcrumb .= htmlentities($obFolder->title, ENT_COMPAT, $objCore->sysConfig->encoding->default).' / '; 
+
+    if($blnHomeLink){
+      if($strHomeUrl != ''){
+        $strBreadcrumb .= '<a class="home" href="'.$strHomeUrl.'">Home</a> <span>/</span> ';
+      }else{
+        $strBreadcrumb .= '<a class="home" href="/">Home</a> <span>/</span> ';
+      }
+    }
+
+    $intCounter = 0;
+    foreach($arrParentFolders as $key => $objFolder){
+      $intCounter++;
+      $strBreadcrumb .= ($objFolder->id == $objPage->getNavParentId() && $objPage->getIsStartElement(false) == true) ? htmlentities($objFolder->title, ENT_COMPAT, $core->sysConfig->encoding->default) : '<a href="/'.strtolower($objFolder->languageCode).'/'.$objFolder->url.'">'.htmlentities($objFolder->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
+
+      if($intCounter < count($objNavigation->ParentFolders())){
+        $strBreadcrumb .= ' <span>/</span> ';
+      }
     }
   }
-  
+
   echo $strBreadcrumb;
+
+  if($objPage->getIsStartElement(false) == false){
+    echo ' <span>/</span> ';
+    get_title();
+  }
 }
 
 ?>

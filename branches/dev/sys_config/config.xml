@@ -43,6 +43,12 @@
     
     <!-- PATHES -->
     <path>
+      <cache>
+        <gen_forms>tmp/cache/gen_forms/</gen_forms>
+        <min>tmp/cache/min/</min>
+        <pages>tmp/cache/pages/</pages>
+        <tables>tmp/cache/tables/</tables>
+      </cache>
       <session>tmp/sessions/</session>
       <search_index>
         <page>tmp/search_index/pages</page>
@@ -358,7 +364,73 @@
                 <params>40,40</params>
               </action>             
             </actions>                        
-          </default_size>          
+          </default_size>
+
+          <!-- ivoclarvivadent -->
+          <default_size>
+            <folder>933x</folder>
+            <actions>
+              <action>
+                <method>resize</method>
+                <params>933</params>
+              </action>
+            </actions>
+          </default_size>
+          <default_size>
+            <folder>677x</folder>
+            <actions>
+              <action>
+                <method>resize</method>
+                <params>677</params>
+              </action>
+            </actions>
+          </default_size>
+          <default_size>
+            <folder>331x</folder>
+            <actions>
+              <action>
+                <method>resize</method>
+                <params>331</params>
+              </action>
+            </actions>
+          </default_size>
+          <default_size>
+            <folder>219x</folder>
+            <actions>
+              <action>
+                <method>resize</method>
+                <params>219</params>
+              </action>
+            </actions>
+          </default_size>
+          <default_size>
+            <folder>159x</folder>
+            <actions>
+              <action>
+                <method>resize</method>
+                <params>159</params>
+              </action>
+            </actions>
+          </default_size>
+          <default_size>
+            <folder>117x88</folder>
+            <actions>
+              <action>
+                <method>scale</method>
+                <params>117,88</params>
+              </action>
+            </actions>
+          </default_size>
+          <default_size>
+            <folder>47x47</folder>
+            <actions>
+              <action>
+                <method>scale</method>
+                <params>47,47</params>
+              </action>
+            </actions>
+          </default_size>
+          
         </default_sizes>
       </images>
       
@@ -497,7 +569,7 @@
       </link>
       <overview>
         <id>3</id>
-        <default_formId>DEFAULT_PRODUCT</default_formId>
+        <default_formId>DEFAULT_PRODUCT_OVERVIEW</default_formId>
         <default_templateId>12</default_templateId>
       </overview>
     </product_types>
@@ -525,6 +597,7 @@
       <overview>3</overview>
       <portal_startpage>4</portal_startpage>
       <collection>5</collection>
+      <product>6</product>
     </types>
 
     <!-- URL TYPES -->
@@ -614,7 +687,7 @@
     
   	<!-- Plugins / Fields Javascript -->
   	<pluginsJs>
-    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRamTRuOuUEbmwFeFOBAO59ZV6nfBQWp_8apC14qpOjzxiEzaPh4wHeow</gmaps>
+    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
   	</pluginsJs>
   </production>
 

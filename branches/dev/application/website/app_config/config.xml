@@ -7,14 +7,22 @@
   ***********************************************************
   -->
   <production>
+
+    <domains>
+      <static>
+        <!-- http://developer.yahoo.com/performance/rules.html#split -->
+        <components>http://static.dev.zoolu.area51.at</components>
+      </static>
+    </domains>
     
+
     <gmaps>
       <!-- Google Maps API-Key for sportservice.massiveart.at -->
       <!--<key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xQIgr5p9E0wjO4Wkkntg6WrgV5YIxQO4FTS3kR7ciRUeYCHfSX9ddEOFg</key>-->
       <!-- Google Maps API-Key for www.sportservice-v.at -->
       <key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xRX1jCuCB9C7WKVnBt8ZIH40aIQaRS9qo5Ey8l_2L9XVt4bQiHyWn2qmw</key>
     </gmaps>
-    
+
     <!-- languages -->
     <languages>
       <language>
@@ -104,8 +112,8 @@
       <full>
         <id>52</id>
       </full> 
-    </eventstatus> 
-     
+    </eventstatus>
+
   </production>
   
   <!--

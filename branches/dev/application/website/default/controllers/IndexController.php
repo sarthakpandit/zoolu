@@ -56,7 +56,7 @@ class IndexController extends Zend_Controller_Action {
    * @var Model_Folders
    */
   private $objModelFolders;
-  
+
   /**
    * @var Model_Urls
    */
@@ -173,7 +173,7 @@ class IndexController extends Zend_Controller_Action {
     );
 
     $arrBackendOptions = array(
-      'cache_dir' => GLOBAL_ROOT_PATH.'tmp/cache/pages/' // Directory where to put the cache files
+      'cache_dir' => GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->pages // Directory where to put the cache files
     );
 
     // getting a Zend_Cache_Core object
@@ -189,9 +189,9 @@ class IndexController extends Zend_Controller_Action {
        ($this->core->sysConfig->cache->page == 'true' && isset($_SESSION['sesTestMode']))){
 
       $this->getModelUrls();
-      
+
       $this->getModelPages();
-      
+
       $objNavigation = new Navigation();
       $objNavigation->setRootLevelId($objTheme->idRootLevels);
       $objNavigation->setLanguageId($this->intLanguageId);
@@ -216,19 +216,19 @@ class IndexController extends Zend_Controller_Action {
         $this->objPage->setRootLevelTitle($objTheme->title);
         $this->objPage->setPageId($objUrlData->relationId);
         $this->objPage->setPageVersion($objUrlData->version);
-        $this->objPage->setLanguageId($objUrlData->idLanguages);		        
-        
+        $this->objPage->setLanguageId($objUrlData->idLanguages);
+
         switch($objUrlData->idUrlTypes){
           case $this->core->sysConfig->url_types->page:
-            $this->objPage->setType('page');      
-            $this->objPage->setModelSubPath('cms/models/');      
+            $this->objPage->setType('page');
+            $this->objPage->setModelSubPath('cms/models/');
             break;
           case $this->core->sysConfig->url_types->product:
             $this->objPage->setType('product');
-            $this->objPage->setModelSubPath('products/models/');         
+            $this->objPage->setModelSubPath('products/models/');
             break;
         }
-         	
+
         /**
          * preset navigation parent properties
          * e.g. is a collection page
@@ -237,9 +237,9 @@ class IndexController extends Zend_Controller_Action {
           $this->objPage->setNavParentId($objUrlData->idParent);
           $this->objPage->setNavParentTypeId($objUrlData->idParentTypes);
         }
-    
+
         $this->objPage->loadPage();
-            
+
         /**
          * set values for replacers
          */
@@ -272,6 +272,19 @@ class IndexController extends Zend_Controller_Action {
       $this->_helper->viewRenderer->setNoRender();
       echo $this->objCache->load($strCacheId);
     }
+  }
+
+  /**
+   * fontsizeAction
+   * @author Michael Trawetzky <mtr@massiveart.com>
+   * @version 1.0
+   */
+  public function fontsizeAction(){
+  	$request = $this->getRequest();
+  	$strFontSize = $request->getParam('fontsize');
+
+  	$_SESSION['Website']['fontSize'] = $strFontSize;
+  	$this->_helper->viewRenderer->setNoRender();
   }
 
   /**
@@ -315,7 +328,7 @@ class IndexController extends Zend_Controller_Action {
 
     return $this->objModelFolders;
   }
-  
+
   /**
    * getModelUrls
    * @return Model_Urls

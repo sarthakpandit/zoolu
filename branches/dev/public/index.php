@@ -119,7 +119,7 @@ $arrFrontendOptions = array(
 );
 
 $arrBackendOptions = array(
-    'cache_dir' => GLOBAL_ROOT_PATH.'tmp/cache/pages/' // Directory where to put the cache files
+    'cache_dir' => GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->pages // Directory where to put the cache files
 );
 
 // getting a Zend_Cache_Core object

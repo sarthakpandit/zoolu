@@ -4,6 +4,9 @@
  * @package Minify
  */
 
+//include general (autoloader, config)
+require_once(dirname(__FILE__).'/../../sys_config/general.inc.php');
+
 
 /**
  * In 'debug' mode, Minify can combine files with no minification and
@@ -40,9 +43,15 @@ $min_enableBuilder = true;
  * will have to load extra code to guess. Some examples below:
  */
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
-//$min_cachePath = '/tmp';
+$min_cachePath = GLOBAL_ROOT_PATH.$core->sysConfig->path->cache->min;
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
-
+function yuiJs($js) {
+    require_once 'Minify/YUICompressor.php';
+    Minify_YUICompressor::$jarFile = dirname(__FILE__) . '/lib/yuicompressor-2.4.2.jar';
+    Minify_YUICompressor::$tempDir = GLOBAL_ROOT_PATH.$core->sysConfig->path->cache->min;
+    return Minify_YUICompressor::minifyJs($js);
+}
+$min_serveOptions['minifiers']['application/x-javascript'] = 'yuiJs';
 
 /**
  * Leave an empty string to use PHP's $_SERVER['DOCUMENT_ROOT'].
@@ -74,7 +83,7 @@ $min_cacheFileLocking = true;
  * move all @imports to the top of the output. Note that moving @imports could
  * affect CSS values (which is why this option is disabled by default).
  */
-$min_serveOptions['bubbleCssImports'] = false;
+$min_serveOptions['bubbleCssImports'] = true;
 
 
 /**

@@ -235,7 +235,7 @@ class Model_Products {
     $this->core->logger->debug('products->models->Model_Products->add()');
     
     $objProduct->linkProductId = uniqid();
-    $objProduct->version = 1;
+    $objProduct->linkVersion = 1;
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
     /**
@@ -265,7 +265,7 @@ class Model_Products {
                          'sortPosition'     => $objProduct->sortPosition,
                          'sortTimestamp'    => date('Y-m-d H:i:s'),
                          'productId'        => $objProduct->linkProductId,
-                         'version'          => $objProduct->version,
+                         'version'          => $objProduct->linkVersion,
                          'creator'          => $intUserId,
                          'created'          => date('Y-m-d H:i:s'));
     $objProduct->linkId = $this->getProductTable()->insert($arrMainData);

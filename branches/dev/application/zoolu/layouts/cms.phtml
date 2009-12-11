@@ -8,23 +8,22 @@
     <meta http-equiv="Language" content="de" />
     <meta name="language" content="de" />
 
-    <!-- ext.js css -->
+    <link href="/min/g=zExtCss" rel="stylesheet" />
+    <!-- ext.js css
     <link rel="stylesheet" type="text/css" href="/zoolu/js_incs/ext.js/resources/css/ext-all.css?v=<?php echo $this->cssVersion; ?>" />
     <link rel="stylesheet" type="text/css" href="/zoolu/js_incs/ext.js/resources/css/xtheme-gray.css?v=<?php echo $this->cssVersion; ?>" />
+    -->
 
-    <!-- css -->
+    <link href="/min/g=zCmsCss" rel="stylesheet" />
+    <!-- css
     <link href="/zoolu/css/core_main.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
     <link href="/zoolu/css/core_navigation.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
     <link href="/zoolu/css/core_content.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
     <link href="/zoolu/css/core_font.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
     <link href="/zoolu/css/tags.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
     <link href="/zoolu/css/facebooklist.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-
-    <!-- libaries -->
-    <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <?php echo $this->jsPlugins; ?>
-
+     -->
+     
   </head>
   <body id="myBody">
 
@@ -164,29 +163,37 @@
     </div>
 
     <!-- libaries -->
+    <script type="text/javascript" src="/min/g=zCmsJs"></script>
+    <!-- libaries
+    <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
+
     <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/prototype/facebooklist.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- ext.js includes -->
+    <!-- ext.js includes
     <script type="text/javascript" src="/zoolu/js_incs/ext.js/ext-build.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- core -->
+    <!-- core
     <script type="text/javascript" src="/zoolu/js_incs/core.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- define layout -->
+    <!-- define layout
     <script type="text/javascript" src="/zoolu/js_incs/layout.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- navigation -->
+    <!-- navigation
     <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/js_incs/navigation.cms.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- form -->
+    <!-- form
     <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- page -->
+    <!-- page
     <script type="text/javascript" src="/zoolu/js_incs/page.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- folder -->
+    <!-- folder
     <script type="text/javascript" src="/zoolu/js_incs/folder.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- overlay -->
+    <!-- overlay
     <script type="text/javascript" src="/zoolu/js_incs/overlay.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- TinyMCE Texteditor -->
+    <!-- TinyMCE Texteditor
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- tags -->
+    <!-- tags
     <script type="text/javascript" src="/zoolu/js_incs/tags.js?v=<?php echo $this->jsVersion; ?>"></script>
+    -->
+
+    <?php echo $this->jsPlugins; ?>
 
     <script type="text/javascript">//<![CDATA[
       var myCore = new Massiveart.Core();
