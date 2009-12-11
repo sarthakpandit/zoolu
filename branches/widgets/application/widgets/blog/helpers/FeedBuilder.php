@@ -91,7 +91,7 @@ class Blog_FeedBuilder implements Zend_Feed_Builder_Interface {
 	 * @version 1.0
 	 */
 	public function getHeader(){
-		$objFeedHeader = new Zend_Feed_Builder_Header($this->objWidget->getWidgetTitle(), $this->objWidget->getNavigationUrl()); //FIXME URL
+		$objFeedHeader = new Zend_Feed_Builder_Header($this->objWidget->getRootLevelTitle().' - '.$this->objWidget->getWidgetTitle(), $this->objWidget->getNavigationUrl()); //FIXME URL
 		return $objFeedHeader;
 	}
 	

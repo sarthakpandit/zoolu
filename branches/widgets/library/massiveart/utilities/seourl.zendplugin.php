@@ -71,16 +71,21 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 				case $this->core->sysConfig->urltypes->widget: {
 					require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
 					$objModelWidgets = new Model_Widgets();
+					$objModelFolders->setLanguageId($this->intLanguageId);
+					$objTheme = $objModelFolders->getThemeByDomain($_SERVER['SERVER_NAME'])->current();
 					$objModelWidgets->setLanguage($this->intLanguageId);
 					$objWidgetUrl = $objModelWidgets->loadWidgetByUrl('null', $objUrl->url);
+					
 					
 					//$objWidgetUrl->url;
 					$strWidgetArgs = substr($strUrl,strlen($objWidgetUrl->url));
 					$objWidget = new Widget();
 					$objWidget->setWidgetName($objWidgetUrl->name);
+					
 					$objWidget->setNavigationUrl($objWidgetUrl->url);
 					$objWidget->setWidgetTitle($objWidgetUrl->title);
 					$objWidget->setWidgetInstanceId($objWidgetUrl->widgetInstanceId);
+					$objWidget->setRootLevelTitle($objTheme->title);
 					Zend_Registry::set('Widget', $objWidget);
 					
 					if(empty($strWidgetArgs)) {
