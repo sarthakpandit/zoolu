@@ -56,7 +56,7 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
    * js
    */
   const PLACEHOLDER_TEMPLATE_JS = '<%template_js%>';
-  const PLACEHOLDER_PLUGIN_JS = '<%plugin_js%>';
+  const PLACEHOLDER_WIDGET_JS = '<%widget_js%>';
   
   public function filter($value){
     $this->response = $value;
@@ -65,7 +65,7 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
     $this->replaceTemplateJsPlaceholder();
     
     $this->replaceWidgetCssPlaceholder();
-    $this->replacePluginJsPlaceholder();
+    $this->replaceWidgetJsPlaceholder();
         
     return $this->response;
   }
@@ -102,16 +102,22 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
   private function replaceTemplateJsPlaceholder(){
   	if(Zend_Registry::isRegistered('TemplateJs')){
   	  $this->response = str_replace(self::PLACEHOLDER_TEMPLATE_JS, Zend_Registry::get('TemplateJs'), $this->response);
+  	} else {
+  		$this->response = str_replace(self::PLACEHOLDER_TEMPLATE_JS, '', $this->response);
   	}
   }
   
   /**
-   * replacePluginJsPlaceholder
-   * @author Thomas Schedler <tsh@massiveart.com>
+   * replaceWidgetJsPlaceholder
+   * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  private function replacePluginJsPlaceholder(){
-    $this->response = str_replace(self::PLACEHOLDER_PLUGIN_JS, '', $this->response);
+  private function replaceWidgetJsPlaceholder(){
+  	if(Zend_Registry::isRegistered('WidgetJs')){
+    	$this->response = str_replace(self::PLACEHOLDER_WIDGET_JS, Zend_Registry::get('WidgetJs'), $this->response);
+  	} else {
+  		$this->response = str_replace(self::PLACEHOLDER_WIDGET_JS, '', $this->response);
+  	}
   }
   
   /**

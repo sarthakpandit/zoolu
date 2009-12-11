@@ -32,10 +32,10 @@
 
 /**
  * Blog_IndexController
- * template.php
+ * 
  * Version history (please keep backward compatible):
  * 1.0, 2009-08-11: Florian Mathis
- *  *
+ *  
  * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
  */
@@ -46,6 +46,19 @@ class Blog_IndexController extends WidgetControllerAction  {
    */
 	protected $objBlogEntries;
   
+	/**
+	 * Initialize WidgetController and add 
+	 * default css and js widget theme files
+	 * @see library/massiveart/controllers/WidgetControllerAction#init()
+	 * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+	 */
+	public function init() {
+		parent::init();
+		$this->addThemeCss('view');
+		//$this->addThemeJs('test');
+	}
+	
   /**
    * IndexAction
    * @author Florian Mathis <flo@massiveart.com>
@@ -57,6 +70,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 		
 		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
 		
+		// view pagination
 		$page=$this->_getParam('page',1);
     $paginator = Zend_Paginator::factory($objEntry);
     $paginator->setItemCountPerPage(2);
@@ -64,8 +78,28 @@ class Blog_IndexController extends WidgetControllerAction  {
     $this->view->paginator=$paginator;
 		
 		$this->view->assign('objEntries',$objEntry);
+	}
+	
+	public function getViewActionForm() {
+		$form = new Zend_Form();
+		$form->setMethod('post');
 		
-		//widget.inc.php$this->view->assign('test', 'hey hey hey');
+		// Ein username Element erstellen und konfigurieren:
+		$username = $form->createElement('text', 'username');
+		$username->setRequired(true)
+		         ->addFilter('StringToLower');
+		
+		// Ein Passwort Element erstellen und konfigurieren:
+		$password = $form->createElement('password', 'password');
+		$password->setRequired(true);
+		
+		// Elemente dem Formular hinzufügen:
+		$form->addElement($username)
+		     ->addElement($password)
+		     // addElement() als Factory verwenden um den 'Login' Button zu erstellen:
+		     ->addElement('submit', 'login', array('label' => 'Login'));
+		     
+		return $form;
 	}
 	
   /**
@@ -74,11 +108,8 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
   public function viewAction() {
-  	//$this->strTemplateFile = 'template.php';
+
   	$objBlogEntries = $this->getBlogEntries();
-  	
-		$this->addThemeCss('blog_view');
-		$this->addThemeCss('blog_view', 'screen');
 		
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
@@ -86,7 +117,17 @@ class Blog_IndexController extends WidgetControllerAction  {
   	
   	$objEntry = $objBlogEntries->getBlogEntryByDateAndTitle($strDate, $strTitle);
   	$this->view->assign('objEntry',$objEntry);
-  	//$objEntries = $objBlogEntries->getBlogEntry();
+  	
+  	$form = $this->getViewActionForm();
+  	if ($this->getRequest()->isPost()) {
+		  if (!$form->isValid($_POST)) {
+	      $this->view->form = $form;
+		 	} else {
+		 		//$this->_redirect('/widget/blog/comment/add/asdsdf');
+		 	}
+  	} else {
+  		$this->view->form = $form;
+  	}
   }
   
   /**
