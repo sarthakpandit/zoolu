@@ -143,7 +143,7 @@ class Model_Folders {
     $objSelect->joinLeft('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id AND rootLevelTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->join('themes', 'themes.id = rootLevels.idThemes', array('path'));
     $objSelect->where('rootLevelUrls.url = ?', $strDomain);
-
+$this->core->logger->debug(strval($objSelect));
     return $this->getRootLevelUrlTable()->fetchAll($objSelect);
 
   }

@@ -730,6 +730,8 @@ class GenericSetup {
         return 'folder';
       case GenericSetup::TYPE_CATEGORY :
         return 'category';
+      case GenericSetup::TYPE_WIDGET:
+      	return 'widget';
     }
   }
 
