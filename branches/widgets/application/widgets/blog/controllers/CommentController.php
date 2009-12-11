@@ -74,8 +74,7 @@ class Blog_CommentController extends Zend_Controller_Action {
 		$this->core->logger->debug('widgets->blog->CommentController->addAction');
 		try {
 			$this->_helper->viewRenderer->setNoRender();
-			echo var_dump($this->getRequest());
-			if($this->objRequest->getPost() && $this->objRequest->isXmlHttpRequest()) {
+			if($this->objRequest->getPost()) {
 				$arrFormData = $this->objRequest->getPost();
 				//TODO: Replace the keys from the $arrFormData Array with the correct ones from the forms
 				$arrData = array('idWidget_BlogEntries' => $arrFormData['idBlogEntry'],
