@@ -84,7 +84,12 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   protected $objTheme;
   protected $strWidgetArgs;
   protected $strWidgetParams;
+  
+  /**
+   * @var Object
+   */
   static $objWidgetCss = array();
+  static $objWidgetJs = array();
   
 	/**
    * Add Filter Zoolu_PageReplacer and get language prefix from url string,
@@ -182,6 +187,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
      * set values for replacers
      */
     Zend_Registry::set('WidgetCss', $this->getThemeCssFiles());
+    Zend_Registry::set('WidgetJs', $this->getThemeJsFiles());
     Zend_Registry::set('Widget', $this->objWidget);
     
   	require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/widget.inc.php';
@@ -220,10 +226,11 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 	 * @version 1.0
 	 */
 	public function getThemeCssFiles() {
-		if(isset($this->objWidgetCss)) {
+		if(isset($this->objWidgetCss) && count($this->objWidgetCss) > 0) {
 			$strOutput='';
 			$strCssPath='';	
 			
+			// loop array for each css media type
 			foreach ($this->objWidgetCss AS $media => $files) {
 				foreach($files AS $path) {
 					if(file_exists(GLOBAL_ROOT_PATH.'public'.$path)) {
@@ -233,7 +240,48 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 				$strOutput .= "  <link type=\"text/css\" rel=\"stylesheet\" media=\"".$media."\" href=\"/website/min/?f=".substr($strCssPath,0,-1)."\" />\n";
 				$strCssPath='';
 			}
-		return $strOutput;
+			
+			return $strOutput;
+		}
+	}
+	
+	/**
+	 * addThemeJs
+	 * @param string strPath
+	 * @return array objWidgetCss
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addThemeJs($strPath = NULL){
+		if(isset($strPath)) { 
+			$strWidgetPath = '/widgets/'.Zend_Registry::get('Widget')->getWidgetName().'/js/'.$strPath.'.js';
+			$this->objWidgetJs[] = $strWidgetPath; 
+			return $this->objWidgetJs;
+		}
+	}
+	
+	/**
+	 * getThemeJsFiles
+	 * Returns the javascript link with minify
+	 * @return strOutput
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getThemeJsFiles() {
+		if(isset($this->objWidgetJs) && count($this->objWidgetJs) > 0) {
+			$strOutput='';
+			$strJsPath='';	
+			
+			// loop array for each script
+			foreach($this->objWidgetJs AS $path) {
+				if(file_exists(GLOBAL_ROOT_PATH.'public'.$path)) {
+					$strJsPath .= $path.',';
+				}
+			}
+			
+			$strOutput .= "  <script type=\"text/javascript\" src=\"/website/min/?f=".substr($strJsPath,0,-1)."\"></script>\n";
+
+			return $strOutput;
 		}
 	}
   
