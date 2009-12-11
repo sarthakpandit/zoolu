@@ -7,7 +7,7 @@
   <?php get_meta_keywords(); ?>
   
   <link rel="stylesheet" type="text/css" media="screen" href="/website/themes/default/css/screen.css"></link>
-  <%widget_css%>  
+<%widget_css%>  
   <?php if(Zend_Auth::getInstance()->hasIdentity()) : ?>
   <link rel="stylesheet" type="text/css" media="screen" href="/website/themes/default/css/modus.css"></link>
   <?php endif; ?>

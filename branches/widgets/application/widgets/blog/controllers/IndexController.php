@@ -77,9 +77,8 @@ class Blog_IndexController extends WidgetControllerAction  {
   	//$this->strTemplateFile = 'template.php';
   	$objBlogEntries = $this->getBlogEntries();
   	
-		$this->addCssFile('blog_view');
-		$this->addCssFile('blog_asdfview');
-		$this->addCssFile('blog_23view');
+		$this->addThemeCss('blog_view');
+		$this->addThemeCss('blog_view', 'screen');
 		
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];

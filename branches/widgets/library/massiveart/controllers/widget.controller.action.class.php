@@ -31,11 +31,12 @@
  */
 
 /**
- * WidgetControllerAction
+ * WidgetControllerAction 
+ * Class for interacting with Zoolu Widgets
  *
  * Version history (please keep backward compatible):
  * 1.0, 2009-10-09: Florian Mathis
- *  *
+ *  
  * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
  */
@@ -86,10 +87,8 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   static $objWidgetCss = array();
   
 	/**
-   * init
-   * 
-   * Add PageReplacer Filter and get language out of url string.
-   * Also assign url to zend view and load widget object by url.
+   * Add Filter Zoolu_PageReplacer and get language prefix from url string,
+   * assign url to Zend_View and load Widget object by URL.
    * 
    * @return void
    * @author Florian Mathis <flo@massiveart.com>
@@ -137,12 +136,11 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   	$this->strWidgetArgs = substr($strUrl,strlen(Zend_Registry::get('Widget')->getNavigationUrl()));
   	$this->strWidgetParams = explode('/',ltrim($this->strWidgetArgs,'/'));
     
-    /**
-     * Get the theme for this domain
-     */
+    // Get the theme for this domain
     $this->getModelFolders();
     $this->objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
     
+    // Load Widget object by given URL
   	$this->getModelWidgets();
     $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($this->objTheme->idRootLevels, Zend_Registry::get('Widget')->getNavigationUrl());
     foreach($this->objUrlsData as $objPageData){
@@ -154,20 +152,9 @@ class WidgetControllerAction extends Zend_Controller_Action  {
   }
   
   /**
-   * getWidgetObject
-   * @return Zend_Registry object 
-   * @author Florian Mathis <flo@massiveart.com>
-   * @version 1.0
-   */
-  public function getWidgetObject(){
-  	return Zend_Registry::get('Widget');
-  }
-  
-  /**
-   * postDispatch
-   * 
-   * Post-dispatch routines. Called before action method
-   * and is used to set widget specific information and script path correction.
+   * Post-dispatch routines. Called _before_ widget action method
+   * and is used to set widget specific information. This method also
+   * reset the ScriptPath with current theme path.
    * 
    * @return void
    * @author Florian Mathis <flo@massiveart.com>
@@ -194,7 +181,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     /**
      * set values for replacers
      */
-    Zend_Registry::set('WidgetCss', $this->getCssFiles());
+    Zend_Registry::set('WidgetCss', $this->getThemeCssFiles());
     Zend_Registry::set('Widget', $this->objWidget);
     
   	require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/widget.inc.php';
@@ -209,9 +196,62 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     }
   }
   
+	/**
+	 * addThemeCss
+	 * @param string strPath
+	 * @param string strMedia
+	 * @return array objWidgetCss
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addThemeCss($strPath = NULL, $strMedia = 'all'){
+		if(isset($strPath)) { 
+			$strWidgetPath = '/widgets/'.Zend_Registry::get('Widget')->getWidgetName().'/css/'.$strPath.'.css';
+			$this->objWidgetCss[$strMedia][] = $strWidgetPath; 
+			return $this->objWidgetCss;
+		}
+	}
+	
+	/**
+	 * getThemeCssFiles
+	 * Returns the CSS Stylesheet link with minify
+	 * @return strOutput
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getThemeCssFiles() {
+		if(isset($this->objWidgetCss)) {
+			$strOutput='';
+			$strCssPath='';	
+			
+			foreach ($this->objWidgetCss AS $media => $files) {
+				foreach($files AS $path) {
+					if(file_exists(GLOBAL_ROOT_PATH.'public'.$path)) {
+						$strCssPath .= $path.',';
+					}
+				}
+				$strOutput .= "  <link type=\"text/css\" rel=\"stylesheet\" media=\"".$media."\" href=\"/website/min/?f=".substr($strCssPath,0,-1)."\" />\n";
+				$strCssPath='';
+			}
+		return $strOutput;
+		}
+	}
+  
+	/**
+   * getWidgetObject
+   * @return Zend_Registry object 
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getWidgetObject(){
+  	return Zend_Registry::get('Widget');
+  }
+  
   /**
-   * loadWidgetHelpers
-   * @return unknown_type
+   * Load all Helpers for zoolu widget.
+   * @return void
+   * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
    */
   public function loadWidgetHelpers(){
   	$strWidgetHelperPath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.Zend_Registry::get('Widget')->getWidgetName().'/views/helpers/';
@@ -231,43 +271,6 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 		
 		closedir($handle);
   }
-  
-	/**
-	 * addCssFile
-	 * @param string strPath
-	 * @param string strMedia
-	 * @return array objWidgetCss
-	 * @author Florian Mathis <flo@massiveart.com>
-	 * @version 1.0
-	 */
-	public function addCssFile($strPath = NULL, $strMedia = 'all'){
-		if(isset($strPath)) { 
-			$strWidgetPath = '/widgets/'.Zend_Registry::get('Widget')->getWidgetName().'/css/'.$strPath.'.css';
-			$this->objWidgetCss[$strMedia][] = $strWidgetPath; 
-			return $this->objWidgetCss;
-		}
-	}
-	
-	/**
-	 * getCssFiles
-	 * @return strOutput
-	 * @author Florian Mathis <flo@massiveart.com>
-	 * @version 1.0
-	 */
-	public function getCssFiles() {
-		//TODO: implement minify
-		if(isset($this->objWidgetCss)) {
-			$strOutput='';		
-			foreach ($this->objWidgetCss AS $media => $files) {
-				foreach($files AS $path) {
-					if(file_exists(GLOBAL_ROOT_PATH.'public'.$path)) {
-						$strOutput .= '<link type="text/css" rel="stylesheet" media="'. $media .'" href="'. $path .'" />';
-					}
-				}
-			}
-		return $strOutput;
-		}
-	}
   
   /**
    * getModelFolders
