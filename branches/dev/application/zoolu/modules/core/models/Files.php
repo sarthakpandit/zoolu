@@ -130,7 +130,7 @@ class Model_Files {
 	    
 	    $strTmpFileIds = trim($strFileIds, '[]');
 	    $arrFileIds = array();
-	    $arrFileIds = split('\]\[', $strTmpFileIds);
+	    $arrFileIds = explode('][', $strTmpFileIds);
 	    
 	    $objSelect = $this->objFileTable->select();   
 	    $objSelect->setIntegrityCheck(false);
@@ -165,6 +165,55 @@ class Model_Files {
       $this->core->logger->err($exc);
     }  
   }
+
+  /**
+   * loadFilesByFilter
+   * @param integer $intRootLevelId
+   * @param array $arrTagIds
+   * @param array $arrFolderIds
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadFilesByFilter($intRootLevelId = -1, $arrTagIds = array(), $arrFolderIds = array()){
+    $this->core->logger->debug('core->models->Model_Files->loadFilesByFilter('.$intRootLevelId.')');
+    try{
+
+      $objSelect = $this->getFileTable()->select();
+      $objSelect->setIntegrityCheck(false);
+
+      $strTagIds = '';
+      foreach($arrTagIds as $intTagId){
+        $strTagIds .= $intTagId.',';
+      }
+
+      $strFolderIds = '';
+      foreach($arrFolderIds as $intFolderId){
+        $strFolderIds .= $intFolderId.',';
+      }      
+
+      $objSelect->distinct();
+      $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));
+      $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
+      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+      $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
+
+      if(trim($strTagIds, ',') != ''){
+        $objSelect->join('tagFiles', 'tagFiles.fileId = files.id AND tagFiles.idTags IN ('.trim($strTagIds, ',').')', array());
+      }
+
+      if($intRootLevelId > 0){
+        $objSelect->join('folders', 'folders.id = files.idParent AND files.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND folders.idRootLevels = '.$intRootLevelId, array());
+      }else if(trim($strFolderIds, ',') != ''){
+        $objSelect->join('folders AS parent', 'parent.id IN ('.trim($strFolderIds, ',').')', array());
+        $objSelect->join('folders', 'folders.id = files.idParent AND files.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND folders.lft BETWEEN parent.lft AND parent.rgt AND folders.idRootLevels = parent.idRootLevels', array());
+      }
+      
+      return $this->objFileTable->fetchAll($objSelect);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
   
   /**
    * loadFileById 
@@ -294,6 +343,40 @@ class Model_Files {
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }    
+  }
+  
+  /**
+   * changeParentFolderId 
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function changeParentFolderId($strFileIds, $intParentFolderId){
+    $this->core->logger->debug('core->models->Model_Files->changeParentFolderId('.$strFileIds.','.$intParentFolderId.')');    
+    try{ 
+      $this->getFileTable();
+      
+      $strTmpFileIds = trim($strFileIds, '[]');
+      $arrFileIds = array();
+      $arrFileIds = split('\]\[', $strTmpFileIds);
+      
+      $strWhere = '';
+      $intCounter = 0;
+      
+      if(count($arrFileIds) > 0){
+        foreach($arrFileIds as $intFileId){
+        $intCounter++;
+            if($intCounter == 1){
+              $strWhere .= $this->objFileTable->getAdapter()->quoteInto('id = ?', $intFileId);
+            }else{
+              $strWhere .= $this->objFileTable->getAdapter()->quoteInto(' OR id = ?', $intFileId);
+            } 
+        }
+        $this->objFileTable->update(array('idParent' => $intParentFolderId), $strWhere);
+      }
+      
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    } 
   }
     
   /**

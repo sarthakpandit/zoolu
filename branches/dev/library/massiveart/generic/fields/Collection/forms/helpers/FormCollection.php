@@ -81,7 +81,7 @@ class Form_Helper_FormCollection extends Zend_View_Helper_FormElement {
      * build the element
      */
     $strOutput = '<div class="collectionwrapper">
-                    <div class="top">Seite hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddPageTreeOverlay(\'divCollectionContainer_'.$this->view->escape($id).'\'); return false;"/></div>
+                    <div class="top">Seite hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddTreeOverlay(\'divCollectionContainer_'.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="divCollectionContainer_'.$this->view->escape($id).'"'.$disabled.' class="'.$attribs['class'].'">
                     '.$strPageCollection.'
                     <div id="divClear_'.$this->view->escape($name).'" class="clear"></div>

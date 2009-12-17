@@ -723,7 +723,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           $strTmpFileIds = trim($objField->getInstanceValue($intRegionInstanceId), '[]');
 
           $arrFileIds = array();
-          $arrFileIds = split('\]\[', $strTmpFileIds);
+          $arrFileIds = explode('][', $strTmpFileIds);
 
           if(count($arrFileIds) > 0){
             foreach($arrFileIds as $intFileId){
@@ -736,6 +736,39 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
                                      'idFields'           => $intFieldId);
 
                 $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFiles')->insert($arrFileData);
+              }
+            }
+          }
+        }
+      }
+
+      if(count($objRegion->FileFilterFieldNames()) > 0){
+
+        /**
+         * insert into the file filter instances table
+         */
+        foreach($objRegion->FileFilterFieldNames() as $strFieldName){
+          $objField = $objRegion->getField($strFieldName);
+
+          $intFieldId = $objField->id;
+
+          $objFilters = $objField->getInstanceValue($intRegionInstanceId);
+
+          foreach($objFilters->filters as $objFilter){
+            if(!is_array($objFilter->referenceIds)){
+              $objFilter->referenceIds = array($objFilter->referenceIds);
+            }
+
+            foreach($objFilter->referenceIds as $intReferenceId){
+              if(is_numeric($intReferenceId)){
+                $arrFileFilterData = array($strType.'id'        => $strTypeId,
+                                           'version'            => $intTypeVersion,
+                                           'idLanguages'        => $this->setup->getLanguageId(),
+                                           'idRegionInstances'  => $idRegionInstance,
+                                           'idFilterTypes'      => $objFilter->typeId,
+                                           'referenceId'        => $intReferenceId,
+                                           'idFields'           => $intFieldId);
+                $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFileFilters')->insert($arrFileFilterData);
               }
             }
           }
@@ -1085,6 +1118,54 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
                 if($intRegionPos !== false){
                   $strFileIds = $objRegion->getField($arrGenRowFormsData['name'])->getInstanceValue($intRegionPos).'['.$arrGenRowFormsData['idFiles'].']';
                   $objRegion->getField($arrGenRowFormsData['name'])->setInstanceValue($intRegionPos, $strFileIds);
+                }
+              }
+            }
+          }
+
+          /**
+           * generic multipy region file filter fields
+           */
+          if(count($objRegion->FileFilterFieldNames()) > 0){
+
+            $objGenTable = $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFileFilters');
+            $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+            $objSelect = $objGenTable->select();
+            $objSelect->setIntegrityCheck(false);
+
+            $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFilterTypes', 'referenceId', 'idRegionInstances'));
+            $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+            $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
+            $objSelect->where('version = ?', $arrTypeProperties['Version']);
+            $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+            $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+            if(count($arrGenFormsData) > 0){
+              //$this->blnHasLoadedFileData = true;
+              foreach($arrGenFormsData as $arrGenRowFormsData){
+                $intRegionInstanceId = $arrGenRowFormsData['idRegionInstances'];
+                $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
+                if($intRegionPos !== false){
+                  $objFilters = $objRegion->getField($arrGenRowFormsData['name'])->getInstanceValue($intRegionPos);
+                  if(!($objFilters instanceof stdClass)){
+                    $objFilters = new stdClass();
+                    $objFilters->filters = array();
+                  }
+
+                  if(array_key_exists('ft'.$arrGenRowFormsData['idFilterTypes'], $objFilters->filters)){
+                    $objFilter = $objFilters->filters['ft'.$arrGenRowFormsData['idFilterTypes']];
+                  }else{
+                    $objFilter = new stdClass();
+                    $objFilter->typeId = $arrGenRowFormsData['idFilterTypes'];
+                    $objFilter->referenceIds = array();
+                  }
+
+                  $objFilter->referenceIds[] = $arrGenRowFormsData['referenceId'];
+                  $objFilters->filters['ft'.$arrGenRowFormsData['idFilterTypes']] = $objFilter;
+
+                  $objRegion->getField($arrGenRowFormsData['name'])->setInstanceValue($intRegionPos, $objFilters);
                 }
               }
             }

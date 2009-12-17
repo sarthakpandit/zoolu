@@ -41,12 +41,29 @@
  */
 
 class Media_FileController extends AuthControllerAction  {
-
+  
+  /**
+   * request object instance
+   * @var Zend_Controller_Request_Abstract
+   */
+  protected $objRequest;
+  
 	/**
    * @var Model_Folders
    */
   protected $objModelFiles;
-
+  
+  /**
+   * init
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   * @return void
+   */
+  public function init(){
+    parent::init();
+    $this->objRequest = $this->getRequest();
+  }
+  
   /**
    * indexAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -122,6 +139,25 @@ class Media_FileController extends AuthControllerAction  {
 
       $this->objModelFiles->deleteFiles($strFileIds);
     }
+  }
+  
+  /**
+   * changeparentfolderAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function changeparentfolderAction(){
+    $this->core->logger->debug('media->controllers->FileController->changeparentfolderAction()');
+
+    $strFileIds = $this->objRequest->getParam('files');
+    $intParentFolderId = $this->objRequest->getParam('parentFolderId');
+
+    if($strFileIds != '' && $intParentFolderId > 0){
+      $this->getModelFiles();
+      $this->objModelFiles->changeParentFolderId($strFileIds, $intParentFolderId);
+    }
+
+    $this->_helper->viewRenderer->setNoRender();
   }
 
   /**

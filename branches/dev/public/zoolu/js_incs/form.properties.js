@@ -44,7 +44,10 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
         new Ajax.Updater(this.updateContainer , $(this.formId).readAttribute('action'), {
 	        parameters: serializedForm,
 	        evalScripts: true,
-	        onComplete: function() {          
+	        onComplete: function(transport) {
+            //problem: ajax.updater evalScripts = true was too late
+            transport.responseText.evalScripts();
+
 	          if($('rootLevelId').getValue() != '' && $('rootLevelId').getValue() > 0){
 	            myNavigation.updateNavigationLevel();
 	          }                    
@@ -56,6 +59,8 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
             this.loadFileFieldsContent('media');
             // load documents
             this.loadFileFieldsContent('document');
+            // load filter documents
+            this.loadFileFilterFieldsContent('documentFilter');
 	        }.bind(this)
 	      });
       }      
@@ -133,6 +138,8 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
         this.loadFileFieldsContent('media');
         // load documents
         this.loadFileFieldsContent('document');
+        // load filter documents
+        this.loadFileFilterFieldsContent('documentFilter');
         // load contacts
         this.loadContactFieldsContent();
       }.bind(this)

@@ -69,7 +69,7 @@ class UrlHistoryHelper {
       {
         $strOutput .='
               <div id="'.$objUrl['id'].'_'.$strElementId.'" class="urlHistoryEntry">
-               <div class="itemremovelist2 itemRemoveUrl" onclick="myForm.removeUrlHistoryEntry(\''.$objUrl['id'].'\',\''.$objUrl['pageId'].'\',\''.$strElementId.'\')"></div>
+               <div class="itemremovelist2 itemRemoveUrl" onclick="myForm.removeUrlHistoryEntry(\''.$objUrl['id'].'\',\''.$objUrl['relationId'].'\',\''.$strElementId.'\')"></div>
                <div class="urlHistoryName">/'.strtolower($objUrl['languageCode']).'/'.$objUrl['url'].'</div>
                <div class="clear"></div>
               </div>  

@@ -11,26 +11,32 @@
 Massiveart.Folder = Class.create({
 
   initialize: function() {
-    this.folderId = 0; 
+    this.folderId = 0;
   },
   
   /**
    * getCurrentFolderParentChooser
    */
-  getCurrentFolderParentChooser: function(){
+  getCurrentFolderParentChooser: function(strActionKey){
     $(myForm.updateOverlayContainer).innerHTML = '';
     
     myCore.putCenter('overlayGenContentWrapper');
     $('overlayGenContentWrapper').show();    
   
     this.folderId = myNavigation.folderId;
-  
+    
+    if(typeof(strActionKey) == 'undefined'){
+      strActionKey = '';
+    }
+    
     new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/core/folder/foldertree', { 
-      parameters: { portalId: myNavigation.rootLevelId, folderId: this.folderId },
+      parameters: { 
+        portalId: myNavigation.rootLevelId, 
+        folderId: this.folderId,
+        key: strActionKey },
       evalScripts: true,
       onComplete: function(){
         myCore.putOverlayCenter('overlayGenContentWrapper');
-        //$('overlayBlack75').show();
       } 
     });
   },

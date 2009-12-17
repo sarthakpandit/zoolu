@@ -8,20 +8,8 @@
     <meta http-equiv="Language" content="de" />
     <meta name="language" content="de" />
 
-    <link href="/min/g=zExtCss" rel="stylesheet" />
-    <!-- ext.js css
-    <link rel="stylesheet" type="text/css" href="/zoolu/js_incs/ext.js/resources/css/ext-all.css?v=<?php echo $this->cssVersion; ?>" />
-    <link rel="stylesheet" type="text/css" href="/zoolu/js_incs/ext.js/resources/css/xtheme-gray.css?v=<?php echo $this->cssVersion; ?>" />
-    -->
-
-    <link href="/min/g=zUserCss" rel="stylesheet" />
-    <!-- css
-    <link href="/zoolu/css/core_main.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/core_navigation.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/core_content.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/core_font.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/tags.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    -->
+    <link href="/min/g=zExtCss&v=<?php echo $this->jsVersion; ?>" rel="stylesheet" />
+    <link href="/min/g=zUserCss&v=<?php echo $this->jsVersion; ?>" rel="stylesheet" />
 
   </head>
   <body id="myBody">
@@ -178,31 +166,8 @@
           <tr>
             <td class="contentleft"></td>
             <td class="contentcenter">
-              <!-- cotnent -->
-              <div id="overlayGenContent" class="overlaycontent">                
+              <div id="overlayGenContent" class="overlaycontent">
               </div>
-              <!-- buttons -->
-              <div id="overlayButtons" class="overlaycontent" style="display:none;">                
-                <div id="buttonOk">
-                  <div class="button25leftOn"></div>
-		              <div class="button25centerOn">
-		                <img width="13" height="13" src="/zoolu/images/icons/icon_ok_black.png" class="iconok"/>
-		                <div>Ok</div>
-		              </div>
-		              <div class="button25rightOn"></div>
-		              <div class="clear"></div>
-                </div>
-                <div id="buttonCancel">
-                  <div class="button25leftOff"></div>
-		              <div class="button25centerOff">
-		                <img width="11" height="14" src="/zoolu/images/icons/icon_cancel_white.png" class="iconcancel"/>
-		                <div>Abbrechen</div>
-		              </div>
-		              <div class="button25rightOff"></div>
-		              <div class="clear"></div>
-                </div>
-                <div class="clear"></div>
-              </div>              
             </td>
             <td class="contentright"></td>
           </tr>
@@ -216,36 +181,20 @@
     </div> <!-- END overlay for generated content -->
 
     <!-- libaries -->
-    <script type="text/javascript" src="/min/g=zUserJs"></script>
-    <!-- libaries
-    <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- ext.js includes
-    <script type="text/javascript" src="/zoolu/js_incs/ext.js/ext-build.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- core
-    <script type="text/javascript" src="/zoolu/js_incs/core.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- define layout
-    <script type="text/javascript" src="/zoolu/js_incs/layout2.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- navigation
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.users.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- list
-    <script type="text/javascript" src="/zoolu/js_incs/list.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- form
-    <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/form.users.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- TinyMCE Texteditor
+    <script type="text/javascript" src="/min/g=zJs&v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/min/g=zUserJs&v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
-    -->
 
     <script type="text/javascript">//<![CDATA[
-      var myCore = new Massiveart.Core();
-      var myNavigation = new Massiveart.Navigation.Users();
-      var myList = new Massiveart.List();
-      var myForm = new Massiveart.Form.Users();
+      var myCore, myNavigation, myList, myForm;
 
-      document.observe('dom:loaded', function() {
+      //document.observe('dom:loaded', function() {
+      Event.observe(window, 'load', function() {
+        myCore = new Massiveart.Core();
+        myNavigation = new Massiveart.Navigation.Users();
+        myList = new Massiveart.List();
+        myForm = new Massiveart.Form.Users();
+
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('User_administration'); ?>';
         myNavigation.module = <?php echo $this->module; ?>;
         new Draggable('overlayGenContentWrapper', {handle: 'handle', scroll: window });

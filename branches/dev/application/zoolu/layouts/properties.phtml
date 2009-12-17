@@ -8,19 +8,8 @@
     <meta http-equiv="Language" content="de" />
     <meta name="language" content="de" />
 
-    <link href="/min/g=zExtCss" rel="stylesheet" />
-    <!-- ext.js css
-    <link rel="stylesheet" type="text/css" href="/zoolu/js_incs/ext.js/resources/css/ext-all.css?v=<?php echo $this->cssVersion; ?>" />
-    <link rel="stylesheet" type="text/css" href="/zoolu/js_incs/ext.js/resources/css/xtheme-gray.css?v=<?php echo $this->cssVersion; ?>" />
-    -->
-
-    <link href="/min/g=zPropertyCss" rel="stylesheet" />
-    <!-- css
-    <link href="/zoolu/css/core_main.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/core_navigation.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/core_content.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    <link href="/zoolu/css/core_font.css?v=<?php echo $this->cssVersion; ?>" rel="stylesheet" />
-    -->
+    <link href="/min/g=zExtCss&v=<?php echo $this->jsVersion; ?>" rel="stylesheet" />
+    <link href="/min/g=zPropertyCss&v=<?php echo $this->jsVersion; ?>" rel="stylesheet" />
 
   </head>
   <body id="myBody">
@@ -168,36 +157,20 @@
     </div>
 
     <!-- libaries -->
-    <script type="text/javascript" src="/min/g=zPropertyJs"></script>
-    <!-- libaries
-    <script type="text/javascript" src="/zoolu/js_incs/prototype/prototype.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/script.aculous/scriptaculous.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/prototype/element.addons.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- ext.js includes
-    <script type="text/javascript" src="/zoolu/js_incs/ext.js/ext-build.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- core
-    <script type="text/javascript" src="/zoolu/js_incs/core.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- define layout
-    <script type="text/javascript" src="/zoolu/js_incs/layout.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- navigation
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/navigation.properties.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- form
-    <script type="text/javascript" src="/zoolu/js_incs/form.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/js_incs/form.properties.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- overlay
-    <script type="text/javascript" src="/zoolu/js_incs/overlay.js?v=<?php echo $this->jsVersion; ?>"></script>
-    <!-- TinyMCE Texteditor
+    <script type="text/javascript" src="/min/g=zJs&v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/min/g=zPropertyJs&v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
-    -->
 
     <script type="text/javascript">//<![CDATA[
-      var myCore = new Massiveart.Core();
-      var myNavigation = new Massiveart.Navigation.Properties();
-      var myForm = new Massiveart.Form.Properties();
-      var myOverlay = new Massiveart.Overlay();
+      var myCore, myNavigation, myForm, myOverlay;
 
-      document.observe('dom:loaded', function() {
+      //document.observe('dom:loaded', function() {
+      Event.observe(window, 'load', function() {
+        myCore = new Massiveart.Core();
+        myNavigation = new Massiveart.Navigation.Properties();
+        myForm = new Massiveart.Form.Properties();
+        myOverlay = new Massiveart.Overlay();
+
         myNavigation.initPortalHover();
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('Settings'); ?>';
         myNavigation.module = <?php echo $this->module; ?>;

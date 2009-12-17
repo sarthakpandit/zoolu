@@ -84,7 +84,7 @@ class GenericForm extends Zend_Form {
                                                     'strVideoThumb',
                                                     'intParentId',
                                                     'blnIsStartElement',                                                                                             
-                                                    'objPageInternalLinks',
+                                                    'objItemInternalLinks',
                                                     'objPageCollection');
 
 	/**
@@ -219,11 +219,11 @@ class GenericForm extends Zend_Form {
   }
 
   /**
-   * updateSpecialFieldValues
+   * updateSpecificFieldValues
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function updateSpecialFieldValues(){
+  public function updateSpecificFieldValues(){
     try{
       if(count($this->setup->SpecialFields()) > 0){
         foreach($this->setup->SpecialFields() as $objField){
@@ -233,6 +233,25 @@ class GenericForm extends Zend_Form {
             foreach($objField->getProperties() as $strProperty => $mixedPropertyValue){
               if(in_array($strProperty, self::$FIELD_PROPERTIES_TO_IMPART)){
                 $this->getSubForm(self::SUB_FROM_ID_PREFIX.$this->arrFieldSubForm[$objField->name])->getElement($objField->name)->$strProperty = $mixedPropertyValue;
+              }
+            }
+          }
+        }
+      }
+      
+      if(count($this->setup->FileFilterFields()) > 0){
+        foreach($this->setup->FileFilterFields() as $objField){
+          $this->getSubForm(self::SUB_FROM_ID_PREFIX.$this->arrFieldSubForm[$objField->name])->getElement($objField->name)->setValue($objField->getValue());
+        }
+      }
+
+      if(count($this->setup->MultiplyRegionIds()) > 0){
+        foreach($this->setup->MultiplyRegionIds() as $intRegionId){
+          $objRegion = $this->setup->getRegion($intRegionId);
+          if(count($objRegion->FileFilterFieldNames()) > 0){
+            foreach($objRegion->FileFilterFieldNames() as $strFildeName){
+              foreach($objRegion->RegionInstanceIds() as $intRegionInstanceId){
+                $this->getSubForm(self::SUB_FROM_ID_PREFIX.$this->arrFieldSubForm[$strFildeName])->getElement($strFildeName.'_'.$intRegionInstanceId)->setValue($objRegion->getField($strFildeName)->getInstanceValue($intRegionInstanceId));                
               }
             }
           }

@@ -539,7 +539,8 @@ Document Chooser Element */
   cursor:pointer;
 }
 
-.docwrapper .document {
+.docwrapper .document,
+.docwrapper .documentFilter {
   border:1px solid #ccc;
   min-height:50px;
   padding:2px 0 10px 0;
@@ -549,6 +550,14 @@ Document Chooser Element */
   margin:0 0 0 10px;
   border-bottom:1px solid #e4e4e4;
   cursor:move;
+}
+
+.documentFilter .docitem{
+  cursor:default;
+}
+
+.documentFilter .docitem .itemremovelist{
+  display:none;
 }
 
 /* ----------------
@@ -584,7 +593,7 @@ Internal Links Chooser Element */
   padding:2px 0 10px 0;
 }
 
-.pageitem {
+.elementitem {
   margin:0 0 0 10px;
   padding:4px 0 4px 0;
   border-bottom:1px solid #e4e4e4;
@@ -1382,8 +1391,6 @@ video select */
 
 .urlTopTitle{
   color:#754480;
-  font-size:12px;
-  font-weight:bold;
 }
 
 .urlHistoryContainer{

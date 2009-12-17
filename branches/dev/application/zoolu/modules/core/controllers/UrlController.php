@@ -42,15 +42,19 @@
 
 class Core_UrlController extends AuthControllerAction {
 
+  protected $strType;
+  protected $strModelSubPath;
+  protected $intItemId;
+
 	/**
 	 * @var Model_Urls
 	 */
 	protected $objModelUrls;
 	
   /**
-   * @var Model Page
+   * @var Model_Pages|Model_Products
    */
-  protected $objModelPage;
+  protected $objModel;
     
   /**
    * indexAction
@@ -71,15 +75,13 @@ class Core_UrlController extends AuthControllerAction {
 
     try{
       $objRequest = $this->getRequest();
-      $strElementId = $objRequest->getParam('elementId');
-      $intPageId = $objRequest->getParam('pageId');
-      $intLanguageId = $objRequest->getParam('languageId');
-            
-      $this->getModelPage = $this->getModelPage();
       
-      $this->getModelPage->loadPageUrlHistory($intPageId,$intLanguageId);
-          
-      $this->view->objUrls = $this->getModelPage->loadPageUrlHistory($intPageId,$intLanguageId);
+      $strElementId = $objRequest->getParam('elementId');
+      $intLanguageId = $objRequest->getParam('languageId');
+
+      $this->evalModuleType();
+
+      $this->view->objUrls = $this->getModel()->loadUrlHistory($this->intItemId, $intLanguageId);
       $this->view->strElementId = $strElementId;
             
     }catch (Exception $exc){
@@ -101,13 +103,33 @@ class Core_UrlController extends AuthControllerAction {
     try{
       $objRequest = $this->getRequest();
       $intUrlId = $objRequest->getParam('urlId');
-      $strPageId = $objRequest->getParam('pageId');
+      $strRelationId = $objRequest->getParam('relationId');
             
-      return $this->getModelUrls()->removeUrlHistoryEntry($intUrlId, $strPageId);
+      return $this->getModelUrls()->removeUrlHistoryEntry($intUrlId, $strRelationId);
                
     }catch (Exception $exc){
       $this->core->logger->err($exc);
       exit();
+    }
+  }
+  
+  /**
+   * evalModuleType
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.1
+   */
+  protected function evalModuleType(){
+    switch($this->getRequest()->getParam('moduleId')){
+      case $this->core->sysConfig->modules->cms:
+        $this->strType = 'page';
+        $this->strModelSubPath = 'cms/models/';
+        $this->intItemId = $this->getRequest()->getParam('id');
+        break;
+      case $this->core->sysConfig->modules->products:
+        $this->strType = 'product';
+        $this->strModelSubPath = 'products/models/';
+        $this->intItemId = $this->getRequest()->getParam('linkId');
+        break;
     }
   }
   
@@ -130,25 +152,31 @@ class Core_UrlController extends AuthControllerAction {
 
     return $this->objModelUrls;
   }
-  
+
   /**
-   * getModelModules
-   * @return Model_Modules
-   * @author Dominik Mößlang <dmo@massiveart.com>
+   * getModel
+   * @return type Model
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function getModelPage(){
-    if (null === $this->objModelPage) {
+  protected function getModel(){
+    if($this->objModel === null) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it
        * from its modules path location.
        */
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
-      $this->objModelPage = new Model_Pages();
+      $strModelFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.$this->strModelSubPath.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s').'.php';
+      if(file_exists($strModelFilePath)){
+        require_once $strModelFilePath;
+        $strModel = 'Model_'.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s');
+        $this->objModel = new $strModel();
+        $this->objModel->setLanguageId($this->getRequest()->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      }else{
+        throw new Exception('Not able to load type specific model, because the file didn\'t exist! - strType: "'.$this->strType.'"');
+      }
     }
-
-    return $this->objModelPage;
+    return $this->objModel;
   }
   
 }

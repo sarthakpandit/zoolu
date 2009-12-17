@@ -192,7 +192,7 @@ class Cms_PageController extends AuthControllerAction {
 	    /**
        * update special field values
        */
-      $this->objForm->updateSpecialFieldValues();
+      $this->objForm->updateSpecificFieldValuefs();
 
 	    /**
 	     * get form title
@@ -303,13 +303,12 @@ class Cms_PageController extends AuthControllerAction {
 	    /**
        * update special field values
        */
-      $this->objForm->updateSpecialFieldValues();
+      $this->objForm->updateSpecificFieldValues();
 
 	    /**
        * set action
        */
       $this->objForm->setAction('/zoolu/cms/page/edit');
-
 
       /**
        * output of metainformation to hidden div
@@ -342,9 +341,9 @@ class Cms_PageController extends AuthControllerAction {
       $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
 
       if($this->objForm->Setup()->getIsStartElement(false) == true){
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE startpage = 1 AND active = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }else{
-        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
+        $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1 AND active = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }
 
       $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
@@ -380,6 +379,39 @@ class Cms_PageController extends AuthControllerAction {
 	    $this->view->assign('objFiles', $objFiles);
 	    $this->view->assign('fieldname', $strFieldName);
 	    $this->view->assign('viewtype', $strViewType);
+	  }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+      exit();
+    }
+  }
+
+  /**
+   * getfilteredfilesAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getfilteredfilesAction(){
+    $this->core->logger->debug('cms->controllers->PageController->getfilteredfilesAction()');
+
+    try{
+	    
+	    $arrTagIds = explode(',', $this->objRequest->getParam('tagIds'));
+      $arrFolderIds = explode('][', trim($this->objRequest->getParam('folderIds'), '[]'));
+	    $intRootLevelId = (int) $this->objRequest->getParam('rootLevelId', -1);
+
+      $this->view->assign('fieldname', $this->objRequest->getParam('fileFieldId'));
+	    $this->view->assign('viewtype', $this->objRequest->getParam('viewtype'));
+
+      if($intRootLevelId > 0 || $arrFolderIds[0] > 0){
+        /**
+         * get files
+         */
+        $this->getModelFiles();
+        $objFiles = $this->objModelFiles->loadFilesByFilter($intRootLevelId, $arrTagIds, $arrFolderIds);
+        $this->view->assign('objFiles', $objFiles);
+      }else{
+        $this->_helper->viewRenderer->setNoRender();
+      }
 	  }catch (Exception $exc) {
       $this->core->logger->err($exc);
       exit();

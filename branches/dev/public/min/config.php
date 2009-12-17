@@ -45,13 +45,18 @@ $min_enableBuilder = true;
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
 $min_cachePath = GLOBAL_ROOT_PATH.$core->sysConfig->path->cache->min;
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
+
+//require 'lib/Minify/Cache/APC.php';
+//$min_cachePath = new Minify_Cache_APC();
+
 function yuiJs($js) {
     require_once 'Minify/YUICompressor.php';
     Minify_YUICompressor::$jarFile = dirname(__FILE__) . '/lib/yuicompressor-2.4.2.jar';
     Minify_YUICompressor::$tempDir = GLOBAL_ROOT_PATH.$core->sysConfig->path->cache->min;
     return Minify_YUICompressor::minifyJs($js);
 }
-$min_serveOptions['minifiers']['application/x-javascript'] = 'yuiJs';
+//$min_serveOptions['minifiers']['application/x-javascript'] = 'yuiJs';
+//$min_serveOptions['minifiers']['application/x-javascript'] = array('JSMinPlus', 'minify');
 
 /**
  * Leave an empty string to use PHP's $_SERVER['DOCUMENT_ROOT'].

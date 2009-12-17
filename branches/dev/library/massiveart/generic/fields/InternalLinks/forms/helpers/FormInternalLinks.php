@@ -64,14 +64,14 @@ class Form_Helper_FormInternalLinks extends Zend_View_Helper_FormElement {
       $disabled = ' disabled="disabled"';
     }
 
-    $strPageInternalLinks = '';
-    if(isset($element->objPageInternalLinks)){
-      foreach($element->objPageInternalLinks as $objPageInternalLink){
-        $strPageInternalLinks .= '
-                      <div id="'.$this->view->escape($name).'_page_'.$objPageInternalLink->pageId.'" class="pageitem" pageid="'.$objPageInternalLink->pageId.'">
-                        <div id="'.$this->view->escape($name).'_remove'.$objPageInternalLink->id.'" onclick="myForm.removeItem(\''.$this->view->escape($name).'\', \''.$this->view->escape($name).'_page_'.$objPageInternalLink->pageId.'\', \''.$objPageInternalLink->pageId.'\')" class="itemremovelist2"></div>
-                        <div id="Page'.$objPageInternalLink->id.'">
-                          <div class="icon img_'.(($objPageInternalLink->isStartPage == 1) ? 'startpage' : 'page').'_'.(($objPageInternalLink->idStatus == $core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objPageInternalLink->title, ENT_COMPAT, $core->sysConfig->encoding->default).'
+    $strItemInternalLinks = '';
+    if(isset($element->objItemInternalLinks)){
+      foreach($element->objItemInternalLinks as $objItemInternalLink){
+        $strItemInternalLinks .= '
+                      <div id="'.$this->view->escape($name).'_item_'.$objItemInternalLink->relationId.'" class="elementitem" itemid="'.$objItemInternalLink->relationId.'">
+                        <div id="'.$this->view->escape($name).'_remove'.$objItemInternalLink->id.'" onclick="myForm.removeItem(\''.$this->view->escape($name).'\', \''.$this->view->escape($name).'_item_'.$objItemInternalLink->relationId.'\', \''.$objItemInternalLink->relationId.'\')" class="itemremovelist2"></div>
+                        <div id="Item'.$objItemInternalLink->id.'">
+                          <div class="icon img_'.(($objItemInternalLink->isStartItem == 1) ? 'startpage' : 'page').'_'.(($objItemInternalLink->idStatus == $core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objItemInternalLink->title, ENT_COMPAT, $core->sysConfig->encoding->default).'
                         </div>
                       </div>';
       }
@@ -81,9 +81,9 @@ class Form_Helper_FormInternalLinks extends Zend_View_Helper_FormElement {
      * build the element
      */
     $strOutput = '<div class="internallinkswrapper">
-                    <div class="top">Interner Link hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddPageTreeOverlay(\'divInternalLinksContainer_'.$this->view->escape($id).'\'); return false;"/></div>
+                    <div class="top">Interner Link hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddTreeOverlay(\'divInternalLinksContainer_'.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="divInternalLinksContainer_'.$this->view->escape($id).'"'.$disabled.' class="'.$attribs['class'].'">
-                    '.$strPageInternalLinks.'
+                    '.$strItemInternalLinks.'
                     <div id="divClear_'.$this->view->escape($name).'" class="clear"></div>
                     </div>
                     <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>
@@ -93,7 +93,7 @@ class Form_Helper_FormInternalLinks extends Zend_View_Helper_FormElement {
      * add the scriptaculous sortable funcionality to the parent containert
      */
      $strOutput .= '<script type="text/javascript" language="javascript">/* <![CDATA[ */
-     myForm.initSortable(\''.$this->view->escape($id).'\', \'divInternalLinksContainer_'.$this->view->escape($id).'\', \'pageitem\', \'div\', \'pageid\', \'vertical\');
+     myForm.initSortable(\''.$this->view->escape($id).'\', \'divInternalLinksContainer_'.$this->view->escape($id).'\', \'elementitem\', \'div\', \'itemid\', \'vertical\');
      /* ]]> */</script>';
    
       

@@ -290,7 +290,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
     $this->core->logger->debug('massiveart->generic->data->GenericDataTypePage->load()');
     try {
 
-      $objPages = $this->getModelPages()->loadPage($this->setup->getElementId());
+      $objPages = $this->getModelPages()->load($this->setup->getElementId());
 
       if(count($objPages) > 0){
         $objPage = $objPages->current();

@@ -606,6 +606,14 @@
       <page>1</page>
       <product>2</product>
     </url_types>
+
+    <!-- FILTER TYPES-->
+    <!-- table: filterTypes -->
+    <filter_types>
+      <tags>1</tags>
+      <folders>2</folders>
+      <rootLevel>3</rootLevel>
+    </filter_types>
     
     <!-- table: categories / idRootCategory=11, idCategoryTypes=2 -->
     <sort>

@@ -488,6 +488,8 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
          myForm.loadFileFieldsContent('media');
          // load documents
          myForm.loadFileFieldsContent('document');
+         // load filter documents
+         myForm.loadFileFilterFieldsContent('documentFilter');
        }.bind(this)
      });
   }

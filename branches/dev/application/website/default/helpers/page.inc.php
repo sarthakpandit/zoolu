@@ -631,7 +631,7 @@ function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'div
       if($strBlockTitle != ''){
         $strHtmlOutput .= '<h2>'.$strBlockTitle.'</h2>';
 
-        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('docs')->getInstanceValue($intRegionInstanceId));
+        $objFiles = $objPage->getFileFilterFieldValue($objMyMultiRegion->getField('docs')->getInstanceValue($intRegionInstanceId));
         if($objFiles != '' && count($objFiles) > 0){
           $strHtmlOutput .= '<div class="documents">';
           foreach($objFiles as $objFile){
@@ -724,7 +724,7 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
     $strHtmlOutput .= '<div class="video mBottom20">'.getPageObject()->getFieldValue('video_embed_code').'</div>';
   }
 
-  echo (($blnShowVideoTitle) ? get_video_title('h3', false) : '').$strHtmlOutput;
+  echo (($blnShowVideoTitle) ? get_video_title('h2', false) : '').$strHtmlOutput;
 }
 
 /**
@@ -742,7 +742,7 @@ function get_documents_title($strElement = 'h3', $blnShowDefaultTitle = true){
   if($strDocumentsTitle != ''){
     $strDocumentsTitle = '<'.$strElement.'>'.$strDocumentsTitle.'</'.$strElement.'>';
   }else if($blnShowDefaultTitle){
-    $strDocumentsTitle = '<'.$strElement.'>Dokumente</'.$strElement.'>';
+    $strDocumentsTitle = '<'.$strElement.'>BROCHURES</'.$strElement.'>';
   }else{
     $strDocumentsTitle = '';
   }
@@ -758,7 +758,7 @@ function get_documents_title($strElement = 'h3', $blnShowDefaultTitle = true){
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_documents($strContainerCss = 'divDocItem', $strIconCss = 'divDocIcon', $strTitleCss = 'divDocInfos'){
+function get_documents($strContainerCss = 'documents', $strItemCss = 'item', $strIconCss = 'icon', $strTitleCss = 'text'){
   $core = getCoreObject();
   $objPage = getPageObject();
 
@@ -767,16 +767,21 @@ function get_documents($strContainerCss = 'divDocItem', $strIconCss = 'divDocIco
   $strHtmlOutput = '';
 
   if($objFiles != '' && count($objFiles) > 0){
+    $strHtmlOutput .= '<div class="'.$strContainerCss.'">';
     foreach($objFiles as $objFile){
-      $strHtmlOutput .= '<div class="'.$strContainerCss.'">
-              <div class="'.$strIconCss.'"><img src="'.$core->webConfig->domains->static->components.HtmlOutput::getIconByExtension($objFile->extension, '/website/themes/default/images/icons', 'gif').'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+      $strIcon = (strpos($objFile->mimeType, 'image') !== false) ? 'icon_img.gif' : 'icon_'.$objFile->extension.'.gif';
+      $strHtmlOutput .= '<div class="'.$strItemCss.'">
+              <div class="'.$strIconCss.'"><img src="/website/themes/default/images/icons/'.$strIcon.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
               <div class="'.$strTitleCss.'">
                 <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a><br/>
-                <span>Format:</span> <span class="black">'.$objFile->extension.'</span> <span>Gr&ouml;&szlig;e:</span> <span class="black">'.HtmlOutput::getFormattedByteSize($objFile->size).'</span>
+                <span>Format:</span> <span class="black">'.$objFile->extension.'</span> <span>Gr&ouml;&szlig;e:</span> <span class="black">'.$objFile->size.' KB</span>
               </div>
               <div class="clear"></div>
             </div>';
     }
+    $strHtmlOutput .= '
+        <div class="clear"></div>
+      </div>';
   }
   echo $strHtmlOutput;
 }
@@ -830,13 +835,12 @@ function get_internal_links($strContainerCss = 'internalLinks', $strItemCss = 'i
   $core = getCoreObject();
   $objPage = getPageObject();
 
-  $objPageInternalLinks = $objPage->getInternalLinks();
 
   $strHtmlOutput = '';
 
-  if(count($objPageInternalLinks) > 0){
+  if(count($objPage->getField('internal_links')->objItemInternalLinks) > 0){
     $strHtmlOutput .= '<div class="'.$strContainerCss.'">';
-    foreach($objPageInternalLinks as $objPageInternalLink){
+    foreach($objPage->getField('internal_links')->objItemInternalLinks as $objPageInternalLink){
       $strHtmlOutput .= '<div class="'.$strItemCss.'">
               <div class="'.$strIconCss.'"></div>
               <div class="'.$strTitleCss.'">
@@ -1140,12 +1144,13 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
 
               $strHtmlOutput .= '
                 <div class="item">
-                  <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
-              if($strDescription != ''){
-                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
-              }
-              $strHtmlOutput .= '
-                  <a href="'.$objPageEntry->url.'">mehr</a>
+                  <img src="/website/themes/ivoclarvivadent/images/tmp/product.jpg" alt="Product Image" />
+                  <div class="text">
+                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
+                    if($strDescription != ''){
+                      $strHtmlOutput .= '<p>'.$strDescription.'</p>';
+                    }'
+                  </div>
                   <div class="clear"></div>
                 </div>';
             }
@@ -1163,23 +1168,16 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
                   $strDescription = strip_tags($objPageEntry->description);
                 }
               }
-
+              
               $strHtmlOutput .= '
                 <div class="item">
-                  <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
-              if($objPageEntry->filename != ''){
-                $strHtmlOutput .= '
-                  <div class="imgLeft">
-                    <a href="'.$objPageEntry->url.'">
-                      <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolderCol1.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
-                    </a>
-                  </div>';
-              }
-              if($strDescription != ''){
-                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
-              }
-              $strHtmlOutput .= '
-                  <a href="'.$objPageEntry->url.'">mehr</a>
+                  <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$strImageFolderCol1.'/'.$objPageEntry->filename.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
+                  <div class="text">
+                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
+                    if($strDescription != ''){
+                      $strHtmlOutput .= '<p>'.$strDescription.'</p>';
+                    }'
+                  </div>
                   <div class="clear"></div>
                 </div>';
             }
@@ -1202,25 +1200,25 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
                   $strDescription = strip_tags($objPageEntry->description);
                 }
               }
-
+              
               $strHtmlOutput .= '
-                  <div class="item">
-                    <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
-              if($strDescription != ''){
-                $strHtmlOutput .= '<div class="description">'.$strDescription.'</div>';
-              }
-              $strHtmlOutput .= '
-                    <a href="'.$objPageEntry->url.'">mehr</a>
-                  </div>';
+                <div class="item">
+                  <img src="/website/themes/ivoclarvivadent/images/tmp/product.jpg" alt="Product Image" />
+                  <div class="text">
+                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
+                    if($strDescription != ''){
+                      $strHtmlOutput .= '<p>'.$strDescription.'</p>';
+                    }'
+                  </div>
+                  <div class="clear"></div>
+                </div>';
               if($counter % 2 == 1){
                 $strHtmlOutput .= '
                   <div class="clear"></div>';
               }
               $counter++;
             }
-            $strHtmlOutput .= '
-                  <div class="clear"></div>
-                </div>';
+            
             break;
 
           case $core->webConfig->viewtypes->col2_img->id:

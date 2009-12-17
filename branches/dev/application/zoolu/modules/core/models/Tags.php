@@ -127,6 +127,9 @@ class Model_Tags {
    * @version 1.0
    */
   public function addTypeTags($strTagType, $arrTagIds, $strElementId, $intVersion){
+    $this->core->logger->debug('core->models->Tags->addTypeTags('.$strTagType.', '.$strElementId.', '.$intVersion.')');
+    $this->core->logger->debug('core->models->Tags->addTypeTags: count $arrTagIds: '.count($arrTagIds));
+    
     if(count($arrTagIds) > 0){
       $this->getTagTypeTable($strTagType);
       $strInstanceField = strtolower($strTagType).'Id';
@@ -151,6 +154,7 @@ class Model_Tags {
 
     $objSelect = $this->getTagsTable()->select();
     $objSelect->setIntegrityCheck(false);
+    
     $objSelect->from('tags', array('id', 'title'));
     $objSelect->order(array('title ASC'));
 
@@ -242,6 +246,7 @@ class Model_Tags {
      * delete tags
      */
     $strWhere = $this->objTagTypeTable->getAdapter()->quoteInto(strtolower($strTagType).'Id = ?', $strElementId);
+    $strWhere .= $this->objTagTypeTable->getAdapter()->quoteInto(' AND version = ?', $intVersion);
     $strWhere .= $this->objTagTypeTable->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
 
     return $this->objTagTypeTable->delete($strWhere);

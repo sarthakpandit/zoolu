@@ -32,7 +32,10 @@ Massiveart.Form.Users = Class.create(Massiveart.Form, {
       new Ajax.Updater(myNavigation.genTmpContainer, $(this.formId).readAttribute('action'), {
         parameters: serializedForm,
         evalScripts: true,
-        onComplete: function() {   
+        onComplete: function(transport) {
+          //problem: ajax.updater evalScripts = true was too late
+          transport.responseText.evalScripts();
+          
           if(this.blnShowFormAlert){
             //saved
             this.getFormSaveSucces();

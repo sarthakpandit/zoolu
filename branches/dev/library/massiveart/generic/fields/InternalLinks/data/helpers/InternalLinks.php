@@ -47,7 +47,7 @@ require_once(dirname(__FILE__).'/../../../../data/helpers/Abstract.php');
 class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
 
   /**
-   * @var Model_Pages
+   * @var Model_Pages|Model_Products
    */
   private $objModel;
 
@@ -70,7 +70,7 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
 
       $this->objModel->deleteInternalLinks($strElementId, $intVersion);
 
-      $this->objModel->addInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
+      if($this->objElement->getValue() != '') $this->objModel->addInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
 
       $this->load($intElementId, $strType, $strElementId, $intVersion);
 
@@ -94,14 +94,14 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
       
       $this->getModel();
 
-      $objPageInternalLinksData = $this->objModel->loadInternalLinks($strElementId, $intVersion);
+      $objItemInternalLinksData = $this->objModel->loadInternalLinks($strElementId, $intVersion);
 
-      if(count($objPageInternalLinksData) > 0){
-        $this->objElement->objPageInternalLinks = $objPageInternalLinksData;
+      if(count($objItemInternalLinksData) > 0){
+        $this->objElement->objItemInternalLinks = $objItemInternalLinksData;
 
         $strValue = '';
-        foreach($objPageInternalLinksData as $objPageInternalLink){
-          $strValue .= '['.$objPageInternalLink->pageId.']';
+        foreach($objItemInternalLinksData as $objItemInternalLink){
+          $strValue .= '['.$objItemInternalLink->relationId.']';
         }
 
         $this->objElement->setValue($strValue);

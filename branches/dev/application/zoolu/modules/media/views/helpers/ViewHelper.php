@@ -278,18 +278,75 @@ class ViewHelper {
       }else{
         $intLanguageId = $this->core->sysConfig->languages->default->id;
       }
+      
+      // build the element
+      $strTags = '';
+      
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php'; // FIXME : quick and dirty solution
+      $objModelTags = new Model_Tags(); 
+      $objModelTags->setLanguageId($intLanguageId);     
+      $objTags = $objModelTags->loadTypeTags('file', $row->id, 1); // TODO : version      
+      
+    	if(count($objTags) > 0){
+        foreach($objTags as $objTag){ 
+          $strTags .= '<li value="'.$objTag->id.'">'.htmlentities($objTag->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</li>';        
+        }
+      }
        
   		$strOutput .= '<div class="mediacontainer">
                        <div class="mediaicon"><img width="32" height="32" src="'.$strFileIconSrc.'"/></div>
                        <div class="mediainfos">
                          <div class="mediainfotitle"><input type="text" value="'.$row->title.'" id="FileTitle'.$row->id.'|||'.$intLanguageId.'" name="FileTitle'.$row->id.'|||'.$intLanguageId.'"/></div>
                          <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription'.$row->id.'|||'.$intLanguageId.'" name="FileDescription'.$row->id.'|||'.$intLanguageId.'"'.$strTextareaCss.'>'.$strDescription.'</textarea></div>
+                         <div class="mediainfotags">
+                           <ol>        
+                             <li id="autocompletList" class="input-text">
+                               <input type="text" value="" id="FileTags'.$row->id.'" name="FileTags'.$row->id.'|||'.$intLanguageId.'"/>
+                               <div id="FileTags'.$row->id.'_autocompleter" class="autocompleter">
+                                 <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+                                 <ul class="feed">
+                                   '.$strTags.'  
+                                 </ul>
+                               </div>
+                             </li>
+                           </ol>
+                           <script type="text/javascript" language="javascript">//<![CDATA[
+                             FileTags'.$row->id.'_list = new FacebookList(\'FileTags'.$row->id.'\', \'FileTags'.$row->id.'_autocompleter\',{ newValues: true, regexSearch: true });
+                             '.$this->getAllTagsForAutocompleter('FileTags'.$row->id).'
+                             //]]>
+                           </script>                           
+                         </div>
                          <div class="clear"></div>  
                        </div>
                        <div class="clear"></div> 
                      </div>';  		
   	}
   	return $strOutput;
+  }
+  
+  /**
+   * getAllTagsForAutocompleter
+   * @param string $strElementId
+   * @return string $strAllTags
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getAllTagsForAutocompleter($strElementId){
+    require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php';
+    $objModelTags = new Model_Tags();      
+    $objAllTags = $objModelTags->loadAllTags();
+    
+    $strAllTags = '';
+    if(count($objAllTags) > 0){
+      $strAllTags .= 'var '.$strElementId.'_json = [';
+      foreach($objAllTags as $objTag){
+        $strAllTags .= '{"caption":"'.htmlentities($objTag->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'","value":'.$objTag->id.'},';
+      }
+      $strAllTags = trim($strAllTags, ',');
+      $strAllTags .= '];';
+      $strAllTags .= $strElementId.'_json.each(function(t){'.$strElementId.'_list.autoFeed(t)})';   
+    }
+    return $strAllTags;
   }
   
   /**

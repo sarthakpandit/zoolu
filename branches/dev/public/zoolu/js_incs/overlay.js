@@ -50,8 +50,8 @@ Massiveart.Overlay = Class.create({
       // add the scriptaculous sortable funcionality to the parent container
       myForm.initSortable(fieldId, this.areaId, 'mediaitem', 'div', 'fileid','both'); 
       
-      $(fieldId+'_mediaitem_'+id).appear({ duration: 0.5 });
-      $(itemId).fade({ duration: 0.5 });
+      $(fieldId+'_mediaitem_'+id).appear({duration: 0.5});
+      $(itemId).fade({duration: 0.5});
       
       // add remove method to remove icon
       if($(iconRemoveId)){
@@ -91,8 +91,8 @@ Massiveart.Overlay = Class.create({
       // add the scriptaculous sortable funcionality to the parent container
       myForm.initSortable(fieldId, this.areaId, 'docitem', 'div', 'fileid','vertical'); 
             
-      $(fieldId+'_docitem_'+id).appear({ duration: 0.5 });
-      $(itemId).fade({ duration: 0.5 });
+      $(fieldId+'_docitem_'+id).appear({duration: 0.5});
+      $(itemId).fade({duration: 0.5});
       
       // add remove method to remove icon
       if($(iconRemoveId)){
@@ -102,6 +102,42 @@ Massiveart.Overlay = Class.create({
         }
       }
     }    
+  },
+
+  /**
+   * selectDocumentFolders
+   */
+  selectDocumentFolders: function(){
+
+    if($(this.areaId) && $(this.fieldId+'_Folders') && $('foderCheckboxTreeForm')){
+      foldersFieldId = this.fieldId+'_Folders';
+      $(this.areaId).innerHTML = '';
+      $(foldersFieldId).value = '';
+
+      if($(this.fieldId+'_RootLevel')){
+        if($('rootLevelFolderCheckboxTree') && $('rootLevelFolderCheckboxTree').checked){
+          $(this.fieldId+'_RootLevel').value = $F('rootLevelFolderCheckboxTree');
+          $(this.areaId).update($('rootLevelFolderCheckboxTreeTitle').innerHTML);
+        }else{
+          $(this.fieldId+'_RootLevel').value = -1;
+        }
+      }      
+
+      $('foderCheckboxTreeForm').getInputs('checkbox', 'folderCheckboxTree[]').each(function(el) {
+        if(el.checked){
+          $(foldersFieldId).value = $F(foldersFieldId) + '[' + $F(el) + ']';
+          
+          if($(this.areaId).innerHTML.blank()){
+            $(this.areaId).update($('folderCheckboxTreeTitle-' + $F(el)).innerHTML);
+          }else{
+            $(this.areaId).update($(this.areaId).innerHTML + ', ' + $('folderCheckboxTreeTitle-' + $F(el)).innerHTML);
+          }
+        }
+      }.bind(this));
+
+      $('overlayGenContentWrapper').hide();
+      myForm.loadFileFilterFieldContetn(this.fieldId, 'documentFilter');
+    }
   },
   
   /**
@@ -135,48 +171,57 @@ Massiveart.Overlay = Class.create({
   /**
    * addPageToListArea
    * @param integer idPage
-   * @param string pageId
+   * @param string itemId
    */
-  addPageToListArea: function(id, pageId){
+  addPageToListArea: function(id, itemId){
         
-    itemId = 'olPageItem'+pageId;
+    itemElementId = 'olItem'+itemId;
     
-    if($(this.areaId) && $(itemId)){
+    if($(this.areaId) && $(itemElementId)){
       
       // get the hidden field id
       var fieldId = this.areaId.substring(this.areaId.indexOf('_')+1);
       var iconRemoveId = fieldId+'_remove'+id;
       
       // create new media item container
-      var mediaItemContainer = '<div id="'+fieldId+'_page_'+pageId+'" pageid="'+pageId+'" class="pageitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
+      var mediaItemContainer = '<div id="'+fieldId+'_item_'+itemId+'" itemid="'+itemId+'" class="elementitem" style="display:none;">' + $(itemElementId).innerHTML + '</div>';
       if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
       new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
       
-      if($('Page'+id)){
-        $('Page'+id).removeAttribute('onclick');
-        $('Page'+id).removeAttribute('style');
+      if($('Item'+id)){
+        $('Item'+id).removeAttribute('onclick');
+        $('Item'+id).removeAttribute('style');
       }
       if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
            
       // add the scriptaculous sortable funcionality to the parent container
-      myForm.initSortable(fieldId, this.areaId, 'pageitem', 'div', 'pageid', 'vertical'); 
+      myForm.initSortable(fieldId, this.areaId, 'elementitem', 'div', 'itemid', 'vertical');
       
       // insert file id to hidden field - only 1 insert is possible
-      if($(fieldId).value.indexOf('[' + pageId + ']') == -1){
-        $(fieldId).value = $(fieldId).value + '[' + pageId + ']';
+      if($(fieldId).value.indexOf('[' + itemId + ']') == -1){
+        $(fieldId).value = $(fieldId).value + '[' + itemId + ']';
       } 
       
-      $(fieldId+'_page_'+pageId).appear({ duration: 0.5 });
-      $(itemId).fade({ duration: 0.5 });
+      $(fieldId+'_item_'+itemId).appear({duration: 0.5});
+      $(itemElementId).fade({duration: 0.5});
       
       // add remove method to remove icon
       if($(iconRemoveId)){
         $(iconRemoveId).show();
         $(iconRemoveId).onclick = function(){
-          myForm.removeItem(fieldId, fieldId+'_page_'+pageId, pageId);
+          myForm.removeItem(fieldId, fieldId+'_item_'+itemId, itemId);
         }
       }
     }    
+  },
+
+  /**
+   * addProductToListArea
+   * @param integer idProduct
+   * @param string productId
+   */
+  addProductToListArea: function(id, productId){
+    this.addPageToListArea(id, productId);
   },
   
   /**

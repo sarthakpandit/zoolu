@@ -226,6 +226,7 @@ class IndexController extends Zend_Controller_Action {
           case $this->core->sysConfig->url_types->product:
             $this->objPage->setType('product');
             $this->objPage->setModelSubPath('products/models/');
+            $this->objPage->setElementLinkId($objUrlData->linkId);
             break;
         }
 
