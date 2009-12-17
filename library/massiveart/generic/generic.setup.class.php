@@ -134,6 +134,15 @@ class GenericSetup {
     return $this->arrFileFields;
   }
 
+  protected $arrFileFilterFields = array();
+  /**
+   * property of the file filter fields array
+   * @return Array $arrFileFilterFields
+   */
+  public function FileFilterFields(){
+    return $this->arrFileFilterFields;
+  }
+
   protected $arrMultiFields = array();
   /**
    * property of the multi fields array
@@ -192,6 +201,7 @@ class GenericSetup {
   const FILE_FIELD = 3;
   const MULTI_FIELD = 4;
   const INSTANCE_FIELD = 5;
+  const FILE_FILTER_FIELD = 6;
 
   /**
    * field types constants
@@ -210,6 +220,8 @@ class GenericSetup {
   const FIELD_TYPE_SELECT_ID = 2;
   const FIELD_TYPE_MULTIFIELD_ID = 3;
   const FIELD_TYPE_SPECIALFIELD_ID = 4;
+  const FIELD_TYPE_ZF_ID = 5;
+  const FIELD_TYPE_FILE_FILTER_ID = 6;
 
 	/**
 	 * @var Core
@@ -437,12 +449,14 @@ class GenericSetup {
 	  			  /**
 	           * select field container
 	           */
-  				if($objGenField->isSaveField == 1){
+            if($objGenField->isSaveField == 1){
 	            if($objGenField->isMultiply == 1){
 	            	if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SPECIALFIELD_ID) {
 	                $this->getRegion($objFieldRegionTagData->regionId)->addSpecialFieldName($objGenField->name);
 	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addFileFieldName($objGenField->name);
+                }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_FILTER_ID){
+	                $this->getRegion($objFieldRegionTagData->regionId)->addFileFilterFieldName($objGenField->name);
 	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_MULTIFIELD_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addMultiFieldName($objGenField->name);
 	              }else{
@@ -458,6 +472,9 @@ class GenericSetup {
 	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_ID){
 	                $this->arrFileFields[$objGenField->name] = $objGenField;
 	                $this->arrFieldNames[$objGenField->name] = self::FILE_FIELD;
+                }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_FILTER_ID){
+	                $this->arrFileFilterFields[$objGenField->name] = $objGenField;
+	                $this->arrFieldNames[$objGenField->name] = self::FILE_FILTER_FIELD;
 	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_MULTIFIELD_ID){
 	                $this->arrMultiFields[$objGenField->name] = $objGenField;
 	                $this->arrFieldNames[$objGenField->name] = self::MULTI_FIELD;
@@ -525,6 +542,9 @@ class GenericSetup {
         case self::FILE_FIELD:
           return $this->getFileField($strField);
           break;
+        case self::FILE_FILTER_FIELD:
+          return $this->getFileFilterField($strField);
+          break;
         case self::MULTI_FIELD:
           return $this->getMultiField($strField);
           break;
@@ -560,6 +580,20 @@ class GenericSetup {
   public function getFileField($strField){
     if(array_key_exists($strField, $this->arrFileFields)){
       return $this->arrFileFields[$strField];
+    }
+    return null;
+  }
+
+  /**
+   * getFileFilterField
+   * @param string $strField
+   * @return GenericElementField
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getFileFilterField($strField){
+    if(array_key_exists($strField, $this->arrFileFilterFields)){
+      return $this->arrFileFilterFields[$strField];
     }
     return null;
   }
@@ -640,7 +674,9 @@ class GenericSetup {
                    * go through fields of the region
                    */
                   foreach ($objRegion->getFields() as $objField) {
-                    if(array_key_exists($objField->name.'_'.$intRegionInstanceId, $arrValues)){
+                    if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_FILTER_ID){
+                      $objField->setInstanceValue($intRegionInstanceId, $this->getFileFilterObject($objField->name.'_'.$intRegionInstanceId, $arrValues));
+                    }else if(array_key_exists($objField->name.'_'.$intRegionInstanceId, $arrValues)){
                       $objField->setInstanceValue($intRegionInstanceId, $arrValues[$objField->name.'_'.$intRegionInstanceId]);
                     }
                   }
@@ -653,7 +689,9 @@ class GenericSetup {
            * go through fields of the region
            */
           foreach ($objRegion->getFields() as $objField) {
-            if(array_key_exists($objField->name, $arrValues)){
+            if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_FILTER_ID){
+              $objField->setValue($this->getFileFilterObject($objField->name, $arrValues));
+            }else if(array_key_exists($objField->name, $arrValues)){
               $objField->setValue($arrValues[$objField->name]);
             }
           }
@@ -663,6 +701,42 @@ class GenericSetup {
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
+  }
+
+  /**
+	 * getFileFilterObject
+	 * @param string $strFieldName
+   * @param array $arrValues
+   * @return $objFilters
+	 * @author Thomas Schedler <tsh@massiveart.com>
+	 * @version 1.0
+	 */
+  protected function getFileFilterObject($strFieldName, &$arrValues){
+    $objFilters = new stdClass();
+    $objFilters->filters = array();
+
+    if(array_key_exists($strFieldName.'_Tags', $arrValues)){
+      $objTagFilter = new stdClass();
+      $objTagFilter->typeId = $this->core->sysConfig->filter_types->tags;
+      $objTagFilter->referenceIds = explode(',', $arrValues[$strFieldName.'_Tags']);
+      $objFilters->filters['ft'.$objTagFilter->typeId] = $objTagFilter;
+    }
+
+    if(array_key_exists($strFieldName.'_Folders', $arrValues)){
+      $objFoldersFilter = new stdClass();
+      $objFoldersFilter->typeId = $this->core->sysConfig->filter_types->folders;
+      $objFoldersFilter->referenceIds = explode('][', trim($arrValues[$strFieldName.'_Folders'], '[]'));
+      $objFilters->filters['ft'.$objFoldersFilter->typeId] = $objFoldersFilter;
+    }
+
+    if(array_key_exists($strFieldName.'_RootLevel', $arrValues)){
+      $objRootLeveFilter = new stdClass();
+      $objRootLeveFilter->typeId = $this->core->sysConfig->filter_types->rootLevel;
+      $objRootLeveFilter->referenceIds = array($arrValues[$strFieldName.'_RootLevel']);
+      $objFilters->filters['ft'.$objRootLeveFilter->typeId] = $objRootLeveFilter;
+    }
+
+    return $objFilters;
   }
 
 	/**

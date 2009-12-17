@@ -171,9 +171,9 @@ class OverlayHelper {
 
         if($objRow->idPage > 0){
           $strOutput .= '
-                        <div id="olPageItem'.$objRow->pageId.'" class="olnavrootitem"'.$strHidden.'>
+                        <div id="olItem'.$objRow->pageId.'" class="olnavrootitem"'.$strHidden.'>
                           <div style="display:none;" id="Remove'.$objRow->idPage.'" class="itemremovelist2"></div>
-                          <div id="Page'.$objRow->idPage.'" style="position:relative; margin-left:'.(20*$intFolderDepth+20).'px; cursor:pointer;" onclick="'.$strItemAction.'('.$objRow->idPage.', \''.$objRow->pageId.'\'); return false;">
+                          <div id="Item'.$objRow->idPage.'" style="position:relative; margin-left:'.(20*$intFolderDepth+20).'px; cursor:pointer;" onclick="'.$strItemAction.'('.$objRow->idPage.', \''.$objRow->pageId.'\'); return false;">
                             <div class="icon img_'.(($objRow->isStartPage == 1) ? 'startpage' : 'page').'_'.(($objRow->pageStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
                           </div>
                         </div>';

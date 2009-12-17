@@ -24,22 +24,22 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.generic.fields.Tag.forms.decorators
+ * @package    library.massiveart.generic.fields.DocumentFilter.forms.decorators
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 /**
- * Form_Decorator_Tag
+ * Form_Decorator_DocumentFilter
  * 
  * Version history (please keep backward compatible):
- * 1.0, 2009-01-27: Thomas Schedler
+ * 1.0, 2009-12-16: Thomas Schedler
  * 
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
+class Form_Decorator_DocumentFilter extends Zend_Form_Decorator_Abstract {
   
   /**
    * @var Core
@@ -94,21 +94,21 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
   }
   
   /**
-   * buildTags
+   * buildDocumentFilters
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.1
    */
-  public function buildTags(){
+  public function buildDocumentFilters(){
   	
     $element = $this->getElement();
     $helper  = $element->helper;
     
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php';
     $objModelTags = new Model_Tags();
-    
+
     $objAllTags = $objModelTags->loadAllTags();
-        
-    $output = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objAllTags, $element->tagIds);
+
+    $output = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objAllTags);
     
     return $output;
   }
@@ -150,7 +150,7 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
     $separator = $this->getSeparator();
     $placement = $this->getPlacement();
     $label     = $this->buildLabel();
-    $tags      = $this->buildTags();
+    $DocumentFilters      = $this->buildDocumentFilters();
     $errors    = $this->buildErrors();
     $desc      = $this->buildDescription();
     
@@ -158,7 +158,7 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
     $output .= '<div class="field">'
                     .$label
                     .$desc
-                    .$tags
+                    .$DocumentFilters
                     .$errors
                  .'</div>
                  </div>';

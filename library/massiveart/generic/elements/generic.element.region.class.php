@@ -76,7 +76,16 @@ class GenericElementRegion extends GenericElementAbstract {
   public function FileFieldNames(){
     return $this->arrFileFieldNames;
   }
-  
+
+  protected $arrFileFilterFieldNames = array();
+  /**
+   * property of the file filter field names array
+   * @return Array $arrFileFilterFieldNames
+   */
+  public function FileFilterFieldNames(){
+    return $this->arrFileFilterFieldNames;
+  }
+
 	protected $arrMultiFieldNames = array();
   /**
    * property of the multi field names array
@@ -155,6 +164,16 @@ class GenericElementRegion extends GenericElementAbstract {
    */
   public function addFileFieldName($strFieldName){
     $this->arrFileFieldNames[] = $strFieldName;    
+  }
+
+  /**
+   * addFileFilterFieldName
+   * @param string $strFieldName
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addFileFilterFieldName($strFieldName){
+    $this->arrFileFilterFieldNames[] = $strFieldName;
   }
     
   /**

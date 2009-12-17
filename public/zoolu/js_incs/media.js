@@ -74,11 +74,9 @@ Massiveart.Media = Class.create({
           myCore.toggleItemSelected(el.id);
         }else{         
           myCore.toggleItemSelected(el.up('.tdthumbcontainer').id);         
-        }        
-      }.bind(this));
-                 
-    }.bind(this));
-    
+        }              
+      }.bind(this));                 
+    }.bind(this));    
   },
   
   /**
@@ -95,8 +93,6 @@ Massiveart.Media = Class.create({
       scaleThumbs[i].style.width = newWidth+'px';
       
       $('divThumbPos'+scaleThumbs[i].id).style.width = newWidth+'px';                                                  
-      
-      //console.debug(scaleValue);
       
       $('divThumbContainer'+scaleThumbs[i].id).setStyle({width: ((100 * scaleValue / 100) + 10)+'px',
                                                          height: ((100 * scaleValue / 100) + 10)+'px'});
@@ -160,6 +156,46 @@ Massiveart.Media = Class.create({
   },
   
   /**
+   * moveFiles
+   */
+  moveFiles: function(){    
+    if(this.getStringFileIds() != ''){
+      this.toggleMediaEditMenu('buttonmediaedittitle', 'hide');
+      myFolder.getCurrentFolderParentChooser('MOVE_MEDIA');
+    }
+  },
+  
+  /**
+   * selectParentFolder
+   */
+  selectParentFolder: function(parentFolderId){
+    myCore.addBusyClass('overlayGenContent');
+  
+    new Ajax.Request('/zoolu/media/file/changeparentfolder', {
+      parameters: { 
+       files: this.getStringFileIds(),
+       parentFolderId: parentFolderId
+      },      
+      evalScripts: true,     
+      onComplete: function() {  
+        $('overlayGenContentWrapper').hide(); 
+        $('overlayBlack75').hide();
+        
+        this.getMediaFolderContent(myNavigation.folderId);
+        
+        /* to jump to the new folder
+        if($('folder'+parentFolderId)){
+          myNavigation.itemId = 'folder'+parentFolderId;            
+          myNavigation.selectItem();
+        }*/
+        
+        myCore.removeBusyClass('overlayGenContent');
+      }.bind(this)
+    });
+  },
+  
+  
+  /**
    * getMediaListView
    */
   getMediaListView: function(){
@@ -207,13 +243,15 @@ Massiveart.Media = Class.create({
   /**
    * toggleMediaEditMenu
    */
-  toggleMediaEditMenu: function(elementId){    
+  toggleMediaEditMenu: function(elementId, forceHide){    
     if($('divMediaEditMenu')){
-      Effect.toggle('divMediaEditMenu', 'appear', { delay: 0, duration: 0.3 });
-      if($(elementId) && $(elementId).hasClassName('white')){
-        $(elementId).removeClassName('white');
+      if(typeof(forceHide) == 'undefined') forceHide = false;
+      if(!forceHide && $('divMediaEditMenu').style.display == 'none'){
+        $('divMediaEditMenu').appear({ delay: 0, duration: 0.3 });
+        if($(elementId)) $(elementId).removeClassName('white');      
       }else{
-        $(elementId).addClassName('white');
+        $('divMediaEditMenu').fade({ duration: 0.3 });
+        if($(elementId)) $(elementId).addClassName('white');
       }
     }
   },
@@ -352,7 +390,7 @@ Massiveart.Media = Class.create({
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
           myCore.putOverlayCenter('overlayGenContentWrapper');          
           myCore.removeBusyClass(this.constOverlayGenContent);                    
-          this.toggleMediaEditMenu('buttonmediaedittitle');                   
+          this.toggleMediaEditMenu('buttonmediaedittitle', true);                   
         }.bind(this)
       });
     }   
@@ -378,7 +416,7 @@ Massiveart.Media = Class.create({
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
           myCore.putOverlayCenter('overlayGenContentWrapper');          
           myCore.removeBusyClass(this.constOverlayGenContent);                    
-          this.toggleMediaEditMenu('buttonmediaedittitle');                   
+          this.toggleMediaEditMenu('buttonmediaedittitle', true);                   
         }.bind(this)
       });
     }   
@@ -428,7 +466,7 @@ Massiveart.Media = Class.create({
         parameters: { fileIds: strFileIds },
         evalScripts: true,
         onComplete: function() {       
-          this.toggleMediaEditMenu('buttonmediaedittitle');
+          this.toggleMediaEditMenu('buttonmediaedittitle', true);
           this.getMediaFolderContent(this.intFolderId);          
         }.bind(this)
       });

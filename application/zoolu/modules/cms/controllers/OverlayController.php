@@ -121,7 +121,7 @@ class Cms_OverlayController extends AuthControllerAction {
     $intPortalId = $objRequest->getParam('portalId');
     $strItemAction = $objRequest->getParam('itemAction', 'myOverlay.selectPage');
 
-    $strPageIds = $objRequest->getParam('pageIds');
+    $strPageIds = $objRequest->getParam('itemIds');
 
     $strTmpPageIds = trim($strPageIds, '[]');
     $arrPageIds = split('\]\[', $strTmpPageIds);

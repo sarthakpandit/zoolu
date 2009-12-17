@@ -252,7 +252,7 @@ class Products_ProductController extends AuthControllerAction {
 	    /**
        * update special field values
        */
-      $this->objForm->updateSpecialFieldValues();
+      $this->objForm->updateSpecificFieldValues();
 
 	    /**
 	     * get form title
@@ -363,7 +363,7 @@ class Products_ProductController extends AuthControllerAction {
 	    /**
        * update special field values
        */
-      $this->objForm->updateSpecialFieldValues();
+      $this->objForm->updateSpecificFieldValues();
 
 	    /**
        * set action

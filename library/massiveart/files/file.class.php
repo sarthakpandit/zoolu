@@ -81,6 +81,11 @@ class File {
    * @var Zend_Db_Table_Rowset_Abstract
    */
   private $objPathReplacers;
+  
+  /**
+   * @var Model_Tags
+   */
+  private $objModelTags; 
 
   /**
    * @var Zend_File_Transfer_Adapter_Abstract
@@ -109,6 +114,12 @@ class File {
   protected $intParentTypeId;
 
   protected $arrFileDatas = array();
+  
+  /**
+   * for tags
+   */
+  protected $arrNewTagIds = array();
+  protected $arrNewTags = array();
 
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
@@ -173,6 +184,7 @@ class File {
     	$arrMetaData = array();
 
     	$this->getModelFile();
+    	$this->getModelTags();
 
       $arrUploadedFileIds = array();     
       if(count($arrFileData) > 0){
@@ -195,7 +207,18 @@ class File {
 			                             'title'         => $strFileTitle,
 			                             'description'   => $strFileDescription);
 
-            $this->objModelFile->getFileTitleTable()->insert($arrInsertData);
+            $this->objModelFile->getFileTitleTable()->insert($arrInsertData);            
+            
+            /**
+             * save tags (quick&dirty solution)
+             */
+            $this->arrNewTags = array();
+            $this->arrNewTags = explode(',', trim($this->arrFileDatas['FileTags'.$intUploadedFileId.'|||'.$intLanguageId]));
+            
+            $this->validateTags();
+            
+            $this->objModelTags->deletTypeTags('file', $intUploadedFileId, 1); // TODO : version
+            $this->objModelTags->addTypeTags('file', $this->arrNewTagIds, $intUploadedFileId, 1); // TODO : version
           }
         }
       }
@@ -217,6 +240,7 @@ class File {
     	$arrMetaData = array();
 
       $this->getModelFile();
+      $this->getModelTags();
 
       $strTmpEditFileIds = trim($this->arrFileDatas['EditFileIds'], '[]');
       $arrEditFileIds = array();
@@ -237,6 +261,17 @@ class File {
           
             if($intNumOfEffectedRows == 0){
               $this->saveFileData($arrEditFileIds);   
+            }else{              
+              /**
+               * save tags (quick&dirty solution)
+               */
+              $this->arrNewTags = array();
+              $this->arrNewTags = explode(',', trim($this->arrFileDatas['FileTags'.$intEditFileId.'|||'.$intLanguageId]));
+              
+              $this->validateTags();
+              
+              $this->objModelTags->deletTypeTags('file', $intEditFileId, 1); // TODO : version
+              $this->objModelTags->addTypeTags('file', $this->arrNewTagIds, $intEditFileId, 1); // TODO : version
             }
           }
         }
@@ -387,6 +422,55 @@ class File {
       chgrp($this->getPublicFilePath().$strPathAddon, self::DIRECTORY_GROUP);
     }
   }
+  
+  /**
+   * validateTags
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  private function validateTags(){
+
+    $this->getModelTags();
+    $this->arrNewTagIds = array();    
+
+    /**
+     * get tag ids
+     */
+    foreach($this->arrNewTags as $mixedTag){
+      $mixedTag = trim($mixedTag);
+      if($mixedTag != ''){
+        try{
+          if(is_numeric($mixedTag)){
+            $objTagData = $this->objModelTags->loadTag($mixedTag);
+          }else{
+            $objTagData = $this->objModelTags->loadTagByName($mixedTag);  
+          }          
+
+          /**
+           * if the tag exists
+           */
+          if(count($objTagData) > 0){
+            $objTag = $objTagData->current();
+
+            /**
+             * fill in tagIds array
+             */
+            if(!in_array($objTag->id, $this->arrNewTagIds)) {
+              $this->arrNewTagIds[] = $objTag->id;
+            }
+
+          }else{
+            /**
+             * else, insert new tag
+             */
+            $this->arrNewTagIds[] = $this->objModelTags->addTag($mixedTag);
+          }
+        }catch (PDOException $exc) {
+          $this->core->logger->logException($exc);
+        }
+      }
+    }
+  }
 
   /**
    * getModelFile
@@ -426,6 +510,27 @@ class File {
     }
 
     return $this->objModelUtilities;
+  }
+  
+  /**
+   * getModelTags
+   * @return Model_Tags
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelTags(){
+    if (null === $this->objModelTags) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php';
+      $this->objModelTags = new Model_Tags();
+      $this->objModelTags->setLanguageId($this->core->intLanguageId);
+    }
+
+    return $this->objModelTags;
   }
 
   /**

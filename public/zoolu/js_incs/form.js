@@ -41,7 +41,7 @@ Massiveart.Form = Class.create({
    * save
    */
   save: function(){
-      if($(this.formId)){
+    if($(this.formId)){
       
       /**
        * write/save texteditor content to generic form
@@ -60,13 +60,15 @@ Massiveart.Form = Class.create({
       
       new Ajax.Updater(this.updateContainer, $(this.formId).readAttribute('action'), {
         parameters: serializedForm,
-        evalScripts: true,
-        onComplete: function() {         
+        evalScripts: false,
+        onComplete: function(transport) {
+          //problem: ajax.updater evalScripts = true was too late
+          transport.responseText.evalScripts();
+
           if(this.blnShowFormAlert){
             if($('rootLevelId') && $F('rootLevelId') != '' && $F('rootLevelId') > 0){
               myNavigation.updateNavigationLevel();
             }
-
             //saved
             this.getFormSaveSucces();
 
@@ -80,6 +82,8 @@ Massiveart.Form = Class.create({
           this.loadFileFieldsContent('media');
           // load documents
           this.loadFileFieldsContent('document');
+          // load filter documents
+          this.loadFileFilterFieldsContent('documentFilter');
           // load contacts
           this.loadContactFieldsContent();
 
@@ -109,7 +113,7 @@ Massiveart.Form = Class.create({
       this.getFormSaveLoader();
       
       new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'delete', {
-        parameters: { id: elementId, linkId: linkId },
+        parameters: {id: elementId, linkId: linkId},
         evalScripts: true,
         onComplete: function() {
           //deleted
@@ -178,7 +182,61 @@ Massiveart.Form = Class.create({
       }.bind(this));
     }    
   },
+
+  /**
+   * loadFileFilterFieldsContent
+   * @param string strType
+   */
+  loadFileFilterFieldsContent: function(type){
+    if(type != ''){
+
+      $$('#genFormContainer .'+type).each(function(elDiv){
+        if($(elDiv.id)){
+          var fileFieldId = elDiv.id.substring(elDiv.id.indexOf('_')+1);
+          this.loadFileFilterFieldContetn(fileFieldId, type);
+        }
+      }.bind(this));
+    }
+  },
   
+  /**
+   * loadFileFilterFieldContetn
+   * @param string fieldId
+   * @param string type
+   */
+  loadFileFilterFieldContetn: function(fileFieldId, type){
+    var containerId = type + 'Container_' + fileFieldId;
+
+    if($(containerId)){
+      var viewType = 0;
+      if(type == 'documentFilter'){
+        viewType = 2; // viewtypes->list constant of config.xml
+      }else{
+        viewType = 1; // viewtypes->thumb constant of config.xml
+      }
+
+      if($(fileFieldId + '_Tags') && $(fileFieldId + '_Folders') && $(fileFieldId + '_RootLevel')){
+        $(containerId).innerHTML = '';
+        if(!$F(fileFieldId + '_Tags').blank() && !$F(fileFieldId + '_Folders').blank() || (!$F(fileFieldId + '_RootLevel').blank() && $F(fileFieldId + '_RootLevel') > 0)){
+          myCore.addBusyClass(containerId);
+          new Ajax.Updater(containerId, '/zoolu/cms/page/getfilteredfiles', {
+            parameters: {
+              tagIds: $F(fileFieldId + '_Tags'),
+              folderIds: $F(fileFieldId + '_Folders'),
+              rootLevelId: $F(fileFieldId + '_RootLevel'),
+              fileFieldId: fileFieldId,
+              viewtype: viewType
+            },
+            evalScripts: true,
+            onComplete: function(){
+              myCore.removeBusyClass(containerId);
+            }.bind(this)
+          });
+        }
+      }
+    }
+  },
+
   /**
    * loadContactFieldsContent
    * @param string strType
@@ -257,20 +315,49 @@ Massiveart.Form = Class.create({
       });
     }    
   },
+
+  /**
+   * getDocumentFolderChooserOverlay
+   */
+  getDocumentFolderChooserOverlay: function(areaId, fieldId){
+    $(this.updateOverlayContainer).innerHTML = '';
+    myCore.putCenter('overlayGenContentWrapper');
+    $('overlayGenContentWrapper').show();
+    if($(areaId)){
+      new Ajax.Updater(this.updateOverlayContainer, '/zoolu/core/folder/documentcheckboxtree', {
+        parameters: {rootLevelId: ($(fieldId+'_RootLevel') ? $F(fieldId+'_RootLevel') : -1),
+                      folderIds: ($(fieldId+'_Folders') ? $F(fieldId+'_Folders') : '[]')},
+        evalScripts: true,
+        onComplete: function(){
+          myCore.putOverlayCenter('overlayGenContentWrapper');
+          myOverlay.areaId = areaId;
+          myOverlay.fieldId = fieldId;
+        }
+      });
+    }
+  },
   
   /**
-   * getAddPageTreeOverlay
+   * getAddTreeOverlay
    */
-   getAddPageTreeOverlay: function(areaId){    
+   getAddTreeOverlay: function(areaId){
     $(this.updateOverlayContainer).innerHTML = '';
     myCore.putCenter('overlayGenContentWrapper');
     $('overlayGenContentWrapper').show();    
     if($(areaId)){
+      if(myNavigation.module == 5){ //products
+        ajaxRequestUrl = '/zoolu/products/overlay/producttree';
+        itemAction = 'myOverlay.addProductToListArea';
+      }else{
+        ajaxRequestUrl = '/zoolu/cms/overlay/pagetree';
+        itemAction = 'myOverlay.addPageToListArea';
+      }
+
       var fieldname = areaId.substring(areaId.indexOf('_')+1);
-      new Ajax.Updater(this.updateOverlayContainer, '/zoolu/cms/overlay/pagetree', { 
-        parameters: { portalId: myNavigation.rootLevelId,
-                      itemAction: 'myOverlay.addPageToListArea',
-                      pageIds: $(fieldname).value},
+      new Ajax.Updater(this.updateOverlayContainer, ajaxRequestUrl, {
+        parameters: { portalId: myNavigation.rootLevelId,                      
+                      itemAction: itemAction,
+                      itemIds: $(fieldname).value},
         evalScripts: true,
         onComplete: function(){
           myCore.putOverlayCenter('overlayGenContentWrapper');
@@ -309,7 +396,7 @@ Massiveart.Form = Class.create({
     $('overlayGenContentWrapper').show();    
     if($(fieldId)){
       new Ajax.Updater(this.updateOverlayContainer, '/zoolu/cms/overlay/pagetree', { 
-        parameters: { portalId: myNavigation.rootLevelId },
+        parameters: {portalId: myNavigation.rootLevelId},
         evalScripts: true,
         onComplete: function(){
           myCore.putOverlayCenter('overlayGenContentWrapper');
@@ -323,26 +410,26 @@ Massiveart.Form = Class.create({
   /**
    * removeItem
    */
-  removeItem: function(fieldId, elementId, id){  
+  removeItem: function(fieldId, elementId, id){
     if($(fieldId) && $(elementId)){     
       itemId = $(elementId).readAttribute('fileid');
       if(itemId == null){
-        itemId = $(elementId).readAttribute('pageid');
+        itemId = $(elementId).readAttribute('itemid');
       }
       if($(fieldId).value.indexOf('[' + itemId + ']') > -1){
         $(fieldId).value = $(fieldId).value.replace('[' + itemId + ']', '');
  
         // delete element out of field area (media, doc)
-        $(elementId).fade({ duration: 0.5 });
+        $(elementId).fade({duration: 0.5});
         setTimeout('$(\''+elementId+'\').remove()', 500);
         if($('divMediaContainer_'+fieldId)) new Effect.Highlight('divMediaContainer_'+fieldId, {startcolor: '#ffd300', endcolor: '#ffffff'});
         if($('divDocumentContainer_'+fieldId)) new Effect.Highlight('divDocumentContainer_'+fieldId, {startcolor: '#ffd300', endcolor: '#ffffff'});
         if($('divInternalLinksContainer_'+fieldId)) new Effect.Highlight('divInternalLinksContainer_'+fieldId, {startcolor: '#ffd300', endcolor: '#ffffff'});
         
         // display deleted element in overlay (media, doc)
-        if($('olMediaItem'+id)) $('olMediaItem'+id).appear({ duration: 0.5 });
-        if($('olDocItem'+id)) $('olDocItem'+id).appear({ duration: 0.5 });
-        if($('olPageItem'+id)) $('olPageItem'+id).appear({ duration: 0.5 });
+        if($('olMediaItem'+id)) $('olMediaItem'+id).appear({duration: 0.5});
+        if($('olDocItem'+id)) $('olDocItem'+id).appear({duration: 0.5});
+        if($('olItem'+id)) $('olItem'+id).appear({duration: 0.5});
       }    
     }    
   },
@@ -408,6 +495,7 @@ Massiveart.Form = Class.create({
         formVersion: $F('formVersion'),
         formTypeId: $F('formTypeId'),
         id: $F('id'),
+        linkId: ($('linkId')) ? $F('linkId') : -1,
         languageId: $F('languageId'),
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
@@ -426,6 +514,8 @@ Massiveart.Form = Class.create({
         this.loadFileFieldsContent('media');
         // load documents
         this.loadFileFieldsContent('document');
+        // load filter documents
+        this.loadFileFilterFieldsContent('documentFilter');
         // load contacts
         this.loadContactFieldsContent();
       }.bind(this)
@@ -450,6 +540,7 @@ Massiveart.Form = Class.create({
         formVersion: $F('formVersion'),
         formTypeId: $F('formTypeId'),
         id: $F('id'),
+        linkId: ($('linkId')) ? $F('linkId') : -1,
         languageId: newLanguageId,
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
@@ -466,6 +557,8 @@ Massiveart.Form = Class.create({
         this.loadFileFieldsContent('media');
         // load documents
         this.loadFileFieldsContent('document');
+        // load filter documents
+        this.loadFileFilterFieldsContent('documentFilter');
         // load contacts
         this.loadContactFieldsContent();
       }.bind(this)
@@ -479,7 +572,7 @@ Massiveart.Form = Class.create({
   addRegion: function(regionId){
     
     var arrWidgets = [];
-    $('Region_'+regionId+'_Instances').value.scan(/\[\d*\]/, function(widgets){ arrWidgets.push(widgets[0].gsub(/\[/, '').gsub(/\]/, ''))});
+    $('Region_'+regionId+'_Instances').value.scan(/\[\d*\]/, function(widgets){arrWidgets.push(widgets[0].gsub(/\[/, '').gsub(/\]/, ''))});
     widgetId = Number(arrWidgets[arrWidgets.length - 1]) + 1;
         
     var emptyRegion = $('divRegion_'+regionId+'_REPLACE_n');    
@@ -531,7 +624,7 @@ Massiveart.Form = Class.create({
     regEx = "["+widgetId+"]";    
     $('Region_'+regionId+'_Instances').value = $('Region_'+regionId+'_Instances').value.replace(regEx, '');
     var arrWidgets = [];
-    $('Region_'+regionId+'_Instances').value.scan(/\[\d*\]/, function(widgets){ arrWidgets.push(widgets[0].gsub(/\[/, '').gsub(/\]/, ''))});
+    $('Region_'+regionId+'_Instances').value.scan(/\[\d*\]/, function(widgets){arrWidgets.push(widgets[0].gsub(/\[/, '').gsub(/\]/, ''))});
     
     if(arrWidgets.length == 1){
       if($('divRemoveRegion_'+regionId+'_'+arrWidgets[arrWidgets.length - 1])) $('divRemoveRegion_'+regionId+'_'+arrWidgets[arrWidgets.length - 1]).hide();
@@ -702,7 +795,7 @@ Massiveart.Form = Class.create({
   editUrl: function(elementId){
 	if($(elementId) && $F(elementId) !== ''){
       $(elementId+'_UrlValue').innerHTML = '<input style="width:40%;" id="'+elementId+'_tmpUrl" type="text" value="'+$F(elementId+'_EditableUrl')+'"></input>';
-      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.addUrl(\''+elementId+'\'); return false;">OK</span>';
+      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.addUrl(\''+elementId+'\'); return false;">&Uuml;bernehmen</span>';
       $(elementId+'_tmpUrl').focus();
       this.intValidUrlObserver(elementId+'_tmpUrl', elementId);
 	}
@@ -728,34 +821,38 @@ Massiveart.Form = Class.create({
     	
       $(elementId+'_ToggleUrlHistory').toggle();
 
-      myCore.addBusyClass(elementId+'_ToggleUrlHistory');
-          
-      new Ajax.Updater(elementId+'_ToggleUrlHistory', '/zoolu/core/url/geturlhistory', {
-        parameters:{ 
-          elementId: elementId,
-          pageId: $F('id'),
-          languageId: $F('languageId')
-        },
-        evalScripts: true,
-        onComplete: function(){
-          myCore.removeBusyClass(elementId+'_ToggleUrlHistory');
-   	    }.bind(this)
-      }); 	
+      if($(elementId+'_ToggleUrlHistory').innerHTML.blank() && $(elementId+'_ToggleUrlHistory').getStyle('display') != 'none'){
+        myCore.addBusyClass(elementId+'_ToggleUrlHistory');
+
+        new Ajax.Updater(elementId+'_ToggleUrlHistory', '/zoolu/core/url/geturlhistory', {
+          parameters:{
+            elementId: elementId,
+            id: $F('id'),
+            linkId: ($('linkId') ? $F('linkId') : -1),
+            moduleId: myNavigation.module,
+            languageId: $F('languageId')
+          },
+          evalScripts: true,
+          onComplete: function(){
+            myCore.removeBusyClass(elementId+'_ToggleUrlHistory');
+          }.bind(this)
+        });
+      }
     }
   }, 
   
   /**
    * removeUrlHistoryEntry
    */
-  removeUrlHistoryEntry: function(urlId, pageId, elementId){
-    if(urlId && pageId && elementId){
+  removeUrlHistoryEntry: function(urlId, relationId, elementId){
+    if(urlId && relationId && elementId){
       var Check = confirm("Alte Url unwiederruflich löschen?");
       
       if(Check == true){
         new Ajax.Request('/zoolu/core/url/removeUrlHistoryEntry', {
           parameters:{ 
             urlId: urlId,
-            pageId: pageId
+            relationId: relationId
           },
           evalScripts: true,
           onComplete: function(){
@@ -924,15 +1021,15 @@ Massiveart.Form = Class.create({
     if($(elementId)){
       if($(elementId+'SelectedService') && $(elementId+'User') && $(elementId+'TypeId')){ 	  
     	  
-	    var intIndexType = $(elementId+'TypeId').selectedIndex;
-	    var serviceName = $(elementId+'TypeId').options[intIndexType].text;
-	    var intIndexUser = $(elementId+'User').selectedIndex;
-	    var serviceUser = $(elementId+'User').options[intIndexUser].text;
-	    
-	    $(elementId).value = videoId;
-	    $(elementId+'Thumb').value = $F('thumb_'+elementId+'_'+videoId);
-	    $(elementId+'TypeCur').value = $F(elementId+'TypeId');
-		$(elementId+'UserCur').value = $F(elementId+'User');
+        var intIndexType = $(elementId+'TypeId').selectedIndex;
+        var serviceName = $(elementId+'TypeId').options[intIndexType].text;
+        var intIndexUser = $(elementId+'User').selectedIndex;
+        var serviceUser = $(elementId+'User').options[intIndexUser].text;
+
+        $(elementId).value = videoId;
+        $(elementId+'Thumb').value = $F('thumb_'+elementId+'_'+videoId);
+        $(elementId+'TypeCur').value = $F(elementId+'TypeId');
+        $(elementId+'UserCur').value = $F(elementId+'User');
 			  
         $(elementId+'SelectedService').update(serviceName+'/'+serviceUser);
         $('div_selected'+elementId).update($('div_'+elementId+'_'+videoId).innerHTML);      
@@ -1037,9 +1134,9 @@ Massiveart.Form = Class.create({
    */
   togglePublishDate: function(){
     if($('divPublishDateNew') && $('divPublishDateNew').style.display == 'none'){
-      Effect.SlideDown('divPublishDateNew', { duration: 0.5 });
+      Effect.SlideDown('divPublishDateNew', {duration: 0.5});
     }else{
-      Effect.SlideUp('divPublishDateNew', { duration: 0.5 });
+      Effect.SlideUp('divPublishDateNew', {duration: 0.5});
     }
   },
   
@@ -1081,7 +1178,7 @@ Massiveart.Form = Class.create({
   getFormSaveSucces: function(){
     $('divFormSaveSucces').show();
     $('divFormSaveLoader').hide();
-    $('divFormSaveSucces').fade({ duration: 2 });
+    $('divFormSaveSucces').fade({duration: 2});
   },
   
   /**
@@ -1090,7 +1187,7 @@ Massiveart.Form = Class.create({
   getFormSaveError: function(){
     $('divFormSaveError').show();
     $('divFormSaveLoader').hide();
-    $('divFormSaveError').fade({ duration: 2 });
+    $('divFormSaveError').fade({duration: 2});
   },
   
   /**
@@ -1099,7 +1196,7 @@ Massiveart.Form = Class.create({
   getFormDeleteSucces: function(){
     $('divFormDeleteSucces').show();
     $('divFormSaveLoader').hide();
-    $('divFormDeleteSucces').fade({ duration: 2 });
+    $('divFormDeleteSucces').fade({duration: 2});
   },
   
   /**

@@ -143,23 +143,23 @@ Massiveart.Core = Class.create({
    * hideDeleteAlertMessage
    */
   hideDeleteAlertMessage: function(){
-	if($('buttonOk')) $('buttonOk').stopObserving();
-	if($('buttonCancel')) $('buttonCancel').stopObserving();
-	if($('overlayGenContentWrapper')) $('overlayGenContentWrapper').hide();
-	if($('overlayBlack75')) $('overlayBlack75').hide();
-	if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';	
-	if($('overlayButtons')) $('overlayButtons').hide();
+    if($('buttonOk')) $('buttonOk').stopObserving();
+    if($('buttonCancel')) $('buttonCancel').stopObserving();
+    if($('overlayGenContentWrapper')) $('overlayGenContentWrapper').hide();
+    if($('overlayBlack75')) $('overlayBlack75').hide();
+    if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';
+    if($('overlayButtons')) $('overlayButtons').hide();
   },
   
   /**
    * check
    */
   check: function(value){
-	if(typeof(value) != 'undefined'){
-		this.CHECK = value;
-	}else{
-		this.CHECK = true;
-	}  
+    if(typeof(value) != 'undefined'){
+      this.CHECK = value;
+    }else{
+      this.CHECK = true;
+    }
   },
 
   /**

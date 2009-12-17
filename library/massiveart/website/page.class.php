@@ -111,6 +111,7 @@ class Page {
   protected $intRootLevelId;
   protected $strRootLevelTitle;
   protected $intElementId;
+  protected $intElementLinkId;
   protected $strPageId;
   protected $intPageVersion;
   protected $intLanguageId;
@@ -185,6 +186,7 @@ class Page {
         $this->objGenericData->Setup()->setFormTypeId($objPage->idGenericFormTypes);
         $this->objGenericData->Setup()->setTemplateId($objPage->idTemplates);
         $this->objGenericData->Setup()->setElementId($objPage->id);
+        $this->objGenericData->Setup()->setElementLinkId($this->getElementLinkId());
         $this->objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
         $this->objGenericData->Setup()->setFormLanguageId($this->core->sysConfig->languages->default->id);
         $this->objGenericData->Setup()->setLanguageId($this->intLanguageId);
@@ -321,6 +323,45 @@ class Page {
       if($strFileIds != ''){
         $this->getModelFiles();
         $objFiles = $this->objModelFiles->loadFilesById($strFileIds);
+        return $objFiles;
+      }else{
+        return '';
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+
+  /**
+   * getFileFieldValueById
+   * @param stdClass $objFilter
+   * @return object $objFiles
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getFileFilterFieldValue($objFilters){
+    try{
+      if($objFilters instanceof stdClass){
+
+        $arrTagIds = array();
+        if(array_key_exists('ft'.$this->core->sysConfig->filter_types->tags, $objFilters->filters)){
+          $arrTagIds = $objFilters->filters['ft'.$this->core->sysConfig->filter_types->tags]->referenceIds;
+        }
+
+        $arrFolderIds = array();
+        if(array_key_exists('ft'.$this->core->sysConfig->filter_types->folders, $objFilters->filters)){
+          $arrFolderIds = $objFilters->filters['ft'.$this->core->sysConfig->filter_types->folders]->referenceIds;
+        }
+
+        $intRootLevelId = -1;
+        if(array_key_exists('ft'.$this->core->sysConfig->filter_types->rootLevel, $objFilters->filters)){
+          $intRootLevelId = current($objFilters->filters['ft'.$this->core->sysConfig->filter_types->rootLevel]->referenceIds);
+        }
+
+        $this->getModelFiles();
+        if($intRootLevelId > 0 || count($arrFolderIds) > 0){
+          $objFiles = $this->objModelFiles->loadFilesByFilter($intRootLevelId, $arrTagIds, $arrFolderIds);
+        }
         return $objFiles;
       }else{
         return '';
@@ -1056,6 +1097,22 @@ class Page {
    */
   public function getElementId(){
     return $this->intElementId;
+  }
+
+  /**
+   * setElementLinkId
+   * @param integer $intElementLinkId
+   */
+  public function setElementLinkId($intElementLinkId){
+    $this->intElementLinkId = $intElementLinkId;
+  }
+
+  /**
+   * getElementLinkId
+   * @param integer $intElementLinkId
+   */
+  public function getElementLinkId(){
+    return $this->intElementLinkId;
   }
 
   /**

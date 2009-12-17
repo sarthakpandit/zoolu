@@ -21,7 +21,7 @@ var ResizableTextbox = Class.create({
       'keyup', function() {
         var newsize = that.options.get('step') * $F(this).length;
         if(newsize <= that.options.get('min')) newsize = that.width;
-        if(! ($F(this).length == this.retrieveData('rt-value') || newsize <= that.options.min || newsize >= that.options.max))
+        if(!($F(this).length == this.retrieveData('rt-value') || newsize <= that.options.min || newsize >= that.options.max) && newsize > 0)
           this.setStyle({'width': newsize});
       }).observe('keydown', function() {
         this.cacheData('rt-value', $F(this).length);
@@ -116,8 +116,11 @@ var TextboxList = Class.create({
       this.focus(el);
     }.bind(this));
     this.bits.set(id, text.value);
-    // Dynamic updating... why not?
+    // Dynamic updating... why not?    
     this.update();
+    if(this.element.onchange){
+      this.element.onchange();
+    }
     if(this.options.get('extrainputs') && (this.options.get('startinput') || el.previous())) this.addSmallInput(el,'before');
     return el;
   },
@@ -135,6 +138,9 @@ var TextboxList = Class.create({
     this.bits.unset(el.id);
     // Dynamic updating... why not?
     this.update();
+    if(this.element.onchange){
+      this.element.onchange();
+    }
     if(el.previous() && el.previous().retrieveData('small')) el.previous().remove();
     if(this.current == el) this.focus(el.next());
     if(el.retrieveData('type') == 'box') el.onBoxDispose(this);

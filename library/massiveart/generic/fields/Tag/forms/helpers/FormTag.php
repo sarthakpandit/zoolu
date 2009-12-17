@@ -47,16 +47,16 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
   
   /**
    * formTag
-   * @author Thomas Schedler <tsh@massiveart.com>
    * @param string $name
    * @param string $value
    * @param array $attribs
    * @param mixed $options
    * @param Zend_Db_Table_Rowset $objAllTags
    * @param array $arrTagIds
+   * @author Thomas Schedler <tsh@massiveart.com>  
    * @version 1.0
    */
-  public function formTag($name, $value = null, $attribs = null, $options = null, $objAllTags, $arrTagIds = array()){
+  public function formTag($name, $value = null, $attribs = null, $options = null, $objAllTags, $arrTagIds){
     $info = $this->_getInfo($name, $value, $attribs);
     $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
@@ -71,15 +71,15 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
     // build the element
     $strTags = '';
     
-   if(is_object($value) || is_array($value)){
+    if(is_object($value) || is_array($value)){
       foreach($value as $objTag){
         $strTags .= '<li value="'.$objTag->id.'">'.htmlentities($objTag->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</li>';        
       }
     }
         
-    $strOutput = '<div class="field">
+    $strOutput = '<div>
 	                  <ol>        
-							        <li id="autocompletList" class="input-text">
+							        <li id="autocompletList'.$this->view->escape($id).'" class="autocompletList input-text">
                         <input type="text" value="" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$this->_htmlAttribs($attribs).$endTag.'
 							          <div id="'.$this->view->escape($id).'_autocompleter" class="autocompleter">
 							            <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
@@ -115,7 +115,7 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
       }
       $strAllTags = trim($strAllTags, ',');
       $strAllTags .= '];';
-      $strAllTags .= $strElementId.'_json.each(function(t){'.$strElementId.'_list.autoFeed(t)})';   
+      $strAllTags .= $strElementId.'_json.each(function(t){'.$strElementId.'_list.autoFeed(t)});';
     }
     return $strAllTags;
   }

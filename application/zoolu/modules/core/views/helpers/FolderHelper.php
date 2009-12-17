@@ -61,33 +61,113 @@ class FolderHelper {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getFolderTree($objRowset, $intFolderId) {
-    $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderTree()');
-
+  public function getFolderTree($objRowset, $intFolderId, $strActionKey) {
+    $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderTree()');    
+    
     $strOutput = '';
 
     if(count($objRowset) > 0){
+      
+      $blnShowRootFolder = true;
+      $strJsRootAction = '';
+      switch($strActionKey){
+        case 'MOVE_MEDIA' :
+          $strJsRootAction = 'return false;';
+          $blnShowRootFolder = false;
+          break;
+        default :
+          $strJsRootAction = 'myFolder.selectParentRootFolder('.$objRowset[0]->idRootLevels.'); return false;';
+          $blnShowRootFolder = true;
+          break;
+      }
+      
       $blnFolderChilds = false;
       $intMainFolderDepth = 0;
-      $strOutput .= '<div id="olnavitem'.$objRowset[0]->idRootLevels.'" class="olnavrootitem">
-                       <div style="position:relative;">
-                         <a href="#" onclick="myFolder.selectParentRootFolder('.$objRowset[0]->idRootLevels.'); return false;"><div class="icon img_folder_on"></div>'.htmlentities($objRowset[0]->rootLevelTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
-                       </div>
-                     </div>';
+      if($blnShowRootFolder){
+        $strOutput .= '<div id="olnavitem'.$objRowset[0]->idRootLevels.'" class="olnavrootitem">
+                         <div style="position:relative;">
+                           <a href="#" onclick="'.$strJsRootAction.'"><div class="icon img_folder_on"></div>'.htmlentities($objRowset[0]->rootLevelTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                         </div>
+                       </div>';
+      }
 
       foreach ($objRowset as $objRow){
         if($objRow->id == $intFolderId){
           $intMainFolderDepth = $objRow->depth;
-          $blnFolderChilds = true;
+          
+          switch($strActionKey){
+            case 'MOVE_MEDIA' :
+              $intFolderDepth = $objRow->depth + 1;
+              $blnFolderChilds = false; 
+              $strOutput .= '<div id="olnavitem'.$objRow->id.'" class="olnavrootitem">
+                               <div style="position:relative; padding-left:'.(20*$intFolderDepth).'px">
+                                 <div class="icon img_folder_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div><span style="background-color:#FFD300;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</span>
+                               </div>
+                             </div>';
+              break;
+            default :
+              $blnFolderChilds = true;
+              break;
+          }          
         }else if($blnFolderChilds == false || $objRow->depth <= $intMainFolderDepth){
+          
+          $strJsAction = '';
+          switch($strActionKey){
+            case 'MOVE_MEDIA' :
+              $strJsAction = 'myMedia.selectParentFolder('.$objRow->id.'); return false;';
+              break;
+            default :
+              $strJsAction = 'myFolder.selectParentFolder('.$objRow->id.'); return false;';
+              break;
+          }
+          
           $blnFolderChilds = false;
           $intFolderDepth = $objRow->depth + 1;
           $strOutput .= '<div id="olnavitem'.$objRow->id.'" class="olnavrootitem">
                            <div style="position:relative; padding-left:'.(20*$intFolderDepth).'px">
-                             <a href="#" onclick="myFolder.selectParentFolder('.$objRow->id.'); return false;"><div class="icon img_folder_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                             <a href="#" onclick="'.$strJsAction.'"><div class="icon img_folder_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
                            </div>
                          </div>';
         }
+      }
+    }
+
+    /**
+     * return html output
+     */
+    return $strOutput;
+  }
+
+  /**
+   * getFolderContentList
+   * @param object $objRowset
+   * @param integer $intSelectedFolderId
+   * @param string $strSelectedFolderIds
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getFolderCheckboxTree($objRowset, $intSelectedFolderId, $strSelectedFolderIds){
+    $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderTree()');
+
+    $strOutput = '';
+    
+    if(count($objRowset) > 0){
+
+      $strRootLevelChecked = ($objRowset[0]->idRootLevels == $intSelectedFolderId) ? ' checked="checked"' : '';
+      $strOutput .= '<div id="olnavitem'.$objRowset[0]->idRootLevels.'" class="olnavrootitem">
+                       <div style="position:relative;">
+                         <label style="white-space: nowrap;"><input type="checkbox"'.$strRootLevelChecked.' class="multiCheckbox" value="'.$objRowset[0]->idRootLevels.'" id="rootLevelFolderCheckboxTree" name="rootLevelFolderCheckboxTree"/><span id="rootLevelFolderCheckboxTreeTitle">'.htmlentities($objRowset[0]->rootLevelTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</span></lable>
+                       </div>
+                     </div>';
+
+      foreach ($objRowset as $objRow){
+        $intFolderDepth = $objRow->depth + 1;
+        $strFolderChecked = (strpos($strSelectedFolderIds, '['.$objRow->id.']') !== false) ? ' checked="checked"' : '';
+        $strOutput .= '<div id="olnavitem'.$objRow->id.'" class="olnavrootitem">
+                         <div style="position:relative; padding-left:'.(20*$intFolderDepth).'px">
+                           <label style="white-space: nowrap;"><input type="checkbox"'.$strFolderChecked.' class="multiCheckbox" value="'.$objRow->id.'" id="folderCheckboxTree-'.$objRow->id.'" name="folderCheckboxTree[]"/><span id="folderCheckboxTreeTitle-'.$objRow->id.'">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</span></lable>
+                         </div>
+                       </div>';
       }
     }
 

@@ -681,6 +681,42 @@ class Model_Folders {
   }
 
   /**
+   * loadProductRootLevelChilds
+   * @param integer $intRootLevelId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadProductRootLevelChilds($intRootLevelId){
+    $this->core->logger->debug('core->models->Folders->loadRootLevelChilds('.$intRootLevelId.')');
+
+    $objSelect = $this->getFolderTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objFolderTable, array('folderId' => 'id', 'folderStatus' => 'idStatus', 'depth'))
+              ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND
+                                      folderTitles.version = folders.version AND
+                                      folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'))
+              ->join('products AS lP', 'lP.idParent = folders.id AND
+                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idProduct' => 'id', 'productId', 'isStartProduct'))
+              ->join('productLinks', 'productLinks.idProducts = lP.id', array())
+              ->join('products', 'products.productId = productLinks.productId', array())
+              ->join('productProperties', 'productProperties.productId = products.productId AND 
+                                           productProperties.version = products.version AND
+                                           productProperties.idLanguages = '.$this->intLanguageId, array('productStatus' => 'idStatus'))
+              ->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('productTitle' => 'title'))
+              ->where('folders.idRootLevels = ?', $intRootLevelId)
+              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)')
+              ->order('folders.lft')
+              ->order('products.isStartProduct DESC')
+              ->order('products.sortPosition ASC')
+              ->order('products.sortTimestamp DESC')
+              ->order('products.id ASC');
+
+    return $this->objFolderTable->fetchAll($objSelect);
+  }
+
+  /**
    * loadWebsiteRootLevelChilds
    * @param integer $intRootLevelId
    * @return Zend_Db_Table_Rowset_Abstract

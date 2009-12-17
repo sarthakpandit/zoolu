@@ -98,7 +98,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
            
           $strOutput = '
                   <div class="urlwrapper">
-                    <span class="gray666 bold">Adresse: '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($blnIsStartElement == true) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">Editieren</a></span>
+                    <span class="gray666 bold">Adresse: '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($blnIsStartElement == true) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">Bearbeiten</a></span>
                     <input type="hidden" value="'.$value.'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
                     <input type="hidden" value="'.$strUrlEditable.'" id="'.$this->view->escape($id).'_EditableUrl" name="'.$this->view->escape($name).'_EditableUrl" '.$endTag.'
                   </div>';

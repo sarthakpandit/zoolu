@@ -82,9 +82,18 @@ class Core_FolderController extends AuthControllerAction {
    * @return void
    */
   private function initCommandChain(){
+    $this->core->logger->debug('core->controllers->FolderController->initCommandChain()');
     $this->objCommandChain = new CommandChain();
-    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->portals) $this->objCommandChain->addCommand(new PageCommand());
-    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->products) $this->objCommandChain->addCommand(new ProductCommand());
+
+    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->portals){
+      $this->core->logger->debug('add page command');
+      $this->objCommandChain->addCommand(new PageCommand());
+    }
+
+    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->products){
+      $this->core->logger->debug('add product command!');
+      $this->objCommandChain->addCommand(new ProductCommand());
+    }
   }
 
   /**
@@ -420,8 +429,10 @@ class Core_FolderController extends AuthControllerAction {
 
     $intPortalId = $this->objRequest->getParam('portalId');
     $intFolderId = $this->objRequest->getParam('folderId');
+    $strActionKey = $this->objRequest->getParam('key');
 
     $this->loadFolderTreeForPortal($intPortalId, $intFolderId);
+    $this->view->assign('key', $strActionKey);
     $this->view->assign('overlaytitle', 'Ordner wählen');
   }
 
@@ -442,6 +453,31 @@ class Core_FolderController extends AuthControllerAction {
     $this->view->assign('objFolderContent', $objFolderContent);
     $this->view->assign('intFolderId', $intFolderId);
     $this->view->assign('listTitle', $objFolderContent[0]->folderTitle);
+  }
+
+  /**
+   * documenttreeAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function documentcheckboxtreeAction(){
+    $this->core->logger->debug('core->controllers->FolderController->documentcheckboxtreeAction()');
+
+    $this->getModelFolders();
+    $objMediaRootLevels = $this->objModelFolders->loadAllRootLevels($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->documents);
+
+    if(count($objMediaRootLevels) > 0){
+      $objMediaRootLevel = $objMediaRootLevels->current();
+      $this->intRootLevelId = $objMediaRootLevel->id;
+      $objRootelements = $this->objModelFolders->loadRootLevelFolders($this->intRootLevelId);
+
+      $this->view->assign('elements', $objRootelements);
+      $this->view->assign('rootLevelId', $this->intRootLevelId);
+      $this->view->assign('overlaytitle', 'Ordner w&auml;hlen');
+
+      $this->view->assign('selectedRootLevelId', $this->objRequest->getParam('rootLevelId', -1));
+      $this->view->assign('selectedFolderIds', $this->objRequest->getParam('folderIds', '[]'));
+    }
   }
 
   /**
@@ -486,6 +522,7 @@ class Core_FolderController extends AuthControllerAction {
    * loadFolderTreeForPortal
    * @param integer $intPortalId
    * @param integer $intFolderId
+   * @param string $strJsAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */

@@ -247,7 +247,7 @@ Massiveart.Navigation = Class.create({
     if($(this.preSelectedPortal) && ('naviitem'+rootLevelId) != this.preSelectedPortal){ 
       this.makeDeselected(this.preSelectedPortal);
     }  
-            
+    
     this.preSelectedPortal = 'naviitem'+rootLevelId;
     this.rootLevelId = rootLevelId;
     
@@ -260,16 +260,16 @@ Massiveart.Navigation = Class.create({
     if(Prototype.Browser.IE){
       newNavHeight = $('divNaviCenter').getHeight();
       $$('.navlevel').each(function(elDiv){
-        $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
+        if((newNavHeight-42) > 0) $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
       });
     }
     else if(Prototype.Browser.WebKit){
       newNavHeight = $('divNaviCenter').getHeight();
       $$('.navlevel').each(function(elDiv){
-        $(elDiv).setStyle({height: (newNavHeight-40) + 'px'});
+        if((newNavHeight-40) > 0) $(elDiv).setStyle({height: (newNavHeight-40) + 'px'});
       });
     }          
-        
+    
     new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
       parameters: { 
         rootLevelId: this.rootLevelId,
@@ -356,14 +356,14 @@ Massiveart.Navigation = Class.create({
       new Ajax.Updater('navlevel'+this.currLevel, this.constRequestChildNav, {
         parameters: { 
   	      folderId: this.currItemId,
-	      currLevel: this.currLevel
-	    },      
-	    evalScripts: true,     
-	    onComplete: function() {        
-	      myCore.removeBusyClass('navlevel'+this.currLevel);
-	      this.initFolderHover();
-	      this.initPageHover();
-	      this.initAddMenuHover();
+	        currLevel: this.currLevel
+	      },      
+	      evalScripts: true,     
+	      onComplete: function() {        
+	        myCore.removeBusyClass('navlevel'+this.currLevel);
+	        this.initFolderHover();
+	        this.initPageHover();
+	        this.initAddMenuHover();
           //this.createSortableNavLevel(this.currLevel);
           this.scrollNavigationBar();
           this.updateCurrentFolder();
@@ -882,7 +882,9 @@ Massiveart.Navigation = Class.create({
          // load medias
          myForm.loadFileFieldsContent('media');
          // load documents
-         myForm.loadFileFieldsContent('document');		
+         myForm.loadFileFieldsContent('document');
+         // load filter documents
+         myForm.loadFileFilterFieldsContent('documentFilter');
          // load contacts
          myForm.loadContactFieldsContent();     
        }.bind(this)
