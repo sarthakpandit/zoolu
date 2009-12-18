@@ -482,7 +482,6 @@ class Model_Products {
     $objSelect->where('products.id = (SELECT p.id FROM products AS p WHERE products.productId = p.productId ORDER BY p.version DESC LIMIT 1)');
     $objSelect->order('productInternalLinks.sortPosition ASC');
 
-    echo($objSelect);
     return $this->objProductInternalLinkTable->fetchAll($objSelect);
   }
 
