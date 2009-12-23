@@ -82,6 +82,7 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
           $objProduct = $this->objModelProducts->add($this->setup);
 
           $this->setup->setElementId($objProduct->id);
+          $this->setup->setElementLinkId($objProduct->linkId);
 
           $this->insertCoreData('product', $objProduct->productId, $objProduct->version);
           $this->insertFileData('product', array('Id' => $objProduct->productId, 'Version' => $objProduct->version));

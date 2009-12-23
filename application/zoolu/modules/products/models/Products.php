@@ -237,7 +237,7 @@ class Model_Products {
    * @version 1.0
    */
   public function addLink(&$objProduct){
-    $this->core->logger->debug('products->models->Model_Products->add()');
+    $this->core->logger->debug('products->models->Model_Products->addLink()');
     
     $objProduct->linkProductId = uniqid();
     $objProduct->linkVersion = 1;

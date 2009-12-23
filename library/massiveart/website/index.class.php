@@ -77,6 +77,8 @@ class Index {
       $objPage->setPageId($strPageId);
       $objPage->setPageVersion($intPageVersion);
       $objPage->setLanguageId($intLanguageId);
+      $objPage->setType('page');
+      $objPage->setModelSubPath('cms/models/');
       
       $objPage->loadPage();  
       $objPage->indexPage();

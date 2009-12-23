@@ -554,6 +554,11 @@
         <default_formId>DEFAULT_COLLECTION</default_formId>
         <default_templateId>10</default_templateId>
       </collection>
+      <product_tree>
+        <id>7</id>
+        <default_formId>DEFAULT_PRODUCT_TREE</default_formId>        
+        <default_templateId>13</default_templateId>
+      </product_tree>
     </page_types>
     
     <!-- PAGE TYPES -->
@@ -598,6 +603,7 @@
       <portal_startpage>4</portal_startpage>
       <collection>5</collection>
       <product>6</product>
+      <product_tree>7</product_tree>
     </types>
 
     <!-- URL TYPES -->

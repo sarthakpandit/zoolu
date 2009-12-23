@@ -62,7 +62,7 @@ class Model_Modules {
   }
 
   public function getModules(){
-    $objSelect = $this->getModuleTable()->select();
+    $objSelect = $this->getModuleTable()->select()->where('active = 1');
     $objSelect->order('order');
     return $this->objModuleTable->fetchAll($objSelect);
   }

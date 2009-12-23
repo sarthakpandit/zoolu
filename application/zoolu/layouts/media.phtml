@@ -25,7 +25,7 @@
           </a>
         </div>
         <div class="topright">
-          <div class="faqtitle"><a href="#"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
+          <div class="faqtitle"><a href="http://code.google.com/p/zoolu/issues/list" target="_blank"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
           <div class="faqicon"><img src="/zoolu/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
@@ -209,7 +209,29 @@
           <tr>
             <td class="contentleft"></td>
             <td class="contentcenter">
-              <div id="overlayGenContent" class="overlaycontent">
+              <!-- cotnent -->
+              <div id="overlayGenContent" class="overlaycontent"></div>
+              <!-- buttons -->
+              <div id="overlayButtons" class="overlaycontent" style="display:none;">
+                <div id="buttonOk">
+                  <div class="button25leftOn"></div>
+		              <div class="button25centerOn">
+		                <!-- <img width="13" height="13" src="/zoolu/images/icons/icon_ok_black.png" class="iconok"/> -->
+		                <div>Ok</div>
+		              </div>
+		              <div class="button25rightOn"></div>
+		              <div class="clear"></div>
+                </div>
+                <div id="buttonCancel">
+                  <div class="button25leftOff"></div>
+		              <div class="button25centerOff">
+		                <!-- <img width="11" height="14" src="/zoolu/images/icons/icon_cancel_white.png" class="iconcancel"/> -->
+		                <div>Abbrechen</div>
+		              </div>
+		              <div class="button25rightOff"></div>
+		              <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
               </div>
             </td>
             <td class="contentright"></td>

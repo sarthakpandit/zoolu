@@ -192,7 +192,7 @@ class Cms_PageController extends AuthControllerAction {
 	    /**
        * update special field values
        */
-      $this->objForm->updateSpecificFieldValuefs();
+      $this->objForm->updateSpecificFieldValues();
 
 	    /**
 	     * get form title
@@ -618,6 +618,10 @@ class Cms_PageController extends AuthControllerAction {
           case $this->core->sysConfig->page_types->collection->id :
             $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->collection->default_formId);
             $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->collection->default_templateId);
+            break;
+          case $this->core->sysConfig->page_types->product_tree->id :
+            $this->objRequest->setParam('formId', '');
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->product_tree->default_templateId);
             break;
         }
       }

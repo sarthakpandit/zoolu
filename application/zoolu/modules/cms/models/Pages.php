@@ -395,7 +395,6 @@ class Model_Pages {
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
     $objSelect->order('pageInternalLinks.sortPosition ASC');
 
-    echo $objSelect;
     return $this->objPageInternalLinksTable->fetchAll($objSelect);
   }
 

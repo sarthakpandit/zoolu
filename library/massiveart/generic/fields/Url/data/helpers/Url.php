@@ -101,7 +101,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       $this->getModelUrls();
 
       $objItemData = $this->objModel->load($intElementId);
-
+            
       if(count($objItemData) > 0){
         $objItem = $objItemData->current();
 
@@ -155,7 +155,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
           
           $this->strUrl = $strParentUrl;
 
-          if($objItem->idParentTypes == $this->core->sysConfig->parent_types->folder){
+          if($objItem->idParentTypes == $this->core->sysConfig->parent_types->folder || $this->objElement->Setup()->getIsStartElement(false) == false){
             
             $objFieldData = $this->objElement->Setup()->getModelGenericForm()->loadFieldsWithPropery($this->core->sysConfig->fields->properties->url_field, $this->objElement->Setup()->getGenFormId());
 

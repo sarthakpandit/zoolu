@@ -200,6 +200,9 @@ class Model_Templates {
       case $this->core->sysConfig->page_types->collection->id:
         $objSelect->where('types.id = ?', $this->core->sysConfig->types->collection);
         break;
+      case $this->core->sysConfig->page_types->product_tree->id:
+        $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_tree);
+        break;
     }
 
     return $this->getTemplateTable()->fetchAll($objSelect);
