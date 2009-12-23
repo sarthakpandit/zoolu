@@ -275,9 +275,9 @@ function get_sidebar_blocks($strContainerClass = 'sidebar', $strBlockClass = 'bl
     if(count($objMyMultiRegion->RegionInstanceIds()) > 0){
       $counter = 0;
       foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
-        $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
-        $strBlockDescription = $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
-        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
+        $strBlockTitle = htmlentities($objMyMultiRegion->getField('sidebar_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
+        $strBlockDescription = $objMyMultiRegion->getField('sidebar_description')->getInstanceValue($intRegionInstanceId);
+        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('sidebar_pics')->getInstanceValue($intRegionInstanceId));
         $counter++;
 
         if(!($strBlockTitle == '' && $strBlockDescription == '')){
@@ -1590,8 +1590,8 @@ function get_sidebar_blocks_cha($strContainerClass = 'divSidebarContainer'){
     if(count($objMyMultiRegion->RegionInstanceIds()) > 0){
       $counter = 0;
       foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
-        $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
-        $strBlockDescription = $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
+        $strBlockTitle = htmlentities($objMyMultiRegion->getField('sidebar_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $core->sysConfig->encoding->default);
+        $strBlockDescription = $objMyMultiRegion->getField('sidebar_description')->getInstanceValue($intRegionInstanceId);
         $counter++;
         if(!($strBlockTitle == '' && $strBlockDescription == '')){
           if($counter == 1) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';

@@ -645,7 +645,7 @@ class Products_ProductController extends AuthControllerAction {
           case $this->core->sysConfig->product_types->overview->id :
             $this->objRequest->setParam('formId', '');
             $this->objRequest->setParam('templateId', $this->core->sysConfig->product_types->overview->default_templateId);
-            break;          
+            break;         
         }
       }
 

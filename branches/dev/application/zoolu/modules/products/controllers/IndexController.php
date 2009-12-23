@@ -47,7 +47,7 @@ class Products_IndexController extends AuthControllerAction {
    */
   public function indexAction(){
     $this->_helper->viewRenderer->setNoRender(true);
-    $this->_forward('list');
+    $this->_forward('tree');
   }
 
   /**

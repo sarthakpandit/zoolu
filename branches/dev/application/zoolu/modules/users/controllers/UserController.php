@@ -185,6 +185,7 @@ class Users_UserController extends Zend_Controller_Action {
           $arrFormData['idLanguages'] = $arrFormData['language'];
           unset($arrFormData['language']);
           unset($arrFormData['passwordConfirmation']);
+          unset($arrFormData['_']);
 
           $arrUserGroups = array();
           if(array_key_exists('groups', $arrFormData)){
@@ -284,6 +285,7 @@ class Users_UserController extends Zend_Controller_Action {
           unset($arrFormData['language']);
           unset($arrFormData['id']);
           unset($arrFormData['passwordConfirmation']);
+          unset($arrFormData['_']);
 
           $arrUserGroups = array();
           if(array_key_exists('groups', $arrFormData)){

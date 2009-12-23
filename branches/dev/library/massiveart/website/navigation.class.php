@@ -245,7 +245,7 @@ class Navigation {
                 $objItem->setId($objSubNavigationItem->idPage);
                 $objItem->setParentId($objSubNavigationItem->idFolder);
                 $objItem->setOrder($objSubNavigationItem->pageOrder);
-                $objItem->setItemId($objSubNavigationItem->idPage);
+                $objItem->setItemId($objSubNavigationItem->pageId);
                 $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
               }
             }

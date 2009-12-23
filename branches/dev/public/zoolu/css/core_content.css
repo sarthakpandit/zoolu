@@ -868,12 +868,17 @@ Buttons: Save, Delete */
   width:143px;
 }
 
-.buttoneditmenu {
+.buttoneditmenu,
+.buttoneditmenu2 {
   position:absolute; 
   z-index:300; 
   width:143px; 
   top:27px; 
   left:122px;
+}
+
+.buttoneditmenu2{
+  left:10px;
 }
 
 .buttoneditmenuinner {

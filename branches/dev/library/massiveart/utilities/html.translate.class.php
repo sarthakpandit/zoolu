@@ -55,7 +55,7 @@ class HtmlTranslate extends Zend_Translate {
    * @return string
    */
   public function _($messageId, $htmlEncoded = true, $locale = null) {
-    return ($htmlEncoded == true) ? nl2br(htmlentities(parent::_($messageId, $locale), ENT_COMPAT, Zend_Registry::get('Core')->sysConfig->encoding->default, false)) :  parent::_($messageId, $locale);
+    return ($htmlEncoded == true) ? nl2br(htmlentities(parent::getAdapter()->_($messageId, $locale), ENT_COMPAT, Zend_Registry::get('Core')->sysConfig->encoding->default, false)) : parent::getAdapter()->_($messageId, $locale);
   }
 
 }
