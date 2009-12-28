@@ -68,6 +68,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 	 */
 	public function save() {
 		$this->core->logger->debug('massiveart->generic->data->GenericDataTypeWidget->save()');
+		$this->core->logger->debug('Special Fields: '.count($this->setup->SpecialFields()));
 		try {
 			$this->getModelWidgets()->setLanguage($this->setup->getLanguageId());
 			

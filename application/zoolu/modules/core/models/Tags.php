@@ -113,6 +113,8 @@ class Model_Tags {
    * @version 1.0
    */
   public function addTag($strTag){
+  	$this->core->logger->debug('core->models->Tags->addTag('.$strTag.')');
+  	
     $arrData = array('title' => $strTag);
     return $this->getTagsTable()->insert($arrData);
   }
@@ -127,6 +129,7 @@ class Model_Tags {
    * @version 1.0
    */
   public function addTypeTags($strTagType, $arrTagIds, $strElementId, $intVersion){
+  	$this->core->logger->debug('core->models->Tags->addTypeTags('.$strTagType.', '.$arrTagIds.', '.$strElementId.', '.$intVersion.')');
     if(count($arrTagIds) > 0){
       $this->getTagTypeTable($strTagType);
       $strInstanceField = strtolower($strTagType).'Id';

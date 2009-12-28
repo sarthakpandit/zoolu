@@ -169,6 +169,7 @@ class Blog_FormController extends AuthControllerAction {
 			$arrData = array_merge($this->objRequest->getPost(), $arrData);
 
 			$this->objForm->Setup()->setFieldValues($arrData);
+			$this->objForm->loadFormData();
 			$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 			$this->objForm->prepareForm();
 			
@@ -215,6 +216,7 @@ class Blog_FormController extends AuthControllerAction {
 
 
         if($this->objForm->isValid($arrFormData)){
+        	$this->objForm->saveFormData();
           $this->view->assign('blnShowFormAlert', true);
         }else{
           $this->view->assign('blnShowFormAlert', false);
@@ -226,7 +228,9 @@ class Blog_FormController extends AuthControllerAction {
         $this->objForm->prepareForm();
       }
       
-      $this->objForm->setAction('/zoolu/cms/page/edit');
+      $this->objForm->updateSpecialFieldValues();
+      
+      $this->objForm->setAction('/widget/blog/form/editsubwidget');
       
       $this->setViewMetaInfos();
 
