@@ -59,6 +59,7 @@ class GenericSetup {
 	protected $strFormType;
 	protected $intFormLanguageId;
 	protected $intWidgetInstanceId;
+	protected $strSubwidgetId;
 
 	protected $intRegionId;
 	protected $strRegionTitle;
@@ -183,6 +184,7 @@ class GenericSetup {
   const TYPE_UNIT = 4;
   const TYPE_CONTACT = 5;
   const TYPE_WIDGET = 6;
+  const TYPE_SUBWIDGET = 7; 
 
   /**
    * field type container
@@ -712,6 +714,9 @@ class GenericSetup {
       case GenericSetup::TYPE_WIDGET:
       	require_once(dirname(__FILE__).'/data/types/generic.data.type.widget.class.php');
       	return new GenericDataTypeWidget();
+      case GenericSetup::TYPE_SUBWIDGET:
+      	require_once(dirname(__FILE__).'/data/types/generic.data.type.subwidget.class.php');
+      	return new GenericDataTypeSubwidget();
     }
   }
 
@@ -732,6 +737,8 @@ class GenericSetup {
         return 'category';
       case GenericSetup::TYPE_WIDGET:
       	return 'widget';
+      case GenericSetup::TYPE_SUBWIDGET:
+      	return 'subwidget';
     }
   }
 
@@ -925,6 +932,22 @@ class GenericSetup {
 	 */
 	public function getWidgetInstanceId(){
 		return $this->intWidgetInstanceId;
+	}
+	
+	/**
+	 * setSubwidgetId
+	 * @param string $strSubwidgetId
+	 */
+	public function setSubwidgetId($strSubwidgetId){
+		$this->strSubwidgetId = $strSubwidgetId;
+	}
+	
+	/**
+	 * getSubwidgetId
+	 * @return string
+	 */
+	public function getSubwidgetId(){
+		return $this->strSubwidgetId; 
 	}
 	
 	/**

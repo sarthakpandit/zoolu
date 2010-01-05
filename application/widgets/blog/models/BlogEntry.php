@@ -93,7 +93,7 @@ class Model_BlogEntry {
   public function getBlogEntry($intBlogEntryId) {
   	$objSelect = $this->getBlogEntryTable()->select();
   	$objSelect->setIntegrityCheck(false);
-  	$objSelect->from($this->objBlogEntryTable, array('id', 'widgetInstanceId', 'title', 'text'));
+  	$objSelect->from($this->objBlogEntryTable, array('id', 'widgetInstanceId', 'title', 'text', 'subwidgetId'));
   	$objSelect->where('id = ?', $intBlogEntryId);
   	$objSelect->limit(1);
   	
