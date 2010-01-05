@@ -117,19 +117,29 @@ class Blog_FormController extends AuthControllerAction {
 				
 				if($this->objForm->isValid($arrFormData)) {
 					$this->objForm->setAction('/../widget/blog/form/editsubwidget');
+					$intSubwidgetUnique = uniqid();
 					$arrData = array('widgetInstanceId' => $arrFormData['widgetInstanceId'],
 					                 'title' => $arrFormData['title'],
 					                 'text' => $arrFormData['text'],
 					                 'created' => date('Y-m-d H:m:s', time()),
-					                 'idUsers' => Zend_Auth::getInstance()->getIdentity()->id);
+					                 'idUsers' => Zend_Auth::getInstance()->getIdentity()->id,
+					                 'subwidgetId' => $intSubwidgetUnique);
 					$intSubWidgetId = $this->getModelBlogEntry()->addBlogEntry($arrData);
 					$this->objForm->Setup()->setElementId($intSubWidgetId);
-					$this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
+					$this->objForm->Setup()->setSubwidgetId($intSubwidgetUnique);
+					$this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->add);
 					$this->objForm->getElement('id')->setValue($intSubWidgetId);
 			
 					// Add WidgetForm Url
 					$strSubwidgetUrl = $this->getModelWidgets()->prepareSubwidgetUrl($arrFormData['title'], $arrFormData['widgetInstanceId'], 1);
 					$this->getModelWidgets()->insertWidgetUrl($strSubwidgetUrl, $arrFormData['widgetInstanceId'], '1');
+					
+					if($this->objForm->isValid($arrFormData)){
+	          $this->objForm->saveFormData();
+	          $this->view->assign('blnShowFormAlert', true);
+	        }else{
+	          $this->view->assign('blnShowFormAlert', false);
+	        }
 					
 					$this->view->assign('blnShowFormAlert', true);
 				} else {
@@ -169,6 +179,8 @@ class Blog_FormController extends AuthControllerAction {
 			$arrData = array_merge($this->objRequest->getPost(), $arrData);
 
 			$this->objForm->Setup()->setFieldValues($arrData);
+			$this->objForm->Setup()->setSubwidgetId($arrData['subwidgetId']);
+			
 			$this->objForm->loadFormData();
 			$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 			$this->objForm->prepareForm();
@@ -203,6 +215,10 @@ class Blog_FormController extends AuthControllerAction {
         $arrFormData = $this->objRequest->getPost();
         $this->objForm->Setup()->setFieldValues($arrFormData);
         $this->objForm->Setup()->setElementId($arrFormData['elementId']);
+        
+        $arrOldData = $this->getModelBlogEntry()->getBlogEntry($arrFormData['elementId']);
+        $this->objForm->Setup()->setSubwidgetId($arrOldData['subwidgetId']);
+        
         /**
          * Get the data for the updated entry
          */
