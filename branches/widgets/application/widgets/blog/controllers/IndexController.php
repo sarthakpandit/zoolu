@@ -67,8 +67,7 @@ class Blog_IndexController extends WidgetControllerAction  {
    */
 	public function indexAction() {
 		$this->strTemplateFile = 'index.php';
-		$objEntries = $this->getBlogEntries();
-		
+		$objEntries = $this->getBlogEntriesTable();
 		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
 		
 		// view pagination
@@ -109,7 +108,7 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
   public function viewAction() {
-  	$objBlogEntries = $this->getBlogEntries();
+  	$objBlogEntries = $this->getBlogEntriesTable();
 		
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
@@ -147,12 +146,12 @@ class Blog_IndexController extends WidgetControllerAction  {
   }
   
 	/**
-   * getBlogEntries
+   * getBlogEntriesTable
    * @return Model_BlogEntry
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  protected function getBlogEntries(){
+  protected function getBlogEntriesTable(){
     if (null === $this->objBlogEntries) {
       /**
        * autoload only handles "library" components.

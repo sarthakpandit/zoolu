@@ -153,7 +153,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     }
     
     $this->objWidget = new Widget();    
-    $this->objWidget->setWidgetInstanceId($this->objUrlsData->urlId);
+    $this->objWidget->setWidgetInstanceId($this->objUrlsData->relationId);
     $this->objWidget->setRootLevelTitle($this->objTheme->title);
   }
   

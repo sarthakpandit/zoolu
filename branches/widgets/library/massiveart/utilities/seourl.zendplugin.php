@@ -48,7 +48,7 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 	 * @var Core
 	 */
 	protected $core;
-	
+	//urlId
 	/**
 	 * routeStartup
 	 * @see library/Zend/Controller/Plugin/Zend_Controller_Plugin_Abstract#routeStartup($request)
@@ -56,7 +56,7 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 	 * @version 1.0
 	 */
 	public function routeStartup($request){
-		$this->core = Zend_Registry::get('Core');
+		/*$this->core = Zend_Registry::get('Core');
 		$strUrl = $this->getValidUrl($request->getRequestUri());
 		
 		require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
@@ -65,10 +65,8 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 
 		if(isset($objUrl->idUrlTypes)) {
 			switch($objUrl->idUrlTypes) {
-				/**
-				 * Widgets
-				 */
-				case $this->core->sysConfig->urltypes->widget: {
+				// Widgets
+				case $this->core->sysConfig->url_types->widget: {
 					require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
 					$objModelWidgets = new Model_Widgets();
 					$objModelFolders->setLanguageId($this->intLanguageId);
@@ -100,12 +98,10 @@ class SeoUrlPlugin extends Zend_Controller_Plugin_Abstract{
 					}
 				} break;
 				
-				/**
-				 * load index controller and display page
-				 */
+				// load index controller and display page
 				default: break;
 			}
-    }
+    }*/
 	}
 	
 	/**

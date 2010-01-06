@@ -31,7 +31,7 @@
  */
 
 /**
- * Model_Table_PageUrls
+ * Model_Table_Urls
  * 
  * Version history (please keep backward compatible):
  * 1.0, 2009-02-06: Thomas Schedler
@@ -40,7 +40,7 @@
  * @version 1.0
  */
 
-class Model_Table_PageUrls extends Zend_Db_Table_Abstract {
+class Model_Table_Urls extends Zend_Db_Table_Abstract {
   
   protected $_name = 'urls';
   protected $_primary = 'id';

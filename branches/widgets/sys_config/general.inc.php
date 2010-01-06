@@ -30,8 +30,8 @@ if($sysConfig->show_errors === 'false'){
   error_reporting(0);
   ini_set('display_errors', 0);
 }else{
-  error_reporting(E_ALL);
-  ini_set('display_errors', E_ALL);
+  error_reporting(E_ALL ^ E_DEPRECATED); // hide deprecated warnings (caused by ereg)
+  ini_set('display_errors', E_ALL ^ E_DEPRECATED);
 }
 
 /**

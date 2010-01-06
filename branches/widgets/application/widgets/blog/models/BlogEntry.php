@@ -63,13 +63,16 @@ class Model_BlogEntry {
    * @version 1.0
 	 */
 	public function getBlogEntries($strWidgetInstanceId, $intCount=5) {
+		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntries('.$strWidgetInstanceId.', '.$intCount.')');
+		
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'created', 'created_ts' => 'UNIX_TIMESTAMP(created)', 'text'));
-		$objSelectForm->joinInner('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
-		$objSelectForm->where("widgetInstanceId=?",$strWidgetInstanceId);
-		$objSelectForm->limit($intCount,0);
-		
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'widget_BlogEntries.created', 'created_ts' => 'UNIX_TIMESTAMP(widget_BlogEntries.created)', 'text'));
+		$objSelectForm->join('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
+		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.idEntry', array('url'));
+		$objSelectForm->where("widgetInstanceId = ?", $strWidgetInstanceId);
+		$objSelectForm->limit($intCount, 0);
+
 		return $this->objBlogEntryTable->fetchAll($objSelectForm);
 	}
 	
@@ -80,6 +83,8 @@ class Model_BlogEntry {
    * @version 1.0
    */
   public function addBlogEntry($arrValues) {
+  	$this->core->logger->debug('widgets->blog->Model_BlogEntry->addBlogEntry(array)');
+  	
     return $this->getBlogEntryTable()->insert($arrValues);
   }
   
@@ -109,6 +114,8 @@ class Model_BlogEntry {
    * @version 1.0
    */
   public function getBlogEntryByDateAndTitle($strDate, $strTitle){
+  	$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntryByDateAndTitle('.$strDate.', '.$strTitle.')');
+  	
   	$objSelect = $this->getBlogEntryTable()->select();
   	$objSelect->setIntegrityCheck(false);
   	$objSelect->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'created', 'text'));
@@ -125,7 +132,7 @@ class Model_BlogEntry {
    * @param number $intBlogEntry
    */
   public function editBlogEntry($arrValues, $intBlogEntry) {
-  	$this->core->logger->debug('widgets->blog->Model_Blog->editBlogEntry('.$arrValues.', '.$intBlogEntry.')');
+  	$this->core->logger->debug('widgets->blog->Model_Blog->editBlogEntry(array, '.$intBlogEntry.')');
   	
   	$strWhere = $this->getBlogEntryTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
   	$this->getBlogEntryTable()->update($arrValues, $strWhere);
@@ -151,7 +158,6 @@ class Model_BlogEntry {
    * @version 1.0
    */
   public function getBlogEntryTable(){
-
     if($this->objBlogEntryTable === null) {
       require_once GLOBAL_ROOT_PATH.'application/widgets/blog/models/tables/BlogEntries.php';
       $this->objBlogEntryTable = new Model_Table_BlogEntries();
