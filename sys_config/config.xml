@@ -74,7 +74,7 @@
         <host>localhost</host>
         <username>zoolu</username>
         <password>zoolu</password>
-        <dbname>zoolu</dbname>
+        <dbname>widgets</dbname>
       </params>
     </database>
     
@@ -483,10 +483,10 @@
     
     <!-- URLTYPES -->
     <!-- table: urltypes -->
-    <urltypes>
+    <url_types>
     	<page>1</page>
     	<widget>2</widget>
-    </urltypes>
+    </url_types>
     
     <!-- table: categories / idRootCategory=11, idCategoryTypes=2 -->
     <sort>
