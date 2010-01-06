@@ -213,11 +213,32 @@ class Model_Widgets {
 
     $objSelect->from($this->objUrlTable, array('url'));
     $objSelect->join('languages', 'languages.id = urls.idLanguages', array('languageCode'));
-    $objSelect->where('urls.urlId = ?', $strElementId)
+    $objSelect->where('urls.relationId = ?', $strElementId)
               ->where('urls.version = ?', $intVersion)
               ->where('urls.idLanguages = ?', $this->intLanguageId);
 
     return $this->objUrlTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadWidgetByInstanceId
+   * @param integer $intWidgetInstanceId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadWidgetByInstanceId($intWidgetInstanceId){
+  	$this->core->logger->debug('cms->models->Model_Widgets->loadWidgetByInstanceId('.$intWidgetInstanceId.')');
+  	
+  	$objSelect = $this->getWidgetInstancesTable()->select();
+  	$objSelect->setIntegrityCheck(false);
+  	
+  	$objSelect->from('widgetInstances', array('widgetInstanceTitles.title', 'widgets.name'));
+  	$objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id');
+  	$objSelect->join('widgetInstanceTitles', 'widgetInstances.widgetInstanceId = widgetInstanceTitles.widgetInstanceId', array());
+  	$objSelect->where('widgetInstances.widgetInstanceId = ?', $intWidgetInstanceId);
+
+  	return $this->objWidgetInstancesTable->fetchRow($objSelect);
   }
   
 	/**
@@ -231,20 +252,18 @@ class Model_Widgets {
   public function loadWidgetByUrl($intRootLevelId = 'null', $strUrl){
     $this->core->logger->debug('cms->models->Model_Widgets->loadWidgetByUrl('.$intRootLevelId.', '.$strUrl.')');
 
-    if($intRootLevelId != 'null') {
+    if($intRootLevelId != 'null'){
     	return $this->loadWidgetByUrlAndRootLevel($intRootLevelId, $strUrl);
-	  } else {
-	  	
-	    $objSelect = $this->getUrlTable()->select();
+	  }else{
+	  	$objSelect = $this->getUrlTable()->select();
 	    $objSelect->setIntegrityCheck(false);
 	
 	    $objSelect->from($this->objUrlTable, array('url'));
-	    $objSelect->join('widgetInstances', 'widgetInstances.widgetInstanceId = urls.urlId 
-	    																		 AND widgetInstances.version = urls.version', array('widgetInstanceId'));
-	   $objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id');
-	   $objSelect->join('widgetInstanceTitles', 'widgetInstances.widgetInstanceId = widgetInstanceTitles.widgetInstanceId', array('title'));
-	   $objSelect->where('urls.url = ?', $strUrl)
-	   					 ->where('urls.idLanguages = ?', 1);
+	    $objSelect->join('widgetInstances', 'widgetInstances.widgetInstanceId = urls.relationId AND widgetInstances.version = urls.version', array('widgetInstanceId'));
+	   	$objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id');
+	   	$objSelect->join('widgetInstanceTitles', 'widgetInstances.widgetInstanceId = widgetInstanceTitles.widgetInstanceId', array('title'));
+	   	$objSelect->where('urls.url = ?', $strUrl)
+	   					 	->where('urls.idLanguages = ?', 1);
 	    
 	    return $this->objUrlTable->fetchRow($objSelect);
     }
@@ -261,9 +280,9 @@ class Model_Widgets {
   public function loadWidgetByUrlAndRootLevel($intRootLevelId, $strUrl){
     $this->core->logger->debug('cms->models->Model_Widgets->loadWidgetByUrlAndRootLevel('.$intRootLevelId.', '.$strUrl.')');
 
-    $sqlStmt = $this->core->dbh->query('SELECT urls.urlId, urls.version, urls.idLanguages FROM urls
+    $sqlStmt = $this->core->dbh->query('SELECT urls.relationId, urls.version, urls.idLanguages FROM urls
                                           INNER JOIN widgetInstances ON
-                                            widgetInstances.widgetInstanceId = urls.urlId AND
+                                            widgetInstances.widgetInstanceId = urls.relationId AND
                                             widgetInstances.version = urls.version AND
                                             widgetInstances.idParentTypes = ?
                                           INNER JOIN folders ON
@@ -272,9 +291,9 @@ class Model_Widgets {
                                             urls.idLanguages = ? AND
                                             folders.idRootLevels = ?
                                         UNION
-                                        SELECT urls.urlId, urls.version, urls.idLanguages FROM urls
+                                        SELECT urls.relationId, urls.version, urls.idLanguages FROM urls
                                           INNER JOIN widgetInstances ON
-                                            widgetInstances.widgetInstanceId = urls.urlId AND
+                                            widgetInstances.widgetInstanceId = urls.relationId AND
                                             widgetInstances.version = urls.version AND
                                             widgetInstances.idParentTypes = ?
                                           INNER JOIN rootLevels ON
@@ -329,7 +348,7 @@ class Model_Widgets {
 
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
-    $arrData = array('urlId'       => $strWidgetInstanceId,
+    $arrData = array('relationId'       => $strWidgetInstanceId,
                      'version'     => $intVersion,
                      'idLanguages' => $this->intLanguageId,
                      'url'         => $strUrl,
@@ -458,7 +477,7 @@ class Model_Widgets {
   public function getUrlTable(){
 
     if($this->objUrlTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageUrls.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/Urls.php';
       $this->objUrlTable = new Model_Table_Urls();
     }
 

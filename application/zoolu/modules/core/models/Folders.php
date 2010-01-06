@@ -216,8 +216,8 @@ $this->core->logger->debug(strval($objSelect));
     $sqlStmt = $this->core->dbh->query('SELECT id, title, idStatus, url, pageId, folderId, sortPosition, sortTimestamp, isStartPage, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                         FROM (SELECT DISTINCT folders.id, folderTitles.title, folders.idStatus,
                                                               IF(pages.idPageTypes = ?,
-                                                                 (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.urlId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                                 (SELECT pU.url FROM urls AS pU WHERE pU.urlId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                                 (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
+                                                                 (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
@@ -238,8 +238,8 @@ $this->core->logger->debug(strval($objSelect));
                                               UNION
                                               SELECT DISTINCT pages.id, pageTitles.title, pages.idStatus,
                                                               IF(pages.idPageTypes = ?,
-                                                                 (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.urlId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                                 (SELECT pU.url FROM urls AS pU WHERE pU.urlId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                                 (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
+                                                                 (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
@@ -256,7 +256,7 @@ $this->core->logger->debug(strval($objSelect));
                                                     '.$strPageFilter.'
                                               UNION
 																	            SELECT DISTINCT wi.id, wit.title, -1 AS idStatus, 
-																	            	(SELECT pU.url FROM urls AS pU WHERE pU.urlId = wi.widgetInstanceId AND pU.version = wi.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url, -1 AS tmpVar,
+																	            	(SELECT pU.url FROM urls AS pU WHERE pU.relationId = wi.widgetInstanceId AND pU.version = wi.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url, -1 AS tmpVar,
 																	            	-1 AS folderId, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, -1 AS isStartPage
 																	            FROM widgetInstances wi
 																	            INNER JOIN widgetInstanceTitles wit ON wi.widgetInstanceId = wit.widgetInstanceId
@@ -291,8 +291,8 @@ $this->core->logger->debug(strval($objSelect));
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folders.idParentFolder as parentId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth, folders.sortPosition as folderOrder,
                                                pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
                                                IF(pages.idPageTypes = ?,
-                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.urlId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                  (SELECT pU.url FROM urls AS pU WHERE pU.urlId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
+                                                  (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                           FROM folders
                                             INNER JOIN folderTitles ON
@@ -321,7 +321,7 @@ $this->core->logger->debug(strval($objSelect));
     $sqlStmtWidget = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folders.idParentFolder as parentId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth, folders.sortPosition as folderOrder,
     																					widgetInstances.id AS idWidgetInstance, widgetInstances.widgetInstanceId, widgetInstanceTitles.title AS widgetInstanceTitle, widgetInstances.idStatus AS widgetInstanceStatus, widgetInstances.sortPosition AS widgetInstanceOrder,
     																				(SELECT languageCode FROM languages WHERE id = ?) AS languageCode,
-    																			  (SELECT pU.url FROM urls AS pU WHERE pU.urlId = widgetInstances.widgetInstanceId AND pU.version = widgetInstances.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url
+    																			  (SELECT pU.url FROM urls AS pU WHERE pU.relationId = widgetInstances.widgetInstanceId AND pU.version = widgetInstances.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url
                                           FROM folders
                                             INNER JOIN folderTitles ON
                                               folderTitles.folderId = folders.folderId AND
@@ -360,8 +360,8 @@ $this->core->logger->debug(strval($objSelect));
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folders.idParentFolder as parentId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth, folders.sortPosition as folderOrder,
                                                pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
                                                IF(pages.idPageTypes = ?,
-                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.urlId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
-                                                  (SELECT pU.url FROM urls AS pU WHERE pU.urlId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
+                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
+                                                  (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                           FROM folders
                                             INNER JOIN folderTitles ON
@@ -534,7 +534,7 @@ $this->core->logger->debug(strval($objSelect));
                                               pageTitles.version = pages.version AND
                                               pageTitles.idLanguages = ?
                                             INNER JOIN urls ON
-                                              urls.urlId = pages.pageId AND
+                                              urls.relationId = pages.pageId AND
                                               urls.version = pages.version AND
                                               urls.idLanguages = ?
                                             LEFT JOIN languages  ON
@@ -623,7 +623,7 @@ $this->core->logger->debug(strval($objSelect));
 																			      pageTitles.version = pages.version AND
 																			      pageTitles.idLanguages = ?
 																				  LEFT JOIN urls ON
-																				    urls.urlId = pages.pageId AND
+																				    urls.relationId = pages.pageId AND
 																				    urls.version = pages.version AND
 																				    urls.idLanguages = ?
 																				  LEFT JOIN pageExternals ON
@@ -639,7 +639,7 @@ $this->core->logger->debug(strval($objSelect));
 																			      plTitle.version = pl.version AND
 																			      plTitle.idLanguages = ?
 																			    LEFT JOIN urls AS plUrls ON
-																			      plUrls.urlId = pl.pageId AND
+																			      plurls.relationId = pl.pageId AND
 																			      plUrls.version = pl.version AND
 																			      plUrls.idLanguages = ?
 																				  LEFT JOIN pageExternals AS plExternals ON
@@ -756,7 +756,7 @@ $this->core->logger->debug(strval($objSelect));
                                               pages.idParentTypes = ? AND
                                               pages.sortPosition = 0
                                             INNER JOIN urls ON
-                                              urls.urlId = pages.pageId AND
+                                              urls.relationId = pages.pageId AND
                                               urls.version = pages.version AND
                                               urls.idLanguages = ?
                                             INNER JOIN folderTitles ON
@@ -1139,7 +1139,7 @@ ORDER BY sort, url DESC LIMIT 1*/
   public function getUrlTable(){
 
     if($this->objUrlTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageUrls.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/Urls.php';
       $this->objUrlTable = new Model_Table_Urls();
     }
 

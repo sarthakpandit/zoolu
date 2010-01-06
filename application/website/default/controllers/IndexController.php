@@ -63,26 +63,27 @@ class IndexController extends Zend_Controller_Action {
   private $objModelFolders;
 
   /**
+   * @var Model_Urls
+   */
+  private $objModelUrls;
+  
+  /**
    * @var Zend_Cache_Frontend_Output
    */
   private $objCache;
 
   /**
+   * @var Zend_Db_Table_Row_Abstract
+   */
+  private $objUrlsData;
+  
+  /**
    * @var Page
    */
   private $objPage;
   private $objWidget;
-
   private $blnCachingStart = false;
-
-  /**
-   * @var integer
-   */
   private $intLanguageId;
-
-  /**
-   * @var string
-   */
   private $strLanguageCode;
 
   /**
@@ -159,94 +160,134 @@ class IndexController extends Zend_Controller_Action {
       $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
     }
 
+    $this->getModelUrls();
     $this->getModelFolders();
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
 
+    $this->objUrlsData = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 
-    $arrFrontendOptions = array(
-      'lifetime' => 604800, // cache lifetime (in seconds), if set to null, the cache is valid forever.
-      'automatic_serialization' => true
-    );
-
-    $arrBackendOptions = array(
-      'cache_dir' => GLOBAL_ROOT_PATH.'tmp/cache/pages/' // Directory where to put the cache files
-    );
-
-    // getting a Zend_Cache_Core object
-    $this->objCache = Zend_Cache::factory('Output',
-                                          'File',
-                                          $arrFrontendOptions,
-                                          $arrBackendOptions);
-
-    $strCacheId = 'page_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
-    if($this->core->sysConfig->cache->page == 'false' ||
-       ($this->core->sysConfig->cache->page == 'true' && $this->objCache->test($strCacheId) == false) ||
-       ($this->core->sysConfig->cache->page == 'true' && isset($_SESSION['sesTestMode']))){
-
-      $objNavigation = new Navigation();
+    if(count($this->objUrlsData) > 0){
+    	$objUrlData = $this->objUrlsData->current();
+    	
+      switch($objUrlData->idUrlTypes) {
+      	
+      	// UrlType: Widget
+      	case $this->core->sysConfig->url_types->widget: {
+       		$this->getModelWidgets();
+        	$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
+					
+        	$objWidget = new Widget();
+					$objWidget->setWidgetInstanceId($objUrlData->relationId);
+					$objWidget->setWidgetName($objWidgetInstance->name);
+					$objWidget->setNavigationUrl((parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
+					$objWidget->setWidgetTitle($objWidgetInstance->title);
+					$objWidget->setRootLevelTitle($objTheme->title);
+					$objWidget->setWidgetVersion($objUrlData->version);
+					Zend_Registry::set('Widget', $objWidget);
+					$this->_forward('index','index',$objWidgetInstance->name);
+      	} break;
+      	
+				// Url Type: page
+			  case $this->core->sysConfig->url_types->page: {    
+		    
+		  		$arrFrontendOptions = array(
+			      'lifetime' => 604800, // cache lifetime (in seconds), if set to null, the cache is valid forever.
+			      'automatic_serialization' => true
+			    );
+			
+			    $arrBackendOptions = array(
+			      'cache_dir' => GLOBAL_ROOT_PATH.'tmp/cache/pages/' // Directory where to put the cache files
+			    );
+			
+			    // getting a Zend_Cache_Core object
+			    $this->objCache = Zend_Cache::factory('Output',
+			                                          'File',
+			                                          $arrFrontendOptions,
+			                                          $arrBackendOptions);
+			
+			    $strCacheId = 'page_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
+			    if($this->core->sysConfig->cache->page == 'false' ||
+			       ($this->core->sysConfig->cache->page == 'true' && $this->objCache->test($strCacheId) == false) ||
+			       ($this->core->sysConfig->cache->page == 'true' && isset($_SESSION['sesTestMode']))){
+			
+			      $objNavigation = new Navigation();
+			      $objNavigation->setRootLevelId($objTheme->idRootLevels);
+			      $objNavigation->setLanguageId($this->intLanguageId);
+			
+			      require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
+			      Zend_Registry::set('Navigation', $objNavigation);
+			
+			      $this->getModelPages();
+			      $this->objUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl);
+			      
+			      foreach($this->objUrlsData as $objPageData){
+			        $this->objUrlsData = $objPageData;
+			      }
+			      	
+			      if(count($this->objUrlsData) > 0){
+			
+			        $this->core->logger->debug('Cache: '.$this->core->sysConfig->cache->page);
+			        if($this->core->sysConfig->cache->page == 'true' && !isset($_SESSION['sesTestMode'])){
+			          $this->core->logger->debug('Start caching...');
+			          $this->objCache->start($strCacheId);
+			          $this->blnCachingStart = true;
+			        }
+			        
+			        $this->objPage = new Page();
+			        $this->objPage->setRootLevelId($objTheme->idRootLevels);
+			        $this->objPage->setRootLevelTitle($objTheme->title);
+			        $this->objPage->setPageId($this->objUrlsData->relationId);
+			        $this->objPage->setPageVersion($this->objUrlsData->version);
+			        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
+			
+			        $this->objPage->loadPage();
+			        
+			        /**
+			         * set values for replacers
+			         */
+			        Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
+			        Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
+			
+			        $objNavigation->setPage($this->objPage);
+			
+			        /**
+			         * get page template filename
+			         */
+			        $this->view->template = $this->objPage->getTemplateFile();
+			
+			        $this->view->intRootLevelId = $this->objPage->getRootLevelId();
+			        //$this->view->strRootLevelUrl = $this->core->sysConfig->url->base;
+			        $this->view->publisher = $this->objPage->getPublisherName();
+			        $this->view->publishdate = $this->objPage->getPublishDate();
+			
+			        Zend_Registry::set('Page', $this->objPage);
+			        require_once(dirname(__FILE__).'/../helpers/page.inc.php');
+			        
+			        $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+			        $this->renderScript('master.php');
+			
+			      }else{
+			      	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+			        $this->renderScript('error-404.php');
+			      }
+			    }else{
+			      $this->_helper->viewRenderer->setNoRender();
+			      echo $this->objCache->load($strCacheId);
+			    }
+	    // end page type
+    	}
+  	}
+		//end if type
+    } else {
+    	$objNavigation = new Navigation();
       $objNavigation->setRootLevelId($objTheme->idRootLevels);
       $objNavigation->setLanguageId($this->intLanguageId);
-
       require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
       Zend_Registry::set('Navigation', $objNavigation);
-
-      $this->getModelPages();
-      $this->objUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl);
-      
-      foreach($this->objUrlsData as $objPageData){
-        $this->objUrlsData = $objPageData;
-      }
-      	
-      if(count($this->objUrlsData) > 0){
-
-        $this->core->logger->debug('Cache: '.$this->core->sysConfig->cache->page);
-        if($this->core->sysConfig->cache->page == 'true' && !isset($_SESSION['sesTestMode'])){
-          $this->core->logger->debug('Start caching...');
-          $this->objCache->start($strCacheId);
-          $this->blnCachingStart = true;
-        }
-        
-        $this->objPage = new Page();
-        $this->objPage->setRootLevelId($objTheme->idRootLevels);
-        $this->objPage->setRootLevelTitle($objTheme->title);
-        $this->objPage->setPageId($this->objUrlsData->urlId);
-        $this->objPage->setPageVersion($this->objUrlsData->version);
-        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
-
-        $this->objPage->loadPage();
-        
-        /**
-         * set values for replacers
-         */
-        Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
-        Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
-
-        $objNavigation->setPage($this->objPage);
-
-        /**
-         * get page template filename
-         */
-        $this->view->template = $this->objPage->getTemplateFile();
-
-        $this->view->intRootLevelId = $this->objPage->getRootLevelId();
-        //$this->view->strRootLevelUrl = $this->core->sysConfig->url->base;
-        $this->view->publisher = $this->objPage->getPublisherName();
-        $this->view->publishdate = $this->objPage->getPublishDate();
-
-        Zend_Registry::set('Page', $this->objPage);
-        require_once(dirname(__FILE__).'/../helpers/page.inc.php');
-        
-        $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
-        $this->renderScript('master.php');
-
-      }else{
-      	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
-        $this->renderScript('error-404.php');
-      }
-    }else{
-      $this->_helper->viewRenderer->setNoRender();
-      echo $this->objCache->load($strCacheId);
-    } 
+    	
+    	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+      $this->renderScript('error-404.php');
+    }
   }
 
   /**
@@ -270,7 +311,26 @@ class IndexController extends Zend_Controller_Action {
     return $this->objModelPages;
   }
   
+	/**
+   * getModelUrls
+   * @return Model_Urls
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUrls(){
+    if (null === $this->objModelUrls) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Urls.php';
+      $this->objModelUrls = new Model_Urls();
+      $this->objModelUrls->setLanguageId($this->intLanguageId);
+    }
 
+    return $this->objModelUrls;
+  }
 
   /**
    * getModelFolders
@@ -291,6 +351,27 @@ class IndexController extends Zend_Controller_Action {
     }
 
     return $this->objModelFolders;
+  }
+  
+	/**
+   * getModelWidgets
+   * @return Model_Widgets
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelWidgets(){
+    if (null === $this->objModelWidgets) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
+      $this->objModelWidgets = new Model_Widgets();
+      $this->objModelWidgets->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelWidgets;
   }
 }
 ?>
