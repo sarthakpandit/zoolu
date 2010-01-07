@@ -1156,7 +1156,7 @@ class Model_Pages {
   public function getPageUrlTable(){
 
     if($this->objPageUrlTable === null) {
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageUrls.php';
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/Urls.php';
       $this->objPageUrlTable = new Model_Table_Urls();
     }
 

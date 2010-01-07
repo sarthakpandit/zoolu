@@ -69,7 +69,7 @@ class Model_BlogEntry {
 		$objSelectForm->setIntegrityCheck(false);
 		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'widget_BlogEntries.created', 'created_ts' => 'UNIX_TIMESTAMP(widget_BlogEntries.created)', 'text'));
 		$objSelectForm->join('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
-		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.idEntry', array('url'));
+		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.widgetInstanceId', array('url'));
 		$objSelectForm->where("widgetInstanceId = ?", $strWidgetInstanceId);
 		$objSelectForm->limit($intCount, 0);
 
