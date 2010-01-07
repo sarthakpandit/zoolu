@@ -174,7 +174,8 @@ class IndexController extends Zend_Controller_Action {
       	// UrlType: Widget
       	case $this->core->sysConfig->url_types->widget: {
        		$this->getModelWidgets();
-        	$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
+       		echo var_dump($objUrlData);
+        	/*$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
 					
         	$objWidget = new Widget();
 					$objWidget->setWidgetInstanceId($objUrlData->relationId);
@@ -184,7 +185,18 @@ class IndexController extends Zend_Controller_Action {
 					$objWidget->setRootLevelTitle($objTheme->title);
 					$objWidget->setWidgetVersion($objUrlData->version);
 					Zend_Registry::set('Widget', $objWidget);
-					$this->_forward('index','index',$objWidgetInstance->name);
+					$this->_forward('index','index',$objWidgetInstance->name);*/
+       		
+       		// debug output
+       		$objNavigation = new Navigation();
+		      $objNavigation->setRootLevelId($objTheme->idRootLevels);
+		      $objNavigation->setLanguageId($this->intLanguageId);
+		      require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
+		      Zend_Registry::set('Navigation', $objNavigation);  	
+		    	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+		      $this->renderScript('error-404.php');
+		      // debug output end
+		      
       	} break;
       	
 				// Url Type: page
