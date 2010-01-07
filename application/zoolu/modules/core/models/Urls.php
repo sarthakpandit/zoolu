@@ -126,17 +126,16 @@ class Model_Urls {
     $objWidgetSelect->where('urls.url = ?', $strUrl)
                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->widget)
                     ->where('urls.idLanguages = ?', $this->intLanguageId);
-                     
-		//not implemented yet (copied from dev branch)
-    /*$objProductSelect = $this->core->dbh->select();
-    $objProductSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
-    $objProductSelect->join('products', 'products.productId = urls.relationId AND products.version = urls.version', array());
-    $objProductSelect->where('urls.url = ?', $strUrl)
-                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->product)
-                     ->where('urls.idLanguages = ?', $this->intLanguageId);*/
-					              
+
+    $objSubWidgetSelect = $this->core->dbh->select();
+		$objSubWidgetSelect->from('urls', array('relationId' => 'urls.relationId', 'urls.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
+    $objSubWidgetSelect->join('widgetInstances', 'urls.idParent = widgetInstances.widgetInstanceId', array());
+		$objSubWidgetSelect->where('urls.url = ?', $strUrl)
+                    	 ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->widget)
+                    	 ->where('urls.idLanguages = ?', $this->intLanguageId);
+
     $objSelect = $this->getUrlTable()->select()
-                                     ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objWidgetSelect));
+                                     ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objWidgetSelect, $objSubWidgetSelect));
                                                                
   	return $this->objUrlTable->fetchAll($objSelect);
   }
