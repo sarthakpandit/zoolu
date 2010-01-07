@@ -256,7 +256,7 @@ class Navigation {
 	                $objItem->setItemId($objSubNavigationItem->idPage);
               	}
               }
-              $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
+              if(isset($objItem)) $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
             }
           }else{            
             if($intTreeId != $objSubNavigationItem->idFolder){
