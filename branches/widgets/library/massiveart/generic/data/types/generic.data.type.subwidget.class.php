@@ -55,6 +55,16 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 		
 		$intSubwidgetVersion = 0;
 		
+		switch($this->setup->getActionType()) {
+			case $this->core->sysConfig->generic->actions->add:
+				//FIXME Categories have to work!
+				$this->insertMultiFieldData('subwidget', array('Id' => $this->Setup()->getSubwidgetId(), 'Version' => $intSubwidgetVersion));
+				break;
+			case $this->core->sysConfig->generic->actions->edit:
+				
+				break;
+		}
+		
 		if(count($this->setup->SpecialFields()) > 0) {
 			foreach($this->setup->SpecialFields() as $objField) {
 				$objField->setGenericSetup($this->setup);
