@@ -129,14 +129,13 @@ class Model_Urls {
 
     $objSubWidgetSelect = $this->core->dbh->select();
 		$objSubWidgetSelect->from('urls', array('relationId' => 'urls.relationId', 'urls.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
-    $objSubWidgetSelect->join('widgetInstances', 'urls.idParent = widgetInstances.widgetInstanceId', array());
 		$objSubWidgetSelect->where('urls.url = ?', $strUrl)
                     	 ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->widget)
                     	 ->where('urls.idLanguages = ?', $this->intLanguageId);
 
     $objSelect = $this->getUrlTable()->select()
                                      ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objWidgetSelect, $objSubWidgetSelect));
-                                                               
+                                                          
   	return $this->objUrlTable->fetchAll($objSelect);
   }
   

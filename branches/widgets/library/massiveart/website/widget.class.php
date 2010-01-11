@@ -64,6 +64,29 @@ class Widget{
   protected $strWidgetName;
   protected $strWidgetTitle;
   
+  protected $strUrlParentId;
+  
+  
+	/**
+   * setUrlParentId
+   * @param $strUrlParentId
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function setUrlParentId($strUrlParentId){
+  	$this->strUrlParentId = $strUrlParentId;
+  }
+  
+	/**
+   * getUrlParentId
+   * @return $strUrlParentId
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+	public function getUrlParentId(){
+  	return $this->strUrlParentId;
+  }
+  
   /**
    * setRootLevelId
    * @param $intRootLevelId

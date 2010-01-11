@@ -73,7 +73,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 		// view pagination
 		$page=$this->_getParam('page',1);
     $paginator = Zend_Paginator::factory($objEntry);
-    $paginator->setItemCountPerPage(2);
+    $paginator->setItemCountPerPage(1);
     $paginator->setCurrentPageNumber($page);
     $this->view->paginator=$paginator;
 		
@@ -107,8 +107,12 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  public function viewAction() {
+  public function viewAction() {  	
   	$objBlogEntries = $this->getBlogEntriesTable();
+  	$objEntry = $objBlogEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), '1');
+  	$this->view->assign('objEntry',$objEntry[0]);
+  	
+  	/*
 		
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
@@ -127,7 +131,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 		 	}
   	} else {
   		$this->view->form = $form;
-  	}
+  	}*/
   }
   
   /**
