@@ -173,29 +173,30 @@ class IndexController extends Zend_Controller_Action {
       	
       	// UrlType: Widget
       	case $this->core->sysConfig->url_types->widget: {
+      		$objWidget = new Widget();
        		$this->getModelWidgets();
-       		echo var_dump($objUrlData);
-        	/*$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
-					
-        	$objWidget = new Widget();
-					$objWidget->setWidgetInstanceId($objUrlData->relationId);
+       		
+       		if($objUrlData->idParent) {
+        		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->idParent);
+        		$objWidget->setWidgetInstanceId($objUrlData->idParent);
+        		$objWidget->setAction('view');
+       		} else {
+       			$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
+       			$objWidget->setWidgetInstanceId($objUrlData->relationId);
+       			$objWidget->setAction('index');
+       		}
+       		
 					$objWidget->setWidgetName($objWidgetInstance->name);
 					$objWidget->setNavigationUrl((parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 					$objWidget->setWidgetTitle($objWidgetInstance->title);
 					$objWidget->setRootLevelTitle($objTheme->title);
+					$objWidget->setRootLevelId($objTheme->idRootLevels);
 					$objWidget->setWidgetVersion($objUrlData->version);
+					$objWidget->setLanguageId($objUrlData->idLanguages);
+					$objWidget->setUrlParentId($objUrlData->idParent);
+
 					Zend_Registry::set('Widget', $objWidget);
-					$this->_forward('index','index',$objWidgetInstance->name);*/
-       		
-       		// debug output
-       		$objNavigation = new Navigation();
-		      $objNavigation->setRootLevelId($objTheme->idRootLevels);
-		      $objNavigation->setLanguageId($this->intLanguageId);
-		      require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
-		      Zend_Registry::set('Navigation', $objNavigation);  	
-		    	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
-		      $this->renderScript('error-404.php');
-		      // debug output end
+					$this->_forward($objWidget->getAction(),'index',$objWidgetInstance->name);
 		      
       	} break;
       	

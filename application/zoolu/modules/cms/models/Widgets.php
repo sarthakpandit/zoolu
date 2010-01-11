@@ -425,14 +425,6 @@ class Model_Widgets {
   }
 	
 	/**
-	 * setLanguage
-	 * @param number $intLanguageId
-	 */
-	public function setLanguage($intLanguageId) {
-		$this->intLanguageId = $intLanguageId;
-	}
-	
-	/**
    * makeUrlConform()
    * @param string $strUrlPart
    * @author Thomas Schedler <tsh@massiveart.com>

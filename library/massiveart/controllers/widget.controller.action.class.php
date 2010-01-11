@@ -144,17 +144,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     // Get the theme for this domain
     $this->getModelFolders();
     $this->objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
-    
-    // Load Widget object by given URL
-  	$this->getModelWidgets();
-    $this->objUrlsData = $this->objModelWidgets->loadWidgetByUrl($this->objTheme->idRootLevels, Zend_Registry::get('Widget')->getNavigationUrl());
-    foreach($this->objUrlsData as $objPageData){
-      $this->objUrlsData = $objPageData;
-    }
-    
-    $this->objWidget = new Widget();    
-    $this->objWidget->setWidgetInstanceId($this->objUrlsData->relationId);
-    $this->objWidget->setRootLevelTitle($this->objTheme->title);
+    $this->objWidget = Zend_Registry::get('Widget');
   }
   
   /**
@@ -175,15 +165,9 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/navigation.inc.php';
     Zend_Registry::set('Navigation', $objNavigation);
-
-    $this->objWidget->setRootLevelId($this->objTheme->idRootLevels);
-    $this->objWidget->setRootLevelTitle($this->objTheme->title);
-    $this->objWidget->setWidgetVersion($this->objUrlsData->version);
-    $this->objWidget->setLanguageId($this->objUrlsData->idLanguages);
-    $this->objWidget->setTemplateFile($this->strTemplateFile);
-    $this->objWidget->setAction($this->strWidgetParams[0]);
-    $this->objWidget->setWidgetName(Zend_Registry::get('Widget')->getWidgetName());
     
+    $this->objWidget->setTemplateFile($this->strTemplateFile);
+
     /**
      * set values for replacers
      */
@@ -359,7 +343,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
       $this->objModelWidgets = new Model_Widgets();
       $this->objModelWidgets->setLanguageId($this->intLanguageId);
     }
-
+   
     return $this->objModelWidgets;
   }
 }
