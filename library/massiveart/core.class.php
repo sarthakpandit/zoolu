@@ -239,6 +239,8 @@ class Core {
        	$this->dbh->getConnection();
 
        	$this->dbh->exec('SET CHARACTER SET '.$this->sysConfig->encoding->db);
+       	
+       	Zend_Db_Table::setDefaultAdapter($this->dbh);
 
        	/**
        	 * using a default metadata cache for all table objects
@@ -272,8 +274,6 @@ class Core {
          * set the cache to be used with all table objects
          */
         Zend_Db_Table_Abstract::setDefaultMetadataCache($objCache);
-
-       	Zend_Db_Table::setDefaultAdapter($this->dbh);
 
       } catch (Zend_Db_Adapter_Exception $exc) {
         $this->logger->err($exc);

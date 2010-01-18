@@ -43,6 +43,11 @@
 class Model_Products {
 
   private $intLanguageId;
+  
+  /**
+   * @var Model_Folders
+   */
+  protected $objModelFolders;
 
   /**
    * @var Model_Table_Products
@@ -63,11 +68,6 @@ class Model_Products {
    * @var Model_Table_ProductLinks
    */
   protected $objProductLinkTable;
-
-  /**
-   * @var Model_Folders
-   */
-  protected $objModelFolders;
 
   /**
    * @var Model_Table_ProductInternalLinks

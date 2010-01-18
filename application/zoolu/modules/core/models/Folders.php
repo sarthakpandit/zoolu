@@ -169,19 +169,22 @@ class Model_Folders {
 																				      WHERE folders.idRootLevels = ? AND
 																				            folders.idParentFolder = 0
 																	            UNION
-																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pages.idTemplates  AS templateId, -1 AS folderType, pages.idPageTypes AS pageType, pageTypes.title As type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pages.idStatus,
+																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pageProperties.idTemplates  AS templateId, -1 AS folderType, pageProperties.idPageTypes AS pageType, pageTypes.title As type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pageProperties.idStatus,
 																	                   (SELECT pt.title FROM pageLinks, pages AS p LEFT JOIN pageTitles AS pt ON pt.pageId = p.pageId AND pt.version = p.version AND pt.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1) AS pageLinkTitle
 																	            FROM pages
+																	            INNER JOIN pageProperties ON pageProperties.pageId = pages.pageId 
+																	             AND pageProperties.version = pages.version 
+																	             AND pageProperties.idLanguages = ?
 																	            LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
 																	              AND pageTitles.version = pages.version
 																	              AND pageTitles.idLanguages = ?
-																	            INNER JOIN pageTypes ON pageTypes.id = pages.idPageTypes
-																	            INNER JOIN genericForms ON genericForms.id = pages.idGenericForms
+																	            INNER JOIN pageTypes ON pageTypes.id = pageProperties.idPageTypes
+																	            INNER JOIN genericForms ON genericForms.id = pageProperties.idGenericForms
 																	            WHERE pages.idParent = ?
 																	              AND pages.idParentTypes = ?
 																	              AND pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1))
 																	      AS tbl
-																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intRootId, $this->intLanguageId, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
+																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intRootId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -275,15 +278,15 @@ class Model_Folders {
     $strPageFilter = '';
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $strFolderFilter = 'AND folders.idStatus = '.$this->core->sysConfig->status->live;
-      $strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
+      $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
     }
 
     $sqlStmt = $this->core->dbh->query('SELECT id, title, idStatus, url, pageId, folderId, sortPosition, sortTimestamp, isStartPage, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                         FROM (SELECT DISTINCT folders.id, folderTitles.title, folders.idStatus,
-                                                              IF(pages.idPageTypes = ?,
+                                                              IF(pageProperties.idPageTypes = ?,
                                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 ORDER BY pU.version DESC LIMIT 1)) AS url,
-                                                              IF(pages.idPageTypes = ?,
+                                                              IF(pageProperties.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
                                                               folders.folderId, folders.sortPosition, folders.sortTimestamp, -1 AS isStartPage
@@ -296,31 +299,39 @@ class Model_Folders {
                                                 pages.idParent = folders.id AND
                                                 pages.idParentTypes = ? AND
                                                 pages.isStartPage = 1
+                                              INNER JOIN pageProperties ON 
+                                                pageProperties.pageId = pages.pageId AND 
+                                                pageProperties.version = pages.version AND 
+                                                pageProperties.idLanguages = ?
                                               WHERE folders.idRootLevels = ? AND
                                                     folders.idParentFolder = 0 AND
                                                     folders.showInNavigation = 1
                                                     '.$strFolderFilter.'
                                               UNION
-                                              SELECT DISTINCT pages.id, pageTitles.title, pages.idStatus,
-                                                              IF(pages.idPageTypes = ?,
+                                              SELECT DISTINCT pages.id, pageTitles.title, pageProperties.idStatus,
+                                                              IF(pageProperties.idPageTypes = ?,
                                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1  WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 ORDER BY pU.version DESC LIMIT 1)) AS url,
-                                                              IF(pages.idPageTypes = ?,
+                                                              IF(pageProperties.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
                                                               -1 AS folderId, pages.sortPosition, pages.sortTimestamp, pages.isStartPage
                                               FROM pages
+                                              INNER JOIN pageProperties ON 
+                                                pageProperties.pageId = pages.pageId AND 
+                                                pageProperties.version = pages.version AND 
+                                                pageProperties.idLanguages = ?
                                               LEFT JOIN pageTitles ON
                                                 pageTitles.pageId = pages.pageId AND
                                                 pageTitles.version = pages.version AND
                                                 pageTitles.idLanguages = ?
                                               WHERE pages.idParent = ? AND
                                                     pages.idParentTypes = ? AND
-                                                    pages.showInNavigation = 1 AND
+                                                    pageProperties.showInNavigation = 1 AND
                                                     pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1)
                                                     '.$strPageFilter.')
                                         AS tbl
-                                        ORDER BY sortPosition ASC, sortTimestamp DESC, id ASC', array($this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $intRootId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
+                                        ORDER BY sortPosition ASC, sortTimestamp DESC, id ASC', array($this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intRootId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
 
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
@@ -341,12 +352,12 @@ class Model_Folders {
     $strPageFilter = '';
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $strFolderFilter = 'AND folders.idStatus = '.$this->core->sysConfig->status->live;
-      $strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
+      $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
     }
 
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folders.idParentFolder as parentId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth, folders.sortPosition as folderOrder,
-                                               pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
-                                               IF(pages.idPageTypes = ?,
+                                               pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pageProperties.idStatus AS pageStatus, pages.sortPosition as pageOrder,
+                                               IF(pageProperties.idPageTypes = ?,
                                                   (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                   (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
@@ -357,8 +368,12 @@ class Model_Folders {
                                               folderTitles.idLanguages = ?
                                             LEFT JOIN pages ON
                                               pages.idParent = folders.id AND
-                                              pages.idParentTypes = ? AND
-                                              pages.showInNavigation = 1
+                                              pages.idParentTypes = ?
+                                            LEFT JOIN pageProperties ON 
+                                              pageProperties.pageId = pages.pageId AND 
+                                              pageProperties.version = pages.version AND 
+                                              pageProperties.idLanguages = ? AND
+                                              pageProperties.showInNavigation = 1
                                               '.$strPageFilter.'
                                             LEFT JOIN pageTitles ON
                                               pageTitles.pageId = pages.pageId AND
@@ -371,7 +386,7 @@ class Model_Folders {
                                                  folders.depth <= ? AND
                                                  folders.showInNavigation = 1
                                                  '.$strFolderFilter.'
-                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intFolderId, $intDepth));
+                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $intDepth));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -387,8 +402,8 @@ class Model_Folders {
     $this->core->logger->debug('core->models->Folders->loadFolderContentById('.$intFolderId.')');
 
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folders.idParentFolder as parentId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth, folders.sortPosition as folderOrder,
-                                               pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus, pages.sortPosition as pageOrder,
-                                               IF(pages.idPageTypes = ?,
+                                               pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pageProperties.idStatus AS pageStatus, pages.sortPosition as pageOrder,
+                                               IF(pageProperties.idPageTypes = ?,
                                                   (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                   (SELECT pU.url FROM urls AS pU WHERE pU.relationId = pages.pageId AND pU.version = pages.version AND pU.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND pU.idLanguages = ? AND pU.isMain = 1 ORDER BY pU.version DESC LIMIT 1)) AS url,
                                                (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
@@ -400,6 +415,10 @@ class Model_Folders {
                                             LEFT JOIN pages ON
                                               pages.idParent = folders.id AND
                                               pages.idParentTypes = ?
+                                            LEFT JOIN pageProperties ON 
+                                              pageProperties.pageId = pages.pageId AND 
+                                              pageProperties.version = pages.version AND 
+                                              pageProperties.idLanguages = ?
                                             LEFT JOIN pageTitles ON
                                               pageTitles.pageId = pages.pageId AND
                                               pageTitles.version = pages.version AND
@@ -409,7 +428,7 @@ class Model_Folders {
                                                  folders.lft BETWEEN parent.lft AND parent.rgt AND
                                                  folders.idRootLevels = parent.idRootLevels AND
                                                  folders.depth <= (parent.depth + 1)
-                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $intFolderId));
+                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->intLanguageId, $intFolderId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -435,19 +454,22 @@ class Model_Folders {
 																	            INNER JOIN folderTypes ON folderTypes.id = folders.idFolderTypes
 																	            WHERE folders.idParentFolder = ?
 																	            UNION
-																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pages.idTemplates  AS templateId, -1 AS folderType, pages.idPageTypes AS pageType, pageTypes.title AS type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pages.idStatus,
+																	            SELECT pages.id, pageTitles.title, genericForms.genericFormId, genericForms.version, pageProperties.idTemplates  AS templateId, -1 AS folderType, pageProperties.idPageTypes AS pageType, pageTypes.title AS type, pages.isStartPage, pages.sortPosition, pages.sortTimestamp, pageProperties.idStatus,
 																	                   (SELECT pt.title FROM pageLinks, pages AS p LEFT JOIN pageTitles AS pt ON pt.pageId = p.pageId AND pt.version = p.version AND pt.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1) AS pageLinkTitle
 																	            FROM pages
+																	            INNER JOIN pageProperties ON pageProperties.pageId = pages.pageId 
+                                               AND pageProperties.version = pages.version 
+                                               AND pageProperties.idLanguages = ?
 																	            LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
 																	              AND pageTitles.version = pages.version
 																	              AND pageTitles.idLanguages = ?
-																	            INNER JOIN pageTypes ON pageTypes.id = pages.idPageTypes
-																	            INNER JOIN genericForms ON genericForms.id = pages.idGenericForms
+																	            INNER JOIN pageTypes ON pageTypes.id = pageProperties.idPageTypes
+																	            INNER JOIN genericForms ON genericForms.id = pageProperties.idGenericForms
 																	            WHERE pages.idParent = ?
 																	              AND pages.idParentTypes = ?
 																	              AND pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1))
 																	      AS tbl
-																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder));
+																	      ORDER BY sortPosition ASC, sortTimestamp '.$strSortTimestampOrderType.', id ASC', array($this->intLanguageId, $intFolderId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $this->core->sysConfig->parent_types->folder));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -605,24 +627,28 @@ class Model_Folders {
       $now = date('Y-m-d H:i:s', $timestamp);
 
     	$strFolderFilter = 'AND folders.idStatus = '.$this->core->sysConfig->status->live;
-      $strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
-      $strPagePublishedFilter = ' AND pages.published <= \''.$now.'\'';
+      $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strPagePublishedFilter = ' AND pageProperties.published <= \''.$now.'\'';
     }
 
   	$sqlStmt = $this->core->dbh->query('SELECT DISTINCT folders.id AS idFolder, folders.idStatus AS folderStatus, folders.depth,
                                               pages.id AS idPage, pageTitles.title AS title, genericForms.genericFormId, genericForms.version,
-                                              pages.idStatus AS pageStatus, urls.url, languageCode, pages.idPageTypes, pages.created AS pageCreated,
-                                              pages.changed AS pageChanged, pages.published AS pagePublished
+                                              pageProperties.idStatus AS pageStatus, urls.url, languageCode, pageProperties.idPageTypes, pageProperties.created AS pageCreated,
+                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished
                                           FROM folders
                                             INNER JOIN pages ON
                                               pages.idParent = folders.id AND
                                               pages.idParentTypes = ?
+                                            INNER JOIN pageProperties ON 
+                                              pageProperties.pageId = pages.pageId AND 
+                                              pageProperties.version = pages.version AND 
+                                              pageProperties.idLanguages = ?
                                               '.$strPageFilter.'
                                               '.$strPagePublishedFilter.'
-                                            '.$strJoinCategory.'
-                                            '.$strJoinLabel.'
+                                              '.$strJoinCategory.'
+                                              '.$strJoinLabel.'                                            
                                             INNER JOIN genericForms ON
-                                              genericForms.id = pages.idGenericForms
+                                              genericForms.id = pageProperties.idGenericForms
                                             INNER JOIN pageTitles ON
                                               pageTitles.pageId = pages.pageId AND
                                               pageTitles.version = pages.version AND
@@ -644,6 +670,7 @@ class Model_Folders {
   	                                                             $this->intLanguageId,
   	                                                             $this->intLanguageId,
   	                                                             $this->intLanguageId,
+  	                                                             $this->intLanguageId,
   	                                                             $intFolderId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
@@ -660,7 +687,7 @@ class Model_Folders {
     $this->core->logger->debug('core->models->Folders->loadRootLevelChilds('.$intRootLevelId.')');
 
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS folderId, folderTitles.title AS folderTitle, folders.idStatus AS folderStatus, folders.depth,
-                                               pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pages.idStatus AS pageStatus
+                                               pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage, pageProperties.idStatus AS pageStatus
                                               FROM folders
                                                 INNER JOIN folderTitles ON
                                                   folderTitles.folderId = folders.folderId AND
@@ -668,14 +695,18 @@ class Model_Folders {
                                                   folderTitles.idLanguages = ?
                                                 LEFT JOIN pages ON
                                                   pages.idParent = folders.id AND
-                                                  pages.idParentTypes = ? AND
-                                                  pages.idPageTypes != ? AND
-                                                  pages.idPageTypes != ?
+                                                  pages.idParentTypes = ?
+                                                LEFT JOIN pageProperties ON 
+                                                  pageProperties.pageId = pages.pageId AND 
+                                                  pageProperties.version = pages.version AND 
+                                                  pageProperties.idLanguages = ? AND
+                                                  pageProperties.idPageTypes != ? AND
+                                                  pageProperties.idPageTypes != ?
                                                 LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
                                                   AND pageTitles.version = pages.version
                                                   AND pageTitles.idLanguages = ?
                                               WHERE folders.idRootLevels = ?
-                                                ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->core->sysConfig->page_types->link->id, $this->core->sysConfig->page_types->external->id, $this->intLanguageId, $intRootLevelId));
+                                                ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->core->sysConfig->page_types->external->id, $this->intLanguageId, $intRootLevelId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -730,16 +761,16 @@ class Model_Folders {
     $strPageFilter = '';
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $strFolderFilter = 'AND folders.idStatus = '.$this->core->sysConfig->status->live;
-      $strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
+      $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
     }
 
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folderTitles.title AS folderTitle, folders.depth,
                                             IF(folders.idParentFolder = 0, pages.idParent, folders.idParentFolder) AS parentId,
                                             pages.id AS idPage, pages.pageId, pages.isStartPage,
-                                            IF(pages.idPageTypes = ?, lUrls.url, urls.url) as url,
-                                            IF(pages.idPageTypes = ?, plExternals.external, pageExternals.external) as external,
-                                            IF(pages.idPageTypes = ?, plTitle.title, pageTitles.title) as title,
-                                            pages.idPageTypes, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
+                                            IF(pageProperties.idPageTypes = ?, lUrls.url, urls.url) as url,
+                                            IF(pageProperties.idPageTypes = ?, plExternals.external, pageExternals.external) as external,
+                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title,
+                                            pageProperties.idPageTypes, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                         FROM folders
                                           INNER JOIN folderTitles ON
                                             folderTitles.folderId = folders.folderId AND
@@ -747,8 +778,12 @@ class Model_Folders {
 																			      folderTitles.idLanguages = ?
 																			    LEFT JOIN pages ON
 																			      pages.idParent = folders.id AND
-																			      pages.idParentTypes = ? AND
-																			      pages.showInNavigation = 1
+																			      pages.idParentTypes = ?
+																			    LEFT JOIN pageProperties ON 
+																			      pageProperties.pageId = pages.pageId AND 
+																			      pageProperties.version = pages.version AND 
+																			      pageProperties.idLanguages = ? AND
+                                            pageProperties.showInNavigation = 1
 																			      '.$strPageFilter.'
 																			    LEFT JOIN pageTitles ON
 																			      pageTitles.pageId = pages.pageId AND
@@ -787,11 +822,12 @@ class Model_Folders {
                                           folders.showInNavigation = 1
                                           '.$strFolderFilter.'
                                         ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id,
-																																																																																													                                $this->core->sysConfig->page_types->link->id,
-																																																																																													                                $this->core->sysConfig->page_types->link->id,
-																																																																																													                                $this->intLanguageId,
-																																																																																													                                $this->intLanguageId,
+                                                                                                                                                             $this->core->sysConfig->page_types->link->id,
+                                                                                                                                                             $this->core->sysConfig->page_types->link->id,
+                                                                                                                                                             $this->intLanguageId,
+                                                                                                                                                             $this->intLanguageId,
                                                                                                                                                              $this->core->sysConfig->parent_types->folder,
+                                                                                                                                                             $this->intLanguageId,
                                                                                                                                                              $this->intLanguageId,
                                                                                                                                                              $this->intLanguageId,
                                                                                                                                                              $this->intLanguageId,
@@ -817,19 +853,23 @@ class Model_Folders {
 
     $sqlStmt = $this->core->dbh->query('SELECT folders.id AS folderId, folders.idStatus AS folderStatus,
                                                pages.id AS idPage, pages.pageId, pageTitles.title AS pageTitle, pages.isStartPage,
-                                               pages.idStatus AS pageStatus, pages.created, pages.changed,
-                                               (SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = pages.idUsers) AS changeUser
+                                               pageProperties.idStatus AS pageStatus, pageProperties.created, pageProperties.changed,
+                                               (SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = pageProperties.idUsers) AS changeUser
                                               FROM folders
                                                 LEFT JOIN pages ON
                                                   pages.idParent = folders.id AND
-                                                  pages.idParentTypes = ? AND
-                                                  pages.idPageTypes = ?
+                                                  pages.idParentTypes = ?
+                                                INNER JOIN pageProperties ON 
+                                                  pageProperties.pageId = pages.pageId AND 
+                                                  pageProperties.version = pages.version AND 
+                                                  pageProperties.idLanguages = ? AND
+                                                  pageProperties.idPageTypes = ?
                                                 LEFT JOIN pageTitles ON pageTitles.pageId = pages.pageId
                                                   AND pageTitles.version = pages.version
                                                   AND pageTitles.idLanguages = ?
                                               WHERE folders.idRootLevels = ?
                                                 ORDER BY pages.changed DESC, pages.created DESC
-                                              LIMIT '.$intLimitNumber, array($this->core->sysConfig->parent_types->folder, $this->core->sysConfig->page_types->page->id, $this->intLanguageId, $intRootLevelId));
+                                              LIMIT '.$intLimitNumber, array($this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->core->sysConfig->page_types->page->id, $this->intLanguageId, $intRootLevelId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }

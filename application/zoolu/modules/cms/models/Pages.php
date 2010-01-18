@@ -45,10 +45,20 @@ class Model_Pages {
   private $intLanguageId;
 
   /**
+   * @var Model_Folders
+   */
+  protected $objModelFolders;
+  
+  /**
    * @var Model_Table_Pages
    */
   protected $objPageTable;
 
+  /**
+   * @var Model_Table_PageProperties
+   */
+  protected $objPagePropertyTable;
+  
   /**
    * @var Model_Table_Urls
    */
@@ -162,9 +172,10 @@ class Model_Pages {
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'pageId', 'relationId' => 'pageId', 'version', 'idPageTypes', 'isStartPage', 'showInNavigation', 'idParent', 'idParentTypes', 'published', 'changed', 'idStatus', 'creator',
-                                    '(SELECT CONCAT(users.fname, \' \', users.sname) AS publisher FROM users WHERE users.id = pages.publisher) AS publisher',
-                                    '(SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = pages.idUsers) AS changeUser'));
+    $objSelect->from('pages', array('id', 'pageId', 'relationId' => 'pageId', 'version', 'pageProperties.idPageTypes', 'isStartPage', 'pageProperties.showInNavigation', 'idParent', 'idParentTypes', 'pageProperties.published', 'pageProperties.changed', 'pageProperties.idStatus', 'pageProperties.creator'));
+    $objSelect->joinLeft('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = pageProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
+    $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = pageProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
     $objSelect->where('pages.id = ?', $intElementId);
 
     return $this->getPageTable()->fetchAll($objSelect);
@@ -184,16 +195,143 @@ class Model_Pages {
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'idTemplates', 'idStatus', 'published', 'changed', 'created', 'idPageTypes', 'isStartElement' => 'isStartPage', 'showInNavigation', 'idParent', 'idParentTypes',
-                                    '(SELECT CONCAT(users.fname, \' \', users.sname) AS publisher FROM users WHERE users.id = pages.publisher) AS publisher',
-                                    '(SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = pages.idUsers) AS changeUser',
-                                    '(SELECT CONCAT(users.fname, \' \', users.sname) AS creator FROM users WHERE users.id = pages.creator) AS creator'));
-    $objSelect->join('genericForms', 'genericForms.id = pages.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
-    $objSelect->join('templates', 'templates.id = pages.idTemplates', array('filename'));
+    $objSelect->from('pages', array('id', 'pageProperties.idTemplates', 'pageProperties.idStatus', 'pageProperties.published', 'pageProperties.changed', 'pageProperties.created', 'pageProperties.idPageTypes', 'isStartElement' => 'isStartPage', 'pageProperties.showInNavigation', 'idParent', 'idParentTypes'));
+    $objSelect->joinLeft('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = pageProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
+    $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = pageProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
+    $objSelect->joinLeft(array('ucr' => 'users'), 'ucr.id = pageProperties.creator', array('creator' => 'CONCAT(ucr.fname, \' \', ucr.sname)'));
+    $objSelect->join('genericForms', 'genericForms.id = pageProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
+    $objSelect->join('templates', 'templates.id = pageProperties.idTemplates', array('filename'));
     $objSelect->where('pages.pageId = ?', $strPageId);
     $objSelect->where('pages.version = ?', $intPageVersion);
 
     return $this->getPageTable()->fetchAll($objSelect);
+  }
+  
+  /**
+   * add
+   * @param GenericSetup $objGenericSetup
+   * @return stdClass Page
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function add(GenericSetup &$objGenericSetup){
+    $this->core->logger->debug('cms->models->Model_Products->add()');
+
+    $objPage = new stdClass();
+    $objPage->pageId = uniqid();
+    $objPage->version = 1;
+    $objPage->sortPosition = GenericSetup::DEFAULT_SORT_POSITION;
+    $objPage->parentId = $objGenericSetup->getParentId();
+    $objPage->rootLevelId = $objGenericSetup->getRootLevelId();
+    $objPage->isStartElement = $objGenericSetup->getIsStartElement();
+      
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+    
+    /**
+     * check if parent element is rootlevel or folder and get sort position
+     */
+    if($objPage->parentId != '' && $objPage->parentId > 0){
+      $objPage->parentTypeId = $this->core->sysConfig->parent_types->folder;
+      $objNaviData = $this->getModelFolders()->loadChildNavigation($objPage->parentId);
+    }else{
+      if($objPage->rootLevelId != '' && $objPage->rootLevelId > 0){
+        $objPage->parentId = $objPage->rootLevelId;
+      }else{
+        $this->core->logger->err('zoolu->modules->cms->models->Model_Pages->add(): intRootLevelId is empty!');
+      }
+      $objPage->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
+      $objNaviData = $this->getModelFolders()->loadRootNavigation($objPage->rootLevelId);
+    }
+    $objPage->sortPosition = count($objNaviData);
+    
+    /**
+     * insert main data
+     */
+    $arrMainData = array('idParent'         => $objPage->parentId,
+                         'idParentTypes'    => $objPage->parentTypeId,
+                         'isStartPage'      => $objPage->isStartElement,
+                         'idUsers'          => $intUserId,
+                         'sortPosition'     => $objPage->sortPosition,
+                         'sortTimestamp'    => date('Y-m-d H:i:s'),
+                         'pageId'           => $objPage->pageId,
+                         'version'          => $objPage->version,
+                         'creator'          => $objGenericSetup->getCreatorId(),
+                         'created'          => date('Y-m-d H:i:s'));
+    $objPage->id = $this->getPageTable()->insert($arrMainData);
+
+    /**
+     * insert language specific properties
+     */
+    $arrProperties = array('pageId'           => $objPage->pageId,
+                           'version'          => $objPage->version,
+                           'idLanguages'      => $this->intLanguageId,
+                           'idGenericForms'   => $objGenericSetup->getGenFormId(),
+                           'idTemplates'      => $objGenericSetup->getTemplateId(),
+                           'idPageTypes'      => $objGenericSetup->getElementTypeId(),
+                           'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                           'idUsers'          => $intUserId,
+                           'creator'          => $objGenericSetup->getCreatorId(),
+                           'publisher'        => $intUserId,
+                           'created'          => date('Y-m-d H:i:s'),
+                           'published'        => $objGenericSetup->getPublishDate(),
+                           'idStatus'         => $objGenericSetup->getStatusId());
+    $this->getPagePropertyTable()->insert($arrProperties);
+
+    return $objPage;
+  }
+  
+  /**
+   * update
+   * @param GenericSetup $objGenericSetup
+   * @param object Page
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function update(GenericSetup &$objGenericSetup, $objPage){
+    $this->core->logger->debug('cms->models->Model_Pages->update()');
+    
+    $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+    $strWhere = $this->getPageTable()->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
+    $strWhere .= $this->getPageTable()->getAdapter()->quoteInto(' AND version = ?', $objPage->version);
+
+    $this->getPageTable()->update(array('idUsers'  => $intUserId,
+                                        'changed'  => date('Y-m-d H:i:s')), $strWhere);
+    /**
+     * update language specific page properties
+     */
+    $strWhere .= $this->getPageTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
+    $intNumOfEffectedRows = $this->getPagePropertyTable()->update(array('idGenericForms'   => $objGenericSetup->getGenFormId(),
+                                                                        'idTemplates'      => $objGenericSetup->getTemplateId(),
+                                                                        'idPageTypes'      => $objGenericSetup->getElementTypeId(),
+                                                                        'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                                                                        'idUsers'          => $intUserId,
+                                                                        'creator'          => $objGenericSetup->getCreatorId(),
+                                                                        'idStatus'         => $objGenericSetup->getStatusId(),
+                                                                        'published'        => $objGenericSetup->getPublishDate(),
+                                                                        'changed'          => date('Y-m-d H:i:s')), $strWhere);
+    
+    /**
+     * insert language specific page properties
+     */
+    if($intNumOfEffectedRows == 0){      
+      $arrProperties = array('pageId'           => $objPage->pageId,
+                             'version'          => $objPage->version,
+                             'idLanguages'      => $this->intLanguageId,
+                             'idGenericForms'   => $objGenericSetup->getGenFormId(),
+                             'idTemplates'      => $objGenericSetup->getTemplateId(),
+                             'idPageTypes'      => $objGenericSetup->getElementTypeId(),
+                             'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                             'idUsers'          => $intUserId,
+                             'creator'          => $objGenericSetup->getCreatorId(),
+                             'publisher'        => $intUserId,
+                             'created'          => date('Y-m-d H:i:s'),
+                             'published'        => $objGenericSetup->getPublishDate(),
+                             'idStatus'         => $objGenericSetup->getStatusId());
+      $this->getPagePropertyTable()->insert($arrProperties);
+    }
+
   }
 
   /**
@@ -387,8 +525,9 @@ class Model_Pages {
     $objSelect = $this->getPageInternalLinksTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'relationId' => 'pageId', 'pageId', 'version', 'idPageTypes', 'isStartItem' => 'isStartPage', 'isStartPage', 'idStatus'));
+    $objSelect->from('pages', array('id', 'relationId' => 'pageId', 'pageId', 'version', 'pageProperties.idPageTypes', 'isStartItem' => 'isStartPage', 'isStartPage', 'pageProperties.idStatus'));
     $objSelect->join('pageInternalLinks', 'pageInternalLinks.linkedPageId = pages.pageId AND pageInternalLinks.pageId = \''.$strElementId.'\' AND pageInternalLinks.version = '.$intVersion.' AND pageInternalLinks.idLanguages = '.$this->intLanguageId, array('sortPosition'));
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->joinleft('urls', 'urls.relationId = pages.pageId AND urls.version = pages.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1 AND urls.idParent IS NULL', array('url'));
     $objSelect->joinleft('languages', 'languages.id = urls.idLanguages', array('languageCode'));
@@ -414,10 +553,11 @@ class Model_Pages {
     $objSelect = $this->getPageCollectionTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'idStatus'));
+    $objSelect->from('pages', array('id', 'pageId', 'version', 'pageProperties.idPageTypes', 'isStartPage', 'pageProperties.idStatus'));
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->join('pageCollections', 'pageCollections.collectedPageId = pages.pageId AND pageCollections.pageId = \''.$strElementId.'\' AND pageCollections.version = '.$intVersion.' AND pageCollections.idLanguages = '.$this->intLanguageId, array('sortPosition'));
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objSelect->join('genericForms', 'genericForms.id = pages.idGenericForms', array('genericFormId', 'version AS genericFormVersion'));
+    $objSelect->join('genericForms', 'genericForms.id = pageProperties.idGenericForms', array('genericFormId', 'version AS genericFormVersion'));
     $objSelect->joinleft('urls', 'urls.relationId = pages.pageId AND urls.version = pages.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.idParent = '.$intParentId.' AND urls.idParentTypes = '.$intParentTypeId, array('url'));
     $objSelect->joinleft('languages', 'languages.id = urls.idLanguages', array('languageCode'));
     $objSelect->where('pages.id = (SELECT p.id FROM pages AS p WHERE pages.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)');
@@ -511,8 +651,8 @@ class Model_Pages {
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $timestamp = time();
       $now = date('Y-m-d H:i:s', $timestamp);
-      $strPageFilter = ' AND pages.idStatus = '.$this->core->sysConfig->status->live;
-      $strPublishedFilter = ' AND pages.published <= \''.$now.'\'';
+      $strPageFilter = ' AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strPublishedFilter = ' AND pageProperties.published <= \''.$now.'\'';
     }
 
     $sqlStmt = $this->core->dbh->query('SELECT DISTINCT id, plId, genericFormId, version, plGenericFormId, plVersion,
@@ -520,9 +660,13 @@ class Model_Pages {
                                         FROM
                                           (SELECT pages.id, pl.id AS plId, genericForms.genericFormId, genericForms.version,
                                             plGenForm.genericFormId AS plGenericFormId, plGenForm.version AS plVersion, urls.url, lUrls.url AS plUrl,
-                                            IF(pages.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pages.idPageTypes,
-                                            pages.created, pages.changed, pages.published, pages.sortPosition, pages.sortTimestamp
+                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes,
+                                            pageProperties.created, pageProperties.changed, pageProperties.published, pages.sortPosition, pages.sortTimestamp
                                           FROM folders, pages
+                                            INNER JOIN pageProperties ON 
+                                              pageProperties.pageId = pages.pageId AND 
+                                              pageProperties.version = pages.version AND 
+                                              pageProperties.idLanguages = ?
                                             LEFT JOIN pageCategories ON
                                               pageCategories.pageId = pages.pageId AND
                                               pageCategories.version = pages.version
@@ -530,7 +674,7 @@ class Model_Pages {
                                               pageLabels.pageId = pages.pageId AND
                                               pageLabels.version = pages.version
                                             INNER JOIN genericForms ON
-                                              genericForms.id = pages.idGenericForms
+                                              genericForms.id = pageProperties.idGenericForms
                                             LEFT JOIN pageTitles ON
                                               pageTitles.pageId = pages.pageId AND
                                               pageTitles.version = pages.version AND
@@ -546,6 +690,10 @@ class Model_Pages {
                                               pageLinks.idPages = pages.id
                                             LEFT JOIN pages AS pl ON
                                               pl.id = (SELECT p.id FROM pages AS p WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)
+                                            LEFT JOIN pageProperties AS plProperties ON 
+                                              plProperties.pageId = pl.pageId AND 
+                                              plProperties.version = pl.version AND 
+                                              plProperties.idLanguages = ?
                                             LEFT JOIN pageCategories AS plCategories ON
                                               plCategories.pageId = pl.pageId AND
                                               plCategories.version = pl.version
@@ -553,7 +701,7 @@ class Model_Pages {
                                               plLabels.pageId = pl.pageId AND
                                               plLabels.version = pl.version
                                             LEFT JOIN genericForms AS plGenForm ON
-                                              plGenForm.id = pl.idGenericForms
+                                              plGenForm.id = plProperties.idGenericForms
                                             LEFT JOIN pageTitles AS plTitle ON
                                               plTitle.pageId = pl.pageId AND
                                               plTitle.version = pl.version AND
@@ -582,9 +730,13 @@ class Model_Pages {
                                           UNION
                                           SELECT pages.id, pl.id AS plId, genericForms.genericFormId, genericForms.version,
                                             plGenForm.genericFormId AS plGenericFormId, plGenForm.version AS plVersion, urls.url, lUrls.url AS plUrl,
-                                            IF(pages.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pages.idPageTypes,
-                                            pages.created, pages.changed, pages.published, pages.sortPosition, pages.sortTimestamp
+                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes,
+                                            pageProperties.created, pageProperties.changed, pageProperties.published, pages.sortPosition, pages.sortTimestamp                                            
                                           FROM pages
+                                            INNER JOIN pageProperties ON 
+                                              pageProperties.pageId = pages.pageId AND 
+                                              pageProperties.version = pages.version AND 
+                                              pageProperties.idLanguages = ?
                                             LEFT JOIN pageCategories ON
                                               pageCategories.pageId = pages.pageId AND
                                               pageCategories.version = pages.version
@@ -592,7 +744,7 @@ class Model_Pages {
                                               pageLabels.pageId = pages.pageId AND
                                               pageLabels.version = pages.version
                                             INNER JOIN genericForms ON
-                                              genericForms.id = pages.idGenericForms
+                                              genericForms.id = pageProperties.idGenericForms
                                             LEFT JOIN pageTitles ON
                                               pageTitles.pageId = pages.pageId AND
                                               pageTitles.version = pages.version AND
@@ -608,6 +760,10 @@ class Model_Pages {
                                               pageLinks.idPages = pages.id
                                             LEFT JOIN pages AS pl ON
                                               pl.id = (SELECT p.id FROM pages AS p WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)
+                                            LEFT JOIN pageProperties AS plProperties ON 
+                                              plProperties.pageId = pl.pageId AND 
+                                              plProperties.version = pl.version AND 
+                                              plProperties.idLanguages = ?
                                             LEFT JOIN pageCategories AS plCategories ON
                                               plCategories.pageId = pl.pageId AND
                                               plCategories.version = pl.version
@@ -615,7 +771,7 @@ class Model_Pages {
                                               plLabels.pageId = pl.pageId AND
                                               plLabels.version = pl.version
                                             LEFT JOIN genericForms AS plGenForm ON
-                                              plGenForm.id = pl.idGenericForms
+                                              plGenForm.id = plProperties.idGenericForms
                                             LEFT JOIN pageTitles AS plTitle ON
                                               plTitle.pageId = pl.pageId AND
                                               plTitle.version = pl.version AND
@@ -642,9 +798,13 @@ class Model_Pages {
                                                                              $this->intLanguageId,
                                                                              $this->intLanguageId,
                                                                              $this->intLanguageId,
+                                                                             $this->intLanguageId,
+                                                                             $this->intLanguageId,
                                                                              $this->core->sysConfig->parent_types->folder,
                                                                              $intParentId,
                                                                              $this->core->sysConfig->page_types->link->id,
+                                                                             $this->intLanguageId,
+                                                                             $this->intLanguageId,
                                                                              $this->intLanguageId,
                                                                              $this->intLanguageId,
                                                                              $this->intLanguageId,
@@ -1056,8 +1216,9 @@ class Model_Pages {
 
     $objSelect->from($this->objPageUrlTable, array('pages.pageId', 'version', 'idLanguages'));
     $objSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page, array());
-    $objSelect->where('pages.idStatus = ?', $this->core->sysConfig->status->live)
-              ->where('pages.idPageTypes != ?', $this->core->sysConfig->page_types->link->id);
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->where('pageProperties.idStatus = ?', $this->core->sysConfig->status->live)
+              ->where('pageProperties.idPageTypes != ?', $this->core->sysConfig->page_types->link->id);
 
     return $this->objPageUrlTable->fetchAll($objSelect);
   }
@@ -1256,9 +1417,10 @@ class Model_Pages {
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'pageId', 'version', 'created', 'changed', 'published'));
+    $objSelect->from('pages', array('id', 'pageId', 'version', 'pageProperties.created', 'pageProperties.changed', 'pageProperties.published'));
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objSelect->join('genericForms', 'genericForms.id = pages.idGenericForms', array('genericFormId', 'version AS genericFormVersion', 'idGenericFormTypes'));
+    $objSelect->join('genericForms', 'genericForms.id = pageProperties.idGenericForms', array('genericFormId', 'version AS genericFormVersion', 'idGenericFormTypes'));
     if($intTemplateId == $this->core->sysConfig->page_types->page->event_templateId){
 	    $objSelect->join('pageDatetimes', 'pageDatetimes.pageId = pages.pageId AND pageDatetimes.version = pages.version AND pageDatetimes.idLanguages = '.$this->intLanguageId, array('datetime'));
     }
@@ -1284,8 +1446,8 @@ class Model_Pages {
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $timestamp = time();
       $now = date('Y-m-d H:i:s', $timestamp);
-    	$objSelect->where('pages.idStatus = ?', $this->core->sysConfig->status->live);
-    	$objSelect->where('pages.published <= \''.$now.'\'');
+    	$objSelect->where('pageProperties.idStatus = ?', $this->core->sysConfig->status->live);
+    	$objSelect->where('pageProperties.published <= \''.$now.'\'');
     }
     if($intTemplateId == $this->core->sysConfig->page_types->page->event_templateId){
       $objSelect->order('STR_TO_DATE(pageDatetimes.datetime, \'%d.%m.%Y\') ASC');
@@ -1327,13 +1489,13 @@ class Model_Pages {
           $strSqlOrderBy = ' ORDER BY pages.sortPosition '.$strSortOrder.', pages.sortTimestamp '.(($strSortOrder == 'DESC') ? 'ASC' : 'DESC').', pages.id ASC';
           break;
         case $this->core->sysConfig->sort->types->created->id:
-          $strSqlOrderBy = ' ORDER BY pages.created '.$strSortOrder;
+          $strSqlOrderBy = ' ORDER BY pageProperties.created '.$strSortOrder;
           break;
         case $this->core->sysConfig->sort->types->changed->id:
-          $strSqlOrderBy = ' ORDER BY pages.changed '.$strSortOrder;
+          $strSqlOrderBy = ' ORDER BY pageProperties.changed '.$strSortOrder;
           break;
         case $this->core->sysConfig->sort->types->published->id:
-          $strSqlOrderBy = ' ORDER BY pages.published '.$strSortOrder;
+          $strSqlOrderBy = ' ORDER BY pageProperties.published '.$strSortOrder;
           break;
         case $this->core->sysConfig->sort->types->alpha->id:
           $strSqlOrderBy = ' ORDER BY pageTitles.title '.$strSortOrder;
@@ -1372,22 +1534,26 @@ class Model_Pages {
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $timestamp = time();
       $now = date('Y-m-d H:i:s', $timestamp);
-    	$strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
-    	$strPublishedFilter = ' AND pages.published <= \''.$now.'\'';
+    	$strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
+    	$strPublishedFilter = ' AND pageProperties.published <= \''.$now.'\'';
     }
 
     if($intRootLevelId > 0 && $intRootLevelId != ''){
-      $sqlStmt = $this->core->dbh->query('SELECT DISTINCT pages.id, pages.pageId, pages.version, pages.created, pages.published,
+      $sqlStmt = $this->core->dbh->query('SELECT DISTINCT pages.id, pages.pageId, pages.version, pageProperties.created, pageProperties.published,
                                           genericForms.genericFormId, genericForms.version AS genericFormVersion, genericForms.idGenericFormTypes,
                                           pageVideos.videoId, pageVideos.thumb, pageVideos.idVideoTypes,
                                           '.$strSqlCategoryTitle.' pageTitles.title
                                         FROM pages
+                                        INNER JOIN pageProperties ON 
+                                          pageProperties.pageId = pages.pageId AND 
+                                          pageProperties.version = pages.version AND 
+                                          pageProperties.idLanguages = ?                                        
                                         '.$strSqlCategory.'
                                         '.$strSqlLabel.'
                                         INNER JOIN folders ON
                                           folders.id = pages.idParent
                                         INNER JOIN genericForms ON
-                                          genericForms.id = pages.idGenericForms
+                                          genericForms.id = pageProperties.idGenericForms
                                         INNER JOIN pageVideos ON
                                           pageVideos.pageId = pages.pageId AND
                                           pageVideos.version = pages.version AND
@@ -1404,11 +1570,33 @@ class Model_Pages {
                                         '.$strSqlOrderBy.'
                                         '.$strSqlLimit, array($this->intLanguageId,
                                                               $this->intLanguageId,
+                                                              $this->intLanguageId,
                                                               $this->core->sysConfig->page_types->link->default_formId,
                                                               $intRootLevelId));
 
       return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
     }
+  }
+  
+  /**
+   * getModelFolders
+   * @return Model_Folders
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelFolders(){
+    if (null === $this->objModelFolders) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
+      $this->objModelFolders = new Model_Folders();
+      $this->objModelFolders->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelFolders;
   }
 
   /**
@@ -1425,6 +1613,22 @@ class Model_Pages {
     }
 
     return $this->objPageTable;
+  }
+  
+  /**
+   * getPagePropertyTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getPagePropertyTable(){
+
+    if($this->objPagePropertyTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/PageProperties.php';
+      $this->objPagePropertyTable = new Model_Table_PageProperties();
+    }
+
+    return $this->objPagePropertyTable;
   }
 
   /**

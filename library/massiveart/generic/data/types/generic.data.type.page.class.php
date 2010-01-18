@@ -79,149 +79,90 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
       switch($this->setup->getActionType()){
         case $this->core->sysConfig->generic->actions->add :
 
-          $strPageId = uniqid();
-          $intPageVersion = 1;
-          $intSortPosition = GenericSetup::DEFAULT_SORT_POSITION;
+          $objPage = $this->objModelPages->add($this->setup);
 
-          /**
-           * check if parent element is rootlevel or folder
-           */
-          if($this->setup->getParentId() != '' && $this->setup->getParentId() > 0){
-            $this->setup->setParentTypeId($this->core->sysConfig->parent_types->folder);
-            $objNaviData = $this->getModelFolders()->loadChildNavigation($this->setup->getParentId());
-          }else{
-            if($this->setup->getRootLevelId() != '' && $this->setup->getRootLevelId() > 0){
-              $this->setup->setParentId($this->setup->getRootLevelId());
-            }else{
-              $this->core->logger->err('massiveart->generic->data->GenericDataTypePage->save(): intRootLevelId is empty!');
-            }
-            $this->setup->setParentTypeId($this->core->sysConfig->parent_types->rootlevel);
-            $objNaviData = $this->getModelFolders()->loadRootNavigation($this->setup->getRootLevelId());
-          }
-          $intSortPosition = count($objNaviData);
-
-          $arrMainData = array('idGenericForms'   => $this->setup->getGenFormId(),
-                               'idTemplates'      => $this->setup->getTemplateId(),
-                               'idPageTypes'      => $this->setup->getElementTypeId(),
-                               'isStartPage'      => $this->setup->getIsStartElement(),
-                               'showInNavigation' => $this->setup->getShowInNavigation(),
-                               'idParent'         => $this->setup->getParentId(),
-                               'idParentTypes'    => $this->setup->getParentTypeId(),
-                               'pageId'           => $strPageId,
-                               'version'          => $intPageVersion,
-                               'sortPosition'     => $intSortPosition,
-                               'sortTimestamp'    => date('Y-m-d H:i:s'),
-                               'idUsers'          => $intUserId,
-                               'creator'          => $this->setup->getCreatorId(),
-                               'created'          => date('Y-m-d H:i:s'),
-                               'idStatus'         => $this->setup->getStatusId());
-
-          $this->setup->setElementId($this->objModelPages->getPageTable()->insert($arrMainData));
-
-          $this->insertCoreData('page', $strPageId, $intPageVersion);
-          $this->insertFileData('page', array('Id' => $strPageId, 'Version' => $intPageVersion));
-          $this->insertMultiFieldData('page', array('Id' => $strPageId, 'Version' => $intPageVersion));
-          $this->insertInstanceData('page', array('Id' => $strPageId, 'Version' => $intPageVersion));
-          $this->insertMultiplyRegionData('page', $strPageId, $intPageVersion);
+          $this->setup->setElementId($objPage->id);
+         
+          $this->insertCoreData('page', $objPage->pageId, $objPage->version);
+          $this->insertFileData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
+          $this->insertMultiFieldData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
+          $this->insertInstanceData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
+          $this->insertMultiplyRegionData('page', $objPage->pageId, $objPage->version);
           break;
 
         case $this->core->sysConfig->generic->actions->edit :
 
-          $objSelect = $this->objModelPages->getPageTable()->select();
-          $objSelect->from('pages', array('pageId', 'version'));
-          $objSelect->where('id = ?', $this->setup->getElementId());
-
-          $objRowSet = $this->objModelPages->getPageTable()->fetchAll($objSelect);
-
-          if(count($objRowSet) == 1){
-            $objPages = $objRowSet->current();
-
-            $strPageId = $objPages->pageId;
-            $intPageVersion = $objPages->version;
-
-            $strWhere = $this->objModelPages->getPageTable()->getAdapter()->quoteInto('pageId = ?', $objPages->pageId);
-            $strWhere .= $this->objModelPages->getPageTable()->getAdapter()->quoteInto(' AND version = ?', $objPages->version);
-
-            $this->objModelPages->getPageTable()->update(array('idGenericForms'   => $this->setup->getGenFormId(),
-                                                               'idTemplates'      => $this->setup->getTemplateId(),
-                                                               'idUsers'          => $intUserId,
-                                                               'creator'          => $this->setup->getCreatorId(),
-                                                               'idStatus'         => $this->setup->getStatusId(),
-                                                               'published'        => $this->setup->getPublishDate(),
-                                                               'idPageTypes'      => $this->setup->getElementTypeId(),
-                                                               'showInNavigation' => $this->setup->getShowInNavigation(),
-                                                               'changed'          => date('Y-m-d H:i:s')), $strWhere);
-
-            $this->updateCoreData('page', $objPages->pageId, $objPages->version);
-            $this->updateFileData('page', array('Id' => $objPages->pageId, 'Version' => $objPages->version));
-            $this->updateMultiFieldData('page', $objPages->pageId, $objPages->version);
-            $this->updateInstanceData('page', $objPages->pageId, $objPages->version);
-            $this->updateMultiplyRegionData('page', $objPages->pageId, $objPages->version);
+          $objPage = $this->objModelPages->load($this->setup->getElementId());
+          
+          if(count($objPage) > 0){
+            $objPage = $objPage->current();
+            
+            $this->objModelPages->update($this->setup, $objPage);
+            
+            $this->updateCoreData('page', $objPage->pageId, $objPage->version);
+            $this->updateFileData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
+            $this->updateMultiFieldData('page', $objPage->pageId, $objPage->version);
+            $this->updateInstanceData('page', $objPage->pageId, $objPage->version);
+            $this->updateMultiplyRegionData('page', $objPage->pageId, $objPage->version);
           }
           break;
 
         case $this->core->sysConfig->generic->actions->change_template :
 
-          $objSelect = $this->objModelPages->getPageTable()->select();
-          $objSelect->from('pages', array('pageId', 'version'));
-          $objSelect->where('id = ?', $this->setup->getElementId());
+          $objPage = $this->objModelPages->load($this->setup->getElementId());
+          
+          if(count($objPage) > 0){
+            $objPage = $objPage->current();
 
-          $objRowSet = $this->objModelPages->getPageTable()->fetchAll($objSelect);
-
-          if(count($objRowSet) == 1){
-            $objPages = $objRowSet->current();
-
-            $strPageId = $objPages->pageId;
-            $intPageVersion = $objPages->version;
-
-            $strWhere = $this->objModelPages->getPageTable()->getAdapter()->quoteInto('pageId = ?', $objPages->pageId);
-            $strWhere .= $this->objModelPages->getPageTable()->getAdapter()->quoteInto(' AND version = ?', $objPages->version);
+            $this->objModelPages->update($this->setup, $objPage);
+            
+            /*
+            $strWhere = $this->objModelPages->getPageTable()->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
+            $strWhere .= $this->objModelPages->getPageTable()->getAdapter()->quoteInto(' AND version = ?', $objPage->version);
 
             $this->objModelPages->getPageTable()->update(array('idGenericForms' => $this->setup->getGenFormId(),
                                                                'idTemplates'    => $this->setup->getTemplateId(),
                                                                'idUsers'        => $intUserId), $strWhere);
-
-            $this->insertCoreData('page', $objPages->pageId, $objPages->version);
+            */
+            
+            $this->insertCoreData('page', $objPage->pageId, $objPage->version);
 
             if($this->blnHasLoadedFileData){
-              $this->updateFileData('page', array('Id' => $objPages->pageId, 'Version' => $objPages->version));
+              $this->updateFileData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
             }else{
-              $this->insertFileData('page', array('Id' => $objPages->pageId, 'Version' => $objPages->version));
+              $this->insertFileData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
             }
 
             if($this->blnHasLoadedMultiFieldData){
-              $this->updateMultiFieldData('page', $objPages->pageId, $objPages->version);
+              $this->updateMultiFieldData('page', $objPage->pageId, $objPage->version);
             }else{
-              $this->insertMultiFieldData('page', array('Id' => $objPages->pageId, 'Version' => $objPages->version));
+              $this->insertMultiFieldData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
             }
 
             if($this->blnHasLoadedInstanceData){
-              $this->updateInstanceData('page', $objPages->pageId, $objPages->version);
+              $this->updateInstanceData('page', $objPage->pageId, $objPage->version);
             }else{
-              $this->insertInstanceData('page', array('Id' => $objPages->pageId, 'Version' => $objPages->version));
+              $this->insertInstanceData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
             }
           }
           break;
         case $this->core->sysConfig->generic->actions->change_template_id :
+         
+          $objPage = $this->objModelPages->load($this->setup->getElementId());
+          
+          if(count($objPage) > 0){
+            $objPage = $objPage->current();
 
-          $objSelect = $this->objModelPages->getPageTable()->select();
-          $objSelect->from('pages', array('pageId', 'version'));
-          $objSelect->where('id = ?', $this->setup->getElementId());
-
-          $objRowSet = $this->objModelPages->getPageTable()->fetchAll($objSelect);
-
-          if(count($objRowSet) == 1){
-            $objPages = $objRowSet->current();
-
-            $strPageId = $objPages->pageId;
-            $intPageVersion = $objPages->version;
-
-            $strWhere = $this->objModelPages->getPageTable()->getAdapter()->quoteInto('pageId = ?', $objPages->pageId);
-            $strWhere .= $this->objModelPages->getPageTable()->getAdapter()->quoteInto(' AND version = ?', $objPages->version);
+            $this->objModelPages->update($this->setup, $objPage);
+            
+            /*
+            $strWhere = $this->objModelPages->getPageTable()->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
+            $strWhere .= $this->objModelPages->getPageTable()->getAdapter()->quoteInto(' AND version = ?', $objPage->version);
 
             $this->objModelPages->getPageTable()->update(array('idGenericForms' => $this->setup->getGenFormId(),
                                                                'idTemplates'    => $this->setup->getTemplateId(),
                                                                'idUsers'        => $intUserId), $strWhere);
+            */
           }
           break;
       }
@@ -232,7 +173,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
       if(count($this->setup->SpecialFields()) > 0){
         foreach($this->setup->SpecialFields() as $objField){
           $objField->setGenericSetup($this->setup);
-          $objField->save($this->setup->getElementId(), 'page', $strPageId, $intPageVersion);
+          $objField->save($this->setup->getElementId(), 'page', $objPage->pageId, $objPage->version);
         }
       }
 
@@ -240,14 +181,14 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
       if($this->setup->getElementTypeId() != $this->core->sysConfig->page_types->link->id && $this->setup->getStatusId() == $this->core->sysConfig->status->live){
         if(substr(PHP_OS, 0, 3) === 'WIN') {
           $this->core->logger->warning('slow page index on windows based OS!');
-          $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $strPageId);
+          $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $objPage->pageId);
         }else{
           $strIndexPageFilePath = GLOBAL_ROOT_PATH.'cli/IndexPage.php';
           //run page index in background
-          exec("php $strIndexPageFilePath --pageId='".$strPageId."' --version=".$intPageVersion." --languageId=".$this->setup->getLanguageId()." > /dev/null &#038;");
+          exec("php $strIndexPageFilePath --pageId='".$objPage->pageId."' --version=".$objPage->version." --languageId=".$this->setup->getLanguageId()." > /dev/null &#038;");
         }
       }else{
-        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $strPageId);
+        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $objPage->pageId);
       }
 
       //cache expiring
@@ -290,10 +231,10 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
     $this->core->logger->debug('massiveart->generic->data->GenericDataTypePage->load()');
     try {
 
-      $objPages = $this->getModelPages()->load($this->setup->getElementId());
+      $objPage = $this->getModelPages()->load($this->setup->getElementId());
 
-      if(count($objPages) > 0){
-        $objPage = $objPages->current();
+      if(count($objPage) > 0){
+        $objPage = $objPage->current();
 
         /**
          * set some metainformations of current page to get them in the output
@@ -335,6 +276,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
       $this->objModelPages = new Model_Pages();
+      $this->objModelPages->setLanguageId($this->setup->getLanguageId());
     }
 
     return $this->objModelPages;
@@ -355,6 +297,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
+      $this->objModelFolders->setLanguageId($this->setup->getLanguageId());
     }
 
     return $this->objModelFolders;
