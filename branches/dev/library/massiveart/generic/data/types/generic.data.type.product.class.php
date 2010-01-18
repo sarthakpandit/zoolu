@@ -94,10 +94,10 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
         case $this->core->sysConfig->generic->actions->edit :
 
           $objProduct = $this->objModelProducts->load($this->setup->getElementId());
-          $objProduct->linkId = $this->setup->getElementLinkId();
           
           if(count($objProduct) > 0){
             $objProduct = $objProduct->current();
+            $objProduct->linkId = $this->setup->getElementLinkId();
 
             $this->objModelProducts->update($this->setup, $objProduct);
 
