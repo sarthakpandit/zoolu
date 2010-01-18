@@ -386,7 +386,7 @@ class Model_Folders {
                                                  folders.depth <= ? AND
                                                  folders.showInNavigation = 1
                                                  '.$strFolderFilter.'
-                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $intFolderId, $intDepth));
+                                             ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->intLanguageId, $intFolderId, $intDepth));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
@@ -583,13 +583,13 @@ class Model_Folders {
 	        $strSqlOrderBy = ' ORDER BY pages.sortPosition '.$strSortOrder.', pages.sortTimestamp '.(($strSortOrder == 'DESC') ? 'ASC' : 'DESC');
 	        break;
 	      case $this->core->sysConfig->sort->types->created->id:
-	        $strSqlOrderBy = ' ORDER BY pages.created '.$strSortOrder;
+	        $strSqlOrderBy = ' ORDER BY pageProperties.created '.$strSortOrder;
 	        break;
 	      case $this->core->sysConfig->sort->types->changed->id:
-	        $strSqlOrderBy = ' ORDER BY pages.changed '.$strSortOrder;
+	        $strSqlOrderBy = ' ORDER BY pageProperties.changed '.$strSortOrder;
 	        break;
 	      case $this->core->sysConfig->sort->types->published->id:
-	        $strSqlOrderBy = ' ORDER BY pages.published '.$strSortOrder;
+	        $strSqlOrderBy = ' ORDER BY pageProperties.published '.$strSortOrder;
 	        break;
 	      case $this->core->sysConfig->sort->types->alpha->id:
 	        $strSqlOrderBy = ' ORDER BY title '.$strSortOrder;

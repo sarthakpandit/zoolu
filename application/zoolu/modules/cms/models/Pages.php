@@ -475,11 +475,11 @@ class Model_Pages {
     if(count($objStartPageData) > 0){
       $objStartPage = $objStartPageData->current();
 
-      $strWhere = $this->objPageTable->getAdapter()->quoteInto('pageId = ?', $objStartPage->pageId);
-      $strWhere .= $this->objPageTable->getAdapter()->quoteInto(' AND version = ?',  $objStartPage->version);
-      $this->objPageTable->update($arrProperties, $strWhere);
+      $strWhere = $this->getPagePropertyTable()->getAdapter()->quoteInto('pageId = ?', $objStartPage->pageId);
+      $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND version = ?',  $objStartPage->version);
+      $this->objPagePropertyTable->update($arrProperties, $strWhere);
 
-      $strWhere .= $this->objPageTable->getAdapter()->quoteInto(' AND idLanguages = ?',  $this->intLanguageId);
+      $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND idLanguages = ?',  $this->intLanguageId);
       $intNumOfEffectedRows = $this->core->dbh->update('pageTitles', $arrTitle, $strWhere);
 
       if($intNumOfEffectedRows == 0){
