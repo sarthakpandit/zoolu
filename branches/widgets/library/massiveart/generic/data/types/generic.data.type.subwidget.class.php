@@ -54,21 +54,22 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 		$this->core->logger->debug('massiveart->generic->data->GenericDataTypeSubwidget->save()');
 		
 		$intSubwidgetVersion = 0;
+		$strSubwidgetId = $this->Setup()->getSubwidgetId();
 		
 		switch($this->setup->getActionType()) {
 			case $this->core->sysConfig->generic->actions->add:
 				//FIXME Categories have to work!
-				$this->insertMultiFieldData('subwidget', array('Id' => $this->Setup()->getSubwidgetId(), 'Version' => $intSubwidgetVersion));
+				$this->insertCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 			case $this->core->sysConfig->generic->actions->edit:
-				
+				$this->updateCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 		}
 		
 		if(count($this->setup->SpecialFields()) > 0) {
 			foreach($this->setup->SpecialFields() as $objField) {
 				$objField->setGenericSetup($this->setup);
-				$objField->save($this->setup->getElementId(), 'subwidget', $this->Setup()->getSubwidgetId(), $intSubwidgetVersion);
+				$objField->save($this->setup->getElementId(), 'subwidget', $strSubwidgetId, $intSubwidgetVersion);
 			}
 		}
 	}
@@ -79,16 +80,61 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 	 * @version 1.0
 	 */
 	public function load() {
-		$this->core->logger->debug('massiveart->generic->data->GenericDataTypeSubwidget->load()');
+	  $this->core->logger->debug('massiveart->generic->data->GenericDataTypeSubwidget->load()');
 		
-		$intSubwidgetVersion = 0;
-		
+	  $intSubwidgetVersion = 0;
+			
 		if(count($this->setup->SpecialFields()) > 0){
-      foreach($this->setup->SpecialFields() as $objField){
-        $objField->setGenericSetup($this->setup);
-        $objField->load($this->setup->getElementId(), 'subwidget', $this->Setup()->getSubwidgetId(), $intSubwidgetVersion);
-      }
-    }
+	    foreach($this->setup->SpecialFields() as $objField){
+	      $objField->setGenericSetup($this->setup);
+	      $objField->load($this->setup->getElementId(), 'subwidget', $this->Setup()->getSubwidgetId(), $intSubwidgetVersion);
+	    }
+	  }
+	    
+	  if(count($this->setup->CoreFields()) > 0){
+		  /**
+		   * for each core field, try to select the secondary table
+		   */
+		  foreach($this->setup->CoreFields() as $strField => $objField){
+		
+      $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+	    $objSelect = $objGenTable->select();
+	
+	    $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
+	    $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
+	    $objSelect->where('version = ?', $intSubwidgetVersion);
+	    $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+		
+	    $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+		
+		  if(count($arrGenFormsData) > 0){
+		    $objField->blnHasLoadedData = true;
+		    if(count($arrGenFormsData) > 1){
+		      $arrFieldData = array();
+		      foreach ($arrGenFormsData as $arrRowGenFormData) {
+		        foreach ($arrRowGenFormData as $column => $value) {
+		          array_push($arrFieldData, $value);
+		        }
+		      }
+		      if($column == $strField){
+		        $objField->setValue($arrFieldData);
+		      }else{
+		        $objField->$column = $arrFieldData;
+		      }
+		    }else{
+		      foreach ($arrGenFormsData as $arrRowGenFormData) {
+		        foreach ($arrRowGenFormData as $column => $value) {
+		          if($column == $strField){
+		            $objField->setValue($value);
+		          }else{
+		            $objField->$column = $value;
+		            }
+		          }
+		        }
+		      }
+		    }
+	    }
+	  }
 	}
 }
 ?>
