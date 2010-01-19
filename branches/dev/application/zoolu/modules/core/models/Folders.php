@@ -372,8 +372,7 @@ class Model_Folders {
                                             LEFT JOIN pageProperties ON 
                                               pageProperties.pageId = pages.pageId AND 
                                               pageProperties.version = pages.version AND 
-                                              pageProperties.idLanguages = ? AND
-                                              pageProperties.showInNavigation = 1
+                                              pageProperties.idLanguages = ?                                              
                                               '.$strPageFilter.'
                                             LEFT JOIN pageTitles ON
                                               pageTitles.pageId = pages.pageId AND
@@ -384,7 +383,8 @@ class Model_Folders {
                                                  folders.lft BETWEEN parent.lft AND parent.rgt AND
                                                  folders.idRootLevels = parent.idRootLevels AND
                                                  folders.depth <= ? AND
-                                                 folders.showInNavigation = 1
+                                                 folders.showInNavigation = 1 AND
+                                                 pageProperties.showInNavigation = 1
                                                  '.$strFolderFilter.'
                                              ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $this->intLanguageId, $this->intLanguageId, $intFolderId, $intDepth));
 
@@ -782,8 +782,7 @@ class Model_Folders {
 																			    LEFT JOIN pageProperties ON 
 																			      pageProperties.pageId = pages.pageId AND 
 																			      pageProperties.version = pages.version AND 
-																			      pageProperties.idLanguages = ? AND
-                                            pageProperties.showInNavigation = 1
+																			      pageProperties.idLanguages = ?
 																			      '.$strPageFilter.'
 																			    LEFT JOIN pageTitles ON
 																			      pageTitles.pageId = pages.pageId AND
@@ -819,7 +818,8 @@ class Model_Folders {
 																				    plExternals.idLanguages = ?
                                         WHERE folders.idRootLevels = ? AND
                                           folders.depth <= ? AND
-                                          folders.showInNavigation = 1
+                                          folders.showInNavigation = 1 AND
+                                            pageProperties.showInNavigation = 1
                                           '.$strFolderFilter.'
                                         ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id,
                                                                                                                                                              $this->core->sysConfig->page_types->link->id,
