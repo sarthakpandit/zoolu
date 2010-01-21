@@ -58,7 +58,6 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 		
 		switch($this->setup->getActionType()) {
 			case $this->core->sysConfig->generic->actions->add:
-				//FIXME Categories have to work!
 				$this->insertCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 			case $this->core->sysConfig->generic->actions->edit:

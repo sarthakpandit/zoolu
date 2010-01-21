@@ -131,6 +131,7 @@ class Blog_FormController extends AuthControllerAction {
 					$this->objForm->getElement('id')->setValue($intSubWidgetId);
 			
 					// Add WidgetForm Url
+					//FIXME: Should be provided by URL-Field
 					$strSubwidgetUrl = $this->getModelWidgets()->prepareSubwidgetUrl($arrFormData['title'], $arrFormData['widgetInstanceId'], 1);
 					$this->getModelWidgets()->insertWidgetUrl($strSubwidgetUrl, $arrFormData['widgetInstanceId'], '1');
 					
