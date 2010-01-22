@@ -67,6 +67,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function init() {
 		parent::init();
 		$this->addThemeCss('view');
+		// widget.inc.php
 		//$this->addThemeJs('test');
 		$this->view->setHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');
     $this->view->addHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');  
@@ -78,7 +79,6 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
 	public function indexAction() {
-		$this->strTemplateFile = 'index.php';
 		$objEntries = $this->getBlogEntriesTable();
 		$objWidgetProperties = $this->getWidgetInstancePropertiesTable();
 		
@@ -88,6 +88,10 @@ class Blog_IndexController extends WidgetControllerAction  {
     $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset);
 		$this->view->assign('objEntries',$objEntry);
 		$this->view->total = $objEntries->getBlogEntryCount($this->objWidget->getWidgetInstanceId());
+		
+		$objBlogWidgetTags = $this->getBlogEntriesTagsTable();
+		$objBlogWidgetTags->setInstanceId($this->objWidget->getWidgetInstanceId());
+		Zend_Registry::set('WidgetBlogTags', $objBlogWidgetTags);
 	}
 	
 	public function getViewActionForm() {
@@ -122,8 +126,6 @@ class Blog_IndexController extends WidgetControllerAction  {
   	$objEntry = $objBlogEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), '1');
   	$this->view->assign('objEntry',$objEntry[0]);
 
-  	$this->view->assign('tags', $this->getBlogEntriesTagsTable()->getTagCloud());
-  	
   	/*	
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];

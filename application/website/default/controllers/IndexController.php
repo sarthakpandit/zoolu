@@ -175,7 +175,7 @@ class IndexController extends Zend_Controller_Action {
       	case $this->core->sysConfig->url_types->widget: {
       		$objWidget = new Widget();
        		$this->getModelWidgets();
-       		
+			      
        		if($objUrlData->idParent) {
         		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->idParent);
         		$objWidget->setWidgetInstanceId($objUrlData->idParent);
@@ -194,10 +194,9 @@ class IndexController extends Zend_Controller_Action {
 					$objWidget->setWidgetVersion($objUrlData->version);
 					$objWidget->setLanguageId($objUrlData->idLanguages);
 					$objWidget->setUrlParentId($objUrlData->idParent);
-
+					
 					Zend_Registry::set('Widget', $objWidget);
 					$this->_forward($objWidget->getAction(),'index',$objWidgetInstance->name);
-		      
       	} break;
       	
 				// Url Type: page
