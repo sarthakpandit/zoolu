@@ -12,6 +12,11 @@
 				<?php print $this->objEntry->text; ?>
 				
 				<?php print $this->form; ?>
+				
+				<?php 
+					print $this->tags;
+				?>
+				
 				<!-- 
 				<form name="addComment" method="post" id="blogWidgetCommentForm">
 					<strong>Eine Antwort schreiben</strong><br/>

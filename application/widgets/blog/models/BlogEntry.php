@@ -51,19 +51,20 @@ class Model_BlogEntry {
 	 * @var Core
 	 */
 	protected $core;
+	protected $intBlogEntryCount;
 	
 	public function __construct() {
 		$this->core = Zend_Registry::get('Core');
 	}
 	
 	/**
-	 * getBlogEntries
-	 * @return Zend_Db_Table_Rowset_Abstract
-   * @author Florian Mathis <flo@massiveart.com>
-   * @version 1.0
+	 * getBlogEntryCount
+	 * @return integer $intBlogEntryCount
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
 	 */
-	public function getBlogEntries($strWidgetInstanceId, $intCount=5) {
-		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntries('.$strWidgetInstanceId.', '.$intCount.')');
+	public function getBlogEntryCount($strWidgetInstanceId){
+		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntryCount('.$strWidgetInstanceId.')');
 		
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
@@ -72,9 +73,33 @@ class Model_BlogEntry {
 		$objSelectForm->join('urls','urls.idParent = widget_BlogEntries.widgetInstanceId', array('url'));
 		$objSelectForm->where("widget_BlogEntries.widgetInstanceId = ?", $strWidgetInstanceId);
 		$objSelectForm->order('widget_BlogEntries.created ASC');
-		$objSelectForm->limit($intCount, 0);
+		$data = $this->objBlogEntryTable->fetchAll($objSelectForm);
+		$this->intBlogEntryCount = $data->count();
 		
-		return $this->objBlogEntryTable->fetchAll($objSelectForm);
+		return $this->intBlogEntryCount;
+	}
+	
+	/**
+	 * getBlogEntries
+	 * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+	 */
+	public function getBlogEntries($strWidgetInstanceId, $intPerPage=10, $intOffset=0) {
+		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntries('.$strWidgetInstanceId.', '.$intPerPage.', '.$intOffset.')');
+		
+		$objSelectForm = $this->getBlogEntryTable()->select();
+		$objSelectForm->setIntegrityCheck(false);
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'widget_BlogEntries.created', 'created_ts' => 'UNIX_TIMESTAMP(widget_BlogEntries.created)', 'text'));
+		$objSelectForm->join('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
+		$objSelectForm->join('urls','urls.idParent = widget_BlogEntries.widgetInstanceId', array('url'));
+		$objSelectForm->where("widget_BlogEntries.widgetInstanceId = ?", $strWidgetInstanceId);
+		$objSelectForm->order('widget_BlogEntries.created ASC');
+		$objSelectForm->limit($intPerPage, $intOffset);
+		$data = $this->objBlogEntryTable->fetchAll($objSelectForm);
+		$this->intBlogEntryCount = $data->count();
+		
+		return $data;
 	}
 	
  /**

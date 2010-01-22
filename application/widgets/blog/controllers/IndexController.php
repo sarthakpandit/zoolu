@@ -45,6 +45,16 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @var object $objBlogEntries
    */
 	protected $objBlogEntries;
+	
+	/**
+	 * @var object $objBlogEntriesTags
+	 */
+	protected $objBlogEntriesTags;
+	
+	/**
+	 * @var object $objWidgetInstanceProperties
+	 */
+	protected $objWidgetInstanceProperties;
   
 	/**
 	 * Initialize WidgetController action and add 
@@ -58,6 +68,8 @@ class Blog_IndexController extends WidgetControllerAction  {
 		parent::init();
 		$this->addThemeCss('view');
 		//$this->addThemeJs('test');
+		$this->view->setHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');
+    $this->view->addHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');  
 	}
 	
   /**
@@ -68,16 +80,14 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function indexAction() {
 		$this->strTemplateFile = 'index.php';
 		$objEntries = $this->getBlogEntriesTable();
-		$objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId());
+		$objWidgetProperties = $this->getWidgetInstancePropertiesTable();
 		
-		// view pagination
-		$page=$this->_getParam('page',1);
-    $paginator = Zend_Paginator::factory($objEntry);
-    $paginator->setItemCountPerPage(1);
-    $paginator->setCurrentPageNumber($page);
-    $this->view->paginator=$paginator;
-		
+    $this->view->perPage = $objWidgetProperties->getPropertyValue('pagination', $this->objWidget->getWidgetInstanceId());
+    $offset = ($this->_getParam('page') > 0) ? $this->view->perPage * ($this->_getParam('page') - 1) : 0;
+
+    $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset);
 		$this->view->assign('objEntries',$objEntry);
+		$this->view->total = $objEntries->getBlogEntryCount($this->objWidget->getWidgetInstanceId());
 	}
 	
 	public function getViewActionForm() {
@@ -111,9 +121,10 @@ class Blog_IndexController extends WidgetControllerAction  {
   	$objBlogEntries = $this->getBlogEntriesTable();
   	$objEntry = $objBlogEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), '1');
   	$this->view->assign('objEntry',$objEntry[0]);
+
+  	$this->view->assign('tags', $this->getBlogEntriesTagsTable()->getTagCloud());
   	
-  	/*
-		
+  	/*	
   	$arrParams = $this->objRequest->getParams();
   	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
   	$strTitle = $arrParams[4];
@@ -166,6 +177,44 @@ class Blog_IndexController extends WidgetControllerAction  {
       $this->objBlogEntries = new Model_BlogEntry();
     }
     return $this->objBlogEntries;
+  }
+
+	/**
+   * getBlogEntriesTagsTable
+   * @return Model_BlogTags
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  protected function getBlogEntriesTagsTable(){
+    if (null === $this->objBlogEntriesTags) {
+      /**
+       * autoload only handles "library" components.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogTags.php';
+      $this->objBlogEntriesTags = new Model_BlogTags();
+    }
+    return $this->objBlogEntriesTags;
+  }
+  
+/**
+   * getWidgetInstancePropertiesTable
+   * @return Model_WidgetInstanceProperties
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  protected function getWidgetInstancePropertiesTable(){
+    if (null === $this->objWidgetInstanceProperties) {
+      /**
+       * autoload only handles "library" components.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/WidgetInstanceProperties.php';
+      $this->objWidgetInstanceProperties = new Model_WidgetInstanceProperties();
+    }
+    return $this->objWidgetInstanceProperties;
   }
 }
 
