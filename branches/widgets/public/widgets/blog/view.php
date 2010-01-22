@@ -10,21 +10,14 @@
 				<?php if (isset($this->objEntry->created)): print date("d.m.Y\, H:i \\U\\h\\r",strtotime($this->objEntry->created)); endif; ?>
 				<br/><br/>
 				<?php print $this->objEntry->text; ?>
-				
-				<?php print $this->form; ?>
-				
-				<?php 
-					print $this->tags;
-				?>
-				
-				<!-- 
+			 
 				<form name="addComment" method="post" id="blogWidgetCommentForm">
 					<strong>Eine Antwort schreiben</strong><br/>
 					<label for="name">Name</label><input type="text" name="name"/><br/>
 					<label for="mail">E-Mail</label><input type="text" name="mail"/><br/>
 					<textarea name="text"></textarea><br/>
 					<input type="submit" name="submit" value="Absenden"/>
-				</form> -->
+				</form>
         <div class="clear"></div>
       </div>  
     </div>

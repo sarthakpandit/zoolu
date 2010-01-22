@@ -52,45 +52,49 @@ class Model_BlogTags {
 	 */
 	protected $objBlogEntriesTagTable;
 	
+	/**
+	 * @var string WidgetInstanceId 
+	 */
+	protected $strWidgetInstanceId;
+	
 	public function __construct() {
 		$this->core = Zend_Registry::get('Core');
 	}
 	
-	public function getTagCloud(){
-		$this->core->logger->debug('widgets->blog->Model_BlogTags->getTagCloud()');
+	/**
+	 * getTags
+	 * @return array tags
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getTags(){
+		$this->core->logger->debug('widgets->blog->Model_BlogTags->getTags()');
 		
 		$objSelect = $this->getBlogEntryTagTable()->select();
 		$objSelect->setIntegrityCheck(false);
-		$objSelect->from('tags', array('title', 'count(tagSubwidgets.idTags) AS c', 'MAX(c) AS maxC', 'MIN(c) AS minC'));
+		$objSelect->from('tags', array('title', 'count(tagSubwidgets.idTags) AS c'));
 		$objSelect->join('tagSubwidgets', 'tagSubwidgets.idTags = tags.id', array());
+		$objSelect->join('widget_BlogEntries', 'widget_BlogEntries.subwidgetId = tagSubwidgets.subwidgetId', array());
+		$objSelect->where('widget_BlogEntries.widgetInstanceId = ?', $this->strWidgetInstanceId);
 		$objSelect->group('tags.title');
-
+		
 		$tags = array();
 		foreach($this->objBlogEntriesTagTable->fetchAll($objSelect) AS $keywords) {
-			array_push($tags,array('count' => $keywords->count, $keywords->title));
+			$tags[$keywords['title']] = $keywords['c'];
 		}
 		
-		echo var_dump($tags);
-		
-		/*
-		$typecount = array_count_values($tags);
-		$types = $tags;
-		
-		$max = max($typecount);
-		$min = min($typecount);
-		echo $max.'-'.$min;
-		
-		$x = 18; // 18px
-		$y = 11; // 11px
-		
-		$stepvalue = ($max - $min) / ($x - $y);	
-		
-			for($i=0;$i<count($types);$i++)
-		{
-		  echo '<a href="/fonts?t='.$types[$i].'" 
-		  style="font-size:'. ( $y + round( ($typecount[$types[$i]]-$min) / $stepvalue ) ).'px;">'. $types[$i].'</a>';
-		  if($i<count($types)-1) echo ",\n";
-		}*/
+		ksort($tags);
+		return $tags;
+	}
+	
+	/**
+	 * setInstanceId
+	 * @param string $strWidgetInstanceId
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function setInstanceId($strWidgetInstanceId){
+		$this->strWidgetInstanceId = $strWidgetInstanceId;
 	}
 	
 	/**

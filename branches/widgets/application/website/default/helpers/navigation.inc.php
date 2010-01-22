@@ -135,22 +135,27 @@ function get_main_navigation_title(){
   
   $objNavigation->loadMainNavigation();
   
-  $strPageId = '';  
+  $strPageId = ''; 
+  $strWidgetId = ''; 
   if(is_object($objNavigation->Page())){
     $strPageId = $objNavigation->Page()->getPageId();
-  }   
+  } else if(is_object($objNavigation->Widget())) {
+  	$strWidgetId = $objNavigation->Widget()->getWidgetInstanceId();
+  }
   $strFolderId = $objNavigation->getRootFolderId();
   
   if(count($objNavigation->MainNavigation()) > 0){    
     foreach($objNavigation->MainNavigation() as $objNavigationItem){
-      
+
       $blnIsSelected = false;
       if($strPageId == $objNavigationItem->pageId){
         $blnIsSelected = true;
       }else if($strFolderId == $objNavigationItem->folderId){
         $blnIsSelected = true;
+      }else if($strWidgetId == $objNavigationItem->widgetId){
+      	$blnIsSelected = true;
       }
-            
+      
       if($blnIsSelected){
 	      $strHtmlOutput  .= htmlentities($objNavigationItem->title, ENT_COMPAT, $objCore->sysConfig->encoding->default);   
       }

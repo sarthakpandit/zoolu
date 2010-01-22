@@ -70,6 +70,13 @@ class Navigation {
   }
   
   /**
+   * @return Widget
+   */
+  public function Widget(){
+  	return Zend_Registry::get('Widget');
+  }
+  
+  /**
    * @var Zend_Db_Table_Rowset_Abstract
    */
   protected $objMainNavigation;

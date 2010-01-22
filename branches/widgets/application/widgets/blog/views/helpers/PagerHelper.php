@@ -110,7 +110,7 @@ class Blog_View_Helper_Pager {
     $pagination = array();
     $pagination[] = $this->pager()->previous();
     $pagination[] = $this->pager()->next();
-    return join('', $pagination);
+    return join(' ', $pagination);
  }
    
   /**

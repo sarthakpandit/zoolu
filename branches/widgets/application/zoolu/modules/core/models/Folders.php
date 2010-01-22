@@ -213,7 +213,7 @@ $this->core->logger->debug(strval($objSelect));
       $strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
     }
 
-    $sqlStmt = $this->core->dbh->query('SELECT id, title, idStatus, url, pageId, folderId, sortPosition, sortTimestamp, isStartPage, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
+    $sqlStmt = $this->core->dbh->query('SELECT id, title, idStatus, url, pageId, folderId, widgetId, sortPosition, sortTimestamp, isStartPage, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
                                         FROM (SELECT DISTINCT folders.id, folderTitles.title, folders.idStatus,
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT pU.url FROM pageLinks, pages AS p LEFT JOIN urls AS pU ON pU.relationId = p.pageId AND pU.version = p.version AND pU.idLanguages = ? WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
@@ -221,7 +221,7 @@ $this->core->logger->debug(strval($objSelect));
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
-                                                              folders.folderId, folders.sortPosition, folders.sortTimestamp, -1 AS isStartPage
+                                                              folders.folderId, -1 AS widgetId, folders.sortPosition, folders.sortTimestamp, -1 AS isStartPage
                                               FROM folders
                                               INNER JOIN folderTitles ON
                                                 folderTitles.folderId = folders.folderId AND
@@ -243,7 +243,7 @@ $this->core->logger->debug(strval($objSelect));
                                                               IF(pages.idPageTypes = ?,
                                                                  (SELECT p.pageId FROM pages AS p, pageLinks WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1),
                                                                  pages.pageId) AS pageId,
-                                                              -1 AS folderId, pages.sortPosition, pages.sortTimestamp, pages.isStartPage
+                                                              -1 AS folderId, -1 AS widgetId, pages.sortPosition, pages.sortTimestamp, pages.isStartPage
                                               FROM pages
                                               LEFT JOIN pageTitles ON
                                                 pageTitles.pageId = pages.pageId AND
@@ -257,7 +257,7 @@ $this->core->logger->debug(strval($objSelect));
                                               UNION
 																	            SELECT DISTINCT wi.id, wit.title, -1 AS idStatus, 
 																	            	(SELECT pU.url FROM urls AS pU WHERE pU.relationId = wi.widgetInstanceId AND pU.version = wi.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url, -1 AS tmpVar,
-																	            	-1 AS folderId, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, -1 AS isStartPage
+																	            	-1 AS folderId, wi.widgetInstanceId AS widgetId, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, -1 AS isStartPage
 																	            FROM widgetInstances wi
 																	            INNER JOIN widgetInstanceTitles wit ON wi.widgetInstanceId = wit.widgetInstanceId
 																	            INNER JOIN widgets w ON w.id = wi.idWidgets																	            

@@ -65,7 +65,7 @@ class Widget{
   protected $strWidgetTitle;
   
   protected $strUrlParentId;
-  
+ 
   
 	/**
    * setUrlParentId

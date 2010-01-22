@@ -23,3 +23,22 @@
 #blogWidgetCommentForm input[type=submit] {
 	width: 130px;
 }
+
+.blogWidgetTag1 {
+	font-size: 12px;
+}
+.blogWidgetTag2 {
+	font-size: 14px;
+}
+.blogWidgetTag3 {
+	font-size: 15px;
+}
+.blogWidgetTag4 {
+	font-size: 17px;
+}
+.blogWidgetTag5 {
+	font-size: 18px;
+}
+.blogWidgetTag6 {
+	font-size: 20px;
+}
