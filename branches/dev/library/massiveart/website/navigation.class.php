@@ -47,7 +47,7 @@ require_once(dirname(__FILE__).'/navigation/tree.class.php');
 require_once(dirname(__FILE__).'/navigation/item.class.php');
 
 class Navigation {
-
+  
   /**
    * @var Core
    */
@@ -158,6 +158,7 @@ class Navigation {
             $objTree->setId($objNavigationItem->idFolder);
             $objTree->setParentId(0);
             $objTree->setItemId($objNavigationItem->folderId);
+            $objTree->setOrder($objNavigationItem->folderOrder);
             $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
             $intTreeId = $objNavigationItem->idFolder;
@@ -177,6 +178,7 @@ class Navigation {
               $objTree->setId($objNavigationItem->idFolder);
               $objTree->setParentId($objNavigationItem->parentId);
               $objTree->setItemId($objNavigationItem->folderId);
+              $objTree->setOrder($objNavigationItem->folderOrder);
               $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
               $intTreeId = $objNavigationItem->idFolder;
@@ -192,6 +194,7 @@ class Navigation {
                 $objItem->setId($objNavigationItem->idPage);
                 $objItem->setParentId($objNavigationItem->idFolder);
                 $objItem->setItemId($objNavigationItem->pageId);
+                $objItem->setOrder($objNavigationItem->pageOrder);
                 $objTree->addItem($objItem, 'item_'.$objItem->getId());
               }
             }
@@ -199,7 +202,7 @@ class Navigation {
         }
       }
 
-     /**
+      /**
        * add to parent tree
        */
       if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
@@ -211,6 +214,181 @@ class Navigation {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * loadNavigationByDisplayOption
+   * @param integer $intDisplayOptionId
+   * @param integer $intDepth
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function loadNavigationByDisplayOption($intDisplayOptionId, $intDepth = 99){
+    try{
+      
+      $this->getModelFolders();
+
+      $this->evaluateRootFolderId();
+
+      $objNavigationTree = new NavigationTree();
+      $objNavigationTree->setId(0);
+
+      if($this->intRootLevelId > 0){
+        
+        $objNavigationData = $this->objModelFolders->loadWebsiteRootLevelChilds($this->intRootLevelId, $intDepth, $intDisplayOptionId);
+        
+        $intTreeId = 0;
+        foreach($objNavigationData as $objNavigationItem){
+
+          if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0){
+
+           /**
+            * add to parent tree
+            */
+            if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+              $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+            }
+
+            $objTree = new NavigationTree();
+            $objTree->setTitle($objNavigationItem->folderTitle);
+            $objTree->setId($objNavigationItem->idFolder);
+            $objTree->setParentId(0);
+            $objTree->setTypeId($objNavigationItem->idPageTypes);
+            $objTree->setItemId($objNavigationItem->folderId);
+            $objTree->setOrder($objNavigationItem->folderOrder);            
+            $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+
+            if($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->product_tree->id && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
+              $this->addProductTree($objTree);
+            }
+              
+            $intTreeId = $objNavigationItem->idFolder;
+
+          }else{
+            if($intTreeId != $objNavigationItem->idFolder){
+
+              /**
+               * add to parent tree
+               */
+              if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+                $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+              }
+
+              $objTree = new NavigationTree();
+              $objTree->setTitle($objNavigationItem->folderTitle);
+              $objTree->setId($objNavigationItem->idFolder);
+              $objTree->setTypeId($objNavigationItem->idPageTypes);
+              $objTree->setParentId($objNavigationItem->parentId);
+              $objTree->setItemId($objNavigationItem->folderId);
+              $objTree->setOrder($objNavigationItem->folderOrder);
+              $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                            
+              if($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->product_tree->id && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
+                $this->addProductTree($objTree);
+              }
+            
+              $intTreeId = $objNavigationItem->idFolder;
+            }
+
+            if($objNavigationItem->pageId != null){
+              if($objNavigationItem->isStartPage == 1){
+                $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+              }else{
+                $objItem = new NavigationItem();
+                $objItem->setTitle($objNavigationItem->title);
+                $objItem->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objItem->setId($objNavigationItem->idPage);
+                $objTree->setTypeId($objNavigationItem->idPageTypes);
+                $objItem->setParentId($objNavigationItem->idFolder);
+                $objItem->setItemId($objNavigationItem->pageId);
+                $objItem->setOrder($objNavigationItem->pageOrder);
+                $objTree->addItem($objItem, 'item_'.$objItem->getId());
+              }
+            }
+          }
+        }
+      }
+
+      /**
+       * add to parent tree
+       */
+      if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+        $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+      }
+
+      $this->objMainNavigation = $objNavigationTree;
+      
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    } 
+  }
+  
+  /**
+   * addProductTree
+   * @param NavigationTree $objNavigationTree
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  private function addProductTree(NavigationTree &$objNavigationTree){
+    try{
+      if($this->objPage instanceof Page){
+        
+        $intParentId = $this->objPage->getFieldValue('entry_product_point');
+        $arrFilterOptions = array('CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+                                  'LabelId'     => $this->objPage->getFieldValue('entry_label'));
+               
+        $objNavigationData = $this->getModelFolders()->loadWebsiteProductTree($intParentId, $arrFilterOptions);
+
+        if(count($objNavigationData) > 0){
+          
+          $intTreeId = 0;
+          
+          foreach($objNavigationData as $objNavigationItem){
+          
+            if($intTreeId != $objNavigationItem->idFolder){
+
+              /**
+               * add to parent tree
+               */
+              if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+                $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+              }
+
+              $objTree = new NavigationTree();
+              $objTree->setTitle($objNavigationItem->folderTitle);
+              $objTree->setId($objNavigationItem->idFolder);
+              $objTree->setTypeId($objNavigationItem->idProductTypes);
+              $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
+              $objTree->setItemId($objNavigationItem->folderId);
+              $objTree->setOrder($objNavigationItem->folderOrder);
+              //$objTree->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+              $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
+                           
+              $intTreeId = $objNavigationItem->idFolder;
+            }
+
+            if($objNavigationItem->productId != null){
+              if($objNavigationItem->isStartProduct == 1){
+                //$objTree->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
+              }else{
+                $objItem = new NavigationItem();
+                $objItem->setTitle($objNavigationItem->productTitle);
+                //$objItem->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objItem->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
+                $objItem->setId($objNavigationItem->idProduct);
+                $objTree->setTypeId($objNavigationItem->idProductTypes);
+                $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
+                $objItem->setItemId($objNavigationItem->productId);
+                $objItem->setOrder($objNavigationItem->productOrder);
+                $objTree->addItem($objItem, 'item_'.$objItem->getId());
+              }
+            }
+          }          
+        }
+      }
+            
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }     
+  }  
 
   /**
    * loadStaticSubNavigation

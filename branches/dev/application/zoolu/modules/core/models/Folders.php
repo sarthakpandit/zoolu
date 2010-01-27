@@ -548,7 +548,7 @@ class Model_Folders {
 
     return $this->getFolderTable()->fetchAll($objSelect);
   }
-
+  
   /**
    * loadFolderChildPages
    * @param integer $intFolderId
@@ -750,11 +750,13 @@ class Model_Folders {
   /**
    * loadWebsiteRootLevelChilds
    * @param integer $intRootLevelId
+   * @param integer $intDepth
+   * @param integer $intDisplayOptionId 
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadWebsiteRootLevelChilds($intRootLevelId, $intDepth = 1){
+  public function loadWebsiteRootLevelChilds($intRootLevelId, $intDepth = 1, $intDisplayOptionId = 1){
     $this->core->logger->debug('core->models->Folders->loadRootLevelChilds('.$intRootLevelId.','.$intDepth.')');
 
     $strFolderFilter = '';
@@ -764,9 +766,9 @@ class Model_Folders {
       $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
     }
 
-    $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folderTitles.title AS folderTitle, folders.depth,
+    $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folderTitles.title AS folderTitle, folders.depth, folders.sortPosition as folderOrder,
                                             IF(folders.idParentFolder = 0, pages.idParent, folders.idParentFolder) AS parentId,
-                                            pages.id AS idPage, pages.pageId, pages.isStartPage,
+                                            pages.id AS idPage, pages.pageId, pages.isStartPage, pages.sortPosition as pageOrder,
                                             IF(pageProperties.idPageTypes = ?, lUrls.url, urls.url) as url,
                                             IF(pageProperties.idPageTypes = ?, plExternals.external, pageExternals.external) as external,
                                             IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title,
@@ -818,8 +820,8 @@ class Model_Folders {
 																				    plExternals.idLanguages = ?
                                         WHERE folders.idRootLevels = ? AND
                                           folders.depth <= ? AND
-                                          folders.showInNavigation = 1 AND
-                                            pageProperties.showInNavigation = 1
+                                          folders.showInNavigation = ? AND
+                                          pageProperties.showInNavigation = ?
                                           '.$strFolderFilter.'
                                         ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id,
                                                                                                                                                              $this->core->sysConfig->page_types->link->id,
@@ -835,9 +837,59 @@ class Model_Folders {
                                                                                                                                                              $this->intLanguageId,
                                                                                                                                                              $this->intLanguageId,
                                                                                                                                                              $intRootLevelId,
-                                                                                                                                                             $intDepth));
+                                                                                                                                                             $intDepth,
+                                                                                                                                                             $intDisplayOptionId,
+                                                                                                                                                             $intDisplayOptionId));
 
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+  }
+  
+  /**
+   * loadWebsiteProductTree
+   * @param integer $intParentId
+   * @param array $arrFilterOptions
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function loadWebsiteProductTree($intParentId, $arrFilterOptions = array()){
+    $this->core->logger->debug('core->models->Folders->loadWebsiteProductTree('.$intParentId.','.$arrFilterOptions.')');
+
+    $strFolderFilter = '';
+    $strProductFilter = '';
+    if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
+      $strFolderFilter = 'AND folders.idStatus = '.$this->core->sysConfig->status->live;
+      $strProductFilter = 'AND productProperties.idStatus = '.$this->core->sysConfig->status->live;
+    }
+    
+    $objSelect = $this->getFolderTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from($this->objFolderTable, array('idFolder' => 'id', 'folderId', 'parentId' => 'idParentFolder', 'folderStatus' => 'idStatus', 'depth', 'folderOrder' => 'sortPosition'))
+              ->join(array('parent' => 'folders'), 'parent.id = '.$this->core->dbh->quote($intParentId, Zend_Db::INT_TYPE), array())
+              ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND
+                                      folderTitles.version = folders.version AND
+                                      folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'))
+              ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'))
+              ->join('products AS lP', 'lP.idParent = folders.id AND
+                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idProduct' => 'id', 'productId', 'isStartProduct', 'productOrder' => 'sortPosition'))
+              ->join('productLinks', 'productLinks.idProducts = lP.id', array())
+              ->join('products', 'products.productId = productLinks.productId', array())
+              ->join('productProperties', 'productProperties.productId = products.productId AND 
+                                           productProperties.version = products.version AND
+                                           productProperties.idLanguages = '.$this->intLanguageId, array('productStatus' => 'idStatus', 'idProductTypes'))
+              ->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('productTitle' => 'title'))
+              ->joinLeft('urls', 'urls.relationId = lP.productId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->product.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
+              ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
+              ->where('folders.idRootLevels = parent.idRootLevels')
+              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)')
+              ->order('folders.lft')
+              ->order('products.isStartProduct DESC')
+              ->order('products.sortPosition ASC')
+              ->order('products.sortTimestamp DESC')
+              ->order('products.id ASC');
+
+    return $this->objFolderTable->fetchAll($objSelect);
+    
   }
 
   /**

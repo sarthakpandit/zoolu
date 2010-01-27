@@ -195,7 +195,7 @@ class Model_Pages {
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'pageProperties.idTemplates', 'pageProperties.idStatus', 'pageProperties.published', 'pageProperties.changed', 'pageProperties.created', 'pageProperties.idPageTypes', 'isStartElement' => 'isStartPage', 'pageProperties.showInNavigation', 'idParent', 'idParentTypes'));
+    $objSelect->from('pages', array('id', 'relationId' => 'pageId', 'pageId', 'version', 'pageProperties.idTemplates', 'pageProperties.idStatus', 'pageProperties.published', 'pageProperties.changed', 'pageProperties.created', 'pageProperties.idPageTypes', 'isStartElement' => 'isStartPage', 'pageProperties.showInNavigation', 'idParent', 'idParentTypes'));
     $objSelect->joinLeft('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = pageProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
     $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = pageProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));

@@ -75,7 +75,7 @@ class GenericSetup {
 	protected $intRootLevelTypeId;
   protected $intElementTypeId;
   protected $blnIsStartElement;
-  protected $blnShowInNavigation;
+  protected $intShowInNavigation = 0;
   protected $intUrlFolder;
 
   protected $strModelSubPath;
@@ -268,7 +268,6 @@ class GenericSetup {
         $this->setGenFormId($objForm->id);
         $this->setFormTitle($objForm->title);
         $this->setFormVersion($objForm->version);
-        $this->core->logger->debug($objForm->idGenericFormTypes);
         $this->setFormTypeId($objForm->idGenericFormTypes);
         $this->setFormType($objForm->typeTitle);
 
@@ -1238,34 +1237,18 @@ class GenericSetup {
 
   /**
    * setShowInNavigation
-   * @param boolean $blnShowInNavigation
+   * @param boolean $intShowInNavigation
    */
-  public function setShowInNavigation($blnShowInNavigation, $blnValidate = true){
-    if($blnValidate == true){
-      if($blnShowInNavigation === true || $blnShowInNavigation === 'true' || $blnShowInNavigation == 1){
-        $this->blnShowInNavigation = true;
-      }else{
-        $this->blnShowInNavigation = false;
-      }
-    }else{
-      $this->blnShowInNavigation = $blnShowInNavigation;
-    }
+  public function setShowInNavigation($intShowInNavigation){
+    $this->intShowInNavigation = $intShowInNavigation;    
   }
 
   /**
    * getShowInNavigation
-   * @return boolean $blnShowInNavigation
+   * @return boolean $intShowInNavigation
    */
-  public function getShowInNavigation($blnReturnAsNumber = true){
-    if($blnReturnAsNumber == true){
-      if($this->blnShowInNavigation == true){
-        return 1;
-      }else{
-        return 0;
-      }
-    }else{
-      return $this->blnShowInNavigation;
-    }
+  public function getShowInNavigation(){
+    return $this->intShowInNavigation;
   }
 
 	/**

@@ -103,11 +103,27 @@ class IndexController extends Zend_Controller_Action {
    */
   public function postDispatch(){
 
+    /**
+     * Tidy is a binding for the Tidy HTML clean and repair utility which allows 
+     * you to not only clean and otherwise manipulate HTML documents, 
+     * but also traverse the document tree. 
+     */
+    $arrConfig = array(
+        'indent'        => TRUE,
+        'output-xhtml'  => TRUE,
+        'wrap'          => 200
+    );
+    
+    $objTidy = tidy_parse_string($this->getResponse()->getBody(), $arrConfig, 'UTF8');    
+    $objTidy->cleanRepair();
+    
+    $this->getResponse()->setBody($objTidy);
+        
     if(isset($this->objCache) && $this->objCache instanceof Zend_Cache_Frontend_Output){
       if($this->blnCachingStart === true){
-        $response = $this->getResponse()->getBody();
+        $response = $this->getResponse()->getBody();        
         $this->getResponse()->setBody(str_replace("<head>", "<head>
-  <!-- This is a ZOOLU cached page (".date('d.m.Y H:i:s').") -->", $response));
+  <!-- This is a ZOOLU cached page (".date('d.m.Y H:i:s').") -->", $objTidy));
         $this->getResponse()->outputBody();
 
         $arrTags = array();
@@ -196,8 +212,19 @@ class IndexController extends Zend_Controller_Action {
       $objNavigation->setRootLevelId($objTheme->idRootLevels);
       $objNavigation->setLanguageId($this->intLanguageId);
 
-      require_once(dirname(__FILE__).'/../helpers/navigation.inc.php');
-      Zend_Registry::set('Navigation', $objNavigation);
+      if(file_exists(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/helpers/NavigationHelper.php')){
+        require_once(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/helpers/NavigationHelper.php');
+        $strNavigationHelper = ucfirst($objTheme->path).'_NavigationHelper';
+        $objNavigationHelper = new $strNavigationHelper();
+      }else{
+        require_once(dirname(__FILE__).'/../helpers/NavigationHelper.php');
+        $objNavigationHelper = new NavigationHelper();        
+      }
+      
+      $objNavigationHelper->setNavigation($objNavigation);      
+      Zend_Registry::set('NavigationHelper', $objNavigationHelper);
+      
+      Zend_Registry::set('Navigation', $objNavigation); //FIXME need of registration navigation object??      
 
       $this->objUrlsData = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 
@@ -247,7 +274,11 @@ class IndexController extends Zend_Controller_Action {
         Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
         Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
 
-        $objNavigation->setPage($this->objPage);
+        if($this->objPage->ParentPage() instanceof Page){
+          $objNavigation->setPage($this->objPage->ParentPage());
+        }else{
+          $objNavigation->setPage($this->objPage); 
+        }        
 
         /**
          * get page template filename

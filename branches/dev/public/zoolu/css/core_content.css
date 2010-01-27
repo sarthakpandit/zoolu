@@ -755,6 +755,10 @@ Function Widget */
   text-align:right;
 }
 
+.widgetcontentmain .navigationoptios{
+  padding:5px 0 0 0; 
+}
+
 .widgetcontentmain .publishdate {
   float:left;
   padding-right:10px;
