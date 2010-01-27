@@ -97,7 +97,6 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
           
           if(count($objProduct) > 0){
             $objProduct = $objProduct->current();
-            $objProduct->linkId = $this->setup->getElementLinkId();
 
             $this->objModelProducts->update($this->setup, $objProduct);
 

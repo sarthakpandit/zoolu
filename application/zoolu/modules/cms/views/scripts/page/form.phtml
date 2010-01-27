@@ -38,8 +38,19 @@
             </tr>
             <?php if(!$this->blnIsStartPage) : ?>
             <tr>
-              <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation == 1) ? print(' checked="checked"') : print(''); ?> onclick="$('showInNavigation').value = this.checked ? '1' : '0'"/></td>
-              <td><label for="showinnavigation">in Navigation anzeigen</label></td>
+              <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation > 0) ? print(' checked="checked"') : ''; ?> onclick="if($('divShowInNavigationOptions')) { myForm.toggleNavigationOptions(); } else { $('showInNavigation').value = (this.checked) ? '1' : '0'; }"/></td>
+              <td>
+                <label for="showinnavigation">in Navigation anzeigen</label>
+                <?php if($this->blnIsRootLevelChild): ?>
+                <div id="divShowInNavigationOptions"<?php echo ($this->showinnavigation == 0) ? ' style="display:none;"' : ''; ?>>
+                  <div class="navigationoptios">
+                    <select name="showinnavigationoption" id="showinnavigationoption" onchange="$('showInNavigation').value = this.value;">
+                      <?php echo $this->navigationOptions; ?>
+                    </select>
+                  </div>
+                </div>
+                <?php endif;?>
+              </td>
             </tr>
             <tr>
               <td class="tdNormal">Ver&ouml;ffentlicht:</td>

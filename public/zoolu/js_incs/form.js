@@ -90,6 +90,8 @@ Massiveart.Form = Class.create({
           if(this.selectNavigationItemNow == true){
             myNavigation.selectItem();
           }
+          
+          $('divMetaInfos').innerHTML = '';
         }.bind(this)
       });
     }
@@ -1137,6 +1139,19 @@ Massiveart.Form = Class.create({
       Effect.SlideDown('divPublishDateNew', {duration: 0.5});
     }else{
       Effect.SlideUp('divPublishDateNew', {duration: 0.5});
+    }
+  },
+  
+  /**
+   * toggleNavigationOptions
+   */
+  toggleNavigationOptions: function(){
+    if($('divShowInNavigationOptions') && $('showinnavigation') && $('showinnavigation').checked){
+      Effect.SlideDown('divShowInNavigationOptions', {duration: 0.5});
+      $('showInNavigation').value = $F('showinnavigationoption');
+    }else{
+      Effect.SlideUp('divShowInNavigationOptions', {duration: 0.5});
+      $('showInNavigation').value = 0;
     }
   },
   

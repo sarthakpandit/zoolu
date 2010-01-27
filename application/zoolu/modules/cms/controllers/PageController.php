@@ -199,7 +199,7 @@ class Cms_PageController extends AuthControllerAction {
 	     */
 	    $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
 
-	     /**
+	    /**
        * output of metainformation to hidden div
        */
       $this->setViewMetaInfos();
@@ -345,6 +345,9 @@ class Cms_PageController extends AuthControllerAction {
       }else{
         $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT pageTypeTitles.title AS DISPLAY FROM pageTypeTitles WHERE pageTypeTitles.idPageTypes = pageTypes.id AND pageTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM pageTypes WHERE page = 1 AND active = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }
+      
+      $this->view->blnIsRootLevelChild = ($this->objForm->Setup()->getParentTypeId() == $this->core->sysConfig->parent_types->rootlevel) ? true : false;
+      $this->view->navigationOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT navigationOptionTitles.title FROM navigationOptionTitles WHERE navigationOptionTitles.idNavigationOptions = navigationOptions.id AND navigationOptionTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM navigationOptions WHERE active = 1', $this->objForm->Setup()->getShowInNavigation());
 
       $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
       $this->view->monthOptions = DateTimeHelper::getOptionsMonth(false, $this->objForm->Setup()->getPublishDate('n'));

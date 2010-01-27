@@ -87,7 +87,33 @@ class Page {
    * @var GenericData
    */
   protected $objGenericData;
-
+  
+  /**
+   * @var Page
+   */
+  protected $objParentPage;
+  
+  /**
+   * property of the parent page
+   * @return Page $objParentPage
+   */
+  public function ParentPage(){
+    return $this->objParentPage;
+  }
+  
+  /**
+   * @var Page
+   */
+  protected $objChildPage;
+  
+  /**
+   * property of the child page
+   * @return Page $objChildPage
+   */
+  public function ChildPage(){
+    return $this->objChildPage;
+  }
+  
   /**
    * @var array
    */
@@ -147,14 +173,16 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPage(){
+  public function loadPage($blnLoadByParentId = false){
     try{
-      $this->getModelPages();
-      $objPageData = $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
-
+      $this->getModel();
+      $objPageData = ($blnLoadByParentId == true) ? $this->objModel->loadByParentId($this->intParentId, true) : $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
+                 
       if(count($objPageData) > 0){
         $objPage = $objPageData->current();
 
+        $this->setPageId($objPage->relationId);            
+        $this->setPageVersion($objPage->version);
         $this->setElementId($objPage->id);
         $this->setTemplateFile($objPage->filename);
         $this->setTemplateId($objPage->idTemplates);
@@ -166,11 +194,12 @@ class Page {
         $this->setChangeDate($objPage->changed);
         if(isset($objPage->idPageTypes)) $this->setTypeId($objPage->idPageTypes);
         if(isset($objPage->idProductTypes)) $this->setTypeId($objPage->idProductTypes);
+        if(isset($objPage->linkId)) $this->setElementLinkId($objPage->linkId);
         $this->setIsStartElement($objPage->isStartElement);
         $this->setShowInNavigation($objPage->showInNavigation);
         $this->setParentId($objPage->idParent);
         $this->setParentTypeId($objPage->idParentTypes);
-
+        
         /**
          * navigation parent properties
          */
@@ -209,8 +238,20 @@ class Page {
               header ('Location: http://'.$_SERVER['HTTP_HOST']);
             }
             exit();
+          case  $this->core->sysConfig->page_types->product_tree->id:
+            
+            $this->objParentPage = clone $this;
+                        
+            $this->setType('product');
+            $this->setModelSubPath('products/models/');
+            $this->setParentId($this->getFieldValue('entry_product_point'));
+            $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
+            
+            $this->objModel = null;            
+            $this->loadPage(true);            
+            break;
         }
-
+       
       }else{
         throw new Exception('Not able to load page, because no page found in database!');
       }
@@ -461,7 +502,7 @@ class Page {
   public function getInternalLinks(){
     try{
 
-      $this->getModelPages();
+      $this->getModel();
       $this->objModel->setLanguageId($this->intLanguageId);
       return $this->objModel->loadInternalLinks($this->strPageId, $this->intPageVersion);
 
@@ -606,7 +647,7 @@ class Page {
    */
   public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds){
     try{
-      $this->getModelPages();
+      $this->getModel();
 
       $objPages = $this->objModel->loadPages($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
       return $objPages;
@@ -800,7 +841,7 @@ class Page {
    */
   public function getPagesByCategory(){
     try{
-      $this->getModelPages();
+      $this->getModel();
 
       $intCategoryId = $this->objGenericData->Setup()->getField('top_category')->getValue();
       $intLabelId = $this->objGenericData->Setup()->getField('top_label')->getValue();
@@ -897,7 +938,7 @@ class Page {
    */
   public function getPagesByTemplate($intTemplateId, $intQuarter = 0, $intYear = 0){
     try{
-      $this->getModelPages();
+      $this->getModel();
       $objPages = $this->objModel->loadPagesByTemplatedId($intTemplateId, $intQuarter, $intYear);
       return $objPages;
     }catch (Exception $exc) {
@@ -912,7 +953,7 @@ class Page {
    */
   public function getPageInstanceDataById($intPageId, $strGenForm){
     try{
-      $this->getModelPages();
+      $this->getModel();
 
       $objPageRowset = $this->objModel->loadPageInstanceDataById($intPageId, $strGenForm);
       return $objPageRowset;
@@ -922,12 +963,12 @@ class Page {
   }
 
   /**
-   * getModelPages
+   * getModel
    * @return Model_Pages
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  protected function getModelPages(){
+  protected function getModel(){
   	if($this->objModel === null) {
       /**
        * autoload only handles "library" compoennts.
@@ -1537,6 +1578,15 @@ class Page {
         return null;
       }
     }
+  }
+  
+  /**
+   * setChildPage
+   * @param Page $objChildPage
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function setChildPage(Page &$objChildPage){
+    $this->objChildPage = $objChildPage;
   }
 
 }

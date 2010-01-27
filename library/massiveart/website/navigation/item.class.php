@@ -50,6 +50,7 @@ class NavigationItem {
   protected $strUrl;
   
   protected $intId;
+  protected $intTypeId;
   protected $intParentId;
   protected $strItemId;
   
@@ -122,6 +123,22 @@ class NavigationItem {
    */
   public function getId(){
     return $this->intId;
+  }
+  
+  /**
+   * setTypeId
+   * @return integer $intTypeId
+   */
+  public function setTypeId($intTypeId){
+    $this->intTypeId = $intTypeId;
+  }
+  
+  /**
+   * getTypeId
+   * @return integer
+   */
+  public function getTypeId(){
+    return $this->intTypeId;
   }
   
   /**

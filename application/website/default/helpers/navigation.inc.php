@@ -52,6 +52,16 @@ function getNavigationObject(){
 }
 
 /**
+ * getNavigationHelperObject
+ * @return NavigationHelper
+ * @author Thomas Schedler <tsh@massiveart.com>
+ * @version 1.0
+ */
+function getNavigationHelperObject(){
+  return Zend_Registry::get('NavigationHelper');
+}
+
+/**
  * get_main_navigation
  * @param string $strElement
  * @param string|array $mixedElementProperties element css class or array with element properties
@@ -62,151 +72,16 @@ function getNavigationObject(){
  * @version 1.0
  */	
 function get_main_navigation($strElement = 'li', $mixedElementProperties = '', $strSelectedClass = 'selected', $blnWithHomeLink = true, $blnImageNavigation = false){
-  $strMainNavigation = '';
-  $strHomeLink = '';
-  
-	$objNavigation = getNavigationObject();
-	$core = Zend_Registry::get('Core');
-	
-	$objNavigation->loadMainNavigation();
-	
-	$strPageId = '';	
-	if(is_object($objNavigation->Page())){
-	  $strPageId = $objNavigation->Page()->getPageId();
-	}		
-	$strFolderId = $objNavigation->getRootFolderId();
-	
-	$strElementProperties = '';
-	if(is_array($mixedElementProperties)){
-	  foreach($mixedElementProperties as $strProperty => $strValue){
-	   $strElementProperties .= ' '.$strProperty.'="'.$strValue.'"';  
-	  }
-	}else if($mixedElementProperties != ''){
-	  $strElementProperties = ' class="'.$mixedElementProperties.'"';
-	}
-	
-	if(count($objNavigation->MainNavigation()) > 0){	  
-	  foreach($objNavigation->MainNavigation() as $objNavigationItem){
-	    
-	    $strSelectedItem = '';
-	    $strSelectedImg = 'off';
-	    if($strPageId == $objNavigationItem->pageId){
-        $strSelectedItem = ' class="'.$strSelectedClass.'"';
-        $strSelectedImg = 'on';
-	    }else if($strFolderId == $objNavigationItem->folderId){
-	      $strSelectedItem = ' class="'.$strSelectedClass.'"';
-	      $strSelectedImg = 'on';
-	    }
-	    
-	    $strImgFileTitle = strtolower($objNavigationItem->url);
-	    if(strpos($strImgFileTitle, '/') > -1){
-	      $strImgFileTitle = substr($strImgFileTitle, 0, strpos($strImgFileTitle, '/'));   	
-	    }
-	    
-	    if($objNavigationItem->isStartPage == 1 && $blnWithHomeLink == true){
-	      if($blnImageNavigation){
-	        $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/navigation/home_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
-	      }else{
-	        $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></'.$strElement.'>';
-	      }
-	    }else{
-	    	if($blnImageNavigation){
-	    	  $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/navigation/'.$strImgFileTitle.'_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
-	    	}else{
-	    	  $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></'.$strElement.'>';
-	    	}
-	    }
-	  }
-	}
-		
-  echo $strHomeLink.$strMainNavigation;
+  echo getNavigationHelperObject()->getMainNavigation($strElement, $mixedElementProperties, $strSelectedClass, $blnWithHomeLink, $blnImageNavigation);
 }
 
 /**
- * get_main_navigation_middle
- * @author Michael Trawetzky <mtr@massiveart.com>
+ * get_side_navigation
+ * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
-function get_main_navigation_middle($strElement = 'li', $mixedElementProperties = '', $strSelectedClass = 'selected', $blnWithHomeLink = true, $blnImageNavigation = false, $strHomePrefix = ''){
-  $strMainNavigation = '';
-  $strHomeLink = '';
-
-  $objNavigation = getNavigationObject();
-  $core = Zend_Registry::get('Core');
-
-  $objNavigation->loadNavigation(1);
-
-  $strPageId = '';
-  if(is_object($objNavigation->Page())){
-    $strPageId = $objNavigation->Page()->getPageId();
-  }
-  $strFolderId = $objNavigation->getRootFolderId();
-
-  if(count($objNavigation->MainNavigation()) > 0){
-
-    $blnHomeActive = true;
-
-    foreach($objNavigation->MainNavigation() as $objNavi){
-      if($objNavi instanceof NavigationTree){
-
-        $strSelectedClassAddon = '';
-        $strSelectedItem = '';
-        if($strPageId == $objNavi->getItemId()){
-          $strSelectedItem = ' class="'.$strSelectedClass.'"';
-          $strSelectedClassAddon = ' '.$strSelectedClass;
-          $blnHomeActive = false;
-        }else if($strFolderId == $objNavi->getItemId()){
-          $strSelectedItem = ' class="'.$strSelectedClass.'"';
-          $strSelectedClassAddon = ' '.$strSelectedClass;
-          $blnHomeActive = false;
-        }
-
-        $strElementProperties = '';
-        if(is_array($mixedElementProperties)){
-          foreach($mixedElementProperties as $strProperty => $strValue){
-            $strElementProperties .= ' '.$strProperty.'="'.$strValue.'"';
-          }
-        }else if($mixedElementProperties != ''){
-          $strElementProperties = ' class="'.$mixedElementProperties.$strSelectedClassAddon.'"';
-        }
-
-        $strMainNavigation  .= '
-              <'.$strElement.$strElementProperties.' onclick="location.href=\''.$objNavi->getUrl().'\'">
-                <div class="middle">
-                  <a href="'.$objNavi->getUrl().'">'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
-						      if(count($objNavi) > 0){
-					          $strMainNavigation  .= '
-					                  <ul style="position:absolute; left: -15px; top: 14px;">';
-					          foreach($objNavi as $objSubNavi){
-					            $strMainNavigation  .= '
-					                    <li>
-					                      <div>
-					                        <a href="'.$objSubNavi->getUrl().'">'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
-					                      </div>
-					                    </li>';
-					          }
-					          $strMainNavigation  .= '
-					                  </ul>';
-					        }
-        $strMainNavigation  .= '
-                </div>';
-        $strMainNavigation  .= '
-              </'.$strElement.'>
-              <li><img src="'.$core->webConfig->domains->static->components.'/website/themes/ivoclarvivadent/images/mainnav_stripline.gif" alt="stripline" /></li>';
-      }
-    }
-
-    if($blnWithHomeLink){
-      $strHomeLink = '
-        <'.$strElement.' class="object'.(($blnHomeActive) ? ' '.$strSelectedClass : '').'" onclick="location.href=\'/\'">
-          <div class="middle">
-            <a class="home" href="/">'.$strHomePrefix.' Home</a>
-          </div>
-        </'.$strElement.'>
-        <li><img src="'.$core->webConfig->domains->static->components.'/website/themes/ivoclarvivadent/images/mainnav_stripline.gif" alt="stripline" /></li>';
-    }
-  }
-  echo $strHomeLink.$strMainNavigation;
+function get_side_navigation(){
+  echo getNavigationHelperObject()->getSideNavigation();
 }
 
 /**
@@ -239,7 +114,7 @@ function get_main_navigation_title(){
       }
             
       if($blnIsSelected){
-	      $strHtmlOutput  .= htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default);
+	      $strHtmlOutput .= htmlentities($objNavigationItem->title, ENT_COMPAT, $core->sysConfig->encoding->default);
       }
     }
   }    

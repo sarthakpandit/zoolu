@@ -121,7 +121,7 @@ class Model_Products {
    * @param string $strProductId
    * @param integer $intVersion
    * @return Zend_Db_Table_Rowset_Abstract
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function loadByIdAndVersion($strProductId, $intVersion){
@@ -130,7 +130,7 @@ class Model_Products {
     $objSelect = $this->getProductTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('products', array('id', 'productId', 'version', 'isStartElement' => 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idTemplates', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.created', 'productProperties.idStatus'));
+    $objSelect->from('products', array('id', 'productId', 'relationId' => 'productId', 'version', 'isStartElement' => 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idTemplates', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.created', 'productProperties.idStatus'));
     $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = productProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
     $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = productProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
@@ -140,6 +140,39 @@ class Model_Products {
     $objSelect->where('products.productId = ?', $strProductId)
               ->where('products.version = ?', $intVersion);
     
+    return $this->getProductTable()->fetchAll($objSelect);   
+  }
+  
+  /**
+   * loadByParentId
+   * @param integer $intParentId
+   * @param boolean $blnOnlyStartProduct
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadByParentId($intParentId, $blnOnlyStartProduct = false){
+    $this->core->logger->debug('products->models->Model_Products->loadByParentId('.$intParentId.', '.$blnOnlyStartProduct.')');
+    
+    $objSelect = $this->getProductTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('products', array('id', 'productId', 'relationId' => 'productId', 'linkId' => 'lP.id','version', 'isStartElement' => 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idTemplates', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.created', 'productProperties.idStatus'));
+    $objSelect->join('productLinks', 'productLinks.productId = products.productId', array());
+    $objSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());              
+    $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = productProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
+    $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = productProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
+    $objSelect->joinLeft(array('ucr' => 'users'), 'ucr.id = productProperties.creator', array('creator' => 'CONCAT(ucr.fname, \' \', ucr.sname)'));
+    $objSelect->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
+    $objSelect->join('templates', 'templates.id = productProperties.idTemplates', array('filename'));
+    $objSelect->where('lP.idParent = ?', $intParentId)
+              ->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
+    
+    if($blnOnlyStartProduct == true){
+      $objSelect->where('lP.isStartProduct = 1');
+    }
+        
     return $this->getProductTable()->fetchAll($objSelect);   
   }
 
@@ -156,7 +189,7 @@ class Model_Products {
     $objSelect = $this->getProductTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('products', array('id', 'productId', 'version', 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.idStatus', 'productProperties.creator'));
+    $objSelect->from('products', array('id', 'productId', 'productId', 'version', 'isStartProduct', 'idParent', 'idParentTypes', 'productProperties.idProductTypes', 'productProperties.showInNavigation', 'productProperties.published', 'productProperties.changed', 'productProperties.idStatus', 'productProperties.creator'));
     $objSelect->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'));
     $objSelect->where('productTitles.title LIKE ?', '%'.$strSearchValue.'%')
