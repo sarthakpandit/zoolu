@@ -672,6 +672,14 @@
       <approval>3</approval> 
     </status>
     
+    <!-- NAVIGATION OPTIONS -->
+    <navigation_options>
+      <top>1</top>
+      <left>2</left>
+      <right>3</right>
+      <bottom>4</bottom>
+    </navigation_options>
+    
     <!-- VIDEO CHANNELS -->
     <video_channels>
       <vimeo>
