@@ -78,7 +78,7 @@ class Index {
       $objPage->setPageVersion($intPageVersion);
       $objPage->setLanguageId($intLanguageId);
       
-      $objPage->loadPage();  
+      $objPage->load();  
       $objPage->indexPage();
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

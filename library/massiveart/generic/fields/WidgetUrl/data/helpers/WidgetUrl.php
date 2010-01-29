@@ -212,7 +212,7 @@ class GenericDataHelper_WidgetUrl extends GenericDataHelperAbstract  {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Widgets.php';
       $this->objModelWidgets = new Model_Widgets();
-      $this->objModelWidgets->setLanguage($this->objElement->Setup()->getLanguageId());
+      $this->objModelWidgets->setLanguageId($this->objElement->Setup()->getLanguageId());
     }
 
     return $this->objModelWidgets;

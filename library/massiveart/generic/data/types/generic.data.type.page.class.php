@@ -103,7 +103,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
           $arrMainData = array('idGenericForms'   => $this->setup->getGenFormId(),
                                'idTemplates'      => $this->setup->getTemplateId(),
                                'idPageTypes'      => $this->setup->getElementTypeId(),
-                               'isStartPage'      => $this->setup->getIsStartPage(),
+                               'isStartPage'      => $this->setup->getIsStartElement(),
                                'showInNavigation' => $this->setup->getShowInNavigation(),
                                'idParent'         => $this->setup->getParentId(),
                                'idParentTypes'    => $this->setup->getParentTypeId(),
@@ -290,7 +290,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
     $this->core->logger->debug('massiveart->generic->data->GenericDataTypePage->load()');
     try {
 
-      $objPagesData = $this->getModelPages()->loadPage($this->setup->getElementId());
+      $objPagesData = $this->getModelPages()->load($this->setup->getElementId());
 
       if(count($objPagesData) > 0){
         $objPageData = $objPagesData->current();
@@ -300,7 +300,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
          */
         $this->setup->setMetaInformation($objPageData);
         $this->setup->setElementTypeId($objPageData->idPageTypes);
-        $this->setup->setIsStartPage($objPageData->isStartPage);
+        $this->setup->setIsStartElement($objPageData->isStartPage);
         $this->setup->setParentTypeId($objPageData->idParentTypes);
 
         /**

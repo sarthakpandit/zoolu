@@ -129,11 +129,6 @@ class Blog_FormController extends AuthControllerAction {
 					$this->objForm->Setup()->setSubwidgetId($intSubwidgetUnique);
 					$this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->add);
 					$this->objForm->getElement('id')->setValue($intSubWidgetId);
-			
-					// Add WidgetForm Url
-					//FIXME: Should be provided by URL-Field
-					$strSubwidgetUrl = $this->getModelWidgets()->prepareSubwidgetUrl($arrFormData['title'], $arrFormData['widgetInstanceId'], 1);
-					$this->getModelWidgets()->insertWidgetUrl($strSubwidgetUrl, $arrFormData['widgetInstanceId'], '1');
 					
 					if($this->objForm->isValid($arrFormData)){
 	          $this->objForm->saveFormData();
@@ -384,7 +379,7 @@ class Blog_FormController extends AuthControllerAction {
       $this->objForm->Setup()->setStatusId((($this->objRequest->getParam("idStatus") != '') ? $this->objRequest->getParam("idStatus") : $this->core->sysConfig->form->status->default));
       $this->objForm->Setup()->setRootLevelId((($this->objRequest->getParam("rootLevelId") != '') ? $this->objRequest->getParam("rootLevelId") : null));
       $this->objForm->Setup()->setParentId((($this->objRequest->getParam("parentId") != '') ? $this->objRequest->getParam("parentId") : null));
-      $this->objForm->Setup()->setIsStartPage((($this->objRequest->getParam("isStartPage") != '') ? $this->objRequest->getParam("isStartPage") : 0));
+      $this->objForm->Setup()->setIsStartElement((($this->objRequest->getParam("isStartPage") != '') ? $this->objRequest->getParam("isStartPage") : 0));
       $this->objForm->Setup()->setPublishDate((($this->objRequest->getParam("publishDate") != '') ? $this->objRequest->getParam("publishDate") : date('Y-m-d H:i:s')));
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentTypeId") != '') ? $this->objRequest->getParam("parentTypeId") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
@@ -453,7 +448,7 @@ class Blog_FormController extends AuthControllerAction {
       $this->view->arrPublishDate = DateTimeHelper::getDateTimeArray($this->objForm->Setup()->getPublishDate());
       $this->view->monthOptions = DateTimeHelper::getOptionsMonth(false, $this->objForm->Setup()->getPublishDate('n'));
       
-      $this->view->blnIsStartPage = $this->objForm->Setup()->getIsStartPage(false);
+      $this->view->blnIsStartPage = $this->objForm->Setup()->getIsStartElement(false);
 
       if($this->objForm->Setup()->getField('url')) $this->view->pageurl = $this->objForm->Setup()->getField('url')->getValue();
 

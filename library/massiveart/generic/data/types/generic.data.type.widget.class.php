@@ -69,7 +69,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 	public function save() {
 		$this->core->logger->debug('massiveart->generic->data->GenericDataTypeWidget->save()');
 		try {
-			$this->getModelWidgets()->setLanguage($this->setup->getLanguageId());
+			$this->getModelWidgets()->setLanguageId($this->setup->getLanguageId());
 			
 			$intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 			$strWidgetInstanceId = 0;
@@ -179,7 +179,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
       
 			// $this->setup->setMetaInformation($objWidgetData);
 			// $this->setup->setElementTypeId($objWidgetData->idPageTypes);
-			// $this->setup->setIsStartPage($objWidgetData->isStartPage);
+			// $this->setup->setIsStartElement($objWidgetData->isStartPage);
 			// $this->setup->setParentTypeId($objWidgetData->idParentTypes);
       
       foreach($this->Setup()->CoreFields() as $strField => $objField) {

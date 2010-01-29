@@ -126,7 +126,7 @@ class Model_Pages {
   public function addPlugin($intElementId, $arrValues, $strType) {
   	$this->core->logger->debug('cms->models->Model_Pages->addPlugin('.$arrValues.','.$strType.')');
   	
-  	$objPageData = $this->loadPage($intElementId);
+  	$objPageData = $this->load($intElementId);
   	
   	if(count($objPageData) > 0){
   		$objPage = $objPageData->current();
@@ -148,19 +148,19 @@ class Model_Pages {
   }
   
   /**
-   * loadPage
+   * load
    * @param integer $intElementId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPage($intElementId){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPage('.$intElementId.')');
+  public function load($intElementId){
+    $this->core->logger->debug('cms->models->Model_Pages->load('.$intElementId.')');
 
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'pageId', 'version', 'idPageTypes', 'isStartPage', 'showInNavigation', 'idParent', 'idParentTypes', 'published', 'changed', 'idStatus', 'creator',
+    $objSelect->from('pages', array('id', 'pageId', 'relationId' => 'pageId', 'version', 'idPageTypes', 'isStartPage', 'showInNavigation', 'idParent', 'idParentTypes', 'published', 'changed', 'idStatus', 'creator',
                                     '(SELECT CONCAT(users.fname, \' \', users.sname) AS publisher FROM users WHERE users.id = pages.publisher) AS publisher',
                                     '(SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = pages.idUsers) AS changeUser'));
     $objSelect->where('pages.id = ?', $intElementId);
@@ -169,15 +169,15 @@ class Model_Pages {
   }
 
   /**
-   * loadPageById
+   * loadById
    * @param string $strPageId
    * @param integer $intPageVersion
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPageById($strPageId, $intPageVersion){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPageById('.$strPageId.', '.$intPageVersion.')');
+  public function loadById($strPageId, $intPageVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->loadById('.$strPageId.', '.$intPageVersion.')');
 
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -246,14 +246,14 @@ class Model_Pages {
   }
 
   /**
-   * loadPageLink
+   * loadLink
    * @param integer $intElementId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadPageLink($intElementId){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPageLink('.$intElementId.')');
+  public function loadLink($intElementId){
+    $this->core->logger->debug('cms->models->Model_Pages->loadLink('.$intElementId.')');
 
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -268,7 +268,7 @@ class Model_Pages {
   }
 
   /**
-   * loadPages
+   * loads
    * @param integer $intParentId
    * @param integer $intCategoryId
    * @param integer $intLabelId
@@ -281,8 +281,8 @@ class Model_Pages {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadPages($intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array()){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPages('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
+  public function loads($intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array()){
+    $this->core->logger->debug('cms->models->Model_Pages->loads('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
 
     $strSortOrder = '';
     if($intSortOrderId > 0 && $intSortOrderId != ''){
@@ -485,15 +485,15 @@ class Model_Pages {
   }
 
   /**
-   * loadPagesInstanceDataByIds
+   * loadsInstanceDataByIds
    * @param string $strGenForm
    * @param array $arrPageIds
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPagesInstanceDataByIds($strGenForm, $arrPageIds){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPagesInstanceDataByIds('.$strGenForm.', '.$arrPageIds.')');
+  public function loadsInstanceDataByIds($strGenForm, $arrPageIds){
+    $this->core->logger->debug('cms->models->Model_Pages->loadsInstanceDataByIds('.$strGenForm.', '.$arrPageIds.')');
 
     // FIXME : !!! CHANGE INSTANCE FIELDS DEFINTION
     // FIXME : !!! iFl.idFields IN (5,55) -> define
@@ -541,15 +541,15 @@ class Model_Pages {
   }
 
   /**
-   * loadPageInstanceDataById
+   * loadInstanceDataById
    * @param integer $intPageId
    * @param string $strGenForm
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPageInstanceDataById($intPageId, $strGenForm){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPageInstanceDataById('.$intPageId.', '.$strGenForm.')');
+  public function loadInstanceDataById($intPageId, $strGenForm){
+    $this->core->logger->debug('cms->models->Model_Pages->loadInstanceDataById('.$intPageId.', '.$strGenForm.')');
 
     // FIXME : !!! iFl.idFields IN (5,55) -> define
     if($strGenForm != '' && $strGenForm != '-' && strpos($strGenForm, $this->core->sysConfig->page_types->link->default_formId) === false){
@@ -596,7 +596,7 @@ class Model_Pages {
   }
 
   /**
-   * loadPageLink
+   * loadLink
    * @param integer $intElementId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -628,7 +628,7 @@ class Model_Pages {
 
     $this->getPageTable();
 
-    $objPageData = $this->loadPage($intElementId);
+    $objPageData = $this->load($intElementId);
 
     if(count($objPageData) > 0){
       $objPage = $objPageData->current();
@@ -683,15 +683,15 @@ class Model_Pages {
   }
 
   /**
-   * loadPageUrl
+   * loadUrl
    * @param string $strPageId
    * @param integer $intVersion
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadPageUrl($strPageId, $intVersion){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPageUrl('.$strPageId.', '.$intVersion.')');
+  public function loadUrl($strPageId, $intVersion){
+    $this->core->logger->debug('cms->models->Model_Pages->loadUrl('.$strPageId.', '.$intVersion.')');
 
     $objSelect = $this->getPageUrlTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -704,17 +704,57 @@ class Model_Pages {
 
     return $this->objPageUrlTable->fetchAll($objSelect);
   }
+  
+  /**
+   * loadParentUrl
+   * @param integer $intPageId
+   * @param boolean $blnIsStartElement
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadParentUrl($intPageId, $blnIsStartElement){
+    $this->core->logger->debug('cms->models->Model_Pages->loadParentUrl('.$intPageId.','.$blnIsStartElement.')');
+    
+    $objSelect = $this->getPageUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    if($blnIsStartElement == true){
+      $objSelect->from($this->objPageUrlTable, array('url','id'));
+      $objSelect->join('pages', 'pages.pageId = urls.relationId', array('pageId','version','isStartpage'));
+      $objSelect->join('folders', 'folders.id = (SELECT idParent FROM pages WHERE id = '.$intPageId.')', array());
+      $objSelect->where('urls.version = pages.version')
+                ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
+                ->where('urls.idLanguages = ?', $this->intLanguageId)
+                ->where('urls.isMain = 1')
+                ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
+                ->where('pages.idParent = folders.idParentFolder')
+                ->where('pages.isStartPage = 1');
+    }else{
+      $objSelect->from($this->objPageUrlTable, array('url','id'));
+      $objSelect->join('pages', 'pages.pageId = urls.relationId', array('pageId','version','isStartpage'));
+      $objSelect->where('urls.version = pages.version')
+                ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
+                ->where('urls.idLanguages = ?', $this->intLanguageId)
+                ->where('urls.isMain = 1')
+                ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
+                ->where('pages.idParent = (SELECT idParent FROM pages WHERE id = '.$intPageId.')')
+                ->where('pages.isStartPage = 1');
+    }
+
+    return $this->objPageUrlTable->fetchAll($objSelect);
+  }
 
   /**
-   * loadPageByUrl
+   * loadByUrl
    * @param integer $intRootLevelId
    * @param string $strUrl
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadPageByUrl($intRootLevelId, $strUrl){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPageByUrl('.$intRootLevelId.', '.$strUrl.')');
+  public function loadByUrl($intRootLevelId, $strUrl){
+    $this->core->logger->debug('cms->models->Model_Pages->loadByUrl('.$intRootLevelId.', '.$strUrl.')');
 
     $sqlStmt = $this->core->dbh->query('SELECT urls.relationId, urls.version, urls.idLanguages FROM urls
                                           INNER JOIN pages ON
@@ -800,7 +840,7 @@ class Model_Pages {
   public function addVideo($intElementId, $mixedVideoId, $intVideoTypeId, $strVideoUserId, $strVideoThumb){
     $this->core->logger->debug('cms->models->Model_Pages->addVideo('.$intElementId.','.$mixedVideoId.','.$intVideoTypeId.','.$strVideoUserId.','.$strVideoThumb.')');
 
-    $objPageData = $this->loadPage($intElementId);
+    $objPageData = $this->load($intElementId);
 
     if(count($objPageData) > 0){
       $objPage = $objPageData->current();
@@ -836,7 +876,7 @@ class Model_Pages {
   public function removeVideo($intElementId){
     $this->core->logger->debug('cms->models->Model_Pages->addVideo('.$intElementId.')');
 
-    $objPageData = $this->loadPage($intElementId);
+    $objPageData = $this->load($intElementId);
 
     if(count($objPageData) > 0){
       $objPage = $objPageData->current();
@@ -888,7 +928,7 @@ class Model_Pages {
   public function addContact($intElementId, $strContactIds, $intFieldId){
     $this->core->logger->debug('cms->models->Model_Pages->addContact('.$intElementId.','.$strContactIds.','.$intFieldId.')');
 
-    $objPageData = $this->loadPage($intElementId);
+    $objPageData = $this->load($intElementId);
 
     if(count($objPageData) > 0){
       $objPage = $objPageData->current();
@@ -945,7 +985,7 @@ class Model_Pages {
   }
 
   /**
-   * loadPagesByTemplatedId
+   * loadsByTemplatedId
    * @param integer $intTemplateId
    * @param integer $intQuarter
    * @param integer $intYear
@@ -953,8 +993,8 @@ class Model_Pages {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPagesByTemplatedId($intTemplateId, $intQuarter = 0, $intYear = 0){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPagesByTemplatedId('.$intTemplateId.')');
+  public function loadsByTemplatedId($intTemplateId, $intQuarter = 0, $intYear = 0){
+    $this->core->logger->debug('cms->models->Model_Pages->loadsByTemplatedId('.$intTemplateId.')');
 
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -998,7 +1038,7 @@ class Model_Pages {
   }
 
   /**
-   * loadPagesByCategory
+   * loadsByCategory
    * @param integer $intCategoryId
    * @param integer $intLabelId
    * @param integer $intLimitNumber
@@ -1008,8 +1048,8 @@ class Model_Pages {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPagesByCategory($intRootLevelId, $intCategoryId = 0, $intLabelId = 0, $intLimitNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPagesByCategory('.$intRootLevelId.','.$intCategoryId.','.$intLabelId.','.$intLimitNumber.','.$intSortTypeId.','.$intSortOrderId.')');
+  public function loadsByCategory($intRootLevelId, $intCategoryId = 0, $intLabelId = 0, $intLimitNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0){
+    $this->core->logger->debug('cms->models->Model_Pages->loadsByCategory('.$intRootLevelId.','.$intCategoryId.','.$intLabelId.','.$intLimitNumber.','.$intSortTypeId.','.$intSortOrderId.')');
 
     $strSortOrder = '';
     if($intSortOrderId > 0 && $intSortOrderId != ''){
