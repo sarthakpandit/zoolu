@@ -4,9 +4,9 @@
       <div class="inner detail">        
         <!-- Sub Navigation -->   
         <div class="divSubNavContainer">  
-        	<?php if(has_tags()) : ?>
+        	<?php if(has_tags($this->objWidgetTags)) : ?>
 		      	<h3>Tags</h3>
-		          <?php get_tags(); ?>
+		          <?php get_tags($this->objWidgetTags); ?>
 	      	<?php endif; ?>
         </div>     
         <!-- Main Content -->
