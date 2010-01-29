@@ -40,24 +40,13 @@
  * @version 1.0
  */
 
-/*
- * getWidgetBlogTag
- * @return object BlogTags
- * @author Florian Mathis <flo@massiveart.com>
- * @version 1.0
- */
-function getWidgetBlogTag(){
-	return Zend_Registry::get('WidgetBlogTags');
-}
-
 /**
  * get_tags
  * @return void
  * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
  */
-function get_tags(){
-	$objWidgetTag = getWidgetBlogTag();
+function get_tags($objWidgetTag){
 	$tags = $objWidgetTag->getTags();
 	
 	// in css file, blogWidgetTag1-5
@@ -93,9 +82,7 @@ function get_tags(){
  * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
  */
-function has_tags(){
-	$objWidgetTag = getWidgetBlogTag();
-	
+function has_tags($objWidgetTag){	
 	if(count($objWidgetTag) > 0){
     return true;  
   }else{

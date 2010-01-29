@@ -91,29 +91,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 		
 		$objBlogWidgetTags = $this->getBlogEntriesTagsTable();
 		$objBlogWidgetTags->setInstanceId($this->objWidget->getWidgetInstanceId());
-		Zend_Registry::set('WidgetBlogTags', $objBlogWidgetTags);
-	}
-	
-	public function getViewActionForm() {
-		$form = new Zend_Form();
-		$form->setMethod('post');
-		
-		// Ein username Element erstellen und konfigurieren:
-		$username = $form->createElement('text', 'username');
-		$username->setRequired(true)
-		         ->addFilter('StringToLower');
-		
-		// Ein Passwort Element erstellen und konfigurieren:
-		$password = $form->createElement('password', 'password');
-		$password->setRequired(true);
-		
-		// Elemente dem Formular hinzufügen:
-		$form->addElement($username)
-		     ->addElement($password)
-		     // addElement() als Factory verwenden um den 'Login' Button zu erstellen:
-		     ->addElement('submit', 'login', array('label' => 'Login'));
-		     
-		return $form;
+		$this->view->assign('objWidgetTags', $objBlogWidgetTags);
 	}
 	
   /**
@@ -122,29 +100,10 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
   public function viewAction() {  	
+  	// load entry with subwidgetId!
   	$objBlogEntries = $this->getBlogEntriesTable();
-  	$objEntry = $objBlogEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), '1');
+  	$objEntry = $objBlogEntries->getBlogEntryBySubwidgetId($this->objWidget->getWidgetInstanceId(), '1');
   	$this->view->assign('objEntry',$objEntry[0]);
-
-  	/*	
-  	$arrParams = $this->objRequest->getParams();
-  	$strDate = $arrParams[1].'-'.$arrParams[2].'-'.$arrParams[3];
-  	$strTitle = $arrParams[4];
-  	
-  	$objEntry = $objBlogEntries->getBlogEntryByDateAndTitle($strDate, $strTitle);
-  	$this->view->assign('objEntry',$objEntry);
-  	
-  	$form = $this->getViewActionForm();
-  	if ($this->getRequest()->isPost()) {
-		  if (!$form->isValid($_POST)) {
-	      $this->view->form = $form;
-		 	} else {
-		 		// add id to _POST
-		 		$this->_forward('add','comment');
-		 	}
-  	} else {
-  		$this->view->form = $form;
-  	}*/
   }
   
   /**

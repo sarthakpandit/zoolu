@@ -165,20 +165,19 @@ class IndexController extends Zend_Controller_Action {
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
 
     $this->objUrlsData = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
-
+		
     if(count($this->objUrlsData) > 0){
     	$objUrlData = $this->objUrlsData->current();
-    	
+
       switch($objUrlData->idUrlTypes) {
       	
       	// UrlType: Widget
       	case $this->core->sysConfig->url_types->widget: {
       		$objWidget = new Widget();
        		$this->getModelWidgets();
-			      
        		if($objUrlData->idParent) {
         		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->idParent);
-        		$objWidget->setWidgetInstanceId($objUrlData->idParent);
+        		$objWidget->setWidgetInstanceId($objUrlData->relationId);
         		$objWidget->setAction('view');
        		} else {
        			$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);

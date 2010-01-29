@@ -122,7 +122,8 @@ class Model_Urls {
 	  // flo 2010-01-06, todo: to display e.g. blog entries, this won't work because blog entry isn't a widgetInstance -> relationId ?!
 		$objWidgetSelect = $this->core->dbh->select();
 		$objWidgetSelect->from('urls', array('relationId' => 'widgetInstances.widgetInstanceId', 'widgetInstances.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
-    $objWidgetSelect->joinLeft('widgetInstances', 'urls.relationId = widgetInstances.widgetInstanceId AND urls.version = widgetInstances.version', array());
+    $objWidgetSelect->join('widgetInstances', 'urls.relationId = widgetInstances.widgetInstanceId AND urls.version = widgetInstances.version', array());
+    $objWidgetSelect->join('widgetInstances', 'urls.idParent = widgetInstances.widgetInstanceId', array());
     $objWidgetSelect->where('urls.url = ?', $strUrl)
                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->widget)
                     ->where('urls.idLanguages = ?', $this->intLanguageId);
