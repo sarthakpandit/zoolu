@@ -120,7 +120,7 @@ class Cms_OverlayController extends AuthControllerAction {
     $objRequest = $this->getRequest();
     $intPortalId = $objRequest->getParam('portalId');
     
-    $this->loadPageTreeForPortal($intPortalId);
+    $this->loadTreeForPortal($intPortalId);
     $this->view->assign('overlaytitle', 'Seite wählen');
   }
   
@@ -287,13 +287,13 @@ class Cms_OverlayController extends AuthControllerAction {
   }
   
   /**
-   * loadPageTreeForPortal
+   * loadTreeForPortal
    * @param integer $intPortalId
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function loadPageTreeForPortal($intPortalId){
-    $this->core->logger->debug('cms->controllers->OverlayController->loadPageTreeForPortal('.$intPortalId.')');
+  protected function loadTreeForPortal($intPortalId){
+    $this->core->logger->debug('cms->controllers->OverlayController->loadTreeForPortal('.$intPortalId.')');
     
     $this->getModelFolders();
     $objPageTree = $this->objModelFolders->loadRootLevelChilds($intPortalId);

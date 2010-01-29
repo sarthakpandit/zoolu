@@ -508,7 +508,7 @@ class GenericForm extends Zend_Form {
        * template specific addons
        */
 	    if($objField->type == GenericSetup::FIELD_TYPE_TEMPLATE){
-        $this->getElement($objField->name.$strNameExtension)->isStartPage = $this->Setup()->getIsStartPage(false);
+        $this->getElement($objField->name.$strNameExtension)->isStartPage = $this->Setup()->getIsStartElement(false);
         $this->getElement($objField->name.$strNameExtension)->intElementTypeId = $this->Setup()->getElementTypeId();
         $this->getElement($objField->name.$strNameExtension)->intParentTypeId = $this->Setup()->getParentTypeId();
       }

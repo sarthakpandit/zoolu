@@ -1150,11 +1150,12 @@ class GenericSetup {
 		return $this->intElementTypeId;
 	}
 
+	//FIXME change more than only methodsname!
   /**
-   * setIsStartPage
+   * setIsStartElement
    * @param boolean $blnIsStartPage
    */
-  public function setIsStartPage($blnIsStartPage, $blnValidate = true){
+  public function setIsStartElement($blnIsStartPage, $blnValidate = true){
     if($blnValidate == true){
       if($blnIsStartPage === true || $blnIsStartPage === 'true' || $blnIsStartPage == 1){
         $this->blnIsStartPage = true;
@@ -1167,10 +1168,10 @@ class GenericSetup {
   }
 
   /**
-   * getIsStartPage
+   * getIsStartElement
    * @return boolean $blnIsStartPage
    */
-  public function getIsStartPage($blnReturnAsNumber = true){
+  public function getIsStartElement($blnReturnAsNumber = true){
     if($blnReturnAsNumber == true){
       if($this->blnIsStartPage == true){
         return 1;

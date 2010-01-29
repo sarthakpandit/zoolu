@@ -109,7 +109,7 @@ class IndexController extends Zend_Controller_Action {
 
         $arrTags = array();
 
-        if($this->objPage->getIsStartPage(false) == true)
+        if($this->objPage->getIsStartElement(false) == true)
           $arrTags[] = 'StartPage';
 
         $arrTags[] = 'PageType'.$this->objPage->getPageTypeId();
@@ -229,7 +229,7 @@ class IndexController extends Zend_Controller_Action {
 			      Zend_Registry::set('Navigation', $objNavigation);
 			
 			      $this->getModelPages();
-			      $this->objUrlsData = $this->objModelPages->loadPageByUrl($objTheme->idRootLevels, $strUrl);
+			      $this->objUrlsData = $this->objModelPages->loadByUrl($objTheme->idRootLevels, $strUrl);
 			      
 			      foreach($this->objUrlsData as $objPageData){
 			        $this->objUrlsData = $objPageData;
@@ -251,7 +251,7 @@ class IndexController extends Zend_Controller_Action {
 			        $this->objPage->setPageVersion($this->objUrlsData->version);
 			        $this->objPage->setLanguageId($this->objUrlsData->idLanguages);
 			
-			        $this->objPage->loadPage();
+			        $this->objPage->load();
 			        
 			        /**
 			         * set values for replacers

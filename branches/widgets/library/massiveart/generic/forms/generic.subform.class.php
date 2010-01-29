@@ -219,7 +219,7 @@ class GenericSubForm extends Zend_Form_SubForm {
        * template specific addons
        */
       if($objField->type == GenericSetup::FIELD_TYPE_TEMPLATE){
-        $this->getElement($objField->name.$strNameExtension)->isStartPage = $this->objGenericForm->Setup()->getIsStartPage(false);
+        $this->getElement($objField->name.$strNameExtension)->isStartPage = $this->objGenericForm->Setup()->getIsStartElement(false);
         $this->getElement($objField->name.$strNameExtension)->intElementTypeId = $this->objGenericForm->Setup()->getElementTypeId();
         $this->getElement($objField->name.$strNameExtension)->intParentTypeId = $this->objGenericForm->Setup()->getParentTypeId();
       }

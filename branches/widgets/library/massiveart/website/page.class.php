@@ -139,14 +139,14 @@ class Page {
   }
 
   /**
-   * loadPage
+   * load
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPage(){
+  public function load(){
     try{
       $this->getModelPages();
-      $objPageData = $this->objModelPages->loadPageById($this->strPageId, $this->intPageVersion);
+      $objPageData = $this->objModelPages->loadById($this->strPageId, $this->intPageVersion);
 
       if(count($objPageData) > 0){
         $objPage = $objPageData->current();
@@ -175,7 +175,7 @@ class Page {
         $this->setChangeUserName($objPage->changeUser);
         $this->setChangeDate($objPage->changed);
         $this->setPageTypeId($objPage->idPageTypes);
-        $this->setIsStartPage($objPage->isStartPage);
+        $this->setIsStartElement($objPage->isStartPage);
         $this->setShowInNavigation($objPage->showInNavigation);
         $this->setParentId($objPage->idParent);
         $this->setParentTypeId($objPage->idParentTypes);
@@ -474,7 +474,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModelPages->loadsInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -518,7 +518,7 @@ class Page {
     try{
       $this->getModelPages();
 
-      $objPages = $this->objModelPages->loadPages($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
+      $objPages = $this->objModelPages->loads($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
       return $objPages;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -591,7 +591,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModelPages->loadsInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -654,7 +654,7 @@ class Page {
       $intSortType = $this->objGenericData->Setup()->getField('top_sorttype')->getValue();
       $intSortOrder = $this->objGenericData->Setup()->getField('top_sortorder')->getValue();
 
-      $objPages = $this->objModelPages->loadPagesByCategory($this->intRootLevelId, $intCategoryId, $intLabelId, $intLimitNumber, $intSortType, $intSortOrder);
+      $objPages = $this->objModelPages->loadsByCategory($this->intRootLevelId, $intCategoryId, $intLabelId, $intLimitNumber, $intSortType, $intSortOrder);
 
       return $objPages;
     }catch (Exception $exc) {
@@ -706,7 +706,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModelPages->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModelPages->loadsInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -744,7 +744,7 @@ class Page {
   public function getPagesByTemplate($intTemplateId, $intQuarter = 0, $intYear = 0){
     try{
       $this->getModelPages();
-      $objPages = $this->objModelPages->loadPagesByTemplatedId($intTemplateId, $intQuarter, $intYear);
+      $objPages = $this->objModelPages->loadsByTemplatedId($intTemplateId, $intQuarter, $intYear);
       return $objPages;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -760,7 +760,7 @@ class Page {
     try{
       $this->getModelPages();
 
-      $objPageRowset = $this->objModelPages->loadPageInstanceDataById($intPageId, $strGenForm);
+      $objPageRowset = $this->objModelPages->loadInstanceDataById($intPageId, $strGenForm);
       return $objPageRowset;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -1117,10 +1117,10 @@ class Page {
   }
 
   /**
-   * setIsStartPage
+   * setIsStartElement
    * @param boolean $blnIsStartPage
    */
-  public function setIsStartPage($blnIsStartPage, $blnValidate = true){
+  public function setIsStartElement($blnIsStartPage, $blnValidate = true){
     if($blnValidate == true){
       if($blnIsStartPage === true || $blnIsStartPage === 'true' || $blnIsStartPage == 1){
         $this->blnIsStartPage = true;
@@ -1133,10 +1133,10 @@ class Page {
   }
 
   /**
-   * getIsStartPage
+   * getIsStartElement
    * @return boolean $blnIsStartPage
    */
-  public function getIsStartPage($blnReturnAsNumber = true){
+  public function getIsStartElement($blnReturnAsNumber = true){
     if($blnReturnAsNumber == true){
       if($this->blnIsStartPage == true){
         return 1;

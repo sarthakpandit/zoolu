@@ -90,7 +90,7 @@ class GenericDataHelper_InternalLink extends GenericDataHelperAbstract  {
     try{
       $this->getModelPages();
 
-      $objLinkedPageData = $this->objModelPages->loadPageLink($intElementId);
+      $objLinkedPageData = $this->objModelPages->loadLink($intElementId);
 
       if(count($objLinkedPageData) > 0){
         $this->setPageLinkData($objLinkedPageData->current());
