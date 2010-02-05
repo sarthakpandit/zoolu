@@ -1078,8 +1078,8 @@ Massiveart.Navigation = Class.create({
       myCore.addBusyClass(this.genFormContainer);
       myCore.addBusyClass('divWidgetMetaInfos');
       
-      var strAjaxAction = '/../widget/%WIDGET%/form/geteditsubwidgetform';
-      strAjaxAction = strAjaxAction.replace(/%WIDGET%/, widgetName)
+      var strAjaxAction = '/widget/%WIDGET%/form/geteditsubwidgetform';
+      strAjaxAction = strAjaxAction.replace(/%WIDGET%/, widgetName);
       
       new Ajax.Updater('genFormContainer', strAjaxAction,{
     	parameters: {

@@ -118,16 +118,14 @@ class Blog_FormController extends AuthControllerAction {
 				if($this->objForm->isValid($arrFormData)) {
 					$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 					$intSubwidgetUnique = uniqid();
-					$arrData = array('widgetInstanceId' => $arrFormData['widgetInstanceId'],
-					                 'title' => $arrFormData['title'],
+					$arrData = array('title' => $arrFormData['title'],
 					                 'text' => $arrFormData['text'],
-					                 'created' => date('Y-m-d H:m:s', time()),
-					                 'idUsers' => Zend_Auth::getInstance()->getIdentity()->id,
 					                 'subwidgetId' => $intSubwidgetUnique);
 					$intSubWidgetId = $this->getModelBlogEntry()->addBlogEntry($arrData);
 					$this->objForm->Setup()->setElementId($intSubWidgetId);
 					$this->objForm->Setup()->setSubwidgetId($intSubwidgetUnique);
 					$this->objForm->Setup()->setActionType($this->core->sysConfig->generic->actions->add);
+					$this->objForm->Setup()->setParentId($arrFormData['widgetInstanceId']);
 					$this->objForm->getElement('id')->setValue($intSubWidgetId);
 					
 					if($this->objForm->isValid($arrFormData)){

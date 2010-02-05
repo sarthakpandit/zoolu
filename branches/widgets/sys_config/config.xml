@@ -393,6 +393,7 @@
     <parent_types>
       <rootlevel>1</rootlevel>
       <folder>2</folder>
+      <widget>3</widget>
     </parent_types>
     
     <!-- MODULES -->
@@ -486,6 +487,7 @@
     <url_types>
     	<page>1</page>
     	<widget>2</widget>
+    	<subwidget>3</subwidget>
     </url_types>
     
     <!-- table: categories / idRootCategory=11, idCategoryTypes=2 -->

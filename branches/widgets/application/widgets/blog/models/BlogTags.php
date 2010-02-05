@@ -74,8 +74,9 @@ class Model_BlogTags {
 		$objSelect->setIntegrityCheck(false);
 		$objSelect->from('tags', array('title', 'count(tagSubwidgets.idTags) AS c'));
 		$objSelect->join('tagSubwidgets', 'tagSubwidgets.idTags = tags.id', array());
-		$objSelect->join('widget_BlogEntries', 'widget_BlogEntries.subwidgetId = tagSubwidgets.subwidgetId', array());
-		$objSelect->where('widget_BlogEntries.widgetInstanceId = ?', $this->strWidgetInstanceId);
+		$objSelect->join('subwidgets', 'subwidgets.subwidgetId = tagSubwidgets.subwidgetId');
+		//$objSelect->join('widget_BlogEntries', 'widget_BlogEntries.subwidgetId = tagSubwidgets.subwidgetId', array());
+		$objSelect->where('subwidgets.widgetInstanceId = ?', $this->strWidgetInstanceId);
 		$objSelect->group('tags.title');
 		
 		$tags = array();
