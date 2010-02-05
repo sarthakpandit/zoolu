@@ -100,7 +100,9 @@ class GenericDataHelper_WidgetUrl extends GenericDataHelperAbstract  {
                 break;
               }
             }
-          }        
+          }  
+
+          $this->strUrl .= '/';
 
           $this->strUrl = $this->checkUrlUniqueness($this->strUrl);          
           $this->objModelWidgets->insertWidgetUrl($this->strUrl, $strElementId, $objWidget->version);

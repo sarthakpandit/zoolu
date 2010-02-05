@@ -45,6 +45,12 @@
 require_once(dirname(__FILE__).'/generic.data.type.abstract.class.php');
 
 class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
+	
+	/**
+	 * @var Model_Subwidgets
+	 */
+	private $objModelSubwidgets;
+	
 	/**
 	 * save
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
@@ -58,6 +64,18 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 		
 		switch($this->setup->getActionType()) {
 			case $this->core->sysConfig->generic->actions->add:
+				
+				$arrMainData = array( 'subwidgetId'       => $strSubwidgetId,
+				                      'widgetInstanceId'  => $this->setup->getParentId(),
+				                      'created'           => date('Y-m-d H:i:s'),
+				                      'idUsers'           => Zend_Auth::getInstance()->getIdentity()->id,
+				                      'idWidgetTable'     => 1,    //FIXME: Make it variable
+				                      'idParentTypes'     => $this->core->sysConfig->parent_types->widget,
+				                      'version'           => $intSubwidgetVersion
+				                    );
+				                    
+				$this->setup->setElementId($this->getModelSubwidgets()->getSubwidgetTable()->insert($arrMainData));
+				
 				$this->insertCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 			case $this->core->sysConfig->generic->actions->edit:
@@ -135,5 +153,25 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 	    }
 	  }
 	}
+	
+  /**
+   * getModelSubwidgets
+   * @return Model_Subwidgets
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelSubwidgets(){
+    if (null === $this->objModelSubwidgets) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Subwidgets.php';
+      $this->objModelSubwidgets = new Model_Subwidgets();
+    }
+
+    return $this->objModelSubwidgets;
+  }
 }
 ?>

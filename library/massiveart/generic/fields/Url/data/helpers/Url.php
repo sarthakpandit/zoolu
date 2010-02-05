@@ -101,11 +101,11 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       $this->getModelUrls();
 
       $objItemData = $this->objModel->load($intElementId);
-            
+
       if(count($objItemData) > 0){
         $objItem = $objItemData->current();
 
-        if($objItem->idParentTypes == $this->core->sysConfig->parent_types->folder){
+        if($objItem->idParentTypes == $this->core->sysConfig->parent_types->folder || $objItem->idParentTypes == $this->core->sysConfig->parent_types->widget){
           $objParentFolderData = $this->objModel->loadParentUrl($intElementId, $this->objElement->Setup()->getIsStartElement(false));
 
           if(count($objParentFolderData) > 0){

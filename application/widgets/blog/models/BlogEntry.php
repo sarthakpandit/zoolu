@@ -48,6 +48,11 @@ class Model_BlogEntry {
 	protected $objBlogEntryTable;
 	
 	/**
+	 * @var Model_Subwidgets
+	 */
+	protected $objModelSubwidgets;
+	
+	/**
 	 * @var Core
 	 */
 	protected $core;
@@ -68,11 +73,12 @@ class Model_BlogEntry {
 		
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'widget_BlogEntries.created', 'created_ts' => 'UNIX_TIMESTAMP(widget_BlogEntries.created)', 'text'));
-		$objSelectForm->join('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'created_ts' => 'UNIX_TIMESTAMP(subwidgets.created)', 'text'));
+		$objSelectForm->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
+		$objSelectForm->join('users','subwidgets.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
 		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.subwidgetId', array('url'));
 		$objSelectForm->where('urls.idParent = ?', $strWidgetInstanceId);
-		$objSelectForm->order('widget_BlogEntries.created ASC');
+		$objSelectForm->order('subwidgets.created ASC');
 		$data = $this->objBlogEntryTable->fetchAll($objSelectForm);
 		$this->intBlogEntryCount = $data->count();
 		
@@ -90,11 +96,12 @@ class Model_BlogEntry {
 		
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'widget_BlogEntries.created', 'created_ts' => 'UNIX_TIMESTAMP(widget_BlogEntries.created)', 'text'));
-		$objSelectForm->join('users','widget_BlogEntries.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'created_ts' => 'UNIX_TIMESTAMP(subwidgets.created)', 'text'));
 		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.subwidgetId', array('url'));
-		$objSelectForm->where('urls.idParent = ?', $strWidgetInstanceId);
-		$objSelectForm->order('widget_BlogEntries.created ASC');
+		$objSelectForm->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
+		$objSelectForm->join('users','subwidgets.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
+		$objSelectForm->where('subwidgets.widgetInstanceId = ?', $strWidgetInstanceId);
+		$objSelectForm->order('subwidgets.created ASC');
 		$objSelectForm->limit($intPerPage, $intOffset);
 		$data = $this->objBlogEntryTable->fetchAll($objSelectForm);
 		$this->intBlogEntryCount = $data->count();
@@ -122,10 +129,13 @@ class Model_BlogEntry {
    * @version 1.0
    */
   public function getBlogEntry($intBlogEntryId) {
+  	$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntry('.$intBlogEntryId.')');
+  	
   	$objSelect = $this->getBlogEntryTable()->select();
   	$objSelect->setIntegrityCheck(false);
-  	$objSelect->from($this->objBlogEntryTable, array('id', 'widgetInstanceId', 'title', 'text', 'subwidgetId'));
-  	$objSelect->where('id = ?', $intBlogEntryId);
+  	$objSelect->from($this->objBlogEntryTable, array('id', 'title', 'text', 'subwidgetId'));
+  	$objSelect->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId', array('widgetInstanceId'));
+  	$objSelect->where('widget_BlogEntries.id = ?', $intBlogEntryId);
   	$objSelect->limit(1);
   	
   	return $this->objBlogEntryTable->fetchRow($objSelect)->toArray();
@@ -143,8 +153,9 @@ class Model_BlogEntry {
   	
   	$objSelect = $this->getBlogEntryTable()->select();
   	$objSelect->setIntegrityCheck(false);
-  	$objSelect->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'created', 'text'));
-  	$objSelect->joinInner('users','widget_BlogEntries.idUsers = users.id');
+  	$objSelect->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'text'));
+  	$objSelect->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
+  	$objSelect->joinInner('users','subwidgets.idUsers = users.id');
   	$objSelect->where('widget_BlogEntries.subwidgetId = ?', $strSubwidgetId);
 
   	return $this->objBlogEntryTable->fetchAll($objSelect);
@@ -171,6 +182,17 @@ class Model_BlogEntry {
   public function deleteBlogEntry($intBlogEntry) {
   	$this->core->logger->debug('widgets->blog->Model_Blog->deleteBlogEntry('.$intBlogEntry.')');
   	
+  	//Delete Subwidget-Entry
+  	$objSelect = $this->getBlogEntryTable()->select();
+  	$objSelect->setIntegrityCheck(false);
+  	$objSelect->from($this->objBlogEntryTable, array('subwidgets.Id'));
+  	$objSelect->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
+  	$objSelect->where('widget_BlogEntries.id = ?', $intBlogEntry);
+  	$objSelect->limit(1);
+  	$arrData = $this->getBlogEntryTable()->fetchRow($objSelect);
+  	
+  	$this->getModelSubwidgets()->delete($arrData->Id);
+  	
   	$strWhere = $this->getBlogEntryTable()->getAdapter()->quoteInto('id = ?', $intBlogEntry);
   	return $this->getBlogEntryTable()->delete($strWhere);
   }
@@ -188,6 +210,26 @@ class Model_BlogEntry {
     }
 
     return $this->objBlogEntryTable;
+  }
+  
+  /**
+   * getModelSubwidgets
+   * @return Model_Subwidgets
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelSubwidgets(){
+    if (null === $this->objModelSubwidgets) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Subwidgets.php';
+      $this->objModelSubwidgets = new Model_Subwidgets();
+    }
+
+    return $this->objModelSubwidgets;
   }
 }
 
