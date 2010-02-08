@@ -81,17 +81,19 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function indexAction() {
 		$objEntries = $this->getBlogEntriesTable();
 		$objWidgetProperties = $this->getWidgetInstancePropertiesTable();
-		
-    $this->view->perPage = $objWidgetProperties->getPropertyValue('pagination', $this->objWidget->getWidgetInstanceId());
-    $offset = ($this->_getParam('page') > 0) ? $this->view->perPage * ($this->_getParam('page') - 1) : 0;
-
-    $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset);
-		$this->view->assign('objEntries',$objEntry);
 		$this->view->total = $objEntries->getBlogEntryCount($this->objWidget->getWidgetInstanceId());
 		
-		$objBlogWidgetTags = $this->getBlogEntriesTagsTable();
-		$objBlogWidgetTags->setInstanceId($this->objWidget->getWidgetInstanceId());
-		$this->view->assign('objWidgetTags', $objBlogWidgetTags);
+		if($this->view->total > 0) {
+	    $this->view->perPage = $objWidgetProperties->getPropertyValue('pagination', $this->objWidget->getWidgetInstanceId());
+	    $offset = ($this->_getParam('page') > 0) ? $this->view->perPage * ($this->_getParam('page') - 1) : 0;
+	
+	    $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset);
+			$this->view->assign('objEntries',$objEntry);
+			
+			$objBlogWidgetTags = $this->getBlogEntriesTagsTable();
+			$objBlogWidgetTags->setInstanceId($this->objWidget->getWidgetInstanceId());
+			$this->view->assign('objWidgetTags', $objBlogWidgetTags);
+		}
 	}
 	
   /**

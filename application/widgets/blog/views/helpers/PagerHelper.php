@@ -48,8 +48,8 @@ class Blog_View_Helper_Pager {
    protected $endPage = 1;
    protected $pageRange = 10;
 
-   const FORMAT_PREVIOUS           = '<a href="%s" class="pager_previous">&laquo; Newer Posts</a>';
-   const FORMAT_NEXT               = '<a href="%s" class="pager_next">Older Posts &raquo;</a>';
+   const FORMAT_PREVIOUS           = '<a href="%s">&laquo; Newer Posts</a>';
+   const FORMAT_NEXT               = '<a href="%s">Older Posts &raquo;</a>';
 
    /**
     * Base link formats
