@@ -119,7 +119,6 @@ class Model_Urls {
 					                 ->where('urls.idLanguages = ?', $this->intLanguageId)
 					                 ->where('rootLevels.id = ?', $intRootLevelId);
 					                 
-	  // flo 2010-01-06, todo: to display e.g. blog entries, this won't work because blog entry isn't a widgetInstance -> relationId ?!
 		$objWidgetSelect = $this->core->dbh->select();
 		$objWidgetSelect->from('urls', array('relationId' => 'widgetInstances.widgetInstanceId', 'widgetInstances.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
     $objWidgetSelect->join('widgetInstances', 'urls.relationId = widgetInstances.widgetInstanceId AND urls.version = widgetInstances.version', array());
@@ -128,15 +127,15 @@ class Model_Urls {
                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->widget)
                     ->where('urls.idLanguages = ?', $this->intLanguageId);
 
+    // todo: 2010-02-08, flo: problem with idUrlTypes
     $objSubWidgetSelect = $this->core->dbh->select();
 		$objSubWidgetSelect->from('urls', array('relationId' => 'urls.relationId', 'urls.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes'));
 		$objSubWidgetSelect->where('urls.url = ?', $strUrl)
-                    	 ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->widget)
                     	 ->where('urls.idLanguages = ?', $this->intLanguageId);
 
     $objSelect = $this->getUrlTable()->select()
                                      ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objWidgetSelect, $objSubWidgetSelect));
-                                                          
+                                                 
   	return $this->objUrlTable->fetchAll($objSelect);
   }
   

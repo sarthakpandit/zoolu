@@ -77,24 +77,24 @@ class Blog_View_Helper_Pager {
    * @version 1.0
    */
 	public function pager($total = null, $perPage = 10) {
-   	if(isset(self::$pager)) return self::$pager;
-    $page = Zend_Controller_Front::getInstance()->getRequest()->getParam('page');
-
-    if ($page > 0) {
-   		$this->currentPage = $page;
-    }
-
-    $this->total = $total;
-    $this->perPage = $perPage;
-    $this->totalPage = ceil($this->total / $this->perPage);
-     
-    if ($this->totalPage < $this->currentPage) $this->currentPage = 1;
-    $this->endPage = ($this->pageRange * ceil($this->currentPage / $this->pageRange));
-    $this->startPage = ($this->endPage - $this->pageRange) + 1;
-
-    self::$pager = $this;
-
-    return $this;
+	   	if(isset(self::$pager)) return self::$pager;
+	    $page = Zend_Controller_Front::getInstance()->getRequest()->getParam('page');
+	
+	    if ($page > 0) {
+	   		$this->currentPage = $page;
+	    }
+	
+	    $this->total = $total;
+	    $this->perPage = $perPage;
+	    $this->totalPage = ceil($this->total / $this->perPage);
+	     
+	    if ($this->totalPage < $this->currentPage) $this->currentPage = 1;
+	    $this->endPage = ($this->pageRange * ceil($this->currentPage / $this->pageRange));
+	    $this->startPage = ($this->endPage - $this->pageRange) + 1;
+	
+	    self::$pager = $this;
+	
+	    return $this;
 	}
 
 

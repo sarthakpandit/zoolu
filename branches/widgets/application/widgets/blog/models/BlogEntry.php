@@ -66,20 +66,15 @@ class Model_BlogEntry {
 	 * getBlogEntryCount
 	 * @return integer $intBlogEntryCount
 	 * @author Florian Mathis <flo@massiveart.com>
-	 * @version 1.0
+	 * @version 1.0getGenericTable
 	 */
 	public function getBlogEntryCount($strWidgetInstanceId){
 		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntryCount('.$strWidgetInstanceId.')');
-		
-		$objSelectForm = $this->getBlogEntryTable()->select();
-		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'created_ts' => 'UNIX_TIMESTAMP(subwidgets.created)', 'text'));
-		$objSelectForm->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
-		$objSelectForm->join('users','subwidgets.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
-		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.subwidgetId', array('url'));
-		$objSelectForm->where('urls.idParent = ?', $strWidgetInstanceId);
-		$objSelectForm->order('subwidgets.created ASC');
-		$data = $this->objBlogEntryTable->fetchAll($objSelectForm);
+
+		$objSelect = $this->getModelSubwidgets()->getGenericTable('subwidgets')->select();
+  	$objSelect->setIntegrityCheck(false);
+  	$objSelect->where('widgetInstanceId = ?', $strWidgetInstanceId);
+		$data = $this->getModelSubwidgets()->getGenericTable('subwidgets')->fetchAll($objSelect);
 		$this->intBlogEntryCount = $data->count();
 		
 		return $this->intBlogEntryCount;
@@ -93,11 +88,12 @@ class Model_BlogEntry {
 	 */
 	public function getBlogEntries($strWidgetInstanceId, $intPerPage=10, $intOffset=0) {
 		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntries('.$strWidgetInstanceId.', '.$intPerPage.', '.$intOffset.')');
-		
+
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
 		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'created_ts' => 'UNIX_TIMESTAMP(subwidgets.created)', 'text'));
 		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.subwidgetId', array('url'));
+		$objSelectForm->join('languages', 'urls.idLanguages = languages.id', array('languageCode'));
 		$objSelectForm->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
 		$objSelectForm->join('users','subwidgets.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
 		$objSelectForm->where('subwidgets.widgetInstanceId = ?', $strWidgetInstanceId);
