@@ -175,6 +175,7 @@ class IndexController extends Zend_Controller_Action {
       	case $this->core->sysConfig->url_types->widget: {
       		$objWidget = new Widget();
        		$this->getModelWidgets();
+       		
        		if($objUrlData->idParent) {
         		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->idParent);
         		$objWidget->setWidgetInstanceId($objUrlData->relationId);
@@ -195,6 +196,25 @@ class IndexController extends Zend_Controller_Action {
 					$objWidget->setUrlParentId($objUrlData->idParent);
 					
 					Zend_Registry::set('Widget', $objWidget);
+					$this->_forward($objWidget->getAction(),'index',$objWidgetInstance->name);
+      	} break;
+      	
+      	// UrlType: SubWidget
+      	case $this->core->sysConfig->url_types->subwidget: {
+      		$objWidget = new Widget();
+       		$this->getModelWidgets();
+       		$objWidgetInstance = $this->objModelWidgets->loadSubWidgetByInstanceId($objUrlData->relationId);
+       		$objWidget->setWidgetName($objWidgetInstance->name);
+					$objWidget->setNavigationUrl((parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
+					$objWidget->setWidgetTitle($objWidgetInstance->title);
+					$objWidget->setRootLevelTitle($objTheme->title);
+					$objWidget->setRootLevelId($objTheme->idRootLevels);
+					$objWidget->setWidgetVersion($objUrlData->version);
+					$objWidget->setLanguageId($objUrlData->idLanguages);
+					$objWidget->setWidgetInstanceId($objUrlData->relationId);
+					$objWidget->setAction('view');
+					Zend_Registry::set('Widget', $objWidget);
+
 					$this->_forward($objWidget->getAction(),'index',$objWidgetInstance->name);
       	} break;
       	

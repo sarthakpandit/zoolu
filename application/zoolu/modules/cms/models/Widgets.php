@@ -77,6 +77,11 @@ class Model_Widgets {
 	protected $objUrlTable;
 	
 	/**
+	 * @var Model_Subwidgets
+	 */
+	protected $objModelSubwidgets;
+	
+	/**
 	 * @var number
 	 */
 	private $intLanguageId;
@@ -239,6 +244,27 @@ class Model_Widgets {
   	$objSelect->where('widgetInstances.widgetInstanceId = ?', $intWidgetInstanceId);
 
   	return $this->objWidgetInstancesTable->fetchRow($objSelect);
+  }
+  
+  /**
+   * loadSubWidgetByInstanceId
+   * @param integer $intWidgetInstanceId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function loadSubWidgetByInstanceId($intWidgetInstanceId){
+  	$this->core->logger->debug('cms->models->Model_Widgets->loadSubWidgetByInstanceId('.$intWidgetInstanceId.')');
+  	
+  	$objSelect = $this->getModelSubwidgets()->getGenericTable('subwidgets')->select();
+  	$objSelect->from('subwidgets', array());
+  	$objSelect->setIntegrityCheck(false);
+  	$objSelect->join('widgetInstances', 'subwidgets.widgetInstanceId = widgetInstances.widgetInstanceId', array('widgetInstanceTitles.title','widgets.name'));
+  	$objSelect->join('widgetInstanceTitles', 'widgetInstances.widgetInstanceId = widgetInstanceTitles.widgetInstanceId', array());
+  	$objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id', array());
+  	$objSelect->where('subwidgets.subwidgetId = ?', $intWidgetInstanceId);
+  	
+  	return $this->getModelSubwidgets()->getGenericTable('subwidgets')->fetchRow($objSelect);
   }
   
 	/**
@@ -458,6 +484,26 @@ class Model_Widgets {
     if($this->objUrlReplacers === null) {
       $this->objUrlReplacers = $this->loadUrlReplacers();
     }
+  }
+  
+	/**
+   * getModelSubwidgets
+   * @return Model_Subwidgets
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelSubwidgets(){
+    if (null === $this->objModelSubwidgets) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Subwidgets.php';
+      $this->objModelSubwidgets = new Model_Subwidgets();
+    }
+
+    return $this->objModelSubwidgets;
   }
 	
 	/**

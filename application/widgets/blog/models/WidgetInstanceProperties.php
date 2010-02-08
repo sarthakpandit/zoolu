@@ -69,9 +69,11 @@ class Model_WidgetInstanceProperties {
 		
 		$objSelect = $this->getWidgetInstancePropertiesTable()->select();
 		$objSelect->from($this->objWidgetInstancePropertiesTable, array('value'));
-		$objSelect->where('idWidgetInstances = ?', $intWidgetInstanceId)
+		$objSelect->join('widgetInstances', 'widgetInstances.id = widgetInstanceProperties.idWidgetInstances', array());
+		$objSelect->where('widgetInstances.widgetInstanceId = ?', $intWidgetInstanceId)
 							->where('property = ?', $strPropertyName);
 		$objData = $this->objWidgetInstancePropertiesTable->fetchRow($objSelect);	
+
 		return $objData['value'];
 	}
 	
