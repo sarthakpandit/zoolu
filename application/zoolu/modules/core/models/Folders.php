@@ -208,9 +208,11 @@ $this->core->logger->debug(strval($objSelect));
 
     $strFolderFilter = '';
     $strPageFilter = '';
+    $strWidgetFilter = '';
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $strFolderFilter = 'AND folders.idStatus = '.$this->core->sysConfig->status->live;
       $strPageFilter = 'AND pages.idStatus = '.$this->core->sysConfig->status->live;
+      $strWidgetFilter = 'AND wi.idStatus = '.$this->core->sysConfig->status->live;
     }
 
     $sqlStmt = $this->core->dbh->query('SELECT id, title, idStatus, url, pageId, folderId, widgetId, sortPosition, sortTimestamp, isStartPage, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
@@ -255,7 +257,7 @@ $this->core->logger->debug(strval($objSelect));
                                                     pages.id = (SELECT p.id FROM pages p WHERE p.pageId = pages.pageId ORDER BY p.version DESC LIMIT 1)
                                                     '.$strPageFilter.'
                                               UNION
-																	            SELECT DISTINCT wi.id, wit.title, -1 AS idStatus, 
+																	            SELECT DISTINCT wi.id, wit.title, wi.idStatus, 
 																	            	(SELECT pU.url FROM urls AS pU WHERE pU.relationId = wi.widgetInstanceId AND pU.version = wi.version AND pU.idLanguages = ? ORDER BY pU.version DESC LIMIT 1) AS url, -1 AS tmpVar,
 																	            	-1 AS folderId, wi.widgetInstanceId AS widgetId, wi.sortPosition AS sortPosition, wi.sortTimestamp AS sortTimestamp, -1 AS isStartPage
 																	            FROM widgetInstances wi
@@ -264,7 +266,8 @@ $this->core->logger->debug(strval($objSelect));
 																	            LEFT JOIN genericForms gf ON wi.idGenericForms = gf.id
 																	            WHERE wi.idParent = ?
 																	              AND wi.idParentTypes = ?
-																	              AND showInNavigation = 1)
+																	              '.$strWidgetFilter.'
+																	              AND wi.showInNavigation = 1)
                                         AS tbl
                                         ORDER BY sortPosition ASC, sortTimestamp DESC, id ASC', array($this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $intRootId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
 
