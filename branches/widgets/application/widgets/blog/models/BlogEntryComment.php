@@ -61,6 +61,8 @@ class Model_BlogEntryComment {
 	 * @version 1.0
 	 */
 	public function addBlogEntryComment($arrValues) {
+		$this->core->logger->debug('widgets->blog->Model_Blog->addBlogEntryComment('.$arrValues.')');
+		
 		return $this->getBlogEntryCommentTable()->insert($arrValues);
 	}
 	
