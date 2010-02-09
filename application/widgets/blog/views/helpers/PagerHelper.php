@@ -153,8 +153,13 @@ class Blog_View_Helper_Pager {
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
    */
-  public function url($strUrlId) {                                                                                                                          
- 		return '?page='.$strUrlId;                                      
+  public function url($strUrlId) { 
+  	$tag = Zend_Controller_Front::getInstance()->getRequest()->getParam('t');
+  	if($tag != null) {                                                                                                                         
+ 			return '?t='.$tag.'&page='.$strUrlId;                
+  	} else {
+  		return '?page='.$strUrlId;
+  	}         
   }
 }
 

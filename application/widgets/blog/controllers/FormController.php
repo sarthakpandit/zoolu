@@ -276,6 +276,21 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
 	/**
+	 * addblogcommentAction
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addblogcommentAction(){
+		$this->core->logger->debug('widgets->blog->FormController->addblogcommentAction()');
+		try {
+			echo 'XX';die();
+		}catch(Exception $exc) {
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
 	 * getwidgetpropertiesAction
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
@@ -283,7 +298,6 @@ class Blog_FormController extends AuthControllerAction {
 	public function getwidgetpropertiesformAction(){
     $this->core->logger->debug('widgets->blog->FormController->getwidgetpropertiesformAction()');
 
-    
     try {
     	$this->getFormProperties($this->core->sysConfig->generic->actions->edit);
     	

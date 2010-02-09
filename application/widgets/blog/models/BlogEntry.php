@@ -53,6 +53,11 @@ class Model_BlogEntry {
 	protected $objModelSubwidgets;
 	
 	/**
+	 * @var Model_Table_Subwidgets
+	 */
+	protected $objSubwidgetsTable;
+	
+	/**
 	 * @var Core
 	 */
 	protected $core;
@@ -68,12 +73,20 @@ class Model_BlogEntry {
 	 * @author Florian Mathis <flo@massiveart.com>
 	 * @version 1.0getGenericTable
 	 */
-	public function getBlogEntryCount($strWidgetInstanceId){
-		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntryCount('.$strWidgetInstanceId.')');
+	public function getBlogEntryCount($strWidgetInstanceId, $strTag=null){
+		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntryCount('.$strWidgetInstanceId.', '.$strTag.')');
 
-		$objSelect = $this->getModelSubwidgets()->getGenericTable('subwidgets')->select();
+		$objSelect = $this->getSubwidgetsTable()->select();
   	$objSelect->setIntegrityCheck(false);
-  	$objSelect->where('widgetInstanceId = ?', $strWidgetInstanceId);
+  	$objSelect->from($this->objSubwidgetsTable, array('id'));
+		
+  	if($strTag){
+			$objSelect->join('tagSubwidgets', 'tagSubwidgets.subwidgetId = subwidgets.subwidgetId', array());
+			$objSelect->join('tags', 'tags.id = tagSubwidgets.idTags', array());
+			$objSelect->where('tags.title = ?', $strTag);
+  	}
+  	
+  	$objSelect->where('subwidgets.widgetInstanceId = ?', $strWidgetInstanceId);
 		$data = $this->getModelSubwidgets()->getGenericTable('subwidgets')->fetchAll($objSelect);
 		$this->intBlogEntryCount = $data->count();
 		
@@ -86,7 +99,7 @@ class Model_BlogEntry {
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
 	 */
-	public function getBlogEntries($strWidgetInstanceId, $intPerPage=10, $intOffset=0) {
+	public function getBlogEntries($strWidgetInstanceId, $intPerPage=10, $intOffset=0, $strTag=null) {
 		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntries('.$strWidgetInstanceId.', '.$intPerPage.', '.$intOffset.')');
 
 		$objSelectForm = $this->getBlogEntryTable()->select();
@@ -96,8 +109,15 @@ class Model_BlogEntry {
 		$objSelectForm->join('languages', 'urls.idLanguages = languages.id', array('languageCode'));
 		$objSelectForm->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
 		$objSelectForm->join('users','subwidgets.idUsers = users.id', array('idLanguages', 'username', 'password', 'fname', 'sname'));
+		
+		if($strTag){
+			$objSelectForm->join('tagSubwidgets', 'tagSubwidgets.subwidgetId = subwidgets.subwidgetId', array());
+			$objSelectForm->join('tags', 'tags.id = tagSubwidgets.idTags', array());
+			$objSelectForm->where('tags.title = ?', $strTag);
+  	}
+  	
 		$objSelectForm->where('subwidgets.widgetInstanceId = ?', $strWidgetInstanceId);
-		$objSelectForm->order('subwidgets.created ASC');
+		$objSelectForm->order('subwidgets.created DESC');
 		$objSelectForm->limit($intPerPage, $intOffset);
 		$data = $this->objBlogEntryTable->fetchAll($objSelectForm);
 		$this->intBlogEntryCount = $data->count();
@@ -206,6 +226,21 @@ class Model_BlogEntry {
     }
 
     return $this->objBlogEntryTable;
+  }
+  
+	/**
+   * getSubwidgetsTable
+   * @return Zend_Db_Table_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getSubwidgetsTable(){
+    if($this->objSubwidgetsTable === null) {
+      require_once GLOBAL_ROOT_PATH.'application/widgets/blog/models/tables/Subwidgets.php';
+      $this->objSubwidgetsTable = new Model_Table_Subwidgets();
+    }
+
+    return $this->objSubwidgetsTable;
   }
   
   /**

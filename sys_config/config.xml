@@ -74,7 +74,7 @@
         <host>localhost</host>
         <username>zoolu</username>
         <password>zoolu</password>
-        <dbname>zoolu</dbname>
+        <dbname>zooluwidget</dbname>
       </params>
     </database>
     
