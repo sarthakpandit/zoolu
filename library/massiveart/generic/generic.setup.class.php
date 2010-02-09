@@ -747,16 +747,22 @@ class GenericSetup {
 	public function setMetaInformation(Zend_Db_Table_Row &$objCurrElement){
 
 		if(count($objCurrElement) > 0){
-			$this->setCreatorId($objCurrElement->creator);
-			$this->setPublisherName($objCurrElement->publisher);
-			$this->setChangeUserName($objCurrElement->changeUser);
-			$this->setShowInNavigation($objCurrElement->showInNavigation);
+		  if($objCurrElement->creator != '' || !is_null($objCurrElement->creator)){
+		    $this->setCreatorId($objCurrElement->creator);
+		  }
+		  if($objCurrElement->publisher != '' || !is_null($objCurrElement->publisher)){
+        $this->setPublisherName($objCurrElement->publisher);
+      }
+		  if($objCurrElement->changeUser != '' || !is_null($objCurrElement->changeUser)){
+        $this->setChangeUserName($objCurrElement->changeUser);
+      }
 			if($objCurrElement->changed != '' || !is_null($objCurrElement->changed)){
 				$this->setChangeDate($objCurrElement->changed);
 			}
 			if($objCurrElement->published != '' || !is_null($objCurrElement->published)){
 				$this->setPublishDate($objCurrElement->published);
 			}
+			$this->setShowInNavigation($objCurrElement->showInNavigation);
 			$this->setFormVersion($objCurrElement->version);
 			$this->setStatusId($objCurrElement->idStatus);
 		}

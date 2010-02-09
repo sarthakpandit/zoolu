@@ -25,6 +25,8 @@ Massiveart.Product = Class.create({
                  formVersion: $F('formVersion'),
                  formTypeId: $F('formTypeId'),
                  id: $F('id'),
+                 linkId: ($('linkId')) ? $F('linkId') : -1,
+                 languageId: $F('languageId'),
                  currLevel: $F('currLevel'),
                  rootLevelId: $F('rootLevelId'),
                  parentFolderId: $F('parentFolderId'),

@@ -68,6 +68,11 @@ class Navigation {
   public function Page(){
     return $this->objPage;
   }
+  
+  /**
+   * @var Zend_Db_Table_Row_Abstract
+   */
+  protected $objBaseUrl;
 
   /**
    * @var Zend_Db_Table_Rowset_Abstract
@@ -92,6 +97,14 @@ class Navigation {
   public function ParentFolders(){
     return $this->objParentFolders;
   }
+  
+  /**
+   * @var Zend_Db_Table_Rowset_Abstract
+   */
+  protected $objProductParentFolders;
+  public function ProductParentFolders(){
+    return $this->objProductParentFolders;
+  }  
 
   protected $intRootLevelId;
   protected $intRootFolderId = 0;
@@ -239,7 +252,6 @@ class Navigation {
         foreach($objNavigationData as $objNavigationItem){
 
           if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0){
-
            /**
             * add to parent tree
             */
@@ -257,7 +269,7 @@ class Navigation {
             $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
             if($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->product_tree->id && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
-              $this->addProductTree($objTree);
+              $this->addProductTree($objTree);              
             }
               
             $intTreeId = $objNavigationItem->idFolder;
@@ -315,7 +327,7 @@ class Navigation {
       }
 
       $this->objMainNavigation = $objNavigationTree;
-      
+            
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     } 
@@ -333,15 +345,14 @@ class Navigation {
         $intParentId = $this->objPage->getFieldValue('entry_product_point');
         $arrFilterOptions = array('CategoryId'  => $this->objPage->getFieldValue('entry_category'),
                                   'LabelId'     => $this->objPage->getFieldValue('entry_label'));
-               
+                       
         $objNavigationData = $this->getModelFolders()->loadWebsiteProductTree($intParentId, $arrFilterOptions);
-
+        
         if(count($objNavigationData) > 0){
           
           $intTreeId = 0;
           
           foreach($objNavigationData as $objNavigationItem){
-          
             if($intTreeId != $objNavigationItem->idFolder){
 
               /**
@@ -363,7 +374,7 @@ class Navigation {
                            
               $intTreeId = $objNavigationItem->idFolder;
             }
-
+            
             if($objNavigationItem->productId != null){
               if($objNavigationItem->isStartProduct == 1){
                 //$objTree->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
@@ -381,7 +392,14 @@ class Navigation {
                 $objTree->addItem($objItem, 'item_'.$objItem->getId());
               }
             }
-          }          
+          } 
+
+          /**
+           * add to parent tree
+           */
+          if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+            $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+          }
         }
       }
             
@@ -506,11 +524,33 @@ class Navigation {
     $arrParentFolderIds = array();
     if(count($this->objParentFolders) > 0){
       foreach($this->objParentFolders as $objParentFolder){
-        $arrParentFolderIds[] = $objParentFolder->folderId;
+        $arrParentFolderIds[] = $objParentFolder->folderId;  
+        
       }
     }
-
+    
     return $arrParentFolderIds;
+  }
+  
+  /**
+   * getProductParentFolderIds
+   * @return array $arrProductParentFolderIds
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getProductParentFolderIds(){
+    $arrProductParentFolderIds = array();
+    if($this->objProductParentFolders === null && $this->objPage instanceof Page && $this->objPage->ChildPage() !== null){
+      $this->objProductParentFolders = $this->getModelFolders()->loadProductParentFolders($this->objPage->ChildPage()->getNavParentId());
+    }
+    
+    if(count($this->objProductParentFolders) > 0){
+      foreach($this->objProductParentFolders as $objProductParentFolder){
+        $arrProductParentFolderIds[] = $objProductParentFolder->folderId; 
+      }
+    }
+    
+    return $arrProductParentFolderIds;
   }
 
   /**
@@ -540,6 +580,14 @@ class Navigation {
    */
   public function setPage(Page &$objPage){
     $this->objPage = $objPage;
+  }
+  
+  /**
+   * setBaseUrl
+   * @param $objBaseUrl
+   */
+  public function setBaseUrl(Zend_Db_Table_Row_Abstract $objBaseUrl){
+    $this->objBaseUrl = $objBaseUrl;
   }
 
   /**

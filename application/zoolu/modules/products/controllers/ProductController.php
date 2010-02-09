@@ -170,7 +170,7 @@ class Products_ProductController extends AuthControllerAction {
     try{
 	    $this->getForm($this->core->sysConfig->generic->actions->add);
 	    $this->addProductSpecificFormElements();
-
+	    
 	    /**
 	     * set action
 	     */
@@ -189,7 +189,7 @@ class Products_ProductController extends AuthControllerAction {
 	    /**
        * output of metainformation to hidden div
        */
-      $this->setViewMetaInfos();
+      $this->setViewMetaInfos();      
 
 	    $this->view->form = $this->objForm;
 
@@ -401,6 +401,8 @@ class Products_ProductController extends AuthControllerAction {
       $this->view->statusOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT statusTitles.title AS DISPLAY FROM statusTitles WHERE statusTitles.idStatus = status.id AND statusTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM status', $this->objForm->Setup()->getStatusId());
       $this->view->creatorOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, CONCAT(fname, \' \', sname) AS DISPLAY FROM users', $this->objForm->Setup()->getCreatorId());
 
+      $this->core->logger->debug('getCreatorId: '.$this->objForm->Setup()->getCreatorId());
+
       if($this->objForm->Setup()->getIsStartElement(false) == true){
         $this->view->typeOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT productTypeTitles.title AS DISPLAY FROM productTypeTitles WHERE productTypeTitles.idProductTypes = productTypes.id AND productTypeTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM productTypes WHERE startproduct = 1 ORDER BY DISPLAY', $this->objForm->Setup()->getElementTypeId());
       }else{
@@ -414,7 +416,7 @@ class Products_ProductController extends AuthControllerAction {
 
       if($this->objForm->Setup()->getField('url')) $this->view->producturl = $this->objForm->Setup()->getField('url')->getValue();
 
-      if($this->objForm->Setup()->getElementTypeId() != $this->core->sysConfig->product_types->link->id) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getLanguageId());
+      if($this->objForm->Setup()->getElementTypeId() != $this->core->sysConfig->product_types->link->id) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
     }
   }
 

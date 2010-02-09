@@ -146,7 +146,7 @@ class GenericSubForm extends Zend_Form_SubForm {
        */
       if($objField->sqlSelect != '' && $objField->sqlSelect){
         $objReplacer = new Replacer();
-        $sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getLanguageId(), $this->objGenericForm->Setup()->getRootLevelId());
+        $sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getFormLanguageId(), $this->objGenericForm->Setup()->getRootLevelId());
         $sqlStmt = $this->core->dbh->query($sqlSelect)->fetchAll();
         if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SELECT_ID) {
           $arrOptions[''] = 'Bitte wählen';
@@ -196,6 +196,7 @@ class GenericSubForm extends Zend_Form_SubForm {
         'isCoreField' => $objField->isCoreField,
         'MultiOptions' => $arrOptions,
         'LanguageId' => $this->objGenericForm->Setup()->getLanguageId(),
+        'FormLanguageId' => $this->objGenericForm->Setup()->getFormLanguageId(),
         'isEmptyField' => (($blnEmpty == true) ? 1 : 0),
         'required' =>  (($objField->isKeyField == 1) ? true : false)
       ));

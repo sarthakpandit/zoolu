@@ -177,6 +177,181 @@ class Model_Products {
   }
 
   /**
+   * loadItems
+   * @param integer $intParentId
+   * @param integer $intCategoryId
+   * @param integer $intLabelId
+   * @param integer $intEntryNumber
+   * @param integer $intSortTypeId
+   * @param integer $intSortOrderId
+   * @param integer $intEntryDepthId
+   * @param array $arrProductIds
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadItems($intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrProductIds = array()){
+    $this->core->logger->debug('cms->models->Model_Products->loadItems('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrProductIds.')');
+
+    $strSortOrder = '';
+    if($intSortOrderId > 0 && $intSortOrderId != ''){
+      switch($intSortOrderId){
+        case $this->core->sysConfig->sort->orders->asc->id:
+          $strSortOrder = ' ASC';
+          break;
+        case $this->core->sysConfig->sort->orders->desc->id:
+          $strSortOrder = ' DESC';
+          break;
+      }
+    }    
+
+    $objSelect1 = $this->core->dbh->select();
+    $objSelect1->from('products', array('id', 'productId', 'relationId' => 'productId', 'plId' => 'lP.id', 'isStartElement' => 'isStartProduct', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'productProperties.idProductTypes', 'productProperties.published', 'productProperties.changed', 'productProperties.created', 'productProperties.idStatus'))
+               ->join('productLinks', 'productLinks.productId = products.productId', array())
+               ->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array())
+               ->join('folders', 'folders.id = lP.idParent AND lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
+               ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
+               ->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+               ->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
+               ->joinLeft(array('ub' => 'users'), 'ub.id = productProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
+               ->joinLeft('productCategories', 'productCategories.productId = products.productId AND productCategories.version = products.version', array())
+               ->joinLeft('productLabels', 'productLabels.productId = products.productId AND productLabels.version = products.version', array())
+               ->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+               ->joinLeft('urls', 'urls.relationId = lP.productId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->product.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
+               ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
+               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
+               ->where('folders.idRootLevels = parent.idRootLevels');
+               
+    switch($intEntryDepthId){
+      case $this->core->sysConfig->filter->depth->all:
+        $objSelect1->where('folders.depth > parent.depth');
+        break;
+      case $this->core->sysConfig->filter->depth->first:
+      default:
+        $objSelect1->where('lP.isStartProduct = 1')
+                   ->where('folders.depth = (parent.depth + 1)');        
+        break;
+    }
+    
+    
+    $objSelect2 = $this->core->dbh->select();
+    $objSelect2->from('products', array('id', 'productId', 'relationId' => 'productId', 'plId' => 'lP.id', 'isStartElement' => 'isStartProduct', 'idParent', 'idParentTypes', 'sortPosition' => 'lP.sortPosition', 'sortTimestamp' => 'lP.sortTimestamp', 'productProperties.idProductTypes', 'productProperties.published', 'productProperties.changed', 'productProperties.created', 'productProperties.idStatus'))
+               ->join('productLinks', 'productLinks.productId = products.productId', array())
+               ->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array())
+               ->joinLeft('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+               ->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
+               ->joinLeft(array('ub' => 'users'), 'ub.id = productProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
+               ->joinLeft('productCategories', 'productCategories.productId = products.productId AND productCategories.version = products.version', array())
+               ->joinLeft('productLabels', 'productLabels.productId = products.productId AND productLabels.version = products.version', array())
+               ->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+               ->joinLeft('urls', 'urls.relationId = lP.productId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->product.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
+               ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
+               ->where('lP.idParent = ?', $intParentId)
+               ->where('lP.isStartProduct = 0');
+    
+    
+
+    if(count($arrProductIds) > 0){
+      $objSelect1->where('products.id NOT IN ('.implode(',', $arrProductIds).')');
+      $objSelect2->where('products.id NOT IN ('.implode(',', $arrProductIds).')');
+    }
+
+    if($intCategoryId > 0 && $intCategoryId != ''){
+      $objSelect1->where('productCategories.category = ?', $intCategoryId);
+      $objSelect2->where('productCategories.category = ?', $intCategoryId);
+    }
+
+    if($intLabelId > 0 && $intLabelId != ''){
+      $objSelect1->where('productLabels.label = ?', $intLabelId);
+      $objSelect2->where('productLabels.label = ?', $intLabelId);
+    }
+    
+    if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
+      $objSelect1->where('productProperties.idStatus = ?', $this->core->sysConfig->status->live)
+                 ->where('productProperties.published <= ?', date('Y-m-d H:i:s'));
+      $objSelect2->where('productProperties.idStatus = ?', $this->core->sysConfig->status->live)
+                 ->where('productProperties.published <= ?', date('Y-m-d H:i:s'));
+    }
+                                        
+    $objSelect = $this->getProductTable()->select()
+                                         ->distinct()
+                                         ->union(array($objSelect1, $objSelect2));
+                        
+    if($intSortTypeId > 0 && $intSortTypeId != ''){
+      switch($intSortTypeId){
+        case $this->core->sysConfig->sort->types->manual_sort->id:
+          $objSelect->order(array('sortPosition'.$strSortOrder, 'sortTimestamp'.(($strSortOrder == 'DESC') ? ' ASC' : ' DESC')));
+          break;
+        case $this->core->sysConfig->sort->types->created->id:
+          $objSelect->order(array('created'.$strSortOrder));
+          break;
+        case $this->core->sysConfig->sort->types->changed->id:
+          $objSelect->order(array('changed'.$strSortOrder));
+          break;
+        case $this->core->sysConfig->sort->types->published->id:
+          $objSelect->order(array('published'.$strSortOrder));
+          break;
+        case $this->core->sysConfig->sort->types->alpha->id:
+          $objSelect->order(array('title'.$strSortOrder)); 
+          break;
+      }
+    }
+    
+    if($intEntryNumber > 0 && $intEntryNumber != ''){
+      $objSelect->limit($intEntryNumber);
+    }
+
+    return $this->getProductTable()->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadItemInstanceDataByIds
+   * @param string $strGenForm
+   * @param array $arrPageIds
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadItemInstanceDataByIds($strGenForm, $arrProductIds){
+    $this->core->logger->debug('cms->models->Model_Products->loadItemInstanceDataByIds('.$strGenForm.', '.$arrProductIds.')');
+
+    // FIXME : !!! CHANGE INSTANCE FIELDS DEFINTION
+    // FIXME : !!! iFl.idFields IN (5,55) -> define
+    if($strGenForm != '' && $strGenForm != '-' && strpos($strGenForm, $this->core->sysConfig->product_types->link->default_formId) === false){
+      $strSqlInstanceFields = '';
+      $strSqlInstanceFields = ' `product-'.$strGenForm.'-Instances`.shortdescription,
+                                  `product-'.$strGenForm.'-Instances`.description,';
+      
+      $strSqlWhereProductIds = '';
+      if(count($arrProductIds) > 0){
+        $strSqlWhereProductIds = ' WHERE products.id IN ('.implode(',',$arrProductIds).')';
+      }
+
+      $sqlStmt = $this->core->dbh->query('SELECT products.id,
+                                            '.$strSqlInstanceFields.'
+                                            files.filename, fileTitles.title AS filetitle
+                                          FROM products
+                                          LEFT JOIN `product-'.$strGenForm.'-Instances` ON
+                                            `product-'.$strGenForm.'-Instances`.productId = products.productId AND
+                                            `product-'.$strGenForm.'-Instances`.version = products.version AND
+                                            `product-'.$strGenForm.'-Instances`.idLanguages = ?
+                                          LEFT JOIN `product-'.$strGenForm.'-InstanceFiles` AS iFiles ON
+                                            iFiles.id = (SELECT iFl.id FROM `product-'.$strGenForm.'-InstanceFiles` AS iFl
+                                                         WHERE iFl.productId = products.productId AND iFl.version = products.version AND iFl.idFields IN (5,55)
+                                                         ORDER BY iFl.idFields DESC LIMIT 1)
+                                          LEFT JOIN files ON
+                                            files.id = iFiles.idFiles AND
+                                            files.isImage = 1
+                                          LEFT JOIN fileTitles ON
+                                            fileTitles.idFiles = files.id AND
+                                            fileTitles.idLanguages = ?
+                                          '.$strSqlWhereProductIds, array($this->intLanguageId, $this->intLanguageId));
+
+      return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+    }
+  }
+  
+  /**
    * search
    * @param string $strSearchValue
    * @return Zend_Db_Table_Rowset_Abstract Product

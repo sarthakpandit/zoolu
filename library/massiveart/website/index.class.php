@@ -81,6 +81,7 @@ class Index {
       $objPage->setModelSubPath('cms/models/');
       
       $objPage->loadPage();  
+      
       $objPage->indexPage();
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

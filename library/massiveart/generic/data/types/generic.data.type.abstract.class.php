@@ -1222,7 +1222,8 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    */
   final protected function addToIndex($strIndexPath, $strKey){
     try{
-
+      $this->core->logger->debug('massiveart->generic->data->types->GenericDataTypeAbstract->addToIndex('.$strIndexPath.', '.$strKey.')');
+      
       if(!is_object($this->objIndex) || !($this->objIndex instanceof Zend_Search_Lucene)){
         if(count(scandir($strIndexPath)) > 2){
           $this->objIndex = Zend_Search_Lucene::open($strIndexPath);
@@ -1231,9 +1232,12 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         }
       }
 
-      $objDoc = new Zend_Search_Lucene_Document();
+      Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num_CaseInsensitive());
 
-      $objDoc->addField(Zend_Search_Lucene_Field::keyword('key', $strKey));
+      $objDoc = new Zend_Search_Lucene_Document();      
+
+      $objDoc->addField(Zend_Search_Lucene_Field::keyword('key', $strKey)); 
+      $objDoc->addField(Zend_Search_Lucene_Field::keyword('languageId', $this->setup->getLanguageId()));     
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('date', $this->setup->getPublishDate('d.m.Y')));
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('rootLevelId', $this->setup->getRootLevelId()));
 
@@ -1245,10 +1249,20 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         if(is_object($objField) && $objField->idSearchFieldTypes != Search::FIELD_TYPE_NONE){
 
           $strValue = '';
-          if(is_array($objField->getValue()) && $objField->sqlSelect != ''){
-            $arrIds = $objField->getValue();
+          $strValueIds = '';
+          if(!is_object($objField->getValue()) && $objField->sqlSelect != ''){
             $sqlSelect = $objField->sqlSelect;
-
+            
+            $arrIds = array();
+            
+            if(is_array($objField->getValue())){
+              $arrIds = $objField->getValue();
+            }else if($objField->getValue() != ''){
+              $arrIds = array($objField->getValue());
+            }
+            
+            $this->core->logger->debug(var_export($arrIds, true));
+            
             if(is_array($arrIds)){
               if(count($arrIds) > 0){
                 $strReplaceWhere = '';
@@ -1259,11 +1273,13 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 
                 $objReplacer = new Replacer();
                 $sqlSelect = $objReplacer->sqlReplacer($sqlSelect, $this->setup->getLanguageId(), $this->setup->getRootLevelId(),' AND tbl.id IN ('.$strReplaceWhere.')');
+                $this->core->logger->debug($sqlSelect);
                 $objCategoriesData = $this->core->dbh->query($sqlSelect)->fetchAll(Zend_Db::FETCH_OBJ);
 
                 if(count($objCategoriesData) > 0){
                   foreach($objCategoriesData as $objCategories){
                     $strValue .= $objCategories->title.', ';
+                    $strValueIds .= '['.$objCategories->id.']';
                   }
                   $strValue = rtrim($strValue, ', ');
                 }
@@ -1272,8 +1288,11 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           }else{
             $strValue = $objField->getValue();
           }
-
-          if($strValue != ''){
+          
+          if(is_string($strValue) && $strValue != ''){
+            if($strValueIds != ''){
+              $objDoc->addField(Zend_Search_Lucene_Field::unIndexed($strField.'Ids', $strValueIds, $this->core->sysConfig->encoding->default));
+            }
             switch ($objField->idSearchFieldTypes){
               case Search::FIELD_TYPE_KEYWORD:
                 $objDoc->addField(Zend_Search_Lucene_Field::keyword($strField, $strValue, $this->core->sysConfig->encoding->default));
@@ -1294,7 +1313,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           }
         }
       }
-
+      
       // Add document to the index.
       $this->objIndex->addDocument($objDoc);
 

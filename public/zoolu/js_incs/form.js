@@ -15,6 +15,8 @@ Massiveart.Form = Class.create({
     this.updateContainer = 'genFormContainer';
     this.updateOverlayContainer = 'overlayGenContent';
     
+    this.theme = 'ivoclarvivadent'; //'default'; //FIXME
+    
     this.portalId = 0;
     this.preSelectedPortal = '';
     this.selectedPortal = '';
@@ -543,13 +545,14 @@ Massiveart.Form = Class.create({
         formTypeId: $F('formTypeId'),
         id: $F('id'),
         linkId: ($('linkId')) ? $F('linkId') : -1,
+        zoolu_module: myNavigation.module,
         languageId: newLanguageId,
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
         rootLevelTypeId: $F('rootLevelTypeId'),
         parentFolderId: $F('parentFolderId'),
         elementType: $F('elementType')
-      },
+      },      
       evalScripts: true,
       onComplete: function() {    
         myCore.removeBusyClass(this.updateContainer);
@@ -711,8 +714,9 @@ Massiveart.Form = Class.create({
         plugins : "safari,table,advimage,advlink,media,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,inlinepopups",
                     
         // Theme options
-        theme_advanced_buttons1 : "bold,italic,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,anchor,|,fullscreen,code",
-        theme_advanced_buttons2 : "tablecontrols",
+        
+        theme_advanced_buttons1 : "bold,italic,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,sub,sup,|,link,unlink,anchor,|,fullscreen,code",
+        theme_advanced_buttons2 : "formatselect,|,tablecontrols",
         //theme_advanced_buttons2 : "",
         theme_advanced_buttons3 : "",
         theme_advanced_buttons4 : "",                
@@ -721,6 +725,8 @@ Massiveart.Form = Class.create({
         theme_advanced_statusbar_location : "bottom",
         theme_advanced_resizing : true,
         theme_advanced_resize_horizontal : false,
+          
+        content_css: "/website/themes/" + this.theme + "/css/screen.css",
         
         relative_urls : false                              
       });
