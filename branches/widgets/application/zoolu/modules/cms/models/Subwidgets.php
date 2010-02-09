@@ -62,6 +62,11 @@ class Model_Subwidgets {
   private $objUrlTable;
   
   /**
+   * @var Model_Table_WidgetTable
+   */
+  private $objWidgetTableTable;
+  
+  /**
    * @var array
    */
   protected $arrGenericTables = array();
@@ -136,6 +141,23 @@ class Model_Subwidgets {
   }
   
   /**
+   * searchWidgetTable
+   * @param number $intGenericFormId
+   * @return Zend_Db_Table_Rowset_Abstract
+   */
+  public function searchWidgetTable($intGenericFormId){
+  	$this->core->logger->debug('cms->models->Model_Subwidgets->searchWidgetTable('.$intElementId.')');
+  	
+  	$objSelect = $this->getWidgetTableTable()->select();
+  	$objSelect->setIntegrityCheck(false);
+  	
+  	$objSelect->from('widgetTable', array('id', 'name'));
+  	$objSelect->where('idGenericForms = ?', $intGenericFormId);
+  	
+  	return $this->getWidgetTableTable()->fetchRow($objSelect);
+  }
+  
+  /**
    * setLanguageId
    * @param integer $intLanguageId
    */
@@ -167,6 +189,21 @@ class Model_Subwidgets {
     return $this->objSubwidgetTable;
   }
   
+  /**
+   * getWidgetTableTable
+   * @return Zend_Db_Table_Abstract
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function getWidgetTableTable(){
+  	if($this->objWidgetTableTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/tables/WidgetTable.php';
+      $this->objWidgetTableTable = new Model_Table_WidgetTable();
+    }
+
+    return $this->objWidgetTableTable;
+  }
+  
     /**
    * getGenericTable
    * @return Model_Table_Generics 
@@ -189,7 +226,7 @@ class Model_Subwidgets {
   } 
   
   /**
-   * getPUrlTable
+   * getUrlTable
    * @return Zend_Db_Table_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0

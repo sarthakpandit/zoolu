@@ -64,12 +64,14 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 		
 		switch($this->setup->getActionType()) {
 			case $this->core->sysConfig->generic->actions->add:
+				//Search idWidgetTable
+				$objWidgetTable = $this->getModelSubwidgets()->searchWidgetTable($this->Setup()->getGenFormId());
 				
 				$arrMainData = array( 'subwidgetId'       => $strSubwidgetId,
 				                      'widgetInstanceId'  => $this->setup->getParentId(),
 				                      'created'           => date('Y-m-d H:i:s'),
 				                      'idUsers'           => Zend_Auth::getInstance()->getIdentity()->id,
-				                      'idWidgetTable'     => 1,    //FIXME: Make it variable
+				                      'idWidgetTable'     => $objWidgetTable->id,
 				                      'idParentTypes'     => $this->core->sysConfig->parent_types->widget,
 				                      'version'           => $intSubwidgetVersion
 				                    );
@@ -77,9 +79,21 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 				$this->setup->setElementId($this->getModelSubwidgets()->getSubwidgetTable()->insert($arrMainData));
 				
 				$this->insertCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
+        //NOT TESTED!
+        //Much work (new tables, ...)
+//        $this->insertFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
+//        $this->insertMultiFieldData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
+//        $this->insertInstanceData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
+//        $this->insertMultiplyRegionData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 			case $this->core->sysConfig->generic->actions->edit:
 				$this->updateCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
+				//NOT TESTED!
+				//Much work (new tables, ...)
+//        $this->updateFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
+//        $this->updateMultiFieldData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
+//        $this->updateInstanceData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
+//        $this->updateMultiplyRegionData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 		}
 		
