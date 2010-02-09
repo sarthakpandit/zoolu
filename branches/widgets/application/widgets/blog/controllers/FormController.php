@@ -159,6 +159,32 @@ class Blog_FormController extends AuthControllerAction {
 	}
 	
 	/**
+	 * addblogcommentAction
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addblogcommentAction(){
+		$this->core->logger->debug('widgets->blog->FormController->addblogcommentAction()');
+		try {
+			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+				$arrFormData = $this->objRequest->getPost();	
+				$this->getModelBlogEntryComment();	
+				
+				$arrData = array('name' => $arrFormData['name'],
+                         'text' => $arrFormData['text'],
+												 'mail' => $arrFormData['mail'],
+												 'idWidget_BlogEntries' => $arrFormData['idBlogentries']);		
+				$this->objModelBlogEntryComment->addBlogEntryComment($arrData);
+			
+				$this->renderScript('page/empty.phtml');
+			}
+		}catch(Exception $exc) {
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
 	 * getsubwidgeteditformAction
 	 * @author Daniel Rotter <daniel.rotter@massiveart.com>
 	 * @version 1.0
