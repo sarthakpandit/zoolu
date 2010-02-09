@@ -109,7 +109,7 @@ class Plugin_FormHelper_FormGmaps extends Zend_View_Helper_FormElement {
 	    }
 	    initialize();
     </script>
-    <div id="map_canvas" style="width: 500px; height: 300px"></div>';
+    <div id="map_canvas" style="height:300px;"></div>';
     
 
     // Hidden Fields Latitude and Longitude

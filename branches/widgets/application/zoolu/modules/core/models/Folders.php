@@ -263,7 +263,8 @@ $this->core->logger->debug(strval($objSelect));
 																	            INNER JOIN widgets w ON w.id = wi.idWidgets																	            
 																	            LEFT JOIN genericForms gf ON wi.idGenericForms = gf.id
 																	            WHERE wi.idParent = ?
-																	              AND wi.idParentTypes = ?)
+																	              AND wi.idParentTypes = ?
+																	              AND showInNavigation = 1)
                                         AS tbl
                                         ORDER BY sortPosition ASC, sortTimestamp DESC, id ASC', array($this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->core->sysConfig->parent_types->folder, $intRootId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $this->intLanguageId, $this->core->sysConfig->page_types->link->id, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel, $this->intLanguageId, $intRootId, $this->core->sysConfig->parent_types->rootlevel));
 

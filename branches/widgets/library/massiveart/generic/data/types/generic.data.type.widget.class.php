@@ -102,7 +102,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
           }
           $intSortPosition = count($objNaviData);
 
-          $this->core->logger->debug('$this->setup->getParentId(): '.$this->setup->getParentId());
+          $this->core->logger->debug('$this->setup->getParentId(): '.$this->setup->getShowInNavigation());
           $arrMainData = array( 'idGenericForms'  => $this->setup->getGenFormId(),
                                 'sortPosition'    => $intSortPosition,
                                 'idParent'        => $this->setup->getParentId(),
@@ -113,7 +113,9 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
                                 'creator'         => $this->setup->getCreatorId(),
                                 'idWidgets'       => $this->setup->getElementTypeId(),
                                 'widgetInstanceId'=> $strWidgetInstanceId,
-                                'version'         => $intWidgetVersion);
+                                'version'         => $intWidgetVersion,
+                                'showInNavigation'=> $this->setup->getShowInNavigation()
+          );
           
           $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));
           $this->insertCoreData('widgetInstance', $strWidgetInstanceId, $intWidgetVersion);
@@ -142,7 +144,9 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
                                                                              'creator'          => $this->setup->getCreatorId(),
                                                                              'idStatus'         => $this->setup->getStatusId(),
                                                                              'published'        => $this->setup->getPublishDate(),
-                                                                             'changed'          => date('Y-m-d H:i:s')), $strWhere);
+                                                                             'changed'          => date('Y-m-d H:i:s'),
+                                                                             'showInNavigation' => $this->setup->getShowInNavigation()),
+                                                                     $strWhere);
             
             $this->updateCoreData('widgetInstance', $objWidgetInstances->widgetInstanceId, $objWidgetInstances->version);
           }
@@ -177,10 +181,10 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
     if(count($objWidgetsData) > 0) {
       $objWidgetData = $objWidgetsData->current();
       
-			// $this->setup->setMetaInformation($objWidgetData);
-			// $this->setup->setElementTypeId($objWidgetData->idPageTypes);
-			// $this->setup->setIsStartElement($objWidgetData->isStartPage);
-			// $this->setup->setParentTypeId($objWidgetData->idParentTypes);
+			$this->setup->setMetaInformation($objWidgetData);
+//			$this->setup->setElementTypeId($objWidgetData->idPageTypes);
+//			$this->setup->setIsStartElement($objWidgetData->isStartPage);
+//			$this->setup->setParentTypeId($objWidgetData->idParentTypes);
       
       foreach($this->Setup()->CoreFields() as $strField => $objField) {
         $objGenTable = $this->getModelGenericData()->getGenericTable('widgetInstance'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));

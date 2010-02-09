@@ -341,6 +341,7 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objRequest->getParam('instanceId'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden')));
  		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
@@ -372,6 +373,7 @@ class Cms_WidgetController extends AuthControllerAction {
    * @version 1.0
    */
   private function setViewMetaInfos(){
+  	$this->core->logger->debug('#########################'.$this->objForm->Setup()->getShowInNavigation());
     if(is_object($this->objForm) && $this->objForm instanceof GenericForm){
       $this->view->version = $this->objForm->Setup()->getFormVersion();
       $this->view->publisher = $this->objForm->Setup()->getPublisherName();

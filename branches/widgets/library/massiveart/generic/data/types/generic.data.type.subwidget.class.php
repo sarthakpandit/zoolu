@@ -80,7 +80,6 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 				
 				$this->insertCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
         //NOT TESTED!
-        //Much work (new tables, ...)
 //        $this->insertFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->insertMultiFieldData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->insertInstanceData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
@@ -89,7 +88,6 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 			case $this->core->sysConfig->generic->actions->edit:
 				$this->updateCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				//NOT TESTED!
-				//Much work (new tables, ...)
 //        $this->updateFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->updateMultiFieldData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 //        $this->updateInstanceData('subwidget', $strSubwidgetId, $intSubwidgetVersion);

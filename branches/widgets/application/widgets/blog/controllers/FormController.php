@@ -410,6 +410,7 @@ class Blog_FormController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'widgetInstanceId', array('value' => $this->objRequest->getParam('widgetInstanceId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden')));
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();

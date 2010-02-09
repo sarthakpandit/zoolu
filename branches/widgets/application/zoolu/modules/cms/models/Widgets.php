@@ -428,7 +428,8 @@ class Model_Widgets {
     $objSelect = $this->getWidgetInstancesTable()->select();
     $objSelect->setIntegrityCheck(false);
     
-    $objSelect->from($this->objWidgetInstancesTable, array('id', 'idGenericForms', 'sortPosition', 'idParent', 'idParentTypes', 'created', 'changed', 'published', 'idStatus', 'sortTimestamp', 'creator', 'publisher', 'idWidgets', 'widgetInstanceId', 'version'));
+    $objSelect->from($this->objWidgetInstancesTable, array('id', 'idGenericForms', 'sortPosition', 'idParent', 'idParentTypes', 'created', 'changed', 'published', 'idStatus', 'sortTimestamp', 'creator', 'publisher', 'idWidgets', 'widgetInstanceId', 'version', 'showInNavigation',
+      '(SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = widgetInstances.idUsers) AS changeUser'));
     if(is_numeric($intWidgetInstanceId)) $objSelect->where('id = ?', $intWidgetInstanceId);
     else $objSelect->where('widgetInstanceId = ?', $intWidgetInstanceId);
     
