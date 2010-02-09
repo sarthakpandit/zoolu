@@ -169,7 +169,7 @@ class Model_BlogEntry {
   	
   	$objSelect = $this->getBlogEntryTable()->select();
   	$objSelect->setIntegrityCheck(false);
-  	$objSelect->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'text'));
+  	$objSelect->from($this->objBlogEntryTable, array('blogEntryId' => 'id', 'title', 'users.username', 'subwidgets.created', 'text'));
   	$objSelect->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
   	$objSelect->joinInner('users','subwidgets.idUsers = users.id');
   	$objSelect->where('widget_BlogEntries.subwidgetId = ?', $strSubwidgetId);

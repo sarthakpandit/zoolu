@@ -104,6 +104,9 @@ class Blog_IndexController extends WidgetControllerAction  {
   	$objBlogEntries = $this->getBlogEntriesTable();
   	$objEntry = $objBlogEntries->getBlogEntryBySubwidgetId($this->objWidget->getWidgetInstanceId());
   	$this->view->assign('objEntry',$objEntry[0]);
+  	
+  	$arr = $this->getBlogEntriesTagsTable()->getTagsBySubwidgetId($this->objWidget->getWidgetInstanceId());
+  	$this->view->assign('arrTags', $arr);
   }
   
   /**

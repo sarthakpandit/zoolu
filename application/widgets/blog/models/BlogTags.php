@@ -89,6 +89,25 @@ class Model_BlogTags {
 	}
 	
 	/**
+	 * getTagsBySubwidgetId
+	 * @param string $strSubwidgetId
+	 * @return Zend_Db_Table_Abstract
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getTagsBySubwidgetId($strSubwidgetId) {
+		$this->core->logger->debug('widgets->blog->Model_BlogTags->getTagsBySubwidgetId('.$strSubwidgetId.')');
+		
+		$objSelect = $this->getBlogEntryTagTable()->select();
+		$objSelect->setIntegrityCheck(false);
+		$objSelect->from('tags', array('title', 'count(tagSubwidgets.idTags) AS c'));
+		$objSelect->join('tagSubwidgets', 'tagSubwidgets.idTags = tags.id', array());
+		$objSelect->where('tagSubwidgets.subwidgetId = ?', $strSubwidgetId);
+		echo $objSelect;
+		return $this->objBlogEntriesTagTable->fetchAll($objSelect);
+	}
+	
+	/**
 	 * setInstanceId
 	 * @param string $strWidgetInstanceId
 	 * @author Florian Mathis <flo@massiveart.com>

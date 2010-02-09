@@ -53,7 +53,7 @@ class Blog_FormController extends AuthControllerAction {
 	/**
 	 * @var Model_BlogEntryComment
 	 */
-	private $ObjModelBlogEntryComment;
+	private $objModelBlogEntryComment;
 	
 	/**
 	 * @var Model_WidgetInstanceProperties
@@ -153,32 +153,6 @@ class Blog_FormController extends AuthControllerAction {
       $this->view->form = $this->objForm;
       $this->renderScript('page/form.phtml');
 		} catch(Exception $exc) {
-			$this->core->logger->err($exc);
-			exit();
-		}
-	}
-	
-	/**
-	 * addblogcommentAction
-	 * @author Florian Mathis <flo@massiveart.com>
-	 * @version 1.0
-	 */
-	public function addblogcommentAction(){
-		$this->core->logger->debug('widgets->blog->FormController->addblogcommentAction()');
-		try {
-			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
-				$arrFormData = $this->objRequest->getPost();	
-				$this->getModelBlogEntryComment();	
-				
-				$arrData = array('name' => $arrFormData['name'],
-                         'text' => $arrFormData['text'],
-												 'mail' => $arrFormData['mail'],
-												 'idWidget_BlogEntries' => $arrFormData['idBlogentries']);		
-				$this->objModelBlogEntryComment->addBlogEntryComment($arrData);
-			
-				$this->renderScript('page/empty.phtml');
-			}
-		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
 		}
@@ -309,7 +283,18 @@ class Blog_FormController extends AuthControllerAction {
 	public function addblogcommentAction(){
 		$this->core->logger->debug('widgets->blog->FormController->addblogcommentAction()');
 		try {
-			echo 'XX';die();
+			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+				$arrFormData = $this->objRequest->getPost();	
+				$this->getModelBlogEntryComment();	
+				
+				$arrData = array('title' => $arrFormData['name'],
+                         'text' => $arrFormData['text'],
+												 'mail' => $arrFormData['mail'],
+												 'idWidget_BlogEntries' => $arrFormData['idBlogentries']);		
+				$this->objModelBlogEntryComment->addBlogEntryComment($arrData);
+			
+				$this->renderScript('page/empty.phtml');
+			}
 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
@@ -522,9 +507,9 @@ class Blog_FormController extends AuthControllerAction {
    * @return Model_BlogEntryComments
    */
   protected function getModelBlogEntryComment() {
-  	if(null === $this->ObjModelBlogEntryComment) {
+  	if(null === $this->objModelBlogEntryComment) {
   		require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntryComment.php';
-  		$this->ObjModelBlogEntryComments = new Model_BlogEntryComment();
+  		$this->objModelBlogEntryComment = new Model_BlogEntryComment();
   	}
   }
   
