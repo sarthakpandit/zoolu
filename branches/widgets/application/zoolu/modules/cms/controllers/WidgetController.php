@@ -117,6 +117,7 @@ class Cms_WidgetController extends AuthControllerAction {
 		
 		try {
 			$this->getForm($this->core->sysConfig->generic->actions->add);
+			$this->addWidgetSpecificFormElements();
 			
 			if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
 				$arrFormData = $this->objRequest->getPost();
@@ -163,6 +164,7 @@ class Cms_WidgetController extends AuthControllerAction {
 		
 		try {
 			$this->getForm($this->core->sysConfig->generic->actions->add);
+			$this->addWidgetSpecificFormElements();
 			
 			$this->objForm->setAction('/zoolu/cms/widget/add');
 			
@@ -193,13 +195,15 @@ class Cms_WidgetController extends AuthControllerAction {
     
     try {
       $this->getForm($this->core->sysConfig->generic->actions->edit);
-    
+
       $this->objForm->loadFormData();
+
+      $this->addWidgetSpecificFormElements();
       
       $this->objForm->setAction('/zoolu/cms/widget/edit');
       $this->objForm->prepareForm();
       $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
-      
+
       $this->setViewMetaInfos();
       $this->view->form = $this->objForm;
       
@@ -219,6 +223,7 @@ class Cms_WidgetController extends AuthControllerAction {
     
     try {
       $this->getForm($this->core->sysConfig->generic->actions->edit);
+      $this->addWidgetSpecificFormElements();
       
       $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
       
@@ -282,6 +287,22 @@ class Cms_WidgetController extends AuthControllerAction {
   	}
   }
   
+  /**
+   * addWidgetSpecificFormElements
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  protected function addWidgetSpecificFormElements(){
+    if(is_object($this->objForm) && $this->objForm instanceof GenericForm){
+      /**
+       * add widget specific hidden fields
+       * Here because the Setup isn't updated at the call of getForm()
+       */
+      $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'idStatus', array('value' => $this->objForm->Setup()->getStatusId(), 'decorators' => array('Hidden')));
+    }
+  }
+  
 	
 	/**
 	 * getForm
@@ -324,13 +345,14 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->Setup()->setParentId((($this->objRequest->getParam("parentFolderId") != '') ? $this->objRequest->getParam("parentFolderId") : null));
       $this->objForm->Setup()->setIsStartElement((($this->objRequest->getParam("isStartPage") != '') ? $this->objRequest->getParam("isStartPage") : 0));
       $this->objForm->Setup()->setPublishDate((($this->objRequest->getParam("publishDate") != '') ? $this->objRequest->getParam("publishDate") : date('Y-m-d H:i:s')));
+      $this->objForm->Setup()->setStatusId((($this->objRequest->getParam("idStatus") != '') ? $this->objRequest->getParam("idStatus") : $this->core->sysConfig->form->status->default));
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("idWidget") != '') ? $this->objRequest->getParam("idWidget") : 0));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentType") != '') ? $this->objRequest->getParam("parentType") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setElementId($this->objRequest->getParam('idWidgetInstance'));
       $this->objForm->Setup()->setWidgetInstanceId($this->objRequest->getParam("instanceId"));
       $this->objForm->Setup()->setModelSubPath('cms/models/');
-      
+
       $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'rootLevelId', array('value' => $this->objRequest->getParam('rootLevelId'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'currLevel', array('value' => $this->objRequest->getParam('currLevel'), 'decorators' => array('Hidden'), 'ignore' => true));
@@ -341,7 +363,6 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objRequest->getParam('instanceId'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden')));
-      $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden')));
  		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
@@ -373,7 +394,6 @@ class Cms_WidgetController extends AuthControllerAction {
    * @version 1.0
    */
   private function setViewMetaInfos(){
-  	$this->core->logger->debug('#########################'.$this->objForm->Setup()->getShowInNavigation());
     if(is_object($this->objForm) && $this->objForm instanceof GenericForm){
       $this->view->version = $this->objForm->Setup()->getFormVersion();
       $this->view->publisher = $this->objForm->Setup()->getPublisherName();
