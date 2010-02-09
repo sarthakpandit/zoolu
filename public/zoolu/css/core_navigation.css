@@ -706,14 +706,14 @@ Icons */
 }
 
 .img_widget_on {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -255px;
+  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -17px;
   position:relative;
   width:16px;
   height:16px;
 }
 
 .img_widget_off {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -238px;
+  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% 0px;
   position:relative;
   width:16px;
   height:16px;
