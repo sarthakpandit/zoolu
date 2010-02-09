@@ -94,15 +94,17 @@ class Model_Urls {
    * loadByUrl
    * @param integer $intRootLevelId
    * @param string $strUrl
-   * @return Zend_Db_Table_Rowset_Abstract
+   * @return stdClass
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
   public function loadByUrl($intRootLevelId, $strUrl){
     $this->core->logger->debug('core->models->Model_Urls->loadByUrl('.$intRootLevelId.', '.$strUrl.')');
     
+    $objUrlData = new stdClass();
+    
     $objFolderPageSelect = $this->core->dbh->select();
-    $objFolderPageSelect->from('urls', array('relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => new Zend_Db_Expr('-1')));
+    $objFolderPageSelect->from('urls', array('relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => new Zend_Db_Expr('-1'), 'linkParentId' => new Zend_Db_Expr('-1')));
     $objFolderPageSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array());
     $objFolderPageSelect->join('folders', 'folders.id = pages.idParent', array());
     $objFolderPageSelect->where('urls.url = ?', $strUrl)
@@ -111,7 +113,7 @@ class Model_Urls {
 											  ->where('folders.idRootLevels = ?', $intRootLevelId);
     
     $objRootLevelPageSelect = $this->core->dbh->select();
-    $objRootLevelPageSelect->from('urls', array('relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => new Zend_Db_Expr('-1')));
+    $objRootLevelPageSelect->from('urls', array('relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => new Zend_Db_Expr('-1'), 'linkParentId' => new Zend_Db_Expr('-1')));
     $objRootLevelPageSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->rootlevel, array());
     $objRootLevelPageSelect->join('rootLevels', ' rootLevels.id = pages.idParent', array());
     $objRootLevelPageSelect->where('urls.url = ?', $strUrl)
@@ -120,7 +122,7 @@ class Model_Urls {
 					                 ->where('rootLevels.id = ?', $intRootLevelId);
 	  
     $objProductSelect = $this->core->dbh->select();
-    $objProductSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lP.id'));
+    $objProductSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lP.id', 'linkParentId' => 'lP.idParent'));
     $objProductSelect->join(array('lP' => 'products'), 'lP.productId = urls.relationId AND lP.version = urls.version', array());
     $objProductSelect->join('productLinks', 'productLinks.idProducts = lP.id', array());
     $objProductSelect->join('products', 'products.productId = productLinks.productId', array());
@@ -131,6 +133,70 @@ class Model_Urls {
     
     $objSelect = $this->getUrlTable()->select()
                                      ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objProductSelect));
+
+    $objUrlData->url = $this->objUrlTable->fetchAll($objSelect);
+    
+    /**
+     * check if url is product of a linkde product tree
+     */
+    if(count($objUrlData->url) == 0){
+      $objProductTreeBaseUrls = $this->loadProductTreeBaseUrls($intRootLevelId);
+      foreach($objProductTreeBaseUrls as $objBaseUrl){
+        if(strpos($strUrl, $objBaseUrl->url) === 0){
+          $objUrlData->url = $this->loadProductByUrl(str_replace($objBaseUrl->url, '', $strUrl));
+          $objUrlData->baseUrl = $objBaseUrl;
+          break;
+        }
+      }
+    }
+    
+    return $objUrlData;
+  }
+  
+  /**
+   * loadProductTreeBaseUrls
+   * @param integer $intRootLevelId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function loadProductTreeBaseUrls($intRootLevelId){
+    $this->core->logger->debug('core->models->Model_Urls->loadProductTreeBaseUrls('.$intRootLevelId.')');
+    
+    $objSelect = $this->getUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
+    
+    $objSelect->from('urls', array('url', 'relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => new Zend_Db_Expr('-1')));
+    $objSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array());
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->join('folders', 'folders.id = pages.idParent', array());
+    $objSelect->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
+              ->where('urls.idLanguages = ?', $this->intLanguageId)
+              ->where('folders.idRootLevels = ?', $intRootLevelId)
+              ->where('pageProperties.idPageTypes = ?', $this->core->sysConfig->page_types->product_tree->id);
+
+    return $this->objUrlTable->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadProductByUrl
+   * @param string $strUrl
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function loadProductByUrl($strUrl){
+    $this->core->logger->debug('core->models->Model_Urls->loadProductByUrl('.$strUrl.')');
+    
+    $objSelect = $this->getUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
+    
+    $objSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lP.id', 'linkParentId' => 'lP.idParent'));
+    $objSelect->join(array('lP' => 'products'), 'lP.productId = urls.relationId AND lP.version = urls.version', array());
+    $objSelect->join('productLinks', 'productLinks.idProducts = lP.id', array());
+    $objSelect->join('products', 'products.productId = productLinks.productId', array());
+    $objSelect->where('urls.url = ?', $strUrl)
+              ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->product)
+              ->where('urls.idLanguages = ?', $this->intLanguageId)
+              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
 
     return $this->objUrlTable->fetchAll($objSelect);
   }

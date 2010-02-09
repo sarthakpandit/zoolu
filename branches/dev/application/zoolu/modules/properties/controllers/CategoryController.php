@@ -162,7 +162,7 @@ class Properties_CategoryController extends AuthControllerAction {
      * get form title
      */
     $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
-    if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getLanguageId());
+    if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
 
     $this->view->form = $this->objForm;
 
@@ -198,7 +198,7 @@ class Properties_CategoryController extends AuthControllerAction {
      * get form title
      */
     $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
-    $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getLanguageId());
+    $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
 
     $this->view->form = $this->objForm;
     $this->renderScript('category/form.phtml');
@@ -218,7 +218,7 @@ class Properties_CategoryController extends AuthControllerAction {
      * get form title
      */
     $this->view->formtitle = $this->objForm->Setup()->getFormTitle();
-    $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getLanguageId());
+    $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
 
     if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
 

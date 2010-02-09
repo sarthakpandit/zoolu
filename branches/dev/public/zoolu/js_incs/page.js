@@ -25,6 +25,7 @@ Massiveart.Page = Class.create({
                  formVersion: $F('formVersion'),
                  formTypeId: $F('formTypeId'),
                  id: $F('id'),
+                 languageId: $F('languageId'),
                  currLevel: $F('currLevel'),
                  rootLevelId: $F('rootLevelId'),
                  parentFolderId: $F('parentFolderId'),

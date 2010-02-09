@@ -338,41 +338,7 @@ function get_tree_sub_navigation(){
  * @version 1.0
  */
 function get_breadcrumb($blnHomeLink = false, $strHomeUrl = ''){
-  $strBreadcrumb = '';
-
-  $objNavigation = getNavigationObject();
-  $objPage = getPageObject();
-
-  $core = Zend_Registry::get('Core');
-
-  if(count($objNavigation->ParentFolders()) > 0){
-    $arrParentFolders = array_reverse($objNavigation->ParentFolders());
-
-    if($blnHomeLink){
-      if($strHomeUrl != ''){
-        $strBreadcrumb .= '<a class="home" href="'.$strHomeUrl.'">Home</a> <span>/</span> ';
-      }else{
-        $strBreadcrumb .= '<a class="home" href="/">Home</a> <span>/</span> ';
-      }
-    }
-
-    $intCounter = 0;
-    foreach($arrParentFolders as $key => $objFolder){
-      $intCounter++;
-      $strBreadcrumb .= ($objFolder->id == $objPage->getNavParentId() && $objPage->getIsStartElement(false) == true) ? htmlentities($objFolder->title, ENT_COMPAT, $core->sysConfig->encoding->default) : '<a href="/'.strtolower($objFolder->languageCode).'/'.$objFolder->url.'">'.htmlentities($objFolder->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
-
-      if($intCounter < count($objNavigation->ParentFolders())){
-        $strBreadcrumb .= ' <span>/</span> ';
-      }
-    }
-  }
-
-  echo $strBreadcrumb;
-
-  if($objPage->getIsStartElement(false) == false){
-    echo ' <span>/</span> ';
-    get_title();
-  }
+  echo getNavigationHelperObject()->getBreadcrumb($blnHomeLink, $strHomeUrl);
 }
 
 ?>

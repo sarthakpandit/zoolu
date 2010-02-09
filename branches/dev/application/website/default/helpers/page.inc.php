@@ -50,6 +50,15 @@ function getPageObject(){
 }
 
 /**
+ * getPageHelperObject
+ * @return PageHelper
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function getPageHelperObject(){
+  return Zend_Registry::get('PageHelper');
+}
+
+/**
  * getCoreObject
  * @return Core
  * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -584,19 +593,21 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
         $strHtmlOutput .= '<h3>'.$strBlockTitle.'</h3>';
         $strHtmlOutput .= $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
 
-        $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_docs')->getInstanceValue($intRegionInstanceId));
-        if($objFiles != '' && count($objFiles) > 0){
-          $strHtmlOutput .= '<div class="documents left">';
-          foreach($objFiles as $objFile){
-            $strHtmlOutput .= '<div class="item">
-                    <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
-                    <div class="text">
-                      <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a>
-                    </div>
-                    <div class="clear"></div>
-                  </div>';
+        if($objMyMultiRegion->getField('block_docs')){
+          $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_docs')->getInstanceValue($intRegionInstanceId));
+          if($objFiles != '' && count($objFiles) > 0){
+            $strHtmlOutput .= '<div class="documents left">';
+            foreach($objFiles as $objFile){
+              $strHtmlOutput .= '<div class="item">
+                      <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+                      <div class="text">
+                        <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a>
+                      </div>
+                      <div class="clear"></div>
+                    </div>';
+            }
+            $strHtmlOutput .= '</div>';
           }
-          $strHtmlOutput .= '</div>';
         }
 
         $strHtmlOutput .= '<div class="clear"></div>';
@@ -724,7 +735,7 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
     $strHtmlOutput .= '<div class="video mBottom20">'.getPageObject()->getFieldValue('video_embed_code').'</div>';
   }
 
-  echo (($blnShowVideoTitle) ? get_video_title('h2', false) : '').$strHtmlOutput;
+  echo (($blnShowVideoTitle) ? get_video_title('h3', false) : '').$strHtmlOutput;
 }
 
 /**
@@ -1307,6 +1318,15 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
     }
   }
   echo $strHtmlOutput;
+}
+
+/**
+ * get_product_overview
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_product_overview(){
+  echo getPageHelperObject()->getProductOverview();
 }
 
 /**
@@ -2119,6 +2139,15 @@ function get_categories($strElement = 'li', $blnLinked = true){
     }
   }
   echo $strHtmlOutput;
+}
+
+/**
+ * get_category_icons
+ * @return string
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_category_icons(){
+  echo getPageHelperObject()->getCategoryIcons();
 }
 
 /**

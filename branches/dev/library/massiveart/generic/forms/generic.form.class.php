@@ -24,7 +24,7 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.generic.forms
+ * @package    library.massiveart.generic.formsre
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
@@ -462,7 +462,7 @@ class GenericForm extends Zend_Form {
        */
       if($objField->sqlSelect != '' && $objField->sqlSelect){
       	$objReplacer = new Replacer();
-      	$sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->setup->getLanguageId(), $this->setup->getRootLevelId());
+      	$sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->setup->getFormLanguageId(), $this->setup->getRootLevelId());
       	$sqlStmt = $this->core->dbh->query($sqlSelect)->fetchAll();
       	if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SELECT_ID) {
           $arrOptions[''] = 'Bitte wählen';
@@ -512,6 +512,7 @@ class GenericForm extends Zend_Form {
         'isCoreField' => $objField->isCoreField,
         'MultiOptions' => $arrOptions,
         'LanguageId' => $this->setup->getLanguageId(),
+        'FormLanguageId' => $this->objGenericForm->Setup()->getFormLanguageId(),
         'isEmptyField' => (($blnEmpty == true) ? 1 : 0),
         'required' =>  (($objField->isKeyField == 1) ? true : false)
       ));

@@ -72,11 +72,6 @@ class IndexController extends Zend_Controller_Action {
    */
   private $objPage;
 
-  /**
-   * @var Zend_Db_Table_Row_Abstract
-   */
-  private $objUrlsData;
-
   private $blnCachingStart = false;
 
   /**
@@ -158,30 +153,18 @@ class IndexController extends Zend_Controller_Action {
      * get uri
      */
     $strUrl = $_SERVER['REQUEST_URI'];
-
-    if(preg_match('/^\/[a-zA-Z]{2}\//', $strUrl)){
-      preg_match('/^\/[a-zA-Z]{2}\//', $strUrl, $arrMatches);
-      $this->strLanguageCode = trim($arrMatches[0], '/');
-      foreach($this->core->webConfig->languages->language->toArray() as $arrLanguage){
-        if(array_key_exists('code', $arrLanguage) && $arrLanguage['code'] == strtolower($this->strLanguageCode)){
-          $this->intLanguageId = $arrLanguage['id'];
-          break;
-        }
-      }
-      if($this->intLanguageId == null){
-        $this->intLanguageId = $this->core->sysConfig->languages->default->id;
-        $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
-      }
-      $strUrl = preg_replace('/^\/[a-zA-Z]{2}\//', '', $strUrl);
+    
+    if(preg_match('/^\/[a-zA-Z\-]{2,5}\//', $strUrl)){
+      $strUrl = preg_replace('/^\/[a-zA-Z\-]{2,5}\//', '', $strUrl);
     }else{
-      $strUrl = preg_replace('/^\//', '', $strUrl);
-      $this->intLanguageId = $this->core->sysConfig->languages->default->id;
-      $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
+      $strUrl = preg_replace('/^\//', '', $strUrl);      
     }
-
+    
+    $this->intLanguageId = $this->core->intLanguageId;
+    $this->strLanguageCode = $this->core->strLanguageCode;
+    
     $this->getModelFolders();
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
-
 
     $arrFrontendOptions = array(
       'lifetime' => 604800, // cache lifetime (in seconds), if set to null, the cache is valid forever.
@@ -226,10 +209,11 @@ class IndexController extends Zend_Controller_Action {
       
       Zend_Registry::set('Navigation', $objNavigation); //FIXME need of registration navigation object??      
 
-      $this->objUrlsData = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
+      $objUrl = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 
-      if(count($this->objUrlsData) > 0){
-        $objUrlData = $this->objUrlsData->current();
+      if(isset($objUrl->url) && count($objUrl->url) > 0){
+       
+        $objUrlData = $objUrl->url->current();
 
         $this->core->logger->debug('Cache: '.$this->core->sysConfig->cache->page);
         if($this->core->sysConfig->cache->page == 'true' && !isset($_SESSION['sesTestMode'])){
@@ -244,7 +228,7 @@ class IndexController extends Zend_Controller_Action {
         $this->objPage->setPageId($objUrlData->relationId);
         $this->objPage->setPageVersion($objUrlData->version);
         $this->objPage->setLanguageId($objUrlData->idLanguages);
-
+                
         switch($objUrlData->idUrlTypes){
           case $this->core->sysConfig->url_types->page:
             $this->objPage->setType('page');
@@ -254,8 +238,9 @@ class IndexController extends Zend_Controller_Action {
             $this->objPage->setType('product');
             $this->objPage->setModelSubPath('products/models/');
             $this->objPage->setElementLinkId($objUrlData->linkId);
+            $this->objPage->setNavParentId($objUrlData->linkParentId);
             break;
-        }
+        }        
 
         /**
          * preset navigation parent properties
@@ -264,6 +249,16 @@ class IndexController extends Zend_Controller_Action {
         if($objUrlData->idParent !== null){
           $this->objPage->setNavParentId($objUrlData->idParent);
           $this->objPage->setNavParentTypeId($objUrlData->idParentTypes);
+        }
+        
+        /**
+         * has base url object 
+         * e.g. prduct tree
+         */
+        if(isset($objUrl->baseUrl)){
+          $objNavigation->setBaseUrl($objUrl->baseUrl);
+          $this->objPage->setBaseUrl($objUrl->baseUrl);
+          $this->objPage->setNavParentId($objUrlData->linkParentId);
         }
 
         $this->objPage->loadPage();
@@ -278,7 +273,7 @@ class IndexController extends Zend_Controller_Action {
           $objNavigation->setPage($this->objPage->ParentPage());
         }else{
           $objNavigation->setPage($this->objPage); 
-        }        
+        }   
 
         /**
          * get page template filename
@@ -290,7 +285,20 @@ class IndexController extends Zend_Controller_Action {
         $this->view->publisher = $this->objPage->getPublisherName();
         $this->view->publishdate = $this->objPage->getPublishDate();
 
-        Zend_Registry::set('Page', $this->objPage);
+        if(file_exists(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/helpers/PageHelper.php')){
+          require_once(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/helpers/PageHelper.php');
+          $strPageHelper = ucfirst($objTheme->path).'_PageHelper';
+          $objPageHelper = new $strPageHelper();
+        }else{
+          require_once(dirname(__FILE__).'/../helpers/PageHelper.php');
+          $objPageHelper = new PageHelper();
+        }
+        
+        $objPageHelper->setPage($this->objPage);
+        Zend_Registry::set('PageHelper', $objPageHelper);
+        
+        Zend_Registry::set('Page', $this->objPage); //FIXME need of registration navigation object??      
+      
         require_once(dirname(__FILE__).'/../helpers/page.inc.php');
 
         $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');

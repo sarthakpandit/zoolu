@@ -65,73 +65,37 @@ class GenericDataTypeFolder extends GenericDataTypeAbstract {
 			$intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
 			/**
-			 * add|edit|newVersion core and instance data
+			 * add|edit|... core and instance data
 			 */
       switch($this->setup->getActionType()){
 				case $this->core->sysConfig->generic->actions->add :
+				  
+          $objFolder = $this->objModelFolders->add($this->setup);
 
-					$strFolderId = uniqid();
-					$intFolderVersion = 1;
-					$intSortPosition = GenericSetup::DEFAULT_SORT_POSITION;
-
-					if($this->setup->getParentId() != '' && $this->setup->getParentId() > 0){
-            $objNaviData = $this->getModelFolders()->loadChildNavigation($this->setup->getParentId());
-          }else{
-            $objNaviData = $this->getModelFolders()->loadRootNavigation($this->setup->getRootLevelId());
-          }
-          $intSortPosition = count($objNaviData);
-
-					$arrMainData = array('idGenericForms'   => $this->setup->getGenFormId(),
-                               'idFolderTypes'    => $this->core->sysConfig->folder_types->folder,
-                               'folderId'         => $strFolderId,
-                               'version'          => $intFolderVersion,
-                               'sortPosition'     => $intSortPosition,
-					                     'sortTimestamp'    => date('Y-m-d H:i:s'),
-                               'idUsers'          => $intUserId,
-                               'creator'          => $this->setup->getCreatorId(),
-                               'created'          => date('Y-m-d H:i:s'),
-                               'idStatus'         => $this->setup->getStatusId(),
-					                     'isUrlFolder'      => $this->setup->getUrlFolder(),
-					                     'showInNavigation' => $this->setup->getShowInNavigation());
-
-					/**
-           * add folder node to the "Nested Set Model"
-           */
-          $this->setup->setElementId($this->objModelFolders->addFolderNode($this->setup->getRootLevelId(),
-                                                                           $this->setup->getParentId(),
-                                                                           $arrMainData));
-
-					$this->insertCoreData('folder', $strFolderId, $intFolderVersion);
-					$this->insertInstanceData('folder', array('Id' => $strFolderId, 'Version' => $intFolderVersion));
-
-					break;
+          $this->setup->setElementId($objFolder->id);
+         
+          $this->insertCoreData('folder', $objFolder->folderId, $objFolder->version);
+          $this->insertFileData('folder', array('Id' => $objFolder->folderId, 'Version' => $objFolder->version));
+          $this->insertMultiFieldData('folder', array('Id' => $objFolder->folderId, 'Version' => $objFolder->version));
+          $this->insertInstanceData('folder', array('Id' => $objFolder->folderId, 'Version' => $objFolder->version));
+          $this->insertMultiplyRegionData('folder', $objFolder->folderId, $objFolder->version);
+          break;
+          
 				case $this->core->sysConfig->generic->actions->edit :
-
-					$objSelect = $this->objModelFolders->getFolderTable()->select();
-					$objSelect->from('folders', array('folderId', 'version'));
-					$objSelect->where('id = ?', $this->setup->getElementId());
-
-					$objRowSet = $this->objModelFolders->getFolderTable()->fetchAll($objSelect);
-
-					if(count($objRowSet) == 1){
-						$objFolder = $objRowSet->current();
-
-						$strWhere = $this->objModelFolders->getFolderTable()->getAdapter()->quoteInto('folderId = ?', $objFolder->folderId);
-						$strWhere .= $this->objModelFolders->getFolderTable()->getAdapter()->quoteInto(' AND version = ?', $objFolder->version);
-
-						$this->core->logger->debug('save(): creator: '.$this->setup->getCreatorId().' - idStatus: '.$this->setup->getStatusId().' - isUrlFolder: '.$this->setup->getUrlFolder());
-
-						$this->objModelFolders->getFolderTable()->update(array('idUsers'          => $intUserId,
-      		                                                         'creator'          => $this->setup->getCreatorId(),
-      		                                                         'idStatus'         => $this->setup->getStatusId(),
-						                                                       'isUrlFolder'      => $this->setup->getUrlFolder(),
-						                                                       'showInNavigation' => $this->setup->getShowInNavigation(),
-						                                                       'changed'          => date('Y-m-d H:i:s')), $strWhere);
-
-						$this->updateCoreData('folder', $objFolder->folderId, $objFolder->version);
-						$this->updateInstanceData('folder', $objFolder->folderId, $objFolder->version);
-
-					}
+      
+          $objFolder = $this->objModelFolders->load($this->setup->getElementId());
+          
+          if(count($objFolder) > 0){
+            $objFolder = $objFolder->current();
+            
+            $this->objModelFolders->update($this->setup, $objFolder);
+            
+            $this->updateCoreData('folder', $objFolder->folderId, $objFolder->version);
+            $this->updateFileData('folder', array('Id' => $objFolder->folderId, 'Version' => $objFolder->version));
+            $this->updateMultiFieldData('folder', $objFolder->folderId, $objFolder->version);
+            $this->updateInstanceData('folder', $objFolder->folderId, $objFolder->version);
+            $this->updateMultiplyRegionData('folder', $objFolder->folderId, $objFolder->version);
+          }
 					break;
 			}
 
@@ -150,83 +114,32 @@ class GenericDataTypeFolder extends GenericDataTypeAbstract {
 	public function load(){
 		$this->core->logger->debug('massiveart->generic->data->GenericDataTypeFolder->load()');
 		try {
+		  $objFolder = $this->getModelFolders()->load($this->setup->getElementId());
 
-			$objFoldersData = $this->getModelFolders()->loadFolder($this->setup->getElementId());
-
-			if(count($objFoldersData) > 0){
-				$objFolderData = $objFoldersData->current();
+			if(count($objFolder) > 0){
+				$objFolder = $objFolder->current();
 
 				/**
-				 * set some metainformations of current page to get them in the output
+				 * set some metainformations of current folder to get them in the output
 				 */
-				$this->setup->setMetaInformation($objFolderData);
-				$this->setup->setUrlFolder($objFolderData->isUrlFolder);
+				$this->setup->setMetaInformation($objFolder);
+				$this->setup->setUrlFolder($objFolder->isUrlFolder);
 
-        $this->core->logger->debug('load(): creator: '.$this->setup->getCreatorId().' - idStatus: '.$this->setup->getStatusId().' - isUrlFolder: '.$this->setup->getUrlFolder());
+        parent::loadGenericData('folder', array('Id' => $objFolder->folderId, 'Version' => $objFolder->version));
 
-        if(count($this->setup->CoreFields()) > 0){
-					/**
-					 * for each core field, try to select the secondary table
-					 */
-          foreach($this->setup->CoreFields() as $strField => $objField){
-
-          	$objGenTable = $this->getModelGenericData()->getGenericTable('folder'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
-						$objSelect = $objGenTable->select();
-
-						$objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
-						$objSelect->where('folderId = ?', $objFolderData->folderId);
-						$objSelect->where('version = ?', $objFolderData->version);
-						$objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
-
-						$arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
-
-						foreach ($arrGenFormsData as $arrRowGenFormData) {
-							foreach ($arrRowGenFormData as $column => $value) {
-							if($column == $strField){
-                  $objField->setValue($value);
-                }else{
-                  $objField->$column = $value;
-                }
-							}
-						}
-					}
-				}
-
-				if(count($this->setup->InstanceFields()) > 0){
-					$objGenTable = $this->getModelGenericData()->getGenericTable('folder-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Instances');
-					$objSelect = $objGenTable->select();
-
-					$arrSelectFields = array();
-
-					/**
-					 * for each instance field, add to select array data array
-					 */
-					foreach($this->setup->InstanceFields() as $strField => $objField){
-						$arrSelectFields[] = $strField;
-					}
-
-					$objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), $arrSelectFields);
-					$objSelect->where('folderId = ?', $objFolderData->folderId);
-					$objSelect->where('version = ?', $objFolderData->version);
-          $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
-
-					$arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
-
-					foreach ($arrGenFormsData as $arrRowGenFormData) {
-						foreach ($arrRowGenFormData as $column => $value) {
-						  if(is_array(json_decode($value))){
-                $this->setup->getInstanceField($column)->setValue(json_decode($value));
-              }else{
-                $this->setup->getInstanceField($column)->setValue($value);
-              }
-						}
-					}
-				}
+			 /**
+         * now laod all data from the special fields
+         */
+        if(count($this->setup->SpecialFields()) > 0){
+          foreach($this->setup->SpecialFields() as $objField){
+            $objField->setGenericSetup($this->setup);
+            $objField->load($this->setup->getElementId(), 'folder', $objFolder->folderId, $objFolder->version);
+          }
+        }
 			}
 		}catch (Exception $exc) {
 			$this->core->logger->err($exc);
 		}
-
 	}
 
   /**
@@ -244,6 +157,7 @@ class GenericDataTypeFolder extends GenericDataTypeAbstract {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
+      $this->objModelFolders->setLanguageId($this->setup->getLanguageId());
     }
 
     return $this->objModelFolders;

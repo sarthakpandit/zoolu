@@ -361,7 +361,7 @@ class Core_FolderController extends AuthControllerAction {
       $this->view->blnIsRootLevelChild = ($this->objForm->Setup()->getParentId() == 0) ? true : false;
       $this->view->navigationOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT navigationOptionTitles.title FROM navigationOptionTitles WHERE navigationOptionTitles.idNavigationOptions = navigationOptions.id AND navigationOptionTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM navigationOptions WHERE active = 1', $this->objForm->Setup()->getShowInNavigation());
       
-      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objRequest->getParam('zoolu_module') != 2) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages', $this->objForm->Setup()->getLanguageId());
+      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objRequest->getParam('zoolu_module') != 2) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
     }
   }
 

@@ -31,19 +31,66 @@
  */
 
 /**
- * NavigationHelper
+ * PageHelper
  *
  * Version history (please keep backward compatible):
- * 1.0, 2010-01-19: Thomas Schedler
+ * 1.0, 2010-02-04: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-require_once(GLOBAL_ROOT_PATH.'application/website/default/helpers/NavigationHelper.php');
-
-class Default_NavigationHelper extends NavigationHelper {
+class PageHelper {
   
+  /**
+   * @var Core
+   */
+  protected $core;
+  
+  /**
+   * @var Page
+   */
+  protected $objPage;
+
+  /**
+   * constructor
+   * @author Thomas Schedler <tsh@massiveart.com>   
+   */
+  public function __construct(){
+    $this->core = Zend_Registry::get('Core');
+  }
+  
+  /**
+   * getCategoryIcons
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getCategoryIcons(){
+    //TODO default category icons
+  }
+    
+  /**
+   * getProductOverview
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getProductOverview(){
+    //TODO default product overview
+  }
+    
+  /**
+   * setPage    
+   * @param Page $objPage   
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function setPage(Page $objPage){
+    $this->objPage = $objPage;
+  }
 }
+
+/**
+ * function call wrapper for PageHelper
+ */
+require_once(dirname(__FILE__).'/page.inc.php');
 
 ?>

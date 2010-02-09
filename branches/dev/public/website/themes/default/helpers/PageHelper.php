@@ -31,18 +31,18 @@
  */
 
 /**
- * NavigationHelper
+ * PageHelper
  *
  * Version history (please keep backward compatible):
- * 1.0, 2010-01-19: Thomas Schedler
+ * 1.0, 2010-02-04: Thomas Schedler
  *
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
 
-require_once(GLOBAL_ROOT_PATH.'application/website/default/helpers/NavigationHelper.php');
+require_once(GLOBAL_ROOT_PATH.'application/website/default/helpers/PageHelper.php');
 
-class Default_NavigationHelper extends NavigationHelper {
+class Default_PageHelper extends PageHelper {
   
 }
 

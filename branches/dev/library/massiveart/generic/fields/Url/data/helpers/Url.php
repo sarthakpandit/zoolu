@@ -278,7 +278,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
     
     $objUrlsData = $this->objModelUrls->loadByUrl($this->objElement->Setup()->getRootLevelId(), $strNewUrl);
 
-    if(count($objUrlsData) > 0){
+    if(isset($objUrlsData->url) && count($objUrlsData->url) > 0){
       return $this->checkUrlUniqueness($strUrl, $intUrlAddon + 1);
     }else{
       return $strNewUrl;

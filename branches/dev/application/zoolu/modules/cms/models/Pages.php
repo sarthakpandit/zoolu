@@ -216,7 +216,7 @@ class Model_Pages {
    * @version 1.0
    */
   public function add(GenericSetup &$objGenericSetup){
-    $this->core->logger->debug('cms->models->Model_Products->add()');
+    $this->core->logger->debug('cms->models->Model_Pages->add()');
 
     $objPage = new stdClass();
     $objPage->pageId = uniqid();
@@ -331,7 +331,6 @@ class Model_Pages {
                              'idStatus'         => $objGenericSetup->getStatusId());
       $this->getPagePropertyTable()->insert($arrProperties);
     }
-
   }
 
   /**
@@ -477,9 +476,10 @@ class Model_Pages {
 
       $strWhere = $this->getPagePropertyTable()->getAdapter()->quoteInto('pageId = ?', $objStartPage->pageId);
       $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND version = ?',  $objStartPage->version);
+      $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND idLanguages = ?',  $this->intLanguageId);
+      
       $this->objPagePropertyTable->update($arrProperties, $strWhere);
 
-      $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND idLanguages = ?',  $this->intLanguageId);
       $intNumOfEffectedRows = $this->core->dbh->update('pageTitles', $arrTitle, $strWhere);
 
       if($intNumOfEffectedRows == 0){
@@ -567,7 +567,7 @@ class Model_Pages {
   }
 
   /**
-   * loadPages
+   * loadItems
    * @param integer $intParentId
    * @param integer $intCategoryId
    * @param integer $intLabelId
@@ -580,8 +580,8 @@ class Model_Pages {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadPages($intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array()){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPages('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
+  public function loadItems($intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array()){
+    $this->core->logger->debug('cms->models->Model_Pages->loadItems('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
 
     $strSortOrder = '';
     if($intSortOrderId > 0 && $intSortOrderId != ''){
@@ -661,7 +661,7 @@ class Model_Pages {
                                           (SELECT pages.id, pl.id AS plId, genericForms.genericFormId, genericForms.version,
                                             plGenForm.genericFormId AS plGenericFormId, plGenForm.version AS plVersion, urls.url, lUrls.url AS plUrl,
                                             IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes,
-                                            pageProperties.created, pageProperties.changed, pageProperties.published, pages.sortPosition, pages.sortTimestamp
+                                            pageProperties.created, pageProperties.changed, pageProperties.published, folders.sortPosition, folders.sortTimestamp
                                           FROM folders, pages
                                             INNER JOIN pageProperties ON 
                                               pageProperties.pageId = pages.pageId AND 
@@ -816,15 +816,15 @@ class Model_Pages {
   }
 
   /**
-   * loadPagesInstanceDataByIds
+   * loadItemInstanceDataByIds
    * @param string $strGenForm
    * @param array $arrPageIds
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPagesInstanceDataByIds($strGenForm, $arrPageIds){
-    $this->core->logger->debug('cms->models->Model_Pages->loadPagesInstanceDataByIds('.$strGenForm.', '.$arrPageIds.')');
+  public function loadItemInstanceDataByIds($strGenForm, $arrPageIds){
+    $this->core->logger->debug('cms->models->Model_Pages->loadItemInstanceDataByIds('.$strGenForm.', '.$arrPageIds.')');
 
     // FIXME : !!! CHANGE INSTANCE FIELDS DEFINTION
     // FIXME : !!! iFl.idFields IN (5,55) -> define
@@ -1213,13 +1213,15 @@ class Model_Pages {
     $this->core->logger->debug('cms->models->Model_Pages->loadAllPublicPages()');
 
     $objSelect = $this->getPageUrlTable()->select();
+    $objSelect->setIntegrityCheck(false);
 
     $objSelect->from($this->objPageUrlTable, array('pages.pageId', 'version', 'idLanguages'));
     $objSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page, array());
-    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version', array());
     $objSelect->where('pageProperties.idStatus = ?', $this->core->sysConfig->status->live)
-              ->where('pageProperties.idPageTypes != ?', $this->core->sysConfig->page_types->link->id);
-
+              ->where('pageProperties.idPageTypes != ?', $this->core->sysConfig->page_types->link->id)
+              ->where('pageProperties.idPageTypes != ?', $this->core->sysConfig->page_types->external->id);
+              
     return $this->objPageUrlTable->fetchAll($objSelect);
   }
 
@@ -1381,8 +1383,12 @@ class Model_Pages {
   public function loadParentFolders($intPageId){
     $this->core->logger->debug('cms->models->Model_Pages->loadParentFolders('.$intPageId.')');
 
-    $sqlStmt = $this->core->dbh->query('SELECT folders.id, folders.isUrlFolder, folderTitles.title
+    $sqlStmt = $this->core->dbh->query('SELECT folders.id, folderProperties.isUrlFolder, folderTitles.title
                                           FROM folders
+                                            INNER JOIN folderProperties ON 
+                                                  folderProperties.folderId = folders.folderId AND 
+                                                  folderProperties.version = folders.version AND 
+                                                  folderProperties.idLanguages = ?
                                             INNER JOIN folderTitles ON
                                               folderTitles.folderId = folders.folderId AND
                                               folderTitles.version = folders.version AND
@@ -1395,7 +1401,7 @@ class Model_Pages {
                                            WHERE folders.lft <= parent.lft AND
                                                  folders.rgt >= parent.rgt AND
                                                  folders.idRootLevels = parent.idRootLevels
-                                             ORDER BY folders.rgt', array($this->intLanguageId, $intPageId, $this->core->sysConfig->parent_types->folder));
+                                             ORDER BY folders.rgt', array($this->intLanguageId, $this->intLanguageId, $intPageId, $this->core->sysConfig->parent_types->folder));
 
 
 

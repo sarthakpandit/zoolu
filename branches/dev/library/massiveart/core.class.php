@@ -131,8 +131,8 @@ class Core {
         $this->intLanguageId = $this->sysConfig->languages->default->id;
         $this->strLanguageCode = $this->sysConfig->languages->default->code;
       }
-    }else if(isset($_SERVER['REQUEST_URI']) && preg_match('/^\/[a-zA-Z]{2}\//', $_SERVER['REQUEST_URI'])){
-      preg_match('/^\/[a-zA-Z]{2}\//', $_SERVER['REQUEST_URI'], $arrMatches);
+    }else if(isset($_SERVER['REQUEST_URI']) && preg_match('/^\/[a-zA-Z\-]{2,5}\//', $_SERVER['REQUEST_URI'])){
+      preg_match('/^\/[a-zA-Z\-]{2,5}\//', $_SERVER['REQUEST_URI'], $arrMatches);
       $this->strLanguageCode = trim($arrMatches[0], '/');
       foreach($this->webConfig->languages->language->toArray() as $arrLanguage){
         if(array_key_exists('code', $arrLanguage) && $arrLanguage['code'] == strtolower($this->strLanguageCode)){
@@ -164,14 +164,18 @@ class Core {
     }else{
       $this->intLanguageId = $this->sysConfig->languages->default->id;
       $this->strLanguageCode = $this->sysConfig->languages->default->code;
-    }
+    }    
     
     //$this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/'.$this->sysConfig->client.'-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);
     
     /**
      * set up zoolu translate obj
      */
-    $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);
+    if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo')){
+      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);  
+    }else{
+      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->sysConfig->languages->default->code.'.mo', $this->strLanguageCode);
+    }
     
     /**
      * write language to session

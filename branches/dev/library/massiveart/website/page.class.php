@@ -54,9 +54,9 @@ class Page {
   protected $core;
 
   /**
-   * @var Model_Pages|Model_Product
+   * @var Model_Pages 
    */
-  private $objModel;
+  private $objModel; // or Model_Product
 
   /**
    * @var Model_Folders
@@ -113,6 +113,11 @@ class Page {
   public function ChildPage(){
     return $this->objChildPage;
   }
+  
+  /**
+   * @var Zend_Db_Table_Row_Abstract
+   */
+  protected $objBaseUrl;
   
   /**
    * @var array
@@ -173,7 +178,7 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPage($blnLoadByParentId = false){
+  public function loadPage($blnLoadByParentId = false, $blnLoadProductTreeStartPage = true){
     try{
       $this->getModel();
       $objPageData = ($blnLoadByParentId == true) ? $this->objModel->loadByParentId($this->intParentId, true) : $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
@@ -219,7 +224,7 @@ class Page {
         $this->objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
         $this->objGenericData->Setup()->setFormLanguageId($this->core->sysConfig->languages->default->id);
         $this->objGenericData->Setup()->setLanguageId($this->intLanguageId);
-        $this->objGenericData->Setup()->setParentId($this->getParentId());
+        $this->objGenericData->Setup()->setParentId($this->getParentId());        
         $this->objGenericData->Setup()->setParentTypeId($this->getParentTypeId());
         $this->objGenericData->Setup()->setModelSubPath($this->getModelSubPath());
 
@@ -231,25 +236,44 @@ class Page {
         switch($this->intTypeId){
           case  $this->core->sysConfig->page_types->external->id:
             if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
-              header ('Location: '.$this->getFieldValue('external'));
+              header('Location: '.$this->getFieldValue('external'));
             }else if(filter_var('http://'.$this->getFieldValue('external'), FILTER_VALIDATE_URL)){
-              header ('Location: http://'.$this->getFieldValue('external'));
+              header('Location: http://'.$this->getFieldValue('external'));
             }else{
-              header ('Location: http://'.$_SERVER['HTTP_HOST']);
+              header('Location: http://'.$_SERVER['HTTP_HOST']);
             }
             exit();
+          case  $this->core->sysConfig->page_types->link->id:
+            header('Location: http://'.$_SERVER['HTTP_HOST'].$this->getField('internal_link')->strLinkedPageUrl);
+            exit();
           case  $this->core->sysConfig->page_types->product_tree->id:
-            
-            $this->objParentPage = clone $this;
-                        
-            $this->setType('product');
-            $this->setModelSubPath('products/models/');
-            $this->setParentId($this->getFieldValue('entry_product_point'));
-            $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
-            
-            $this->objModel = null;            
-            $this->loadPage(true);            
+            if($blnLoadProductTreeStartPage == true){
+              $this->objParentPage = clone $this;
+                          
+              $this->setType('product');
+              $this->setModelSubPath('products/models/');
+              $this->setParentId($this->getFieldValue('entry_product_point'));
+              $this->setNavParentId($this->getFieldValue('entry_product_point'));
+              $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
+              
+              $this->objModel = null;            
+              $this->loadPage(true);  
+            }           
             break;
+        }
+        
+        if($this->objBaseUrl instanceof Zend_Db_Table_Row_Abstract){
+          $this->objParentPage = new Page();
+          $this->objParentPage->setRootLevelId($this->intRootLevelId);
+          $this->objParentPage->setRootLevelTitle($this->strRootLevelTitle);
+          $this->objParentPage->setPageId($this->objBaseUrl->relationId);
+          $this->objParentPage->setPageVersion($this->objBaseUrl->version);
+          $this->objParentPage->setLanguageId($this->objBaseUrl->idLanguages);
+          $this->objParentPage->setType('page');
+          $this->objParentPage->setModelSubPath('cms/models/');
+          $this->objParentPage->loadPage(false, false);  
+
+          $this->objParentPage->setChildPage($this);
         }
        
       }else{
@@ -561,16 +585,24 @@ class Page {
             $objContainer->setContainerSortType($objMyMultiRegion->getField('entry_sorttype')->getInstanceValue($intRegionInstanceId));
             $objContainer->setContainerSortOrder($objMyMultiRegion->getField('entry_sortorder')->getInstanceValue($intRegionInstanceId));
             $objContainer->setContainerDepth($objMyMultiRegion->getField('entry_depth')->getInstanceValue($intRegionInstanceId));
+                        
+            /**
+             * override category and label filter with the parent page setting
+             */
+            if($this->objParentPage instanceof Page){
+              $objContainer->setContainerKey($this->objParentPage->getFieldValue('entry_category'));
+              $objContainer->setContainerLabel($this->objParentPage->getFieldValue('entry_label'));
+            }
 
             $objEntries = $this->getOverviewPages($objContainer->getContainerKey(), $objContainer->getContainerLabel(), $objContainer->getEntryNumber(), $objContainer->getContainerSortType(), $objContainer->getContainerSortOrder(), $objContainer->getContainerDepth(), $arrPageIds);
             if(count($objEntries) > 0){
               foreach($objEntries as $objEntryData){
                 $objEntry = new PageEntry();
-                if($objEntryData->idPageTypes == $this->core->sysConfig->page_types->link->id){
+                if(isset($objEntryData->idPageTypes) &&  $objEntryData->idPageTypes == $this->core->sysConfig->page_types->link->id){
                   $objEntry->setEntryId($objEntryData->plId);
                   $objEntry->title = $objEntryData->title;
-                  $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->plUrl;
-
+                  $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->plUrl;  
+                  
                   $arrGenForms[$objEntryData->plGenericFormId.'-'.$objEntryData->plVersion][] = $objEntryData->plId;
                   $arrPageEntries[$objEntryData->plId] = $counter;
 
@@ -578,7 +610,13 @@ class Page {
                 }else{
                   $objEntry->setEntryId($objEntryData->id);
                   $objEntry->title = $objEntryData->title;
-                  $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
+                  
+                  if($this->objParentPage instanceof Page && $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->product_tree->id){
+                    $objEntry->url = $this->objParentPage->getFieldValue('url').$objEntryData->url;  
+                  }else{
+                    $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
+                  }
+                  
 
                   $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->id;
                   $arrPageEntries[$objEntryData->id] = $counter;
@@ -605,7 +643,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -648,8 +686,13 @@ class Page {
   public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds){
     try{
       $this->getModel();
-
-      $objPages = $this->objModel->loadPages($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
+      
+      if($this->intNavParentId !== null && $this->intNavParentId > 0){
+        $objPages = $this->objModel->loadItems($this->intNavParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);  
+      }else{
+        $objPages = $this->objModel->loadItems($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
+      }
+      
       return $objPages;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -1587,6 +1630,14 @@ class Page {
    */
   public function setChildPage(Page &$objChildPage){
     $this->objChildPage = $objChildPage;
+  }
+  
+  /**
+   * setBaseUrl
+   * @param $objBaseUrl
+   */
+  public function setBaseUrl(Zend_Db_Table_Row_Abstract $objBaseUrl){
+    $this->objBaseUrl = $objBaseUrl;
   }
 
 }
