@@ -11,7 +11,7 @@
 				<br/><br/>
 				<?php print $this->objEntry->text; ?>
 			 
-				<form name="addComment" method="post" id="blogWidgetCommentForm">
+				<form name="addComment" method="post" id="blogWidgetCommentForm" onsubmit="javascript:widgetBlogAddComment()">
 					<strong>Eine Antwort schreiben</strong><br/>
 					<label for="name">Name</label><input type="text" name="name"/><br/>
 					<label for="mail">E-Mail</label><input type="text" name="mail"/><br/>

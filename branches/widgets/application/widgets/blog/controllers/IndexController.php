@@ -67,8 +67,6 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function init() {
 		parent::init();
 		$this->addThemeCss('view');
-		// widget.inc.php
-		//$this->addThemeJs('test');
 		$this->view->setHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');
     $this->view->addHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');  
 	}
@@ -81,13 +79,13 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function indexAction() {
 		$objEntries = $this->getBlogEntriesTable();
 		$objWidgetProperties = $this->getWidgetInstancePropertiesTable();
-		$this->view->total = $objEntries->getBlogEntryCount($this->objWidget->getWidgetInstanceId());
-		
+		$this->view->total = $objEntries->getBlogEntryCount($this->objWidget->getWidgetInstanceId(), $this->_getParam('t'));
+
 		if($this->view->total > 0) {
 	    $this->view->perPage = $objWidgetProperties->getPropertyValue('pagination', $this->objWidget->getWidgetInstanceId());
 	    $offset = ($this->_getParam('page') > 0) ? $this->view->perPage * ($this->_getParam('page') - 1) : 0;
 	
-	    $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset);
+	    $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset, $this->_getParam('t'));
 			$this->view->assign('objEntries',$objEntry);
 			
 			$objBlogWidgetTags = $this->getBlogEntriesTagsTable();
@@ -102,9 +100,9 @@ class Blog_IndexController extends WidgetControllerAction  {
    * @version 1.0
    */
   public function viewAction() {  	
-  	// load entry with subwidgetId!
+  	$this->addThemeJs('comment');
   	$objBlogEntries = $this->getBlogEntriesTable();
-  	$objEntry = $objBlogEntries->getBlogEntryBySubwidgetId($this->objWidget->getWidgetInstanceId(), '1');
+  	$objEntry = $objBlogEntries->getBlogEntryBySubwidgetId($this->objWidget->getWidgetInstanceId());
   	$this->view->assign('objEntry',$objEntry[0]);
   }
   
@@ -161,7 +159,7 @@ class Blog_IndexController extends WidgetControllerAction  {
     return $this->objBlogEntriesTags;
   }
   
-/**
+	/**
    * getWidgetInstancePropertiesTable
    * @return Model_WidgetInstanceProperties
    * @author Florian Mathis <flo@massiveart.com>
