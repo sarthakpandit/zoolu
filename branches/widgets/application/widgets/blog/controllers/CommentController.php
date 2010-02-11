@@ -43,7 +43,7 @@ class Blog_CommentController extends Zend_Controller_Action {
 	 /**
    * @var Model_BlogEntryComment
    */
-  private $ObjModelBlogEntryComment;
+  private $objModelBlogEntryComment;
   
   /**
    * @var Core
@@ -77,14 +77,29 @@ class Blog_CommentController extends Zend_Controller_Action {
 			if($this->objRequest->getPost()) {
 				$arrFormData = $this->objRequest->getPost();
 				//TODO: Replace the keys from the $arrFormData Array with the correct ones from the forms
-				$arrData = array('idWidget_BlogEntries' => $arrFormData['idBlogEntry'],
-				                  'title' => $arrFormData['title'],
+				$arrData = array('idWidget_BlogEntries' => $arrFormData['idBlogentry'],
+				                  'title' => $arrFormData['name'],
 				                  'text' => $arrFormData['text'],
-				                  'name' => $arrFormData['name'],
-				                  'created' => date('Y-m-d H:m:s', time())
+				                  'mail' => $arrFormData['mail']
 				);
-				$this->ObjModelBlogEntryComment->addBlogEntryComment($arrData);
+				$this->getModelBlogEntryComment()->addBlogEntryComment($arrData);
 			}
+		}catch(Exception $exc) {
+			$this->core->logger->err($exc);
+			exit();
+		}
+	}
+	
+	/**
+	 * load all comments
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function load(){
+		$this->core->logger->debug('widgets->blog->CommentController->load');
+		try{
+			$this->_helper->viewRenderer->setNoRender();
+			$this->getModelBlogEntryComment()->getAllComments($strSubwidgetId);
 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
@@ -116,11 +131,11 @@ class Blog_CommentController extends Zend_Controller_Action {
    * @return Model_BlogEntryComments
    */
   protected function getModelBlogEntryComment() {
-    if(null === $this->ObjModelBlogEntryComment) {
+    if(null === $this->objModelBlogEntryComment) {
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntryComment.php';
-      $this->ObjModelBlogEntryComment = new Model_BlogEntryComment();
+      $this->objModelBlogEntryComment = new Model_BlogEntryComment();
     }
-    return $this->ObjModelBlogEntryComment;
+    return $this->objModelBlogEntryComment;
   }
 }
 ?>

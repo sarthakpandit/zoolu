@@ -55,6 +55,11 @@ class Blog_IndexController extends WidgetControllerAction  {
 	 * @var object $objWidgetInstanceProperties
 	 */
 	protected $objWidgetInstanceProperties;
+	
+	/**
+	 * @var object $objBlogEntryComments
+	 */
+	protected $objBlogEntryComments;
   
 	/**
 	 * Initialize WidgetController action and add 
@@ -107,6 +112,9 @@ class Blog_IndexController extends WidgetControllerAction  {
   	
   	$arr = $this->getBlogEntriesTagsTable()->getTagsBySubwidgetId($this->objWidget->getWidgetInstanceId());
   	$this->view->assign('arrTags', $arr);
+  	
+  	$comments = $this->getBlogEntryComments()->getAllComments($objEntry[0]['blogEntryId']);
+  	$this->view->assign('comments', $comments);
   }
   
   /**
@@ -141,6 +149,25 @@ class Blog_IndexController extends WidgetControllerAction  {
       $this->objBlogEntries = new Model_BlogEntry();
     }
     return $this->objBlogEntries;
+  }
+  
+	/**
+   * getBlogEntryComments
+   * @return Model_BlogEntryComment
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  protected function getBlogEntryComments(){
+    if (null === $this->objBlogEntryComments) {
+      /**
+       * autoload only handles "library" components.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_widgets.'blog/models/BlogEntryComments.php';
+      $this->objBlogEntryComments = new Model_BlogEntryComments();
+    }
+    return $this->objBlogEntryComments;
   }
 
 	/**
