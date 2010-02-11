@@ -862,7 +862,7 @@ Massiveart.Navigation = Class.create({
   /**
    * addSubWidgetForm
    */
-  addSubWidgetForm: function(widgetName, currLevel, parentId, widgetId, widgetInstanceId){
+  addSubWidgetForm: function(widgetName, currLevel, widgetInstanceId){
 	$('buttondelete').hide();
 	this.showFormContainer();
 	$(this.genFormContainer).innerHTML = '';
@@ -882,11 +882,8 @@ Massiveart.Navigation = Class.create({
 	  parameters: {
 		elementType: 'subwidget',
 		currLevel: currLevel,
-		parentFolderId: parentId,
-		idWidget: widgetId,
 		widgetInstanceId: widgetInstanceId,
 		rootLevelId: this.rootLevelId,
-		idWidgetInstance: parentId
 	  },
 	  evalScripts: true,
 	  onComplete: function() {
