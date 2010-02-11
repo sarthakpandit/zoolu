@@ -90,6 +90,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
    */
   static $objWidgetCss = array();
   static $objWidgetJs = array();
+  static $objWidgetLink = array();
   
 	/**
    * Add Filter Zoolu_PageReplacer and get language prefix from url string,
@@ -169,6 +170,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
      */
     Zend_Registry::set('WidgetCss', $this->getThemeCssFiles());
     Zend_Registry::set('WidgetJs', $this->getThemeJsFiles());
+    Zend_Registry::set('WidgetLink', $this->getThemeLinks());
     Zend_Registry::set('Widget', $this->objWidget);
     
   	require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_website.'default/helpers/widget.inc.php';
@@ -182,6 +184,42 @@ class WidgetControllerAction extends Zend_Controller_Action  {
     	$this->renderScript('empty.php');
     }
   }
+  
+	/**
+	 * addThemeLink
+	 * @param string strPath
+	 * @param string strMedia
+	 * @return array objWidgetLink
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function addThemeLink($rel='', $type='', $title='', $href=''){
+		if(isset($href) && isset($rel) && isset($type)) { 
+			$this->objWidgetLink[] = array('rel' => $rel, 'type' => $type, 'title' => $title, 'href' => $href); 
+			return $this->objWidgetLink;
+		}
+	}
+	
+	/**
+	 * getThemeLinks
+	 * Returns all given links for html header
+	 * @return strOutput
+	 * @author Florian Mathis <flo@massiveart.com>
+	 * @version 1.0
+	 */
+	public function getThemeLinks() {
+		if(isset($this->objWidgetLink) && count($this->objWidgetLink) > 0) {
+			$strOutput='';
+			$strCssPath='';	
+			
+			// loop array for each css media type
+			foreach ($this->objWidgetLink AS $option) {
+				$strOutput .= '<link rel="'.$option['rel'].'" type="'.$option['type'].'" title="'.$option['title'].'" href="'.$option['href'].'">';
+			}
+			
+			return $strOutput;
+		}
+	}
   
 	/**
 	 * addThemeCss

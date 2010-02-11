@@ -23,8 +23,7 @@ function widgetBlogAddComment(){
  * @version 1.0
  */
 function updateCommentList(){
-	new Ajax.Updater('blogWidgetCommentForm', '/widget/blog/form/addblogcomment', {
-      parameters: $('blogWidgetCommentForm').serialize(),
+	new Ajax.Updater('blogWidgetComments', '/widget/blog/form/addblogcomment', {
       onSuccess: function(){
 		$('blogWidgetCommentInfo').innerHTML = 'Vielen Dank f&uuml;r Ihren Kommentar!';
 	  }

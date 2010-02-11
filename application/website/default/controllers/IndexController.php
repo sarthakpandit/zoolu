@@ -179,7 +179,7 @@ class IndexController extends Zend_Controller_Action {
        		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
        		$objWidget->setWidgetInstanceId($objUrlData->relationId);
        		($this->_getParam('do') ==  null) ? $objWidget->setAction('index') : $objWidget->setAction($this->_getParam('do'));
-       		
+
 					$objWidget->setWidgetName($objWidgetInstance->name);
 					$objWidget->setNavigationUrl((parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 					$objWidget->setWidgetTitle($objWidgetInstance->title);
