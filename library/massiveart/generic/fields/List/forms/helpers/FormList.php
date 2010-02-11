@@ -78,7 +78,7 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 		}
 		$xhtml.='</tbody>';
 		$xhtml.= '</table>';
-		$xhtml.='<input type="button" name="delete" value="Löschen" onclick="myList.deleteSelectedElements()">';
+		$xhtml.='<input type="button" name="delete" value="Löschen" style="width:auto;" onclick="myList.deleteSelectedElements()">';
 		
 		return $xhtml;
 	}

@@ -146,7 +146,7 @@ class Model_Subwidgets {
    * @return Zend_Db_Table_Rowset_Abstract
    */
   public function searchWidgetTable($intGenericFormId){
-  	$this->core->logger->debug('cms->models->Model_Subwidgets->searchWidgetTable('.$intElementId.')');
+  	$this->core->logger->debug('cms->models->Model_Subwidgets->searchWidgetTable('.$intGenericFormId.')');
   	
   	$objSelect = $this->getWidgetTableTable()->select();
   	$objSelect->setIntegrityCheck(false);
