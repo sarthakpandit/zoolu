@@ -352,7 +352,6 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->Setup()->setElementId($this->objRequest->getParam('idWidgetInstance'));
       //Generate new widgetInstanceId if addAction is called
       if($intActionType == $this->core->sysConfig->generic->actions->add && $this->objRequest->getParam('instanceId') == ''){
-      	$this->core->logger->debug('########unique!');
       	$strWidgetInstanceId = uniqid();
       	$this->objForm->Setup()->setWidgetInstanceId($strWidgetInstanceId);
       }else{
