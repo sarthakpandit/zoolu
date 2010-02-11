@@ -350,7 +350,14 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("idWidget") != '') ? $this->objRequest->getParam("idWidget") : 0));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentType") != '') ? $this->objRequest->getParam("parentType") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setElementId($this->objRequest->getParam('idWidgetInstance'));
-      $this->objForm->Setup()->setWidgetInstanceId($this->objRequest->getParam("instanceId"));
+      //Generate new widgetInstanceId if addAction is called
+      if($intActionType == $this->core->sysConfig->generic->actions->add && $this->objRequest->getParam('instanceId') == ''){
+      	$this->core->logger->debug('########unique!');
+      	$strWidgetInstanceId = uniqid();
+      	$this->objForm->Setup()->setWidgetInstanceId($strWidgetInstanceId);
+      }else{
+      	$this->objForm->Setup()->setWidgetInstanceId($this->objRequest->getParam("instanceId"));
+      }
       $this->objForm->Setup()->setModelSubPath('cms/models/');
 
       $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objRequest->getParam('parentFolderId'), 'decorators' => array('Hidden'), 'ignore' => true));
@@ -361,7 +368,12 @@ class Cms_WidgetController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'idWidget', array('value' => $this->objRequest->getParam('idWidget'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'elementId', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden'), 'ignore' => true));
       $this->objForm->addElement('hidden', 'isStartPage', array('value' => $this->objRequest->getParam('isStartPage'), 'decorators' => array('Hidden')));
-      $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objRequest->getParam('instanceId'), 'decorators' => array('Hidden')));
+      //Use the widgetInstanceId from above, if addAction is called
+      if($intActionType == $this->core->sysConfig->generic->actions->add){
+        $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objForm->Setup()->getWidgetInstanceId(), 'decorators' => array('Hidden')));
+      }else{
+        $this->objForm->addElement('hidden', 'instanceId', array('value' => $this->objRequest->getParam('instanceId'), 'decorators' => array('Hidden')));
+      }
       $this->objForm->addElement('hidden', 'idWidgetInstance', array('value' => $this->objRequest->getParam('idWidgetInstance'), 'decorators' => array('Hidden')));
  		}catch(Exception $exc) {
 			$this->core->logger->err($exc);

@@ -107,7 +107,6 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
 
         if($objItem->idParentTypes == $this->core->sysConfig->parent_types->folder || $objItem->idParentTypes == $this->core->sysConfig->parent_types->widget){
           $objParentFolderData = $this->objModel->loadParentUrl($intElementId, $this->objElement->Setup()->getIsStartElement(false));
-
           if(count($objParentFolderData) > 0){
             $objParentFolderUrl = $objParentFolderData->current();
             $strParentUrl = $objParentFolderUrl->url;
