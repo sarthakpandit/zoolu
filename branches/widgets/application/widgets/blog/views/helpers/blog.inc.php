@@ -47,32 +47,34 @@
  * @version 1.0
  */
 function get_tags($objWidgetTag){
-	$tags = $objWidgetTag->getTags();
-	// in css file, blogWidgetTag1-5
-	$min_size = 1;
-	$max_size = 5;
-	
-	$minimum_count = min(array_values($tags));
-	$maximum_count = max(array_values($tags));
-	$spread = $maximum_count - $minimum_count;
-
-	if($spread == 0) {
-		$spread = 1;
-	}
-	
-	$cloud_html = '';
-	$cloud_tags = array();
-	
-	foreach ($tags as $tag => $count) {
-		$size = $min_size + ($count - $minimum_count)
-		* ($max_size - $min_size) / $spread;
+	if(isset($objWidgetTag)) {
+		$tags = $objWidgetTag->getTags();
+		// in css file, blogWidgetTag1-5
+		$min_size = 1;
+		$max_size = 5;
 		
-		$cloud_tags[] = '<a href="?t='.htmlspecialchars(stripslashes($tag)).'" class="blogWidgetTag'.floor($size).'">'
-		. htmlspecialchars(stripslashes($tag)) . '</a>';
-	}
-	$cloud_html = join("\n", $cloud_tags) . "\n";
+		$minimum_count = min(array_values($tags));
+		$maximum_count = max(array_values($tags));
+		$spread = $maximum_count - $minimum_count;
 	
-	echo $cloud_html;
+		if($spread == 0) {
+			$spread = 1;
+		}
+		
+		$cloud_html = '';
+		$cloud_tags = array();
+		
+		foreach ($tags as $tag => $count) {
+			$size = $min_size + ($count - $minimum_count)
+			* ($max_size - $min_size) / $spread;
+			
+			$cloud_tags[] = '<a href="?t='.htmlspecialchars(stripslashes($tag)).'" class="blogWidgetTag'.floor($size).'">'
+			. htmlspecialchars(stripslashes($tag)) . '</a>';
+		}
+		$cloud_html = join("\n", $cloud_tags) . "\n";
+		
+		echo $cloud_html;
+	}
 }
 
 /**
@@ -82,11 +84,13 @@ function get_tags($objWidgetTag){
  * @version 1.0
  */
 function has_tags($objWidgetTag){
-	if(count($objWidgetTag->getTags()) > 0){
-    return true;  
-  }else{
-    return false;
-  }
+	if($objWidgetTag != null) {
+		if(count($objWidgetTag->getTags()) > 0){
+	    return true;  
+	  }else{
+	    return false;
+	  }
+	}
 }
 
 ?>

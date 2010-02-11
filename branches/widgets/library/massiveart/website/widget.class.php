@@ -54,6 +54,7 @@ class Widget{
   protected $intWidgetId;
   protected $intWidgetVersion;
   protected $intLanguageId;
+  protected $strLanguageCode;
   
   protected $intTemplateId;
   protected $strNavigationUrl;
@@ -98,6 +99,16 @@ class Widget{
   }
   
   /**
+   * getRootLevelId
+   * @return integer
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getRootLevelId(){
+  	return $this->intRootLevelId;
+  }
+  
+  /**
    * setRootLevelTitle
    * @param $strRootLevelTitle
    * @author Florian Mathis <flo@massiveart.com>
@@ -125,6 +136,26 @@ class Widget{
    */
   public function setWidgetVersion($intVersion){
   	$this->intWidgetVersion = $intVersion;
+  }
+  
+  /**
+   * setLanguageCode
+   * @param string $strLanguageCode
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function setLanguageCode($strLanguageCode){
+  	$this->strLanguageCode = $strLanguageCode;	
+  }
+  
+  /**
+   * getLanguageCode
+   * @return string $strLanguageCode
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getLanguageCode() {
+  	return $this->strLanguageCode;
   }
   
   /**
