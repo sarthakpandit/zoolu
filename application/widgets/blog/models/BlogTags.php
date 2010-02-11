@@ -100,10 +100,10 @@ class Model_BlogTags {
 		
 		$objSelect = $this->getBlogEntryTagTable()->select();
 		$objSelect->setIntegrityCheck(false);
-		$objSelect->from('tags', array('title', 'count(tagSubwidgets.idTags) AS c'));
+		$objSelect->from('tags', array('title'));
 		$objSelect->join('tagSubwidgets', 'tagSubwidgets.idTags = tags.id', array());
 		$objSelect->where('tagSubwidgets.subwidgetId = ?', $strSubwidgetId);
-		echo $objSelect;
+	
 		return $this->objBlogEntriesTagTable->fetchAll($objSelect);
 	}
 	
