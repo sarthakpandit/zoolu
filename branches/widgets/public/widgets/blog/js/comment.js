@@ -4,28 +4,31 @@
  */
 
 /*
- * widgetBlogAddComment
- * @author Florian Mathis <flo@massiveart.com>
- * @version 1.0
- */
-function widgetBlogAddComment(){
-	new Ajax.Updater('blogWidgetCommentForm', '/widget/blog/comment/add', {
-      parameters: $('blogWidgetCommentForm').serialize(),
-      onSuccess: function(){
-		$('blogWidgetCommentInfo').innerHTML = 'Vielen Dank f&uuml;r Ihren Kommentar!';
-	  }
-	});
-}
-
-/**
  * updateCommentList
  * @author Florian Mathis <flo@massiveart.com>
  * @version 1.0
  */
 function updateCommentList(){
-	new Ajax.Updater('blogWidgetComments', '/widget/blog/form/addblogcomment', {
+	var comment = '<div style="margin-bottom: 20px; background-color: #CCCCCC; padding: 5px;"><strong><a href="mailto:'+$F('blogWidgetCommentMail')+'">'+$F('blogWidgetCommentName')+'</a></strong>:<br/><i>Gerade eben</i><br/>'+$F('blogWidgetCommentText')+'</div>';
+	$('blogWidgetComments').insert({top: comment});
+	$('blogWidgetCommentForm').hide();
+}
+
+/*
+ * widgetBlogAddComment
+ * @author Florian Mathis <flo@massiveart.com>
+ * @version 1.0
+ */
+function widgetBlogAddComment(){
+	new Ajax.Request('/widget/blog/comment/add', {
+	  method: 'post',
+      parameters: $('blogWidgetCommentForm').serialize(),
       onSuccess: function(){
-		$('blogWidgetCommentInfo').innerHTML = 'Vielen Dank f&uuml;r Ihren Kommentar!';
+		$('blogWidgetCommentInfo').show();
+		$('blogWidgetCommentForm').hide();
+	  },
+	  onComplete: function(){
+	    updateCommentList();
 	  }
 	});
 }

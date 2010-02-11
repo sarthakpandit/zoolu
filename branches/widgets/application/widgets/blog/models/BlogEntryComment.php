@@ -92,6 +92,20 @@ class Model_BlogEntryComment {
     $strWhere = $this->getBlogEntryCommentTable()->getAdapter()->quoteInto('id = ?', $intBlogEntryComment);
     return $this->getBlogEntryCommentTable()->delete($strWhere);
   }
+  
+  /**
+   * getAllComments
+   * @param integer $intBlogEntryComment
+   * @return Zend_Db_Abstract
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  public function getAllComments($intBlogEntryComment){
+  	$this->core->logger->debug('widgets->blog->Model_Blog->getAllComments('.$intBlogEntryComment.')');
+  	
+  	$strWhere = $this->getBlogEntryCommentTable()->getAdapter()->quoteInto('idWidget_BlogEntries = ?', $intBlogEntryComment);
+  	return $this->getBlogEntryCommentTable()->fetchAll($strWhere);
+  }
 	
 	/**
 	 * getBlogEntryCommentTable
