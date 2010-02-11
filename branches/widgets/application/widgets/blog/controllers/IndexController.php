@@ -72,6 +72,7 @@ class Blog_IndexController extends WidgetControllerAction  {
 	public function init() {
 		parent::init();
 		$this->addThemeCss('view');
+		$this->addThemeLink('alternate', 'application/rss+xml', $this->objWidget->getRootLevelTitle() . ' - ' . $this->objWidget->getWidgetTitle() . ' RSS', '?do=rss');
 		$this->view->setHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');
     $this->view->addHelperPath(dirname(dirname(__FILE__)) . '/views/helpers/', 'Blog_View_Helper');  
 	}
@@ -106,6 +107,7 @@ class Blog_IndexController extends WidgetControllerAction  {
    */
   public function viewAction() {  	
   	$this->addThemeJs('comment');
+  	
   	$objBlogEntries = $this->getBlogEntriesTable();
   	$objEntry = $objBlogEntries->getBlogEntryBySubwidgetId($this->objWidget->getWidgetInstanceId());
   	$this->view->assign('objEntry',$objEntry[0]);
@@ -125,7 +127,7 @@ class Blog_IndexController extends WidgetControllerAction  {
   public function rssAction(){
   	header('Content-type: application/rss+xml');
   	$this->blnRenderMaster = false;
-
+		
   	require_once(dirname(__FILE__).'/../helpers/FeedBuilder.php');
   	
   	$objFeed = Zend_Feed::importBuilder(new Blog_FeedBuilder(Zend_Registry::get('Widget')), 'rss');

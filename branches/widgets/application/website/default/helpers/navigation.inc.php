@@ -139,7 +139,7 @@ function get_main_navigation_title(){
   $strWidgetId = ''; 
   if(is_object($objNavigation->Page())){
     $strPageId = $objNavigation->Page()->getPageId();
-  } else if(is_object($objNavigation->Widget())) {
+  }else if(is_object($objNavigation->Widget())){
   	$strWidgetId = $objNavigation->Widget()->getWidgetInstanceId();
   }
   $strFolderId = $objNavigation->getRootFolderId();

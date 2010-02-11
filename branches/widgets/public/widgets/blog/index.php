@@ -1,4 +1,4 @@
-    <!-- Content Section -->
+  <!-- Content Section -->
   <div class="wrapper content">
     <div class="subwrapper">
       <div class="inner detail">        

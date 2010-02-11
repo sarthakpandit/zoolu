@@ -57,6 +57,11 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
    */
   const PLACEHOLDER_TEMPLATE_JS = '<%template_js%>';
   const PLACEHOLDER_WIDGET_JS = '<%widget_js%>';
+
+  /**
+   * link
+   */
+  const PLACEHOLDER_WIDGET_LINK = '<%widget_link%>';
   
   public function filter($value){
     $this->response = $value;
@@ -66,6 +71,8 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
     
     $this->replaceWidgetCssPlaceholder();
     $this->replaceWidgetJsPlaceholder();
+    
+    $this->replaceWidgetLinkPlaceholder();
         
     return $this->response;
   }
@@ -117,6 +124,19 @@ class Zend_View_Filter_PageReplacer implements Zend_Filter_Interface{
     	$this->response = str_replace(self::PLACEHOLDER_WIDGET_JS, Zend_Registry::get('WidgetJs'), $this->response);
   	} else {
   		$this->response = str_replace(self::PLACEHOLDER_WIDGET_JS, '', $this->response);
+  	}
+  }
+  
+  /**
+   * replaceWidgetLinkPlaceholder
+   * @author Florian Mathis <flo@massiveart.com>
+   * @version 1.0
+   */
+  private function replaceWidgetLinkPlaceholder(){
+  	if(Zend_Registry::isRegistered('WidgetLink')){
+  		$this->response = str_replace(self::PLACEHOLDER_WIDGET_LINK, Zend_Registry::get('WidgetLink'), $this->response);
+  	} else {
+  		$this->response = str_replace(self::PLACEHOLDER_WIDGET_LINK, '', $this->response);
   	}
   }
   

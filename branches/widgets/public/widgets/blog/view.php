@@ -32,6 +32,7 @@
 					<input type="submit" name="submit" value="Absenden"/>
 				</form>
 				
+				<div id="blogWidgetComments">
 				<?php 
 					if(count($this->comments) > 0):
 						foreach($this->comments AS $comment):
@@ -39,6 +40,7 @@
 						endforeach;
 					endif;
 				?>
+				</div>
         <div class="clear"></div>
       </div>  
     </div>
