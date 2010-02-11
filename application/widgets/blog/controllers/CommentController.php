@@ -78,9 +78,9 @@ class Blog_CommentController extends Zend_Controller_Action {
 				$arrFormData = $this->objRequest->getPost();
 				//TODO: Replace the keys from the $arrFormData Array with the correct ones from the forms
 				$arrData = array('idWidget_BlogEntries' => $arrFormData['idBlogentry'],
-				                  'title' => $arrFormData['name'],
-				                  'text' => $arrFormData['text'],
-				                  'mail' => $arrFormData['mail']
+				                  'title' => $arrFormData['blogWidgetCommentName'],
+				                  'text' => $arrFormData['blogWidgetCommentText'],
+				                  'mail' => $arrFormData['blogWidgetCommentMail']
 				);
 				$this->getModelBlogEntryComment()->addBlogEntryComment($arrData);
 			}
@@ -95,11 +95,12 @@ class Blog_CommentController extends Zend_Controller_Action {
 	 * @author Florian Mathis <flo@massiveart.com>
 	 * @version 1.0
 	 */
-	public function load(){
-		$this->core->logger->debug('widgets->blog->CommentController->load');
+	public function loadcommentsAction(){
+		$this->core->logger->debug('widgets->blog->CommentController->loadCommentsAction');
 		try{
 			$this->_helper->viewRenderer->setNoRender();
-			$this->getModelBlogEntryComment()->getAllComments($strSubwidgetId);
+			$arrFormData = $this->objRequest->getParams();
+			return $this->getModelBlogEntryComment()->getAllComments($arrFormData['idBlogentry']);
 		}catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
