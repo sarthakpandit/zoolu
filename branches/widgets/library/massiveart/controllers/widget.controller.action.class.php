@@ -256,7 +256,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 						$strCssPath .= $path.',';
 					}
 				}
-				$strOutput .= "  <link type=\"text/css\" rel=\"stylesheet\" media=\"".$media."\" href=\"/website/min/?f=".substr($strCssPath,0,-1)."\" />\n";
+				$strOutput .= "  <link type=\"text/css\" rel=\"stylesheet\" media=\"".$media."\" href=\"".substr($strCssPath,0,-1)."\" />\n";
 				$strCssPath='';
 			}
 			
@@ -298,7 +298,7 @@ class WidgetControllerAction extends Zend_Controller_Action  {
 				}
 			}
 			
-			$strOutput .= "  <script type=\"text/javascript\" src=\"/website/min/?f=".substr($strJsPath,0,-1)."\"></script>\n";
+			$strOutput .= "  <script type=\"text/javascript\" src=\"".substr($strJsPath,0,-1)."\"></script>\n";
 
 			return $strOutput;
 		}
