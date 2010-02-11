@@ -1,7 +1,0 @@
-<?php 
-require_once(dirname(__FILE__).'/../../helpers/NavigationHelper.php');
-$objHelper = new NavigationHelper();
-?>            
-            <div id="level<?php echo $this->currLevel; ?>" class="navlevelinner" >
-              <?php echo $objHelper->getNavigationElements($this->childElements, $this->currLevel); ?>
-            </div>
