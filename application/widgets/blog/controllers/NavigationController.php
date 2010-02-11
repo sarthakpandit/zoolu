@@ -62,6 +62,9 @@ class Blog_NavigationController extends AuthControllerAction {
     $this->view->assign('childElements', $this->getModelBlogEntry()->getBlogEntries($this->getRequest()->getParam('instanceId')));
     $this->view->assign('widgetName', 'blog');
     $this->view->assign('widgetInstanceId', $this->getRequest()->getParam('instanceId'));
+    
+    $objWidget = $this->getModelWidgets()->loadWidgetByInstanceId($this->getRequest()->getParam('instanceId'));
+    $this->view->assign('parentId', $objWidget->id);
 	}
 	
 	/**
