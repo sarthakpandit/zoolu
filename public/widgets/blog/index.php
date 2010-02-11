@@ -8,6 +8,7 @@
 		      	<h3>Tags</h3>
 		          <?php get_tags($this->objWidgetTags); ?>
 	      	<?php endif; ?>
+	      	<div class="widgetBlogRssFeed"><a href="?do=rss"><img src="/widgets/blog/images/021.png" alt="RSS Feed" title="RSS Feed"/></a></div>
         </div>     
         <!-- Main Content -->
         <div class="divContentContainer">

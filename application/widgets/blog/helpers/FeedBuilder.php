@@ -101,14 +101,15 @@ class Blog_FeedBuilder implements Zend_Feed_Builder_Interface {
 	 * @version 1.0
 	 */
 	public function getEntries(){
-		$objBlogEntries = $this->getModelBlogEntries()->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->intCount);
+		$objBlogEntries = $this->getModelBlogEntries()->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->intCount, 0, null, $this->objWidget);
 		
 		$arrEntry = array();
 		
 		foreach($objBlogEntries as $objBlogEntry){
-			$objEntry = new Zend_Feed_Builder_Entry($objBlogEntry->title, '', $objBlogEntry->text); //FIXME URL
+			$feedUrl = $objBlogEntry->rooturl.'/'.$this->objWidget->getLanguageCode().'/'.$objBlogEntry->url;
+			$objEntry = new Zend_Feed_Builder_Entry($objBlogEntry->title, 'http://'.$feedUrl, $objBlogEntry->text);
 			$objEntry->setLastUpdate($objBlogEntry->created_ts);
-			
+
 			$arrEntry[] = $objEntry;
 		}
 		

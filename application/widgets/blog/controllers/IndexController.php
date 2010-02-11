@@ -125,7 +125,7 @@ class Blog_IndexController extends WidgetControllerAction  {
   public function rssAction(){
   	header('Content-type: application/rss+xml');
   	$this->blnRenderMaster = false;
-  	
+
   	require_once(dirname(__FILE__).'/../helpers/FeedBuilder.php');
   	
   	$objFeed = Zend_Feed::importBuilder(new Blog_FeedBuilder(Zend_Registry::get('Widget')), 'rss');

@@ -165,7 +165,7 @@ class IndexController extends Zend_Controller_Action {
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
 
     $this->objUrlsData = $this->objModelUrls->loadByUrl($objTheme->idRootLevels, (parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
-		
+
     if(count($this->objUrlsData) > 0){
     	$objUrlData = $this->objUrlsData->current();
 
@@ -175,16 +175,10 @@ class IndexController extends Zend_Controller_Action {
       	case $this->core->sysConfig->url_types->widget: {
       		$objWidget = new Widget();
        		$this->getModelWidgets();
-       		
-       		if($objUrlData->idParent) {
-        		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->idParent);
-        		$objWidget->setWidgetInstanceId($objUrlData->relationId);
-        		$objWidget->setAction('view');
-       		} else {
-       			$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
-       			$objWidget->setWidgetInstanceId($objUrlData->relationId);
-       			$objWidget->setAction('index');
-       		}
+
+       		$objWidgetInstance = $this->objModelWidgets->loadWidgetByInstanceId($objUrlData->relationId);
+       		$objWidget->setWidgetInstanceId($objUrlData->relationId);
+       		($this->_getParam('do') ==  null) ? $objWidget->setAction('index') : $objWidget->setAction($this->_getParam('do'));
        		
 					$objWidget->setWidgetName($objWidgetInstance->name);
 					$objWidget->setNavigationUrl((parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
@@ -193,6 +187,7 @@ class IndexController extends Zend_Controller_Action {
 					$objWidget->setRootLevelId($objTheme->idRootLevels);
 					$objWidget->setWidgetVersion($objUrlData->version);
 					$objWidget->setLanguageId($objUrlData->idLanguages);
+					$objWidget->setLanguageCode($this->strLanguageCode);
 					$objWidget->setUrlParentId($objUrlData->idParent);
 					
 					Zend_Registry::set('Widget', $objWidget);
@@ -203,7 +198,11 @@ class IndexController extends Zend_Controller_Action {
       	case $this->core->sysConfig->url_types->subwidget: {
       		$objWidget = new Widget();
        		$this->getModelWidgets();
+       		
        		$objWidgetInstance = $this->objModelWidgets->loadSubWidgetByInstanceId($objUrlData->relationId);
+					$objWidget->setWidgetInstanceId($objUrlData->relationId);
+       		($this->_getParam('do') == null) ? $objWidget->setAction('view') : $objWidget->setAction($this->_getParam('do'));
+       		
        		$objWidget->setWidgetName($objWidgetInstance->name);
 					$objWidget->setNavigationUrl((parse_url($strUrl, PHP_URL_PATH) === null) ? '' : parse_url($strUrl, PHP_URL_PATH));
 					$objWidget->setWidgetTitle($objWidgetInstance->title);
@@ -211,10 +210,9 @@ class IndexController extends Zend_Controller_Action {
 					$objWidget->setRootLevelId($objTheme->idRootLevels);
 					$objWidget->setWidgetVersion($objUrlData->version);
 					$objWidget->setLanguageId($objUrlData->idLanguages);
-					$objWidget->setWidgetInstanceId($objUrlData->relationId);
-					$objWidget->setAction('view');
+					$objWidget->setLanguageCode($this->strLanguageCode);
+					
 					Zend_Registry::set('Widget', $objWidget);
-
 					$this->_forward($objWidget->getAction(),'index',$objWidgetInstance->name);
       	} break;
       	
