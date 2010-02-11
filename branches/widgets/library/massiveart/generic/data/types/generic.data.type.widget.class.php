@@ -81,7 +81,7 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
 					/**
 					 * WidgetInstanceId is empty, add Widget itself
 					 */
-					$strWidgetInstanceId = uniqid();
+					$strWidgetInstanceId = $this->setup->getWidgetInstanceId();
 					$intWidgetVersion = 1;
 					$intSortPosition = GenericSetup::DEFAULT_SORT_POSITION;
 					

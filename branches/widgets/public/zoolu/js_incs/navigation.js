@@ -587,12 +587,12 @@ Massiveart.Navigation = Class.create({
       //TODO: If empty, load nothing
     	
       strAjaxAction = this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog');
-      strParams = 'currLevel='+currLevel+'&instanceId='+widgetInstanceId+'&idWidgetInstances='+parentId;
+      strParams = 'currLevel='+currLevel+'&instanceId='+widgetInstanceId;
       
       // Add new Level
       if(elementType != 'subwidget') {
-        if($('widgetInstanceId')) {
-      	  if($('widgetInstanceId').value == '') {
+        if($('instanceId')) {
+      	  if($('instanceId').value != '') {
 		    if(this.levelArray.indexOf(currLevel) == -1){
 		      this.levelArray.push(currLevel);
 		      var levelContainer = '<div id="navlevel'+currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" class="navlevel" style="left: '+(201*currLevel-201)+'px"></div>'; 
