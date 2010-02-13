@@ -40,10 +40,6 @@
             <?php endif; ?>
             <?php if(!$this->blnIsStartPage) : ?>
             <tr>
-              <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation == 1) ? print(' checked="checked"') : print(''); ?> onclick="$('showInNavigation').value = this.checked ? '1' : '0'"/></td>
-              <td><label for="showinnavigation">in Navigation anzeigen</label></td>
-            </tr>
-            <tr>
               <td class="tdNormal">Ver&ouml;ffentlicht:</td>
               <td>
                 <div class="publishdate" id="divPublishDate"><?php echo $this->publishDate; ?></div>

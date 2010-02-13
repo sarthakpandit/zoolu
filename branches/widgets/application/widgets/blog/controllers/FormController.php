@@ -92,7 +92,7 @@ class Blog_FormController extends AuthControllerAction {
 			$this->view->form = $this->objForm;
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
 			$this->setViewMetaInfos();
-			$this->renderScript('page/form.phtml');
+			$this->renderScript('blog/form.phtml');
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
@@ -151,7 +151,7 @@ class Blog_FormController extends AuthControllerAction {
       $this->setViewMetaInfos();
       
       $this->view->form = $this->objForm;
-      $this->renderScript('page/form.phtml');
+      $this->renderScript('blog/form.phtml');
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
@@ -184,7 +184,7 @@ class Blog_FormController extends AuthControllerAction {
       $this->setViewMetaInfos();
       $this->view->form = $this->objForm;
       
-      $this->renderScript('page/form.phtml');
+      $this->renderScript('blog/form.phtml');
 		}catch(Exception $exc){
 			$this->core->logger->err($exc);
 			exit();
@@ -246,7 +246,7 @@ class Blog_FormController extends AuthControllerAction {
 
       $this->view->form = $this->objForm;
 
-      $this->renderScript('page/form.phtml');
+      $this->renderScript('blog/form.phtml');
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 		}
@@ -268,7 +268,7 @@ class Blog_FormController extends AuthControllerAction {
 				$this->view->blnShowFormAlert = true;
 			}
 			
-			$this->renderScript('page/form.phtml');
+			$this->renderScript('blog/form.phtml');
 		} catch(Exception $exc) {
 			$this->core->logger->err($exc);
 			exit();
@@ -301,7 +301,7 @@ class Blog_FormController extends AuthControllerAction {
       
       $this->view->form = $this->objForm;
       
-      $this->renderScript('page/empty.phtml');
+      $this->renderScript('blog/empty.phtml');
     }catch(Exception $exc){
     	$this->core->logger->err($exc);
     	exit();
@@ -346,7 +346,7 @@ class Blog_FormController extends AuthControllerAction {
 			
 			$this->view->form = $this->objForm;
 			
-			$this->renderScript('page/empty.phtml');
+			$this->renderScript('blog/empty.phtml');
 		} catch(Excpetion $exc){
 			$this->core->logger->err($exc);
 			exit();
@@ -436,7 +436,6 @@ class Blog_FormController extends AuthControllerAction {
 		if(is_object($this->objForm) && $this->objForm instanceof GenericForm) {
 			$this->view->version = $this->objForm->Setup()->getFormVersion();
       $this->view->publisher = $this->objForm->Setup()->getPublisherName();
-      $this->view->showinnavigation = $this->objForm->Setup()->getShowInNavigation();
       $this->view->changeUser = $this->objForm->Setup()->getChangeUserName();
       $this->view->publishDate = $this->objForm->Setup()->getPublishDate('d. M. Y, H:i');
       $this->view->changeDate = $this->objForm->Setup()->getChangeDate('d. M. Y, H:i');
