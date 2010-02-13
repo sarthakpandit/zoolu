@@ -161,7 +161,6 @@ class PluginLoader extends Zend_Loader_PluginLoader{
       $strPathField = $this->getFieldPath($name);
       $this->addPrefixPath($strPrefixField, $strPathField);
       $strClassName = $this->getPluginLoader()->load($name);
-      //Zend_Registry::get('Core')->logger->debug('PluginLoader: Plugin '.$strClassName.' loaded');
       
       $this->removePrefixPath($strPrefixField);
   	}
