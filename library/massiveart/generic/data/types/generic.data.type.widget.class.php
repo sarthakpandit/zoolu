@@ -114,7 +114,8 @@ class GenericDataTypeWidget extends GenericDataTypeAbstract
                                 'idWidgets'       => $this->setup->getElementTypeId(),
                                 'widgetInstanceId'=> $strWidgetInstanceId,
                                 'version'         => $intWidgetVersion,
-                                'showInNavigation'=> $this->setup->getShowInNavigation()
+                                'showInNavigation'=> $this->setup->getShowInNavigation(),
+                                'idUsers'         => $intUserId
           );
           
           $this->setup->setElementId($this->objModelWidgets->getWidgetInstancesTable()->insert($arrMainData));

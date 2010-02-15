@@ -87,6 +87,7 @@ class Blog_FormController extends AuthControllerAction {
 		
 		try {
 			$this->getFormArticle($this->core->sysConfig->generic->actions->add);
+			$this->getBlogSpecificElements();
 			$this->objForm->setAction('/../widget/blog/form/addsubwidget');
 			$this->objForm->prepareForm();
 			$this->view->form = $this->objForm;
@@ -109,6 +110,7 @@ class Blog_FormController extends AuthControllerAction {
 		
 		try {
 			$this->getFormArticle($this->core->sysConfig->generic->actions->add);
+			$this->getBlogSpecificElements();
 			if($this->objRequest->getPost() && $this->objRequest->isXmlHttpRequest()) {
 				$arrFormData = $this->objRequest->getPost();
 				$this->objForm->Setup()->setFieldValues($arrFormData);
@@ -176,6 +178,7 @@ class Blog_FormController extends AuthControllerAction {
 			$this->objForm->Setup()->setSubwidgetId($arrData['subwidgetId']);
 			
 			$this->objForm->loadFormData();
+			$this->getBlogSpecificElements();
 			$this->objForm->setAction('/../widget/blog/form/editsubwidget');
 			$this->objForm->prepareForm();
 			
@@ -201,6 +204,7 @@ class Blog_FormController extends AuthControllerAction {
 		
 		try {
 			$this->getFormArticle($this->core->sysConfig->generic->actions->edit);
+			$this->getBlogSpecificElements();
 			
 			$this->view->formtitle = $this->objForm->Setup()->getFormTitle();
 			
@@ -353,6 +357,16 @@ class Blog_FormController extends AuthControllerAction {
 		}
 	}
 	
+	protected function getBlogSpecificElements(){
+	 if(is_object($this->objForm) && $this->objForm instanceof GenericForm){
+      /**
+       * add blog specific hidden fields
+       * Here because the Setup isn't updated at the call of getForm()
+       */
+      $this->objForm->addElement('hidden', 'idStatus', array('value' => $this->objForm->Setup()->getStatusId(), 'decorators' => array('Hidden')));
+    }
+	}
+	
 	/**
 	 * getFormArticle
 	 * @param number $intActionType
@@ -378,6 +392,7 @@ class Blog_FormController extends AuthControllerAction {
       $this->objForm->Setup()->setParentId((($this->objRequest->getParam("parentId") != '') ? $this->objRequest->getParam("parentId") : null));
       $this->objForm->Setup()->setIsStartElement((($this->objRequest->getParam("isStartPage") != '') ? $this->objRequest->getParam("isStartPage") : 0));
       $this->objForm->Setup()->setPublishDate((($this->objRequest->getParam("publishDate") != '') ? $this->objRequest->getParam("publishDate") : date('Y-m-d H:i:s')));
+      $this->objForm->Setup()->setStatusId((($this->objRequest->getParam("idStatus") != '') ? $this->objRequest->getParam("idStatus") : $this->core->sysConfig->form->status->default));
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentTypeId") != '') ? $this->objRequest->getParam("parentTypeId") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setElementTypeId($this->objRequest->getParam('idWidget'));

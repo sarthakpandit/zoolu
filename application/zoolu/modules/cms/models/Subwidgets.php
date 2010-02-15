@@ -101,7 +101,8 @@ class Model_Subwidgets {
   	$objSelectWidget = $this->getGenericTable($objSubwidget->table)->select();
   	$objSelectWidget->setIntegrityCheck(false);
   	
-  	$objSelectWidget->from($objSubwidget->table, array('id', 'title', 'text', 'subwidgetId AS relationId'));
+  	$objSelectWidget->from($objSubwidget->table, array('id', 'title', 'text', 'subwidgetId AS relationId', '(SELECT 0) AS showInNavigation',
+  	                                                   '(SELECT CONCAT(users.fname, \' \', users.sname) AS changeUser FROM users WHERE users.id = subwidgets.idUsers) AS changeUser'));
   	$objSelectWidget->join('subwidgets', 'subwidgets.subwidgetId = '.$objSubwidget->table.'.subwidgetId');
   	$objSelectWidget->where('subwidgets.subwidgetId = ?', $objSubwidget->subwidgetId);
   	

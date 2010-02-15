@@ -675,7 +675,7 @@ class GenericSetup {
 			$this->setCreatorId($objCurrElement->creator);
 			$this->setPublisherName($objCurrElement->publisher);
 			$this->setChangeUserName($objCurrElement->changeUser);
-			$this->setShowInNavigation($objCurrElement->showInNavigation);
+		  $this->setShowInNavigation($objCurrElement->showInNavigation);
 			if($objCurrElement->changed != '' || !is_null($objCurrElement->changed)){
 				$this->setChangeDate($objCurrElement->changed);
 			}
