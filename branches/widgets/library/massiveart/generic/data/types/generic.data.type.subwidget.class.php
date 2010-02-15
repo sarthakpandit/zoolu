@@ -73,7 +73,10 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 				                      'idUsers'           => Zend_Auth::getInstance()->getIdentity()->id,
 				                      'idWidgetTable'     => $objWidgetTable->id,
 				                      'idParentTypes'     => $this->core->sysConfig->parent_types->widget,
-				                      'version'           => $intSubwidgetVersion
+				                      'version'           => $intSubwidgetVersion,
+				                      'idStatus'          => $this->setup->getStatusId(),
+				                      'creator'           => Zend_Auth::getInstance()->getIdentity()->id,
+				                      'changed'           => date('Y-m-d H:i:s')
 				                    );
 				                    
 				$this->setup->setElementId($this->getModelSubwidgets()->getSubwidgetTable()->insert($arrMainData));
@@ -86,6 +89,28 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 //        $this->insertMultiplyRegionData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				break;
 			case $this->core->sysConfig->generic->actions->edit:
+			  $objSelect = $this->getModelSubwidgets()->getSubwidgetTable()->select();
+        $objSelect->from('subwidgets', array('subwidgetId', 'version', 'created'));
+        $objSelect->where('id = ?', $this->setup->getElementId());
+          
+        $objRowSet = $this->getModelSubwidgets()->getSubwidgetTable()->fetchAll($objSelect);
+          
+        if(count($objRowSet) > 0) {
+          $objSubwidgets = $objRowSet->current();
+            
+          $strSubwidgetId = $objSubwidgets->subwidgetId;
+          $strSubwidgetVersion = $objSubwidgets->version;
+            
+          $strWhere = $this->getModelSubwidgets()->getSubwidgetTable()->getAdapter()->quoteInto('subwidgetId = ?', $objSubwidgets->subwidgetId);
+          $strWhere .= $this->getModelSubwidgets()->getSubwidgetTable()->getAdapter()->quoteInto(' AND version = ?', $objSubwidgets->version);
+
+          $this->getModelSubwidgets()->getSubwidgetTable()->update(array( 'idUsers'          => Zend_Auth::getInstance()->getIdentity()->id,
+                                                                          'idStatus'         => $this->setup->getStatusId(),
+                                                                          'changed'          => date('Y-m-d H:i:s'),
+                                                                          'created'          => $objSubwidgets->created
+                                                                        ),
+                                                                   $strWhere);
+        }
 				$this->updateCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				//NOT TESTED!
 //        $this->updateFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
@@ -112,57 +137,67 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 	  $this->core->logger->debug('massiveart->generic->data->GenericDataTypeSubwidget->load()');
 		
 	  $intSubwidgetVersion = 0;
+	  $objSubwidgetsData = $this->getModelSubwidgets()->load($this->Setup()->getElementId());
+	  
+	  if(count($objSubwidgetsData) > 0){
+	  	$objSubwidgetData = $objSubwidgetsData->current();
 			
-		if(count($this->setup->SpecialFields()) > 0){
-	    foreach($this->setup->SpecialFields() as $objField){
-	      $objField->setGenericSetup($this->setup);
-	      $objField->load($this->setup->getElementId(), 'subwidget', $this->Setup()->getSubwidgetId(), $intSubwidgetVersion);
-	    }
-	  }
-	    
-	  if(count($this->setup->CoreFields()) > 0){
-		  /**
-		   * for each core field, try to select the secondary table
-		   */
-		  foreach($this->setup->CoreFields() as $strField => $objField){
-		
-      $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
-	    $objSelect = $objGenTable->select();
-	
-	    $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
-	    $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
-	    $objSelect->where('version = ?', $intSubwidgetVersion);
-	    $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
-		
-	    $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
-		
-		  if(count($arrGenFormsData) > 0){
-		    $objField->blnHasLoadedData = true;
-		    if(count($arrGenFormsData) > 1){
-		      $arrFieldData = array();
-		      foreach ($arrGenFormsData as $arrRowGenFormData) {
-		        foreach ($arrRowGenFormData as $column => $value) {
-		          array_push($arrFieldData, $value);
-		        }
-		      }
-		      if($column == $strField){
-		        $objField->setValue($arrFieldData);
-		      }else{
-		        $objField->$column = $arrFieldData;
-		      }
-		    }else{
-		      foreach ($arrGenFormsData as $arrRowGenFormData) {
-		        foreach ($arrRowGenFormData as $column => $value) {
-		          if($column == $strField){
-		            $objField->setValue($value);
-		          }else{
-		            $objField->$column = $value;
-		            }
-		          }
-		        }
-		      }
+	  	$this->setup->setMetaInformation($objSubwidgetData);
+//      $this->setup->setElementTypeId($objWidgetData->idPageTypes);
+//      $this->setup->setIsStartElement($objWidgetData->isStartPage);
+//      $this->setup->setParentTypeId($objWidgetData->idParentTypes);
+
+			if(count($this->setup->SpecialFields()) > 0){
+		    foreach($this->setup->SpecialFields() as $objField){
+		      $objField->setGenericSetup($this->setup);
+		      $objField->load($this->setup->getElementId(), 'subwidget', $this->Setup()->getSubwidgetId(), $intSubwidgetVersion);
 		    }
-	    }
+		  }
+		    
+		  if(count($this->setup->CoreFields()) > 0){
+			  /**
+			   * for each core field, try to select the secondary table
+			   */
+			  foreach($this->setup->CoreFields() as $strField => $objField){
+			
+	      $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget'.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+		    $objSelect = $objGenTable->select();
+		
+		    $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
+		    $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
+		    $objSelect->where('version = ?', $intSubwidgetVersion);
+		    $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+			
+		    $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+			
+			  if(count($arrGenFormsData) > 0){
+			    $objField->blnHasLoadedData = true;
+			    if(count($arrGenFormsData) > 1){
+			      $arrFieldData = array();
+			      foreach ($arrGenFormsData as $arrRowGenFormData) {
+			        foreach ($arrRowGenFormData as $column => $value) {
+			          array_push($arrFieldData, $value);
+			        }
+			      }
+			      if($column == $strField){
+			        $objField->setValue($arrFieldData);
+			      }else{
+			        $objField->$column = $arrFieldData;
+			      }
+			    }else{
+			      foreach ($arrGenFormsData as $arrRowGenFormData) {
+			        foreach ($arrRowGenFormData as $column => $value) {
+			          if($column == $strField){
+			            $objField->setValue($value);
+			          }else{
+			            $objField->$column = $value;
+			            }
+			          }
+			        }
+			      }
+			    }
+		    }
+		  }
 	  }
 	}
 	
