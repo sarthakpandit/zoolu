@@ -99,12 +99,12 @@ class Model_BlogEntry {
    * @author Florian Mathis <flo@massiveart.com>
    * @version 1.0
 	 */
-	public function getBlogEntries($strWidgetInstanceId, $intPerPage=10, $intOffset=0, $strTag=null, $objWidget=null) {
+	public function getBlogEntries($strWidgetInstanceId, $blnReturnTest=true, $intPerPage=10, $intOffset=0, $strTag=null, $objWidget=null) {
 		$this->core->logger->debug('widgets->blog->Model_BlogEntry->getBlogEntries('.$strWidgetInstanceId.', '.$intPerPage.', '.$intOffset.')');
 
 		$objSelectForm = $this->getBlogEntryTable()->select();
 		$objSelectForm->setIntegrityCheck(false);
-		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.created', 'created_ts' => 'UNIX_TIMESTAMP(subwidgets.created)', 'text', 'urls.url', 'subwidgets.idStatus'));
+		$objSelectForm->from($this->objBlogEntryTable, array('id', 'title', 'users.username', 'subwidgets.widgetInstanceId', 'subwidgets.created', 'created_ts' => 'UNIX_TIMESTAMP(subwidgets.created)', 'text', 'urls.url', 'subwidgets.idStatus'));
 		$objSelectForm->join('urls','urls.relationId = widget_BlogEntries.subwidgetId', array('url'));
 		$objSelectForm->join('languages', 'urls.idLanguages = languages.id', array('languageCode'));
 		$objSelectForm->join('subwidgets', 'subwidgets.subwidgetId = widget_BlogEntries.subwidgetId');
@@ -121,7 +121,7 @@ class Model_BlogEntry {
 			$objSelectForm->where('tags.title = ?', $strTag);
   	}
   	
-  	if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
+  	if(!$blnReturnTest){
   		$objSelectForm->where('subwidgets.idStatus = ?', $this->core->sysConfig->status->live);
   	}
   	
