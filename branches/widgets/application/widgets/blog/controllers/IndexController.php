@@ -91,7 +91,11 @@ class Blog_IndexController extends WidgetControllerAction  {
 	    $this->view->perPage = $objWidgetProperties->getPropertyValue('pagination', $this->objWidget->getWidgetInstanceId());
 	    $offset = ($this->_getParam('page') > 0) ? $this->view->perPage * ($this->_getParam('page') - 1) : 0;
 	
-	    $objEntry = $objEntries->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->view->perPage, $offset, $this->_getParam('t'));
+	    $objEntry = $objEntries->getBlogEntries( $this->objWidget->getWidgetInstanceId(),
+	                                             (!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false))?false:true,
+	                                             $this->view->perPage,
+	                                             $offset, 
+	                                             $this->_getParam('t'));
 			$this->view->assign('objEntries',$objEntry);
 			
 			$objBlogWidgetTags = $this->getBlogEntriesTagsTable();

@@ -73,7 +73,7 @@ class NavigationHelper {
 				$output .= '<div id="subwidget'.$objRow->id.'" class="blog">
             <div class="icon img_blog_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
             <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_blog_'.$objRow->id.'" id="pos_blog_'.$objRow->id.'" value="'.$counter.'" onfocus="return false;" /></div>
-            <div class="title italic" onclick="myNavigation.editSubWidgetForm('.$objRow->id.', \''.$widgetName.'\'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            <div class="title italic" onclick="myNavigation.editSubWidgetForm('.$objRow->id.', \''.$widgetName.'\', \''.$objRow->widgetInstanceId.'\'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
 				$counter++;
 			}
