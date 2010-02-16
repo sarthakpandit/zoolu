@@ -431,6 +431,7 @@ class GenericSetup {
 	          $objGenField->isMultiply = $objFieldRegionTagData->isMultiply;
 	          $objGenField->idSearchFieldTypes = $objFieldRegionTagData->idSearchFieldTypes;
 						$objGenField->idFieldTypeGroup = $objFieldRegionTagData->idFieldTypeGroup;
+						$objGenField->isSqlKeyValuePair = $objFieldRegionTagData->isSqlKeyValuePair;
 						
 	  			  /**
 	           * select field container
