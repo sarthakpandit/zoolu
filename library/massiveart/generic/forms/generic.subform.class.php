@@ -154,13 +154,19 @@ class GenericSubForm extends Zend_Form_SubForm {
         if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SELECT_ID) {
           $arrOptions[''] = 'Bitte wählen';
         }
-        foreach($sqlStmt as $arrSql){
-          if(array_key_exists('depth', $arrSql)){
-            $arrOptions[$arrSql['id']] = array('title' => $arrSql['title'],
-                                               'depth' => $arrSql['depth']);
-          }else{
-            $arrOptions[$arrSql['id']] = $arrSql['title'];
-          }
+        if($objField->isSqlKeyValuePair == 1){
+	        foreach($sqlStmt as $arrSql){
+	          if(array_key_exists('depth', $arrSql)){
+	            $arrOptions[$arrSql['id']] = array('title' => $arrSql['title'],
+	                                               'depth' => $arrSql['depth']);
+	          }else{
+	            $arrOptions[$arrSql['id']] = $arrSql['title'];
+	          }
+	        }
+        }else{
+        	foreach($sqlStmt as $arrSql){
+        		$arrOptions[$arrSql['id']] = $arrSql;
+        	}
         }
       }
 

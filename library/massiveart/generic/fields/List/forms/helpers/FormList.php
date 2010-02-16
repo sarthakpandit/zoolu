@@ -70,10 +70,15 @@ class Form_Helper_FormList extends Zend_View_Helper_FormElement
 		foreach($options as $id=>$option)
 		{
 			$xhtml.='<tr>';
-			$xhtml.='<td><input type="checkbox" value="'.$id.'" name="listElement" /></td>';
-			$xhtml.='<td>';
-			$xhtml.=$option;
-			$xhtml.='</td>';
+			$xhtml.='<td style="vertical-align:top;"><input type="checkbox" value="'.$id.'" name="listElement" /></td>';
+			foreach($option as $suboption){
+				$xhtml.='<td style="padding-right:20px; vertical-align:top;">';
+				$xhtml.=$suboption;
+				$xhtml.='</td>';
+			}
+//			$xhtml.='<td>';
+//			$xhtml.=$option;
+//			$xhtml.='</td>';
 			$xhtml.='</tr>';
 		}
 		$xhtml.='</tbody>';

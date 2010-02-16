@@ -269,7 +269,7 @@ class Model_GenericForms {
      *             `regionFields`.`order` ASC
      */
 
-    $objSelect->from('fields', array('id', 'idFieldTypes', 'name', 'idSearchFieldTypes', 'idRelationPage', 'idCategory', 'sqlSelect', 'columns', 'isCoreField', 'isKeyField', 'isSaveField', 'isRegionTitle', 'isDependentOn', 'copyValue'));
+    $objSelect->from('fields', array('id', 'idFieldTypes', 'name', 'idSearchFieldTypes', 'idRelationPage', 'idCategory', 'sqlSelect', 'columns', 'isCoreField', 'isKeyField', 'isSaveField', 'isRegionTitle', 'isDependentOn', 'copyValue', 'isSqlKeyValuePair'));
     $objSelect->join('fieldTypes', 'fieldTypes.id = fields.idFieldTypes', array('title AS type', 'defaultValue', 'idFieldTypeGroup'));
     $objSelect->join('decorators', 'decorators.id = fieldTypes.idDecorator', array('title AS decorator'));
     $objSelect->joinLeft('fieldTitles','fieldTitles.idFields = fields.id AND fieldTitles.idLanguages = '.$this->intLanguageId, array('title'));
