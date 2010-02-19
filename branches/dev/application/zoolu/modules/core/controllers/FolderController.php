@@ -334,7 +334,13 @@ class Core_FolderController extends AuthControllerAction {
     $this->core->logger->debug('core->controllers->FolderController->changelanguageAction()');
 
     try{
-      $this->_forward('geteditform');
+      
+     if(intval($this->objRequest->getParam('id')) > 0){
+        $this->_forward('geteditform');
+      }else{
+        $this->_forward('getaddform');
+      }      
+      
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -361,7 +367,9 @@ class Core_FolderController extends AuthControllerAction {
       $this->view->blnIsRootLevelChild = ($this->objForm->Setup()->getParentId() == 0) ? true : false;
       $this->view->navigationOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT navigationOptionTitles.title FROM navigationOptionTitles WHERE navigationOptionTitles.idNavigationOptions = navigationOptions.id AND navigationOptionTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM navigationOptions WHERE active = 1', $this->objForm->Setup()->getShowInNavigation());
       
-      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objRequest->getParam('zoolu_module') != 2) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      // && $this->objRequest->getParam('zoolu_module') != 2
+      //if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit) 
+      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
     }
   }
 

@@ -53,6 +53,8 @@ class Media_FileController extends AuthControllerAction  {
    */
   protected $objModelFiles;
   
+  protected $intLanguageId;
+  
   /**
    * init
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -62,6 +64,8 @@ class Media_FileController extends AuthControllerAction  {
   public function init(){
     parent::init();
     $this->objRequest = $this->getRequest();
+    $this->intLanguageId = ((int) $this->objRequest->getParam("languageId") > 0) ? (int) $this->objRequest->getParam("languageId") : $this->core->sysConfig->languages->default->id;
+    $this->view->assign('languageId', $this->intLanguageId);
   }
   
   /**
@@ -92,6 +96,8 @@ class Media_FileController extends AuthControllerAction  {
       $this->view->assign('strEditFormAction', '/zoolu/media/file/edit');
       $this->view->assign('strFileIds', $strFileIds);
       $this->view->assign('objFiles', $objFiles);
+      
+      $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
     }
 
     $this->renderScript('file/form.phtml');
@@ -110,6 +116,7 @@ class Media_FileController extends AuthControllerAction  {
     	$arrFormData = $this->getRequest()->getPost();
 
       $objFile = new File();
+      $objFile->setLanguageId($this->intLanguageId);
       $objFile->setFileDatas($arrFormData);
       $objFile->updateFileData();
     }
@@ -170,7 +177,7 @@ class Media_FileController extends AuthControllerAction  {
     if (null === $this->objModelFiles) {
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId(1); // TODO : get language id
+      $this->objModelFiles->setLanguageId($this->intLanguageId);
     }
 
     return $this->objModelFiles;

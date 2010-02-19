@@ -43,6 +43,7 @@
 class Model_Files {
   
   private $intLanguageId;
+  private $intAlternativLanguageId;
   
   /**
    * @var Model_Table_Files
@@ -151,7 +152,7 @@ class Model_Files {
 	        $strIds .= $intFileId.',';
 	      }
 	    	
-	    	$objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));
+	    	$objSelect->from('files', array('id', 'fileId', 'filename', 'isLanguageSpecific', 'isImage', 'created', 'extension', 'mimeType', 'size'));
 	      $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
 	      $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));  	
@@ -192,9 +193,14 @@ class Model_Files {
       }      
 
       $objSelect->distinct();
-      $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));
+      $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'extension', 'mimeType', 'size'));
       $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
       $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+      
+      if($this->intAlternativLanguageId > 0){
+        $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
+      }
+      
       $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
 
       if(trim($strTagIds, ',') != ''){
@@ -207,6 +213,8 @@ class Model_Files {
         $objSelect->join('folders AS parent', 'parent.id IN ('.trim($strFolderIds, ',').')', array());
         $objSelect->join('folders', 'folders.id = files.idParent AND files.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND folders.lft BETWEEN parent.lft AND parent.rgt AND folders.idRootLevels = parent.idRootLevels', array());
       }
+      
+      $objSelect->where('(files.isLanguageSpecific = 0) OR (files.isLanguageSpecific = 1 AND fileTitles.idLanguages IS NOT NULL)');
       
       return $this->objFileTable->fetchAll($objSelect);
     }catch (Exception $exc) {
@@ -230,7 +238,7 @@ class Model_Files {
       	$objSelect = $this->objFileTable->select();   
         $objSelect->setIntegrityCheck(false);
       
-        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));
+        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'extension', 'mimeType', 'size'));
         $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
         $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
         $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));   
@@ -258,7 +266,7 @@ class Model_Files {
         $objSelect = $this->objFileTable->select();   
         $objSelect->setIntegrityCheck(false);
       
-        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'created', 'extension', 'mimeType', 'size'));           
+        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'extension', 'mimeType', 'size'));           
         $objSelect->where('files.fileId = ?', $strFileId);
         
         return $this->objFileTable->fetchAll($objSelect);
@@ -381,7 +389,8 @@ class Model_Files {
     
   /**
    * getFileTable 
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return Model_Table_Files
+   * @author Cornelius Hansjakob <cha@massiveart.com>   
    * @version 1.0
    */
   public function getFileTable(){
@@ -396,7 +405,8 @@ class Model_Files {
   
   /**
    * getFileTitleTable 
-   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return Model_Table_FileTitles
+   * @author Cornelius Hansjakob <cha@massiveart.com>   
    * @version 1.0
    */
   public function getFileTitleTable(){
@@ -411,6 +421,7 @@ class Model_Files {
   
   /**
    * getFileAttributeTable 
+   * @return Model_Table_FileAttributes
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
@@ -438,6 +449,22 @@ class Model_Files {
    */
   public function getLanguageId(){
     return $this->intLanguageId;  
+  } 
+  
+  /**
+   * setAlternativLanguageId
+   * @param integer $intAlternativLanguageId
+   */
+  public function setAlternativLanguageId($intAlternativLanguageId){
+    $this->intAlternativLanguageId = $intAlternativLanguageId;  
+  }
+  
+  /**
+   * getAlternativLanguageId
+   * @param integer $intAlternativLanguageId
+   */
+  public function getAlternativLanguageId(){
+    return $this->intAlternativLanguageId;  
   } 
 }
 

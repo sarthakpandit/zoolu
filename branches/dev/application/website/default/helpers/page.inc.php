@@ -576,9 +576,10 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
         $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
 
         $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
-
+        $strImageAddonClasses = ($objMyMultiRegion->getField('block_pics')->getInstanceProperty($intRegionInstanceId, 'display_option') == 'RIGHT_ALIGNED') ? ' mLeft20 right' : ' mRight20 left';
+        
         if($objFiles != '' && count($objFiles) > 0){
-          $strHtmlOutput .= '<div class="'.$strImageContainerClass.'">';
+          $strHtmlOutput .= '<div class="'.$strImageContainerClass.$strImageAddonClasses.'">';
           foreach($objFiles as $objFile){
             if($blnZoom && $strImageFolderZoom != ''){
               $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
@@ -590,7 +591,7 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
           }
           $strHtmlOutput .= '</div>';
         }
-        $strHtmlOutput .= '<h3>'.$strBlockTitle.'</h3>';
+        $strHtmlOutput .= '<div><h3>'.$strBlockTitle.'</h3>';
         $strHtmlOutput .= $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
 
         if($objMyMultiRegion->getField('block_docs')){
@@ -610,6 +611,7 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
           }
         }
 
+        $strHtmlOutput .= '</div>';
         $strHtmlOutput .= '<div class="clear"></div>';
         $strHtmlOutput .= '</div>';
       }
@@ -649,7 +651,7 @@ function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'div
             $strHtmlOutput .= '<div class="item">
                     <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
                     <div class="text">
-                      <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.$objFile->title.'</a>
+                      <a href="'.$core->sysConfig->media->paths->docbase.$objFile->filename.'" target="_blank">'.htmlentities((($objFile->title == '' && isset($objFile->alternativTitle)) ? $objFile->alternativTitle : $objFile->title), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
                     </div>
                     <div class="clear"></div>
                   </div>';
@@ -911,12 +913,12 @@ function get_text_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox 
       $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
       if($strBlockTitle != ''){
         $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
-        $strHtmlOutput .= '  <h2>'.$strBlockTitle.'</h2>';
-
+        
         $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
+        $strImageAddonClasses = ($objMyMultiRegion->getField('block_pics')->getInstanceProperty($intRegionInstanceId, 'display_option') == 'RIGHT_ALIGNED') ? ' mLeft20 right' : ' mRight20 left';
 
         if($objFiles != '' && count($objFiles) > 0){
-          $strHtmlOutput .= '<div class="'.$strImageContainerClass.'">';
+          $strHtmlOutput .= '<div class="'.$strImageContainerClass.$strImageAddonClasses.'">';
           foreach($objFiles as $objFile){
             if($blnZoom && $strImageFolderZoom != ''){
               $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$strImageFolderZoom.'/'.$objFile->filename.'"';
@@ -928,9 +930,12 @@ function get_text_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox 
           }
           $strHtmlOutput .= '</div>';
         }
-        $strHtmlOutput .= $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
-        $strHtmlOutput .= '<div class="clear"></div>';
-        $strHtmlOutput .= '</div>';
+        $strHtmlOutput .= '<div> 
+                             <h3>'.$strBlockTitle.'</h3>
+                             '.$objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId).'
+                           </div>
+                           <div class="clear"></div>
+                         </div>';
       }
     }
   }

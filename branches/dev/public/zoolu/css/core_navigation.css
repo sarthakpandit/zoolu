@@ -784,7 +784,8 @@ Icons */
 
 .selected .img_folder_on,
 .selected .img_unit,
-.pselected .img_folder_on {
+.pselected .img_folder_on,
+.img_folder_on_open {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -221px;
   position:relative;
   width:16px;

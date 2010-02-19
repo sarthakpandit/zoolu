@@ -108,7 +108,7 @@ class Form_Decorator_Tag extends Zend_Form_Decorator_Abstract {
     
     $objAllTags = $objModelTags->loadAllTags();
         
-    $output = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objAllTags, $element->tagIds);
+    $output = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $element->regionId, $objAllTags, $element->tagIds);
     
     return $output;
   }

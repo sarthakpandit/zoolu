@@ -55,7 +55,7 @@ class Form_Helper_FormDocumentFilter extends Zend_View_Helper_FormElement {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function formDocumentFilter($name, $objFilters = null, $attribs = null, $options = null, $objAllTags){
+  public function formDocumentFilter($name, $objFilters = null, $attribs = null, $options = null, $regionId = null, $objAllTags){
     $info = $this->_getInfo($name, $objFilters, $attribs);
     $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
@@ -115,8 +115,8 @@ class Form_Helper_FormDocumentFilter extends Zend_View_Helper_FormElement {
 	                  <ol>
 							        <li id="autocompletList_'.$this->view->escape($id).'" class="autocompletList input-text">
                         <label class="fieldtitle" for="'.$this->view->escape($id).'_Tags">Dokument filtern nach Tags</label>
-                        <input type="text" value="'.$this->view->escape(trim($strTagIds, ',')).'" onchange="myForm.loadFileFilterFieldContetn(\''.$this->view->escape($id).'\', \'documentFilter\');" id="'.$this->view->escape($id).'_Tags" name="'.$this->view->escape($name).'_Tags"'.$endTag.'
-							          <div id="'.$this->view->escape($id).'_autocompleter" class="autocompleter">
+                        <input type="text" value="'.$this->view->escape(trim($strTagIds, ',')).'" onchange="myForm.loadFileFilterFieldContent(\''.$this->view->escape($id).'\', \'documentFilter\');" id="'.$this->view->escape($id).'_Tags" name="'.$this->view->escape($name).'_Tags"'.$endTag.'
+							          <div id="'.$this->view->escape($id).'_Tags_autocompleter" class="autocompleter">
 							            <div class="default">Tags suchen</div>
 							            <ul class="feed">
 							              '.$strTags.'
@@ -124,11 +124,34 @@ class Form_Helper_FormDocumentFilter extends Zend_View_Helper_FormElement {
 							          </div>
 							        </li>
 							      </ol>
-						      </div>
+						      </div>';
+    /**
+     * is empty element
+     */
+    $blnIsEmpty = false;
+    if(array_key_exists('isEmptyField', $attribs) && $attribs['isEmptyField'] == 1){
+      $blnIsEmpty = true;  
+    }
+    
+    if($blnIsEmpty == true){
+      $strOutput .= '
+        <script type="text/javascript">//<![CDATA[ 
+          myForm.addTag("'.$this->view->escape($id).'_Tags","'.$this->view->escape($regionId).'",'.$this->getAllTagsForAutocompleter($objAllTags).');
+        //]]>
+        </script>';
+    }else{
+      $strOutput .= '
+        <script type="text/javascript">//<![CDATA[ 
+          myForm.initTag("'.$this->view->escape($id).'_Tags",'.$this->getAllTagsForAutocompleter($objAllTags).');         
+        //]]>
+        </script>';
+    } 
+    /*
                   <script type="text/javascript" language="javascript">
                     '.$this->view->escape($id).'_list = new FacebookList(\''.$this->view->escape($id).'_Tags\', \''.$this->view->escape($id).'_autocompleter\',{ regexSearch: true });
                     '.$this->getAllTagsForAutocompleter($objAllTags, $id).'
-                  </script>
+                  </script>*/
+    $strOutput .= '
                   <div style="display:none;">
                     <div>Ordner wählen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getDocumentFolderChooserOverlay(\''.$this->view->escape($id).'_FoldersContainer\', \''.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="'.$this->view->escape($id).'_FoldersContainer"></div>
@@ -151,17 +174,16 @@ class Form_Helper_FormDocumentFilter extends Zend_View_Helper_FormElement {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getAllTagsForAutocompleter($objAllTags, $strElementId){
+  public function getAllTagsForAutocompleter($objAllTags){
   	$core = Zend_Registry::get('Core');
     $strAllTags = '';
     if(count($objAllTags) > 0){
-      $strAllTags .= 'var '.$strElementId.'_json = [';
+      $strAllTags .= '[';
       foreach($objAllTags as $objTag){
         $strAllTags .= '{"caption":"'.htmlentities($objTag->title, ENT_COMPAT, $core->sysConfig->encoding->default).'","value":'.$objTag->id.'},';
       }
       $strAllTags = trim($strAllTags, ',');
-      $strAllTags .= '];';
-      $strAllTags .= $strElementId.'_json.each(function(t){'.$strElementId.'_list.autoFeed(t)});';
+      $strAllTags .= ']';      
     }
     return $strAllTags;
   }

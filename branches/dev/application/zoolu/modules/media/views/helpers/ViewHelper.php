@@ -272,36 +272,34 @@ class ViewHelper {
         $strDescription = 'Beschreibung hinzufügen...';
         $strTextareaCss = '';
       }
-      
-  	  if($row->idLanguages != ''){
-        $intLanguageId = $row->idLanguages; 
-      }else{
-        $intLanguageId = $this->core->sysConfig->languages->default->id;
-      }
-      
+            
       // build the element
       $strTags = '';
       
-      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php'; // FIXME : quick and dirty solution
-      $objModelTags = new Model_Tags(); 
-      $objModelTags->setLanguageId($intLanguageId);     
-      $objTags = $objModelTags->loadTypeTags('file', $row->id, 1); // TODO : version      
-      
-    	if(count($objTags) > 0){
-        foreach($objTags as $objTag){ 
-          $strTags .= '<li value="'.$objTag->id.'">'.htmlentities($objTag->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</li>';        
+      if($row->idLanguages != ''){
+        require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php'; // FIXME : quick and dirty solution
+        $objModelTags = new Model_Tags(); 
+        $objModelTags->setLanguageId($row->idLanguages);     
+        $objTags = $objModelTags->loadTypeTags('file', $row->id, 1); // TODO : version      
+        
+      	if(count($objTags) > 0){
+          foreach($objTags as $objTag){ 
+            $strTags .= '<li value="'.$objTag->id.'">'.htmlentities($objTag->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</li>';        
+          }
         }
       }
+      
+      $strLanguageSpecificChecked = ($row->isLanguageSpecific == 1) ? ' checked="checked"' : '';
        
   		$strOutput .= '<div class="mediacontainer">
                        <div class="mediaicon"><img width="32" height="32" src="'.$strFileIconSrc.'"/></div>
                        <div class="mediainfos">
-                         <div class="mediainfotitle"><input type="text" value="'.$row->title.'" id="FileTitle'.$row->id.'|||'.$intLanguageId.'" name="FileTitle'.$row->id.'|||'.$intLanguageId.'"/></div>
-                         <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription'.$row->id.'|||'.$intLanguageId.'" name="FileDescription'.$row->id.'|||'.$intLanguageId.'"'.$strTextareaCss.'>'.$strDescription.'</textarea></div>
+                         <div class="mediainfotitle"><input type="text" value="'.$row->title.'" id="FileTitle'.$row->id.'" name="FileTitle'.$row->id.'"/></div>
+                         <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription'.$row->id.'" name="FileDescription'.$row->id.'"'.$strTextareaCss.'>'.$strDescription.'</textarea></div>
                          <div class="mediainfotags">
                            <ol>        
-                             <li id="autocompletList" class="input-text">
-                               <input type="text" value="" id="FileTags'.$row->id.'" name="FileTags'.$row->id.'|||'.$intLanguageId.'"/>
+                             <li class="autocompletList input-text">
+                               <input type="text" value="" id="FileTags'.$row->id.'" name="FileTags'.$row->id.'"/>
                                <div id="FileTags'.$row->id.'_autocompleter" class="autocompleter">
                                  <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
                                  <ul class="feed">
@@ -315,6 +313,11 @@ class ViewHelper {
                              '.$this->getAllTagsForAutocompleter('FileTags'.$row->id).'
                              //]]>
                            </script>                           
+                         </div>
+                         <div class="mediainfolanguagespecific">
+                           <div class="field">
+                             <label for="FileIsLanguageSpecific'.$row->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$row->id.'" name="FileIsLanguageSpecific'.$row->id.'"> Medium ist sprachspezifisch</label>                            
+                           </div>
                          </div>
                          <div class="clear"></div>  
                        </div>

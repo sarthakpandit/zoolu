@@ -19,7 +19,10 @@ Massiveart.Media = Class.create({
     this.constOverlayGenContent = 'overlayGenContent';
     this.constOverlayMediaWrapper = 'overlayMediaWrapper';
     this.constList = 'list';
-    this.constThumb = 'thumb';    
+    this.constThumb = 'thumb';   
+    
+    this.lastFileId = 0;
+    this.lastFileIds = '';
     
     this.intFolderId = 0;
     this.currViewType = 0;
@@ -29,9 +32,9 @@ Massiveart.Media = Class.create({
                             '<input id="btnCancel" type="button" value="Alle abbrechen" disabled="disabled" />' +
                             '<div class="clear"></div>' +
                             '<div id="overlayMediaWrapperUpload" class="mediawrapper"></div>' +
-                            '<input type="hidden" id="UploadedFileIds" name="UploadedFileIds" value=""/>' +
+                            '<input type="hidden" id="UploadedFileIds" name="FileIds" value=""/>' +
                             '<div class="clear"></div>' +
-                            '<div class="buttoncancel" onclick="$(\'overlayUpload\').hide(); $(\'overlayBlack75\').hide(); return false;">Abbrechen</div>' +  
+                            '<div class="buttoncancel" onclick="myOverlay.close(); return false;">Abbrechen</div>' +  
                             '<div onclick="myMedia.updateUploadedFiles(); return false;" id="buttoneditsave">' +
                             '  <div class="button25leftOn"></div>' +
                             '  <div class="button25centerOn">' + 
@@ -351,7 +354,7 @@ Massiveart.Media = Class.create({
       /**
        * serialize upload form
        */
-      var serializedForm = $(this.formId ).serialize();
+      var serializedForm = $(this.formId).serialize();
       var strAjaxAction = $(this.formId).readAttribute('action') + '/save';
       
       new Ajax.Updater(this.constThumbContainer, strAjaxAction, {
@@ -359,8 +362,8 @@ Massiveart.Media = Class.create({
         evalScripts: true,
         onComplete: function() {       
           this.getMediaFolderContent(this.intFolderId);
-          $('overlayUpload').hide();
-          $('overlayBlack75').hide();  
+          //$('overlayUpload').hide();
+          //$('overlayBlack75').hide();  
         }.bind(this)
       });
     }   
@@ -371,20 +374,32 @@ Massiveart.Media = Class.create({
    * getFilesEditForm
    */
   getFilesEditForm: function(){
+    
+    var intLanguageId = -1;
+    if($('mediaFormLanguageId')) {
+      intLanguageId = $F('mediaFormLanguageId');
+    }
+    
     $(this.constOverlayGenContent).innerHTML = '';
     
     var strFileIds = this.getStringFileIds();
+    
+    if(strFileIds == '' && this.lastFileIds != ''){
+      strFileIds = this.lastFileIds;
+    }
    
     if(strFileIds != ''){
-	  myCore.addBusyClass(this.constOverlayGenContent);
+      this.lastFileId = 0;
+      this.lastFileIds = strFileIds;
+      myCore.addBusyClass(this.constOverlayGenContent);
       
       myCore.putCenter('overlayGenContentWrapper');
       
       $('overlayBlack75').show();
       $('overlayGenContentWrapper').show();
-      
+            
       new Ajax.Updater(this.constOverlayGenContent, '/zoolu/media/file/geteditform', {
-        parameters: { fileIds: strFileIds },
+        parameters: { fileIds: strFileIds, languageId: intLanguageId },
         evalScripts: true,
         onComplete: function() {
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
@@ -400,17 +415,29 @@ Massiveart.Media = Class.create({
    * getSingleFileEditForm
    */
   getSingleFileEditForm: function(fileId){
+    
+    var intLanguageId = -1;
+    if($('mediaFormLanguageId')) {
+      intLanguageId = $F('mediaFormLanguageId');
+    }
+    
     $(this.constOverlayGenContent).innerHTML = '';
    
+    if(typeof(fileId) == 'undefined' && this.lastFileId > 0){
+      fileId = this.lastFileId;
+    }
+    
     if(fileId != ''){
+      this.lastFileId = fileId;
+      this.lastFileIds = '';
       myCore.addBusyClass(this.constOverlayGenContent);      
       myCore.putCenter('overlayGenContentWrapper');
       
       $('overlayBlack75').show();
       $('overlayGenContentWrapper').show();
-      
+                  
       new Ajax.Updater(this.constOverlayGenContent, '/zoolu/media/file/geteditform', {
-        parameters: { fileIds: fileId },
+        parameters: { fileIds: fileId, languageId: intLanguageId },
         evalScripts: true,
         onComplete: function() {
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
@@ -445,13 +472,23 @@ Massiveart.Media = Class.create({
         parameters: serializedForm,
         onComplete: function(transport) {          
           this.getMediaFolderContent(this.intFolderId);
-          $('overlayBlack75').hide();
-          $('overlayGenContentWrapper').hide();
+          //$('overlayBlack75').hide();
+          //$('overlayGenContentWrapper').hide();
         }.bind(this)
-      });
-          
+      });          
+    }    
+  },
+  
+  /**
+   * changeEditFormLanguage
+   */
+  changeEditFormLanguage: function(newLanguageId){
+    $('mediaFormLanguageId').value = newLanguageId;
+    if(this.lastFileIds != '' && this.lastFileId == 0){
+      this.getFilesEditForm();
+    }else{
+      this.getSingleFileEditForm();
     }
-    
   },
   
   /**

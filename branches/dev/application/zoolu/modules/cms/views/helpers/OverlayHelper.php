@@ -78,13 +78,13 @@ class OverlayHelper {
         if($intFolderId == 0){
           $strOutput .= '<div id="olnavitem'.$row->id.'" class="olnavrootitem">
                            <div onclick="myOverlay.getNavItem('.$row->id.','.$viewtype.'); return false;" style="position:relative;">
-                             <div class="icon img_folder_off"></div>'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
+                             <div class="icon img_folder_on"></div>'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
                            </div>
                          </div>';
         }else{
           $strOutput .= '<div id="olnavitem'.$row->id.'" class="olnavchilditem">
                            <div onclick="myOverlay.getNavItem('.$row->id.','.$viewtype.'); return false;" style="position:relative;">
-                             <div class="icon img_folder_off"></div>'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
+                             <div class="icon img_folder_on"></div>'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
                            </div>
                          </div>';
         }
@@ -260,46 +260,58 @@ class OverlayHelper {
               <div class="oldoctopitemtitle bold">Titel</div>
               <div class="oldoctopright"></div>
               <div class="clear"></div>
-            </div>
-            <div class="oldocitemcontainer">';
+            </div>';
 
     /**
      * output of list rows (elements)
      */
     $strOutput = '';
-    foreach ($rowset as $row) {
-    	$strHidden = '';
-    	if(array_search($row->id, $arrFileIds) !== false){
-    	 $strHidden = ' style="display:none;"';
-    	}
-    	if($row->isImage){
-      	$strOutput .= '
-            <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToListArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
-              <div class="oldocleft"></div>
-              <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
-              <div class="oldocitemicon"><img width="32" height="32" id="Doc'.$row->id.'" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" alt="'.$row->description.'" width="16" height="16"/></div>
-              <div class="oldocitemtitle">'.$row->title.'</div>
-              <div class="oldocright"></div>
-              <div class="clear"></div>
-            </div>';
-      }else{
-        $strOutput .= '
-            <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToListArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
-              <div class="oldocleft"></div>
-              <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
-              <div class="oldocitemicon"><img width="32" height="32" id="Doc'.$row->id.'" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" alt="'.$row->description.'"/></div>
-              <div class="oldocitemtitle">'.$row->title.'</div>
-              <div class="oldocright"></div>
-              <div class="clear"></div>
-            </div>';
+    $blnIsImageView = false;
+    if(count($rowset) > 0){
+      $strOutput .= '  
+            <div class="oldocitemcontainer">';
+      foreach ($rowset as $row) {
+      	$strHidden = '';
+      	if(array_search($row->id, $arrFileIds) !== false){
+      	 $strHidden = ' style="display:none;"';
+      	}
+      	if($row->isImage){
+      	  $blnIsImageView = true;
+          if($row->xDim < $row->yDim){
+            $strMediaSize = 'height="32"';
+          }else{
+            $strMediaSize = 'width="32"';
+          }
+        	$strOutput .= '
+              <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToThumbArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
+                <div class="oldocleft"></div>
+                <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
+                <div class="oldocitemicon"><img '.$strMediaSize.' id="Doc'.$row->id.'" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" alt="'.$row->description.'"/></div>
+                <div class="oldocitemtitle">'.$row->title.'</div>
+                <div class="oldocright"></div>
+                <div class="clear"></div>
+              </div>';
+        }else{
+          $strOutput .= '
+              <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToListArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
+                <div class="oldocleft"></div>
+                <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
+                <div class="oldocitemicon"><img width="32" height="32" id="Doc'.$row->id.'" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" alt="'.$row->description.'"/></div>
+                <div class="oldocitemtitle">'.$row->title.'</div>
+                <div class="oldocright"></div>
+                <div class="clear"></div>
+              </div>';
+        }
       }
+      $strOutput .= '
+              <div class="clear"></div>
+            </div>';
     }
+    
     /**
      * list footer
      */
     $strOutputBottom = '
-              <div class="clear"></div>
-            </div>
             <div>
               <div class="oldocbottomleft"></div>
               <div class="oldocbottomcenter"></div>
@@ -311,7 +323,11 @@ class OverlayHelper {
      * return html output
      */
     if($strOutput != ''){
-    	return $strOutputTop.$strOutput.$strOutputBottom.'<div class="clear"></div>';
+      if($blnIsImageView){
+        return $strOutput.'<div class="clear"></div>';
+      }else{
+        return $strOutputTop.$strOutput.$strOutputBottom.'<div class="clear"></div>';
+      }    	
     }
   }
 

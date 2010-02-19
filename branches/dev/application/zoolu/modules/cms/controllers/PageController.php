@@ -410,6 +410,7 @@ class Cms_PageController extends AuthControllerAction {
          * get files
          */
         $this->getModelFiles();
+        $this->objModelFiles->setAlternativLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
         $objFiles = $this->objModelFiles->loadFilesByFilter($intRootLevelId, $arrTagIds, $arrFolderIds);
         $this->view->assign('objFiles', $objFiles);
       }else{

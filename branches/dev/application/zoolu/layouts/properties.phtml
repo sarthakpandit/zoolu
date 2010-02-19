@@ -118,7 +118,7 @@
     <!-- overlay transparent-->
     <div id="overlayTrans" class="overlaytrans" style="display:none;"></div>
     <!-- overlay black 75% -->
-    <div id="overlayBlack75" class="overlayblack75" style="display:none;"></div>
+    <div id="overlayBlack75" class="overlayblack75" style="display:none;" onclick="myOverlay.close();"></div>
 
     <!-- overlay for generated content -->
     <div id="overlayGenContentWrapper" class="overlaycontentwrapper" style="display:none;">
@@ -132,7 +132,7 @@
           <tr>
             <td class="headerleft"></td>
             <td class="headercenter handle">
-	            <div class="headerclose" onclick="$('overlayGenContentWrapper').hide(); return false;"></div>
+	            <div class="headerclose" onclick="myOverlay.close(); return false;"></div>
 	            <div class="clear"></div>
             </td>
             <td class="headerright"></td>

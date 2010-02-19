@@ -141,8 +141,8 @@ class Core {
         }
       }
       if($this->intLanguageId == null){
-        $this->intLanguageId = $this->core->sysConfig->languages->default->id;
-        $this->strLanguageCode = $this->core->sysConfig->languages->default->code;
+        $this->intLanguageId = $this->sysConfig->languages->default->id;
+        $this->strLanguageCode = $this->sysConfig->languages->default->code;
       }
     }else if(isset($this->objCoreSession->languageId)){
       $this->intLanguageId = $this->objCoreSession->languageId;

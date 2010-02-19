@@ -70,6 +70,8 @@ class GenericSubForm extends Zend_Form_SubForm {
 
   public static $FIELD_PROPERTIES_TO_IMPART = array('tagIds',
                                                     'isRegionTitle',
+                                                    'showDisplayOptions',
+                                                    'display_option',
                                                     'strLinkedPageId',
                                                     'intLinkedPageVersion',
                                                     'strLinkedPageTitle',
@@ -209,6 +211,16 @@ class GenericSubForm extends Zend_Form_SubForm {
         foreach($objField->getProperties() as $strProperty => $mixedPropertyValue){
           if(in_array($strProperty, self::$FIELD_PROPERTIES_TO_IMPART)){
             $this->getElement($objField->name.$strNameExtension)->$strProperty = $mixedPropertyValue;
+          }
+        }
+      }
+      
+      if(!is_null($intRegionInstanceId)){
+        if(count($objField->getInstanceProperties($intRegionInstanceId)) > 0){
+          foreach($objField->getInstanceProperties($intRegionInstanceId) as $strProperty => $mixedPropertyValue){
+            if(in_array($strProperty, self::$FIELD_PROPERTIES_TO_IMPART)){
+              $this->getElement($objField->name.$strNameExtension)->$strProperty = $mixedPropertyValue;
+            }
           }
         }
       }

@@ -439,6 +439,7 @@ class GenericSetup {
 	          $objGenField->isSaveField = $objFieldRegionTagData->isSaveField;
 	          $objGenField->isRegionTitle = $objFieldRegionTagData->isRegionTitle;
 	          $objGenField->isDependentOn = $objFieldRegionTagData->isDependentOn;
+	          $objGenField->showDisplayOptions = $objFieldRegionTagData->showDisplayOptions;
 	          $objGenField->copyValue = $objFieldRegionTagData->copyValue;
 	          $objGenField->decorator = $objFieldRegionTagData->decorator;
 	          $objGenField->isMultiply = $objFieldRegionTagData->isMultiply;
@@ -678,6 +679,13 @@ class GenericSetup {
                     }else if(array_key_exists($objField->name.'_'.$intRegionInstanceId, $arrValues)){
                       $objField->setInstanceValue($intRegionInstanceId, $arrValues[$objField->name.'_'.$intRegionInstanceId]);
                     }
+                    
+                    /**
+                     * is ther a display option for this field
+                     */
+                    if(array_key_exists($objField->name.'_'.$intRegionInstanceId.'_display_option', $arrValues)){
+                      $objField->setInstanceProperty($intRegionInstanceId, 'display_option', $arrValues[$objField->name.'_'.$intRegionInstanceId.'_display_option']);
+                    }
                   }
                 }
               }
@@ -692,6 +700,13 @@ class GenericSetup {
               $objField->setValue($this->getFileFilterObject($objField->name, $arrValues));
             }else if(array_key_exists($objField->name, $arrValues)){
               $objField->setValue($arrValues[$objField->name]);
+            }
+            
+            /**
+             * is ther a display option for this field
+             */
+            if(array_key_exists($objField->name.'_display_option', $arrValues)){
+              $objField->display_option = $arrValues[$objField->name.'_display_option'];
             }
           }
         }

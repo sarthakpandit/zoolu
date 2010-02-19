@@ -63,35 +63,6 @@ Media Main Toolbar */
   width:66px;
 }
 
-#mediaviewtypes .iconlistview_on,
-#mediaviewtypes .iconlistview {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat 0 -23px;
-  width:23px;
-  height:23px;
-  float:left;
-  cursor:default;
-}
-
-#mediaviewtypes .iconlistview_on {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat -23px -23px;
-  cursor:pointer;
-}
-
-#mediaviewtypes .iconthumbview_on,
-#mediaviewtypes .iconthumbview {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat 0 0;
-  width:23px;
-  height:23px;
-  float:left;
-  margin-right:10px;
-  cursor:default;
-}
-
-#mediaviewtypes .iconthumbview_on {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat -23px 0;
-  cursor:pointer;
-}
-
 /* --- media slider --- */
 #mediaslider {
   position:absolute; 
@@ -188,6 +159,7 @@ Media Content Thumb */
 .contenthead {
 	height:40px;
 	background-color:#999; /*#754480;*/
+	padding:0px;
 }
 
 .thumbcontainer{
@@ -335,6 +307,15 @@ input[disabled]{
 
 .mediainfotags {
    
+}
+
+.mediainfolanguagespecific {
+  border-top:1px solid #ccc;
+  padding:5px 0 8px 0;  
+}
+
+.mediainfolanguagespecific .field{
+  padding:0;
 }
 
 .mediacontainer input {

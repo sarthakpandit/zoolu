@@ -56,7 +56,7 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
    * @author Thomas Schedler <tsh@massiveart.com>  
    * @version 1.0
    */
-  public function formTag($name, $value = null, $attribs = null, $options = null, $objAllTags, $arrTagIds){
+  public function formTag($name, $value = null, $attribs = null, $options = null, $regionId = null, $objAllTags, $arrTagIds){
     $info = $this->_getInfo($name, $value, $attribs);
     $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
@@ -79,7 +79,7 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
         
     $strOutput = '<div>
 	                  <ol>        
-							        <li id="autocompletList'.$this->view->escape($id).'" class="autocompletList input-text">
+							        <li id="autocompletList_'.$this->view->escape($id).'" class="autocompletList input-text">
                         <input type="text" value="" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$this->_htmlAttribs($attribs).$endTag.'
 							          <div id="'.$this->view->escape($id).'_autocompleter" class="autocompleter">
 							            <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
@@ -89,11 +89,29 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
 							          </div>
 							        </li>
 							      </ol>
-						      </div>
-						      <script type="text/javascript" language="javascript">
-                    '.$this->view->escape($id).'_list = new FacebookList(\''.$this->view->escape($id).'\', \''.$this->view->escape($id).'_autocompleter\',{ newValues: true, regexSearch: true });
-                    '.$this->getAllTagsForAutocompleter($objAllTags, $id).'
-                  </script>';
+						      </div>';
+    
+    /**
+     * is empty element
+     */
+    $blnIsEmpty = false;
+    if(array_key_exists('isEmptyField', $attribs) && $attribs['isEmptyField'] == 1){
+      $blnIsEmpty = true;  
+    }
+    
+    if($blnIsEmpty == true){
+      $strOutput .= '
+        <script type="text/javascript">//<![CDATA[ 
+          myForm.addTag("'.$this->view->escape($id).'","'.$this->view->escape($regionId).'",'.$this->getAllTagsForAutocompleter($objAllTags).');
+        //]]>
+        </script>';
+    }else{
+      $strOutput .= '
+        <script type="text/javascript">//<![CDATA[ 
+          myForm.initTag("'.$this->view->escape($id).'",'.$this->getAllTagsForAutocompleter($objAllTags).');         
+        //]]>
+        </script>';
+    } 
         
     return $strOutput;
   }
@@ -105,17 +123,16 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getAllTagsForAutocompleter($objAllTags, $strElementId){
+  public function getAllTagsForAutocompleter($objAllTags){
   	$core = Zend_Registry::get('Core');
     $strAllTags = '';
     if(count($objAllTags) > 0){
-      $strAllTags .= 'var '.$strElementId.'_json = [';
+      $strAllTags .= '[';
       foreach($objAllTags as $objTag){
         $strAllTags .= '{"caption":"'.htmlentities($objTag->title, ENT_COMPAT, $core->sysConfig->encoding->default).'","value":'.$objTag->id.'},';
       }
       $strAllTags = trim($strAllTags, ',');
-      $strAllTags .= '];';
-      $strAllTags .= $strElementId.'_json.each(function(t){'.$strElementId.'_list.autoFeed(t)});';
+      $strAllTags .= ']';      
     }
     return $strAllTags;
   }

@@ -70,9 +70,19 @@ class Form_Helper_FormMedia extends Zend_View_Helper_FormElement {
                     <div class="mediatop">Medien hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddMediaOverlay(\'divMediaContainer_'.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="divMediaContainer_'.$this->view->escape($id).'"'.$disabled.' class="'.$attribs['class'].'">
                     </div>
-                    <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>
-                  </div>';
+                    <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>';
     
+    if($attribs['showDisplayOptions'] == 1){
+      $strDisplayOption = (isset($attribs['display_option'])) ? $attribs['display_option'] : '';
+      $strOutput .= '
+                    <div class="mediabottom">
+                      <select id="'.$this->view->escape($id).'_display_option" name="'.$this->view->escape($name).'_display_option">
+                        '.HtmlOutput::getOptionsOfSQL(Zend_Registry::get('Core'), "SELECT catCode.code AS VALUE, categoryTitles.title AS DISPLAY FROM categories AS tbl INNER JOIN categoryTitles ON categoryTitles.idCategories = tbl.id AND categoryTitles.idLanguages = ".$attribs['FormLanguageId']." INNER JOIN categoryCodes AS catCode ON catCode.idCategories = tbl.id AND catCode.idLanguages = 1 INNER JOIN categoryCodes ON categoryCodes.code = 'MEDIA_DISPLAY_OPTIONS' AND categoryCodes.idLanguages = 1, categories AS rootCat WHERE rootCat.id = categoryCodes.idCategories AND tbl.idRootCategory = rootCat.idRootCategory AND tbl.lft BETWEEN (rootCat.lft + 1) AND rootCat.rgt ORDER BY tbl.lft, categoryTitles.title", $strDisplayOption).'
+                      </select>
+                    </div>';
+    }
+    $strOutput .= '
+                  </div>';
     
     return $strOutput;
   }

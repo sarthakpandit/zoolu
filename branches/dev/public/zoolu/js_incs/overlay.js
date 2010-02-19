@@ -19,6 +19,10 @@ Massiveart.Overlay = Class.create({
     this.fieldId;
     
     this.activeTabId = null;
+    
+    this.areaViewType = new Object();
+    this.viewtype = null;
+    this.lastFolderId = null;
   },
   
   /**
@@ -35,12 +39,18 @@ Massiveart.Overlay = Class.create({
       var iconRemoveId = fieldId+'_remove'+id;
       
       // create new media item container
-      var mediaItemContainer = '<div id="'+fieldId+'_mediaitem_'+id+'" fileid="'+id+'" class="mediaitem" style="display:none; position:relative;">' + $(itemId).innerHTML + '</div>'; 
+      //var mediaItemContainer = '<div id="'+fieldId+'_mediaitem_'+id+'" fileid="'+id+'" class="mediaitem" style="display:none; position:relative;">' + $(itemId).innerHTML + '</div>';
+      var imgStr = $(itemId).down('img').up().innerHTML;
+      imgStr = imgStr.replace('icon32', 'thumb');
+      imgStr = imgStr.replace('="32"', '="100"');
+      imgStr = imgStr.replace('=32', '=100');
+      
+      var mediaItemContainer = '<div id="'+fieldId+'_mediaitem_'+id+'" fileid="'+id+'" class="mediaitem" style="display:none; position:relative;"><table><tbody><tr><td>' + imgStr + '</td></tr></tbody></table><div id="'+iconRemoveId+'" class="itemremovethumb" style="display:none;"></div></div>';
       if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
       new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
       
       if($('Img'+id)) $('Img'+id).removeAttribute('onclick');
-      if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
+      //if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
            
       // insert file id to hidden field - only 1 insert is possible
       if($(fieldId).value.indexOf('[' + id + ']') == -1){
@@ -136,7 +146,7 @@ Massiveart.Overlay = Class.create({
       }.bind(this));
 
       $('overlayGenContentWrapper').hide();
-      myForm.loadFileFilterFieldContetn(this.fieldId, 'documentFilter');
+      myForm.loadFileFilterFieldContent(this.fieldId, 'documentFilter');
     }
   },
   
@@ -295,14 +305,24 @@ Massiveart.Overlay = Class.create({
     var strAjaxAction = "";
     
     if(folderId != ''){
+      this.lastFolderId = folderId;
+      
       $(this.updateContainer).innerHTML = '';
       myCore.addBusyClass(this.updateContainer);
+      
+      /**
+       * overrule given view type
+       */
+      if(this.areaViewType[this.areaId]){
+        viewtype = this.areaViewType[this.areaId];
+      }      
       
       if(viewtype == 1){
         strAjaxAction = '/zoolu/cms/overlay/thumbview';
       } else {
         strAjaxAction = '/zoolu/cms/overlay/listview';
       }
+      
       var fieldname = this.areaId.substring(this.areaId.indexOf('_')+1);
       new Ajax.Updater(this.updateContainer, strAjaxAction, {
        parameters: { 
@@ -349,12 +369,10 @@ Massiveart.Overlay = Class.create({
       $('olsubnav'+itemId).toggle();
       
       if($('olnavitem'+itemId)){
-	      if($('olnavitem'+itemId).down('.icon').hasClassName('img_folder_off')){
-	        $('olnavitem'+itemId).down('.icon').removeClassName('img_folder_off');
-	        $('olnavitem'+itemId).down('.icon').addClassName('img_folder_on');
+	      if($('olnavitem'+itemId).down('.icon').hasClassName('img_folder_on_open')){
+	        $('olnavitem'+itemId).down('.icon').removeClassName('img_folder_on_open');	        
 	      }else{
-	        $('olnavitem'+itemId).down('.icon').removeClassName('img_folder_on');
-          $('olnavitem'+itemId).down('.icon').addClassName('img_folder_off');
+          $('olnavitem'+itemId).down('.icon').addClassName('img_folder_on_open');
 	      }
 	    }
     }         
@@ -379,6 +397,55 @@ Massiveart.Overlay = Class.create({
    */
   setActiveTab: function(tabId){
     this.activeTabId = tabId;    
-  }
+  },
   
+  /**
+   * setViewType
+   */
+  setViewType: function(viewType){
+    if(typeof(this.areaId) != 'undefined'){
+      this.areaViewType[this.areaId] = viewType;
+    }
+    
+    if(this.lastFolderId !== null) this.getMediaFolderContent(this.lastFolderId, viewType);
+    
+    this.updateViewTypeIcons(viewType)
+  },
+  
+  /**
+   * updateViewTypeIcons
+   */
+  updateViewTypeIcons: function(viewType){
+    
+    if(typeof(viewType) != 'undefined'){
+      if(this.areaViewType[this.areaId]){
+        viewType = this.areaViewType[this.areaId];
+      }else{
+        viewType = 1;
+      }
+    }
+    
+    if(viewType == 1){
+      $('divThumbView').removeClassName('iconthumbview_on');
+      $('divThumbView').addClassName('iconthumbview');      
+      $('divListView').removeClassName('iconlistview');
+      $('divListView').addClassName('iconlistview_on');      
+    }else{
+      $('divThumbView').removeClassName('iconthumbview');
+      $('divThumbView').addClassName('iconthumbview_on');     
+      $('divListView').removeClassName('iconlistview_on');
+      $('divListView').addClassName('iconlistview');      
+    }
+  },
+  
+  /**
+   * close
+   */
+  close: function(viewType){
+    if($('overlayGenContentWrapper')) $('overlayGenContentWrapper').hide();
+    if($('overlayUpload')) $('overlayUpload').hide();
+    if($('overlayBlack75')) $('overlayBlack75').hide();
+    if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';
+    this.lastFolderId = null;
+  }
 });
