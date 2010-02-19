@@ -47,13 +47,26 @@
 class Media_UploadController extends AuthControllerAction  {
 
 	protected $intParentId;
-
+  protected $intLanguageId;
+  
 	/**
    * @var Zend_File_Transfer_Adapter_Http
    */
-  protected $objUpload;
-
+  protected $objUpload;  
+  
   const UPLOAD_FIELD = 'Filedata';
+    
+  /**
+   * init
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   * @return void
+   */
+  public function init(){
+    parent::init();
+    $this->intLanguageId = ((int) $this->getRequest()->getParam("languageId") > 0) ? (int) $this->getRequest()->getParam("languageId") : $this->core->sysConfig->languages->default->id;
+    $this->view->assign('languageId', $this->intLanguageId);
+  }
 
   /**
    * indexAction
@@ -125,7 +138,8 @@ class Media_UploadController extends AuthControllerAction  {
 
     	$objFile = new File();
     	$objFile->setFileDatas($arrFormData);
-    	$objFile->saveFileData();
+    	$objFile->setLanguageId($this->intLanguageId);
+    	$objFile->updateFileData();
     }
 
     /**
@@ -149,6 +163,7 @@ class Media_UploadController extends AuthControllerAction  {
     $objImage->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private);
     $objImage->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->public);
     $objImage->setDefaultImageSizes($this->core->sysConfig->upload->images->default_sizes->default_size->toArray());
+    $objImage->setLanguageId($this->intLanguageId);
     $objImage->add(self::UPLOAD_FIELD);
 
   	$this->writeViewData($objImage);
@@ -168,6 +183,7 @@ class Media_UploadController extends AuthControllerAction  {
     $objFile->setParentTypeId($this->core->sysConfig->parent_types->folder);
     $objFile->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private);
     $objFile->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->public);
+    $objFile->setLanguageId($this->intLanguageId);
     $objFile->add(self::UPLOAD_FIELD);
 
     $this->writeViewData($objFile);
@@ -188,7 +204,7 @@ class Media_UploadController extends AuthControllerAction  {
     $this->view->assign('fileTitle', $objFile->getTitle());
     $this->view->assign('mimeType', $objFile->getMimeType());
     $this->view->assign('strDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : guiTexts
-    $this->view->assign('languageId', 1); // TODO : language
+    $this->view->assign('languageId', $this->intLanguageId);
   }
 }
 

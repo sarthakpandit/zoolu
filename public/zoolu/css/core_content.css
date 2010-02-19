@@ -192,11 +192,17 @@ Edit Mask */
   vertical-align:bottom;
 }
 
-.pagelanguagecontainer{
+.languagecontainer{
   position:absolute; 
   top:10px; 
   right:40px; 
   z-index:300;
+}
+
+.overlaycontent .languagecontainer{
+  position:relative; 
+  top:5px; 
+  right:0;
 }
 
 .formtitle,
@@ -480,6 +486,17 @@ Media Chooser Element */
   vertical-align:middle;
   margin:0 5px 0 2px;
   cursor:pointer;
+}
+
+.mediawrapper .mediabottom {
+  background-color:#e4e4e4;
+  padding:5px;
+  border:1px solid #ccc;
+  border-top:0px;
+}
+
+.mediawrapper .mediabottom select {
+  width:100%;
 }
 
 .mediawrapper .media {
@@ -1533,3 +1550,47 @@ video select */
 }
 /* @end, Navigation Definition */
 
+/* ----------------
+Media Toolbar */
+
+/* --- media view types - thumb, list --- */
+
+.contenthead {
+  height:23px;
+  background-color:#999; /*#754480;*/
+  padding:5px;
+}
+
+#mediaviewtypes {
+  float:right;
+  width:70px;
+}
+
+#mediaviewtypes .iconlistview_on,
+#mediaviewtypes .iconlistview {
+  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat 0 -23px;
+  width:23px;
+  height:23px;
+  float:left;
+  cursor:default;
+}
+
+#mediaviewtypes .iconlistview_on {
+  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat -23px -23px;
+  cursor:pointer;
+}
+
+#mediaviewtypes .iconthumbview_on,
+#mediaviewtypes .iconthumbview {
+  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat 0 0;
+  width:23px;
+  height:23px;
+  float:left;
+  margin-right:10px;
+  cursor:default;
+}
+
+#mediaviewtypes .iconthumbview_on {
+  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat -23px 0;
+  cursor:pointer;
+}

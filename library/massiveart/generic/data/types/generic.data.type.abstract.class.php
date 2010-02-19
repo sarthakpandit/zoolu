@@ -721,6 +721,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           $intFieldId = $objField->id;
 
           $strTmpFileIds = trim($objField->getInstanceValue($intRegionInstanceId), '[]');
+          $strDisplayOption = $objField->getInstanceProperty($intRegionInstanceId, 'display_option');
 
           $arrFileIds = array();
           $arrFileIds = explode('][', $strTmpFileIds);
@@ -733,6 +734,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
                                      'idLanguages'        => $this->setup->getLanguageId(),
                                      'idRegionInstances'  => $idRegionInstance,
                                      'idFiles'            => $intFileId,
+                                     'displayOption'      => $strDisplayOption,
                                      'idFields'           => $intFieldId);
 
                 $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFiles')->insert($arrFileData);
@@ -1102,7 +1104,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
             $objSelect = $objGenTable->select();
             $objSelect->setIntegrityCheck(false);
 
-            $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFiles', 'idRegionInstances'));
+            $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFiles', 'idRegionInstances', 'displayOption'));
             $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
             $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
             $objSelect->where('version = ?', $arrTypeProperties['Version']);
@@ -1118,6 +1120,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
                 if($intRegionPos !== false){
                   $strFileIds = $objRegion->getField($arrGenRowFormsData['name'])->getInstanceValue($intRegionPos).'['.$arrGenRowFormsData['idFiles'].']';
                   $objRegion->getField($arrGenRowFormsData['name'])->setInstanceValue($intRegionPos, $strFileIds);
+                  $objRegion->getField($arrGenRowFormsData['name'])->setInstanceProperty($intRegionPos, 'display_option', $arrGenRowFormsData['displayOption']);
                 }
               }
             }

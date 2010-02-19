@@ -4,15 +4,25 @@
   $objHelper = new ViewHelper();
 
 ?>
+<?php if($this->languageOptions != '') : ?>
+<div style="float:right;">
+  <div class="languagecontainer">
+    <select id="selectMediaFormLanguageId" onchange="myMedia.changeEditFormLanguage(this.value); return false;">
+      <?php echo $this->languageOptions; ?>
+    </select>
+  </div>
+</div>
+<?php endif; ?>
 <div class="oltitle">Medien bearbeiten</div>
-<div class="spacer1"></div>
+<div class="clear spacer1"></div>
 <form id="editForm" name="editForm" method="post" action="<?php echo $this->strEditFormAction; ?>" onsubmit="return false;">
+  <input type="hidden" id="mediaFormLanguageId" value="<?php echo $this->languageId; ?>" name="languageId"/>
   <div id="overlayMediaWrapper" class="mediawrapper">
 	  <?php echo $objHelper->getEditForm($this->objFiles); ?>
-	  <input type="hidden" name="EditFileIds" id="EditFileIds" value="<?php echo $this->strFileIds; ?>"/>
+	  <input type="hidden" name="FileIds" id="EditFileIds" value="<?php echo $this->strFileIds; ?>"/>
   </div>
   <div class="clear"></div>
-  <div class="buttoncancel" onclick="$('overlayGenContentWrapper').hide(); $('overlayBlack75').hide(); return false;">Abbrechen</div>  
+  <div class="buttoncancel" onclick="myOverlay.close(); return false;">Abbrechen</div>  
   <div onclick="myMedia.editFiles();" id="buttoneditsave">
     <div class="button25leftOn"></div>
     <div class="button25centerOn">

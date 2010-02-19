@@ -58,10 +58,14 @@ class Media_IndexController extends AuthControllerAction {
     $objLayout->assign('navigation', $this->view->action('index', 'Navigation', 'media'));
     $objLayout->assign('userinfo', $this->view->action('userinfo', 'User', 'users'));
     $objLayout->assign('modules', $this->view->action('navtop', 'Modules', 'core', array('module' => $this->core->sysConfig->modules->media)));
-
+    
     $this->view->assign('jsVersion', $this->core->sysConfig->version->js);
     $this->view->assign('cssVersion', $this->core->sysConfig->version->css);
     $this->view->assign('module', $this->core->sysConfig->modules->media);
+    
+    $this->view->assign('languageId', $this->core->sysConfig->languages->default->id);
+    $this->view->assign('languageDefaultId', $this->core->sysConfig->languages->default->id);
+    $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->core->sysConfig->languages->default->id));
   }
 }
 

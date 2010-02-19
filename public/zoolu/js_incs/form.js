@@ -33,6 +33,9 @@ Massiveart.Form = Class.create({
     this.regionTitleObj = new Object;
     this.titleArray = [];
     
+    this.regionTagObj = new Object;
+    this.tagArray = [];
+    
     this.blnShowFormAlert = true;
     this.selectNavigationItemNow = false;
     
@@ -197,18 +200,18 @@ Massiveart.Form = Class.create({
       $$('#genFormContainer .'+type).each(function(elDiv){
         if($(elDiv.id)){
           var fileFieldId = elDiv.id.substring(elDiv.id.indexOf('_')+1);
-          this.loadFileFilterFieldContetn(fileFieldId, type);
+          this.loadFileFilterFieldContent(fileFieldId, type);
         }
       }.bind(this));
     }
   },
   
   /**
-   * loadFileFilterFieldContetn
+   * loadFileFilterFieldContent
    * @param string fieldId
    * @param string type
    */
-  loadFileFilterFieldContetn: function(fileFieldId, type){
+  loadFileFilterFieldContent: function(fileFieldId, type){
     var containerId = type + 'Container_' + fileFieldId;
 
     if($(containerId)){
@@ -229,6 +232,7 @@ Massiveart.Form = Class.create({
               folderIds: $F(fileFieldId + '_Folders'),
               rootLevelId: $F(fileFieldId + '_RootLevel'),
               fileFieldId: fileFieldId,
+              languageId: $F('languageId'),
               viewtype: viewType
             },
             evalScripts: true,
@@ -297,6 +301,7 @@ Massiveart.Form = Class.create({
         onComplete: function(){
           myCore.putOverlayCenter('overlayGenContentWrapper');
           myOverlay.areaId = areaId;
+          myOverlay.updateViewTypeIcons();
         } 
       });
     }    
@@ -315,6 +320,7 @@ Massiveart.Form = Class.create({
         onComplete: function(){
           myCore.putOverlayCenter('overlayGenContentWrapper');
           myOverlay.areaId = areaId;
+          myOverlay.updateViewTypeIcons();
         } 
       });
     }    
@@ -606,6 +612,12 @@ Massiveart.Form = Class.create({
         this.initRegionTitleObserver(elementId.gsub(/REPLACE_n/, widgetId), regionId+'_'+widgetId);
       }.bind(this));
     }
+    
+    if(this.regionTagObj[regionId]){
+      this.regionTagObj[regionId].each(function(tagElement){
+        this.initTag(tagElement.elementId.gsub(/REPLACE_n/, widgetId), tagElement.autocompleteFeed);
+      }.bind(this));
+    }
             
     $('Region_'+regionId+'_Instances').value =  $('Region_'+regionId+'_Instances').value + '['+widgetId+']';
     
@@ -771,6 +783,35 @@ Massiveart.Form = Class.create({
       if(this.regionTitleObj[regionId].indexOf(elementId) == -1)  this.regionTitleObj[regionId].push(elementId);      
     }else{
       if(this.titleArray.indexOf(elementId) == -1) this.titleArray.push(elementId);
+    }
+  },
+  
+  /**
+   * addTag
+   */
+  addTag: function(elementId, regionId, autocompleteFeed){
+    tagElement = new Object;
+    tagElement.elementId = elementId;
+    tagElement.autocompleteFeed = autocompleteFeed;
+    
+    //check if regionId is assigned 
+    if(typeof(regionId) != 'undefined'){    
+      if(!this.regionTagObj[regionId]){
+        this.regionTagObj[regionId] = []
+      }
+      if(this.regionTagObj[regionId].indexOf(elementId) == -1) this.regionTagObj[regionId].push(tagElement);
+    }else{
+      if(this.tagArray.indexOf(elementId) == -1) this.tagArray.push(tagElement);
+    }
+  },
+  
+  /**
+   * initTag
+   */
+  initTag: function(elementId, autocompleteFeed){
+    if($(elementId) && $(elementId+'_autocompleter')){
+      var tagList = new FacebookList(elementId, elementId+'_autocompleter',{ regexSearch: true });
+      autocompleteFeed.each(function(t){tagList.autoFeed(t)});
     }
   },
   

@@ -424,6 +424,7 @@ class Page {
         }
 
         $this->getModelFiles();
+        $this->objModelFiles->setAlternativLanguageId($this->core->sysConfig->languages->default->id);
         if($intRootLevelId > 0 || count($arrFolderIds) > 0){
           $objFiles = $this->objModelFiles->loadFilesByFilter($intRootLevelId, $arrTagIds, $arrFolderIds);
         }

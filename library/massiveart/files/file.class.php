@@ -64,8 +64,8 @@ class File {
   /**
    * direcory owner and group
    */
-  const DIRECTORY_OWNER = 'apache';
-  const DIRECTORY_GROUP = 'apache';
+  private static $DIRECTORY_OWNER;
+  private static $DIRECTORY_GROUP;
 
   /**
    * @var Model_Files
@@ -101,7 +101,7 @@ class File {
   protected $intUserId;
   protected $strTitle;
   protected $dblSize;
-
+  
   protected $intXDim;
   protected $intYDim;
   protected $strMimeType;
@@ -115,6 +115,14 @@ class File {
 
   protected $arrFileDatas = array();
   
+  protected $intLanguageId;
+  
+  /**
+   * if render all images from cli, set owner and group of new directories 
+   * to the web server executing user and group, else you will get privilege errors
+   */
+  protected $blnSetOwnerAndGroup = false;
+  
   /**
    * for tags
    */
@@ -123,6 +131,8 @@ class File {
 
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
+    self::$DIRECTORY_OWNER = $this->core->sysConfig->server->executing->user;
+    self::$DIRECTORY_GROUP = $this->core->sysConfig->server->executing->group;
   }
 
   /**
@@ -190,7 +200,7 @@ class File {
       if(count($arrFileData) > 0){
         $arrUploadedFileIds = $arrFileData;    
       }else{
-        $strTmpUploadedFileIds = trim($this->arrFileDatas['UploadedFileIds'], '[]');
+        $strTmpUploadedFileIds = trim($this->arrFileDatas['FileIds'], '[]');
         $arrUploadedFileIds = split('\]\[', $strTmpUploadedFileIds);  
       }
 
@@ -198,12 +208,15 @@ class File {
         foreach($arrUploadedFileIds as $intUploadedFileId){
           if($intUploadedFileId != ''){
 
-          	$intLanguageId = 1; // TODO : language
-          	$strFileTitle = $this->arrFileDatas['FileTitle'.$intUploadedFileId.'|||'.$intLanguageId];
-          	$strFileDescription = $this->arrFileDatas['FileDescription'.$intUploadedFileId.'|||'.$intLanguageId];
+          	$strFileTitle = $this->arrFileDatas['FileTitle'.$intUploadedFileId];
+          	$strFileDescription = $this->arrFileDatas['FileDescription'.$intUploadedFileId];
+          	$intFileIsLanguageSpecific = (int) (isset($this->arrFileDatas['FileIsLanguageSpecific'.$intUploadedFileId])) ? $this->arrFileDatas['FileIsLanguageSpecific'.$intUploadedFileId] : 0;
+
+            $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('id = ?', $intUploadedFileId);
+            $this->objModelFile->getFileTable()->update(array('isLanguageSpecific' => $intFileIsLanguageSpecific), $strWhere);
 
           	$arrInsertData = array('idFiles'       => $intUploadedFileId,
-			                             'idLanguages'   => $intLanguageId,
+			                             'idLanguages'   => $this->intLanguageId,
 			                             'title'         => $strFileTitle,
 			                             'description'   => $strFileDescription);
 
@@ -213,7 +226,7 @@ class File {
              * save tags (quick&dirty solution)
              */
             $this->arrNewTags = array();
-            $this->arrNewTags = explode(',', trim($this->arrFileDatas['FileTags'.$intUploadedFileId.'|||'.$intLanguageId]));
+            $this->arrNewTags = explode(',', trim($this->arrFileDatas['FileTags'.$intUploadedFileId]));
             
             $this->validateTags();
             
@@ -242,7 +255,7 @@ class File {
       $this->getModelFile();
       $this->getModelTags();
 
-      $strTmpEditFileIds = trim($this->arrFileDatas['EditFileIds'], '[]');
+      $strTmpEditFileIds = trim($this->arrFileDatas['FileIds'], '[]');
       $arrEditFileIds = array();
       $arrEditFileIds = split('\]\[', $strTmpEditFileIds);
 
@@ -250,28 +263,41 @@ class File {
         foreach($arrEditFileIds as $intEditFileId){
           if($intEditFileId != ''){
 
-            $intLanguageId = 1; // TODO : language
-            $strFileTitle = $this->arrFileDatas['FileTitle'.$intEditFileId.'|||'.$intLanguageId];
-            $strFileDescription = $this->arrFileDatas['FileDescription'.$intEditFileId.'|||'.$intLanguageId];
-
-            $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('idFiles = ?', $intEditFileId);
-            $strWhere .= $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $intLanguageId);
-
-            $intNumOfEffectedRows = $this->objModelFile->getFileTitleTable()->update(array('title' => $strFileTitle, 'description' => $strFileDescription, 'changed' => date('Y-m-d H:i:s')), $strWhere);
-          
-            if($intNumOfEffectedRows == 0){
-              $this->saveFileData($arrEditFileIds);   
-            }else{              
-              /**
-               * save tags (quick&dirty solution)
-               */
-              $this->arrNewTags = array();
-              $this->arrNewTags = explode(',', trim($this->arrFileDatas['FileTags'.$intEditFileId.'|||'.$intLanguageId]));
+            $strFileTitle = $this->arrFileDatas['FileTitle'.$intEditFileId];
+            $strFileDescription = $this->arrFileDatas['FileDescription'.$intEditFileId];
               
-              $this->validateTags();
-              
-              $this->objModelTags->deletTypeTags('file', $intEditFileId, 1); // TODO : version
-              $this->objModelTags->addTypeTags('file', $this->arrNewTagIds, $intEditFileId, 1); // TODO : version
+            if($strFileTitle != '' || $strFileDescription != ''){
+
+              $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('idFiles = ?', $intEditFileId);
+              $strWhere .= $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
+              $intNumOfEffectedRows = $this->objModelFile->getFileTitleTable()->update(array('title' => $strFileTitle, 'description' => $strFileDescription, 'changed' => date('Y-m-d H:i:s')), $strWhere);
+            
+              if($intNumOfEffectedRows == 0){
+                $this->saveFileData(array($intEditFileId));   
+              }else{   
+                /**
+                 * update is language specific file
+                 */
+                $intFileIsLanguageSpecific = (int) (isset($this->arrFileDatas['FileIsLanguageSpecific'.$intEditFileId])) ? $this->arrFileDatas['FileIsLanguageSpecific'.$intEditFileId] : 0;
+
+                $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('id = ?', $intEditFileId);
+                $this->objModelFile->getFileTable()->update(array('isLanguageSpecific' => $intFileIsLanguageSpecific), $strWhere);
+                            
+                /**
+                 * save tags (quick&dirty solution)
+                 */
+                $this->arrNewTags = array();
+                $this->arrNewTags = explode(',', trim($this->arrFileDatas['FileTags'.$intEditFileId]));
+                
+                $this->validateTags();
+                
+                $this->objModelTags->deletTypeTags('file', $intEditFileId, 1); // TODO : version
+                $this->objModelTags->addTypeTags('file', $this->arrNewTagIds, $intEditFileId, 1); // TODO : version
+              }
+            }else{
+              $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('idFiles = ?', $intEditFileId);
+              $strWhere .= $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
+              $this->objModelFile->getFileTitleTable()->delete($strWhere);
             }
           }
         }
@@ -403,8 +429,10 @@ class File {
 
     if (!is_dir($this->getUploadPath())) {
       mkdir($this->getUploadPath(), 0775, true);
-      chown($this->getUploadPath(), self::DIRECTORY_OWNER);
-      chgrp($this->getUploadPath(), self::DIRECTORY_GROUP);
+      if($this->blnSetOwnerAndGroup === true && self::$DIRECTORY_OWNER !== null && self::$DIRECTORY_GROUP !== null){
+        chown($this->getUploadPath(), self::$DIRECTORY_OWNER);
+        chgrp($this->getUploadPath(), self::$DIRECTORY_GROUP);
+      }
     }
   }
 
@@ -418,8 +446,10 @@ class File {
 
     if (!is_dir($this->getPublicFilePath().$strPathAddon)){
       mkdir($this->getPublicFilePath().$strPathAddon, 0775, true);
-      chown($this->getPublicFilePath().$strPathAddon, self::DIRECTORY_OWNER);
-      chgrp($this->getPublicFilePath().$strPathAddon, self::DIRECTORY_GROUP);
+      if($this->blnSetOwnerAndGroup === true && self::$DIRECTORY_OWNER !== null && self::$DIRECTORY_GROUP !== null){
+        chown($this->getPublicFilePath().$strPathAddon, self::$DIRECTORY_OWNER);
+        chgrp($this->getPublicFilePath().$strPathAddon, self::$DIRECTORY_GROUP);
+      }
     }
   }
   
@@ -486,6 +516,7 @@ class File {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFile = new Model_Files();
+      $this->objModelFile->setLanguageId($this->intLanguageId);
     }
 
     return $this->objModelFile;
@@ -506,7 +537,7 @@ class File {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Utilities.php';
       $this->objModelUtilities = new Model_Utilities();
-      $this->objModelUtilities->setLanguageId($this->core->intLanguageId);
+      $this->objModelUtilities->setLanguageId($this->intLanguageId);
     }
 
     return $this->objModelUtilities;
@@ -527,7 +558,7 @@ class File {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php';
       $this->objModelTags = new Model_Tags();
-      $this->objModelTags->setLanguageId($this->core->intLanguageId);
+      $this->objModelTags->setLanguageId($this->intLanguageId);
     }
 
     return $this->objModelTags;
@@ -860,6 +891,22 @@ class File {
   public function setMimeType($strMimeType){
     $this->strMimeType = $strMimeType;
   }
+  
+  /**
+   * setLanguageId
+   * @param integer $intLanguageId
+   */
+  public function setLanguageId($intLanguageId){
+    $this->intLanguageId = $intLanguageId;  
+  }
+  
+  /**
+   * getLanguageId
+   * @param integer $intLanguageId
+   */
+  public function getLanguageId(){
+    return $this->intLanguageId;  
+  } 
 }
 
 ?>

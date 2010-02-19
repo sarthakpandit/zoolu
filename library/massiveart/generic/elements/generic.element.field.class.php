@@ -60,6 +60,12 @@ class GenericElementField extends GenericElementAbstract {
   protected $instanceValues = array();
   
   /**
+   * properties of the element instance
+   * @var array
+   */
+  protected $arrInstanceProperties = array();
+  
+  /**
    * setValue
    * @param mixed $value
    */
@@ -95,6 +101,55 @@ class GenericElementField extends GenericElementAbstract {
     }else{
       return $this->defaultValue;
     }
+  }
+
+  /**
+   * setInstanceProperty
+   * @param integer $intInstanceId
+   * @param string $strName
+   * @param mixed $mixedValue
+   */
+  public function setInstanceProperty($intInstanceId, $strName, $mixedValue) {
+    if (!array_key_exists($intInstanceId, $this->arrInstanceProperties)) {
+      $this->arrInstanceProperties[$intInstanceId] = array();
+    }
+    $this->arrInstanceProperties[$intInstanceId][$strName] = $mixedValue;
+  }
+
+  /**
+   * getInstanceProperty
+   * @param integer $intInstanceId
+   * @param string $strName
+   * @return mixed $mixedValue
+   */
+  public function getInstanceProperty($intInstanceId, $strName) {
+    if (array_key_exists($intInstanceId, $this->arrInstanceProperties)) {
+      if (array_key_exists($strName, $this->arrInstanceProperties[$intInstanceId])) {
+        return $this->arrInstanceProperties[$intInstanceId][$strName];
+      }
+      return null;
+    }
+    return null;
+  }
+
+  /**
+   * getProperties
+   * @return array
+   */
+  public function getProperties() {
+    return $this->arrProperties;
+  }
+
+  /**
+   * getProperties
+   * @param integer $intInstanceId
+   * @return array
+   */
+  public function getInstanceProperties($intInstanceId) {
+    if (array_key_exists($intInstanceId, $this->arrInstanceProperties)) {
+      return $this->arrInstanceProperties[$intInstanceId];
+    }
+    return array();
   }
 }
 

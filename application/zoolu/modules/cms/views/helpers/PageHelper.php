@@ -101,7 +101,7 @@ class PageHelper {
 						               <div class="oldocleft"></div>
 	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
 						               <div class="oldocitemicon"><img width="32" height="32" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
-						               <div class="oldocitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+						               <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
 						               <div class="clear"></div>
 						             </div>';
       	}else{
@@ -109,7 +109,7 @@ class PageHelper {
                            <div class="oldocleft"></div>
       	                   <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
                            <div class="oldocitemicon"><img width="32" height="32" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
-                           <div class="oldocitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
+                           <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
                            <div class="clear"></div>
                          </div>';		
       	}

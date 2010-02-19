@@ -108,7 +108,7 @@ class Form_Decorator_DocumentFilter extends Zend_Form_Decorator_Abstract {
 
     $objAllTags = $objModelTags->loadAllTags();
 
-    $output = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objAllTags);
+    $output = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $element->regionId, $objAllTags);
     
     return $output;
   }

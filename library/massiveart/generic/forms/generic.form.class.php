@@ -73,6 +73,8 @@ class GenericForm extends Zend_Form {
 
   public static $FIELD_PROPERTIES_TO_IMPART = array('tagIds',
                                                     'isRegionTitle',
+                                                    'showDisplayOptions',
+                                                    'display_option',
                                                     'strLinkedPageId',
                                                     'intLinkedPageVersion',
                                                     'strLinkedPageTitle',

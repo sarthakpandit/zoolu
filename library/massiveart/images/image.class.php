@@ -156,6 +156,8 @@ class Image extends File {
   public function renderAllImages(){
   	$this->core->logger->debug('massiveart.images.Image->renderAllImages()');
   	try{
+  	  $this->blnSetOwnerAndGroup = true;
+  	    	  
       $this->getModelFile();
       
   		/**

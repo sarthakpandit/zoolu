@@ -87,8 +87,6 @@ class Form_Helper_FormTexteditor extends Zend_View_Helper_FormElement {
         </script>';
     }
     
-    
-    
     return $strOutput;
   }
 }

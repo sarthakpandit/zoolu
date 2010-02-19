@@ -11,12 +11,12 @@
     <?php endif; ?>
   </div>
   <div class="mediainfos">
-    <div class="mediainfotitle"><input id="FileTitle<?php echo $this->fileId; ?>|||<?php echo $this->languageId; ?>" name="FileTitle<?php echo $this->fileId; ?>|||<?php echo $this->languageId; ?>" type="text" value="<?php echo $this->fileTitle; ?>"/></div>
-    <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription<?php echo $this->fileId; ?>|||<?php echo $this->languageId; ?>" name="FileDescription<?php echo $this->fileId; ?>|||<?php echo $this->languageId; ?>"><?php echo $this->strDefaultDescription; ?></textarea></div>
+    <div class="mediainfotitle"><input id="FileTitle<?php echo $this->fileId; ?>" name="FileTitle<?php echo $this->fileId; ?>" type="text" value="<?php echo $this->fileTitle; ?>"/></div>
+    <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription<?php echo $this->fileId; ?>" name="FileDescription<?php echo $this->fileId; ?>"><?php echo $this->strDefaultDescription; ?></textarea></div>
     <div class="mediainfotags">
       <ol>        
-       <li id="autocompletList" class="input-text">
-         <input type="text" value="" id="FileTags<?php echo $this->fileId; ?>" name="FileTags<?php echo $this->fileId; ?>|||<?php echo $this->languageId; ?>"/>
+       <li class="autocompletList input-text">
+         <input type="text" value="" id="FileTags<?php echo $this->fileId; ?>" name="FileTags<?php echo $this->fileId; ?>"/>
          <div id="FileTags<?php echo $this->fileId; ?>_autocompleter" class="autocompleter">
            <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
            <ul class="feed"></ul>

@@ -77,6 +77,7 @@ class Cms_OverlayController extends AuthControllerAction {
   public function mediaAction(){
     $this->core->logger->debug('cms->controllers->OverlayController->mediaAction()');
     $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->images);
+    $this->view->assign('rootLevelType', $this->core->sysConfig->root_level_types->images);
     $this->view->assign('overlaytitle', 'Medien zuweisen');
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->thumb);
     $this->renderScript('overlay/overlay.phtml');
@@ -90,6 +91,7 @@ class Cms_OverlayController extends AuthControllerAction {
   public function documentAction(){
     $this->core->logger->debug('cms->controllers->OverlayController->documentAction()');
     $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->documents);
+    $this->view->assign('rootLevelType', $this->core->sysConfig->root_level_types->documents);
     $this->view->assign('overlaytitle', 'Dokumente zuweisen');
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
     $this->renderScript('overlay/overlay.phtml');

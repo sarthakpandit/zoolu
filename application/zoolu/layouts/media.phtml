@@ -185,7 +185,7 @@
     <!-- overlay transparent-->
     <div id="overlayTrans" class="overlaytrans" style="display:none;"></div>
     <!-- overlay black 75% -->
-    <div id="overlayBlack75" class="overlayblack75" style="display:none;"></div>
+    <div id="overlayBlack75" class="overlayblack75" style="display:none;" onclick="myOverlay.close();"></div>
 
     <!-- overlay for generated content -->
     <div id="overlayGenContentWrapper" class="overlaycontentwrapper" style="display:none;">
@@ -199,7 +199,7 @@
           <tr>
             <td class="headerleft"></td>
             <td class="headercenter handle">
-              <div class="headerclose" onclick="$('overlayGenContentWrapper').hide(); $('overlayBlack75').hide(); return false;"></div>
+              <div class="headerclose" onclick="myOverlay.close(); return false;"></div>
               <div class="clear"></div>
             </td>
             <td class="headerright"></td>
@@ -257,7 +257,7 @@
           <tr>
             <td class="headerleft"></td>
             <td class="headercenter handle">
-              <div class="headerclose" onclick="$('overlayUpload').hide(); $('overlayBlack75').hide(); return false;"></div>
+              <div class="headerclose" onclick="myOverlay.close(); return false;"></div>
               <div class="clear"></div>
             </td>
             <td class="headerright"></td>
@@ -271,6 +271,7 @@
                 <div class="oltitle">Medien hochladen</div>
                 <div class="spacer1"></div>
                 <form id="uploadForm" action="/zoolu/media/upload" method="post" enctype="multipart/form-data">
+                  <input type="hidden" id="mediaFormLanguageId" value="<?php echo $this->languageId; ?>" name="languageId"/>
                   <div id="divSWFUploadUI"><!-- myMedia.constSWFUploadUI --></div>
                   <noscript style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px;">
                     We're sorry. SWFUpload could not load. You must have JavaScript enabled to enjoy SWFUpload.
@@ -306,7 +307,7 @@
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
     
     <script type="text/javascript">//<![CDATA[
-      var myCore, myMedia, myFolder, myNavigation, myForm;
+      var myCore, myMedia, myFolder, myNavigation, myForm, myOverlay;
      
       var swfu;
       var sessionId = '<?php echo session_id(); ?>';
@@ -320,6 +321,7 @@
         myFolder = new Massiveart.Folder();
         myNavigation = new Massiveart.Navigation.Media();
         myForm = new Massiveart.Form();
+        myOverlay = new Massiveart.Overlay();
 
         myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('Media'); ?>';
