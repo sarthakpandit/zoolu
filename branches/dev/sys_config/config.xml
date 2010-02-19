@@ -27,6 +27,14 @@
     <language>de</language>
     <location>de_AT</location>
     
+    <!-- Standard web-server user & group -->
+    <server>
+      <executing>
+        <user>apache</user>
+        <group>apache</group>
+      </executing>
+    </server>
+    
     <!-- LANGUAGES -->
     <languages>
       <default>
