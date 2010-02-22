@@ -125,15 +125,14 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
    */
   public function getAllTagsForAutocompleter($objAllTags){
   	$core = Zend_Registry::get('Core');
-    $strAllTags = '';
+    $strAllTags = '[';
     if(count($objAllTags) > 0){
-      $strAllTags .= '[';
       foreach($objAllTags as $objTag){
         $strAllTags .= '{"caption":"'.htmlentities($objTag->title, ENT_COMPAT, $core->sysConfig->encoding->default).'","value":'.$objTag->id.'},';
       }
       $strAllTags = trim($strAllTags, ',');
-      $strAllTags .= ']';      
     }
+    $strAllTags .= ']';
     return $strAllTags;
   }
 }
