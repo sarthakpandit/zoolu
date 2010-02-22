@@ -159,6 +159,11 @@ Massiveart.Form = Class.create({
         strViewType = 1; // viewtypes->thumb constant of config.xml
       }
       
+      var languageId = null;
+      if($('languageId')) {
+        languageId = $F('languageId');
+      }
+      
       $$('#genFormContainer .'+strType).each(function(elDiv){    
         if($(elDiv.id)){          
           var fileFieldId = elDiv.id.substring(elDiv.id.indexOf('_')+1);
@@ -168,7 +173,8 @@ Massiveart.Form = Class.create({
 	          parameters: { 
 	            fileIds: $(fileFieldId).value,
 	            fileFieldId: fileFieldId,
-	            viewtype: strViewType  
+	            viewtype: strViewType,
+	            languageId: languageId
 	          },
 	          evalScripts: true,
 	          onComplete: function(){

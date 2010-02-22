@@ -284,6 +284,10 @@ input[disabled]{
   height:200px;
 }
 
+.busy.mediawrapper div, .busy.mediawrapper span{
+  visibility:hidden;
+}
+
 .mediacontainer {
   padding:10px;
 }

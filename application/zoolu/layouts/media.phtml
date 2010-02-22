@@ -271,7 +271,16 @@
                 <div class="oltitle">Medien hochladen</div>
                 <div class="spacer1"></div>
                 <form id="uploadForm" action="/zoolu/media/upload" method="post" enctype="multipart/form-data">
-                  <input type="hidden" id="mediaFormLanguageId" value="<?php echo $this->languageId; ?>" name="languageId"/>
+                  <input type="hidden" id="addMediaFormLanguageId" value="<?php echo $this->languageId; ?>" name="languageId"/>
+                  <?php if($this->languageOptions != '') : ?>
+                  <div style="position:absolute; right:15px; top:28px;">
+                    <div class="languagecontainer">
+                      <select id="selectMediaFormLanguageId" onchange="myMedia.changeAddFormLanguage(this.value); return false;">
+                        <?php echo $this->languageOptions; ?>
+                      </select>
+                    </div>
+                  </div>
+                  <?php endif; ?>
                   <div id="divSWFUploadUI"><!-- myMedia.constSWFUploadUI --></div>
                   <noscript style="background-color: #FFFF66; border-top: solid 4px #FF9966; border-bottom: solid 4px #FF9966; margin: 10px 25px; padding: 10px 15px;">
                     We're sorry. SWFUpload could not load. You must have JavaScript enabled to enjoy SWFUpload.

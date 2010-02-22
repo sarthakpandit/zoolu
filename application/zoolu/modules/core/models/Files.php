@@ -102,6 +102,11 @@ class Model_Files {
 	    $objSelect->from('files', array('id', 'fileId', 'idParent', 'idParentTypes', 'filename', 'isImage', 'created', 'extension', 'mimeType'));
 	    $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	    $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description'));
+	    
+      if($this->intAlternativLanguageId > 0){
+        $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
+      }
+      
 	    $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
 	    if($intFolderId != ''){
 	      $objSelect->where('idParent = ?', $intFolderId);	
@@ -111,6 +116,8 @@ class Model_Files {
 	      $objSelect->order('files.id DESC');
 	    	$objSelect->limit($intLimitNumber);	
 	    }
+	    
+	    $objSelect->where('(files.isLanguageSpecific = 0) OR (files.isLanguageSpecific = 1 AND fileTitles.idLanguages IS NOT NULL)');
 	    
 	    return $this->objFileTable->fetchAll($objSelect); 
 	  }catch (Exception $exc) {
@@ -155,6 +162,11 @@ class Model_Files {
 	    	$objSelect->from('files', array('id', 'fileId', 'filename', 'isLanguageSpecific', 'isImage', 'created', 'extension', 'mimeType', 'size'));
 	      $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+  	      
+  	    if($this->intAlternativLanguageId > 0){
+          $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
+        }
+      
 	      $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));  	
 	      $objSelect->where('files.id IN ('.trim($strIds, ',').')');
 	      $objSelect->order('FIND_IN_SET(files.id,\''.trim($strIds, ',').'\')');

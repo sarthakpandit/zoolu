@@ -22,16 +22,21 @@
            <ul class="feed"></ul>
          </div>
        </li>
-      </ol>                                 
+      </ol>               
+      <script type="text/javascript">//<![CDATA[
+          myMedia.addUploadedFileId(<?php echo $this->fileId; ?>);
+          FileTags<?php echo $this->fileId; ?>_list = new FacebookList('FileTags<?php echo $this->fileId; ?>', 'FileTags<?php echo $this->fileId; ?>_autocompleter', { newValues: true, regexSearch: true });
+          <?php echo $objHelper->getAllTagsForAutocompleter('FileTags'.$this->fileId); ?>
+      //]]>
+      </script>                  
     </div>
+    <div class="mediainfolanguagespecific">
+       <div class="field">
+         <label for="FileIsLanguageSpecific<?php echo $this->fileId; ?>"><input type="checkbox" class="multiCheckbox" value="1" id="FileIsLanguageSpecific<?php echo $this->fileId; ?>" name="FileIsLanguageSpecific<?php echo $this->fileId; ?>"> Medium ist sprachspezifisch</label>                            
+       </div>
+     </div>
     <div class="clear"></div>
   </div>
   <div class="clear"></div>
-  <script type="text/javascript">//<![CDATA[
-      myMedia.addUploadedFileId(<?php echo $this->fileId; ?>);
-      FileTags<?php echo $this->fileId; ?>_list = new FacebookList('FileTags<?php echo $this->fileId; ?>', 'FileTags<?php echo $this->fileId; ?>_autocompleter', { newValues: true, regexSearch: true });
-      <?php echo $objHelper->getAllTagsForAutocompleter('FileTags'.$this->fileId); ?>
-  //]]>
-  </script>
 </div>
 <div class="clear"></div>

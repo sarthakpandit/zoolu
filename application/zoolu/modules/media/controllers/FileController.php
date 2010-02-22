@@ -102,6 +102,32 @@ class Media_FileController extends AuthControllerAction  {
 
     $this->renderScript('file/form.phtml');
   }
+  
+  /**
+   * getaddeditformAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getaddeditformAction(){
+    $this->core->logger->debug('media->controllers->FileController->getaddeditformAction()');
+
+  if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()){
+
+      $this->getModelFiles();
+
+      $objRequest = $this->getRequest();
+      $strFileIds = $objRequest->getParam('fileIds');
+      $objFiles = $this->objModelFiles->loadFilesById($strFileIds);
+
+      $this->view->assign('strEditFormAction', '/zoolu/media/file/edit');
+      $this->view->assign('strFileIds', $strFileIds);
+      $this->view->assign('objFiles', $objFiles);
+      
+      $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
+    }
+
+    $this->renderScript('file/addform.phtml');
+  }
 
   /**
    * editAction

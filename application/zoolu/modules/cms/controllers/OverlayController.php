@@ -327,7 +327,7 @@ class Cms_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId(1); // TODO : get language id
+      $this->objModelFolders->setLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
     }
 
     return $this->objModelFolders;
@@ -347,7 +347,8 @@ class Cms_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId(1); // TODO : get language id
+      $this->objModelFiles->setLanguageId($this->getRequest()->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFiles->setAlternativLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
     }
 
     return $this->objModelFiles;
@@ -367,7 +368,7 @@ class Cms_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
-      $this->objModelContacts->setLanguageId(1); // TODO : get language id
+      $this->objModelContacts->setLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
     }
 
     return $this->objModelContacts;
