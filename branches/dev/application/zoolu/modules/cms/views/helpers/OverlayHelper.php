@@ -287,7 +287,7 @@ class OverlayHelper {
                 <div class="oldocleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
                 <div class="oldocitemicon"><img '.$strMediaSize.' id="Doc'.$row->id.'" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" alt="'.$row->description.'"/></div>
-                <div class="oldocitemtitle">'.$row->title.'</div>
+                <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                 <div class="oldocright"></div>
                 <div class="clear"></div>
               </div>';
@@ -297,7 +297,7 @@ class OverlayHelper {
                 <div class="oldocleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
                 <div class="oldocitemicon"><img width="32" height="32" id="Doc'.$row->id.'" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" alt="'.$row->description.'"/></div>
-                <div class="oldocitemtitle">'.$row->title.'</div>
+                <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                 <div class="oldocright"></div>
                 <div class="clear"></div>
               </div>';

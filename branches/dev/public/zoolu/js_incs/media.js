@@ -356,25 +356,25 @@ Massiveart.Media = Class.create({
        */
       var serializedForm = $(this.formId).serialize();
       var strAjaxAction = $(this.formId).readAttribute('action') + '/save';
-      
+      myCore.addBusyClass('overlayMediaWrapperUpload');
       new Ajax.Updater(this.constThumbContainer, strAjaxAction, {
         parameters: serializedForm,
         evalScripts: true,
         onComplete: function() {       
           this.getMediaFolderContent(this.intFolderId);
+          myCore.removeBusyClass('overlayMediaWrapperUpload');
           //$('overlayUpload').hide();
           //$('overlayBlack75').hide();  
         }.bind(this)
       });
-    }   
-    
+    }
   },
   
   /**
    * getFilesEditForm
    */
   getFilesEditForm: function(){
-    
+        
     var intLanguageId = -1;
     if($('mediaFormLanguageId')) {
       intLanguageId = $F('mediaFormLanguageId');
@@ -430,7 +430,7 @@ Massiveart.Media = Class.create({
     if(fileId != ''){
       this.lastFileId = fileId;
       this.lastFileIds = '';
-      myCore.addBusyClass(this.constOverlayGenContent);      
+      myCore.addBusyClass(this.constOverlayGenContent);
       myCore.putCenter('overlayGenContentWrapper');
       
       $('overlayBlack75').show();
@@ -467,16 +467,56 @@ Massiveart.Media = Class.create({
        * serialize generic form
        */
       var serializedForm = $(this.editFormId).serialize();
+      myCore.addBusyClass('overlayMediaWrapper');
       
       new Ajax.Request($(this.editFormId).readAttribute('action'), {
         parameters: serializedForm,
         onComplete: function(transport) {          
           this.getMediaFolderContent(this.intFolderId);
+          myCore.removeBusyClass('overlayMediaWrapper');
           //$('overlayBlack75').hide();
           //$('overlayGenContentWrapper').hide();
         }.bind(this)
       });          
     }    
+  },
+  
+  /**
+   * changeAddFormLanguage
+   */
+  changeAddFormLanguage: function(newLanguageId){
+    $('addMediaFormLanguageId').value = newLanguageId;
+    this.getFilesAddEditForm();
+  },
+  
+  /**
+   * getFilesAddEditForm
+   */
+  getFilesAddEditForm: function(){
+    
+    var intLanguageId = -1;
+    if($('addMediaFormLanguageId')) {
+      intLanguageId = $F('addMediaFormLanguageId');
+    }
+    
+    var strFileIds = $F('UploadedFileIds');
+       
+    if(strFileIds != ''){
+      
+      myCore.addBusyClass('overlayMediaWrapperUpload');
+      $('overlayUpload').show();
+      $('overlayBlack75').show();
+                  
+      new Ajax.Updater('overlayMediaWrapperUpload', '/zoolu/media/file/getaddeditform', {
+        parameters: { fileIds: strFileIds, languageId: intLanguageId },
+        evalScripts: true,
+        onComplete: function() {
+          myCore.calcMaxOverlayHeight('overlayMediaWrapperUpload', true);
+          myCore.putOverlayCenter('overlayUpload');          
+          myCore.removeBusyClass('overlayMediaWrapperUpload');
+        }.bind(this)
+      });
+    }   
   },
   
   /**

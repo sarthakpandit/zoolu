@@ -251,10 +251,16 @@ Massiveart.Overlay = Class.create({
 	      this.toggleSubNavItem(folderId);
 	      myCore.addBusyClass('olsubnav'+folderId);
 	      
+	      var languageId = null;
+	      if($('languageId')) {
+	        languageId = $F('languageId');
+	      }
+	      
 	      new Ajax.Updater('olsubnav'+folderId, '/zoolu/cms/overlay/childnavigation', {
 	        parameters: { 
 	         folderId: folderId, 
-	         viewtype: viewtype
+	         viewtype: viewtype,
+	         languageId: languageId
 	        },      
 	        evalScripts: true,     
 	        onComplete: function() {        
@@ -323,11 +329,17 @@ Massiveart.Overlay = Class.create({
         strAjaxAction = '/zoolu/cms/overlay/listview';
       }
       
+      var languageId = null;
+      if($('languageId')) {
+        languageId = $F('languageId');
+      }
+      
       var fieldname = this.areaId.substring(this.areaId.indexOf('_')+1);
       new Ajax.Updater(this.updateContainer, strAjaxAction, {
        parameters: { 
          folderId: folderId, 
-         fileIds: $(fieldname).value 
+         fileIds: $(fieldname).value,
+         languageId: languageId
        },
        evalScripts: true,     
        onComplete: function() {        
@@ -415,9 +427,8 @@ Massiveart.Overlay = Class.create({
   /**
    * updateViewTypeIcons
    */
-  updateViewTypeIcons: function(viewType){
-    
-    if(typeof(viewType) != 'undefined'){
+  updateViewTypeIcons: function(viewType){    
+    if(typeof(viewType) == 'undefined'){
       if(this.areaViewType[this.areaId]){
         viewType = this.areaViewType[this.areaId];
       }else{
