@@ -219,6 +219,10 @@ class File {
 			                             'idLanguages'   => $this->intLanguageId,
 			                             'title'         => $strFileTitle,
 			                             'description'   => $strFileDescription);
+              
+            if($this->objModelFile->hasDisplayTitle($intUploadedFileId) == false){
+              $arrInsertData['isDisplayTitle'] = 1;
+            }
 
             $this->objModelFile->getFileTitleTable()->insert($arrInsertData);            
             
@@ -267,10 +271,18 @@ class File {
             $strFileDescription = $this->arrFileDatas['FileDescription'.$intEditFileId];
               
             if($strFileTitle != '' || $strFileDescription != ''){
+              
+              $arrData = array('title' => $strFileTitle, 
+                               'description' => $strFileDescription, 
+                               'changed' => date('Y-m-d H:i:s'));
+              
+              if($this->objModelFile->hasDisplayTitle($intEditFileId) == false){
+                $arrData['isDisplayTitle'] = 1;
+              }
 
               $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('idFiles = ?', $intEditFileId);
               $strWhere .= $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
-              $intNumOfEffectedRows = $this->objModelFile->getFileTitleTable()->update(array('title' => $strFileTitle, 'description' => $strFileDescription, 'changed' => date('Y-m-d H:i:s')), $strWhere);
+              $intNumOfEffectedRows = $this->objModelFile->getFileTitleTable()->update($arrData, $strWhere);
             
               if($intNumOfEffectedRows == 0){
                 $this->saveFileData(array($intEditFileId));   

@@ -51,6 +51,7 @@ Massiveart.Navigation.Media = Class.create(Massiveart.Navigation, {
     this.currLevel = 1;
     
     $(this.genFormContainer).hide();
+    $(this.genFormContainer).innerHTML = '';
     $(this.genFormSaveContainer).hide(); 
     $(this.mediaContainer).hide();   
     

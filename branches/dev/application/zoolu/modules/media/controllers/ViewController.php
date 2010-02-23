@@ -70,7 +70,7 @@ class Media_ViewController extends AuthControllerAction  {
      * get files
      */
     $this->getModelFiles();
-    $objFiles = $this->objModelFiles->loadFiles($intFolderId);
+    $objFiles = $this->objModelFiles->loadFiles($intFolderId, -1, false);
     
     $this->view->assign('objFiles', $objFiles);
     $this->view->assign('sliderValue', $intSliderValue);    	
@@ -91,7 +91,7 @@ class Media_ViewController extends AuthControllerAction  {
      * get files
      */
     $this->getModelFiles();
-    $objFiles = $this->objModelFiles->loadFiles($intFolderId);
+    $objFiles = $this->objModelFiles->loadFiles($intFolderId, -1, false);
     
     $this->view->assign('objFiles', $objFiles);    
   }
@@ -110,7 +110,7 @@ class Media_ViewController extends AuthControllerAction  {
       if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
         $intLimitNumber = 10;
         
-        $objFiles = $this->objModelFiles->loadFiles('', $intLimitNumber);
+        $objFiles = $this->objModelFiles->loadFiles('', $intLimitNumber, false);
         
         $this->view->assign('objFiles', $objFiles);
         $this->view->assign('limit', $intLimitNumber);
@@ -136,7 +136,8 @@ class Media_ViewController extends AuthControllerAction  {
        */ 
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId(1); // TODO : get language id
+      $this->objModelFiles->setLanguageId($this->getRequest()->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFiles->setAlternativLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);      
     }
     
     return $this->objModelFiles;

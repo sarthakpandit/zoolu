@@ -93,6 +93,9 @@ class ViewHelper {
 	        $strDivThumbPosImgStyle = '';
 	      }
 	      
+	      $intDisplayLanuage = $objRow->idLanguages;
+        $intDisplayLanuage = ($intDisplayLanuage == '' && isset($objRow->alternativLanguageId)) ? $objRow->alternativLanguageId : 0;
+	      
 	      if(strpos($objRow->mimeType, 'image/') !== false){
 	        
 	        /**
@@ -108,7 +111,7 @@ class ViewHelper {
 	                          <tr>
 	                            <td width="5" style="background-color:#e4e4e4;">&nbsp;</td>
 	                            <td id="tdThumbImg'.$objRow->id.'" fileid="'.$objRow->id.'" class="tdthumbcontainer" valign="middle" align="center" style="width:'.$intSliderValue.'px; height:'.$intSliderValue.'px;">
-	                              <div id="divThumbPosImg'.$objRow->id.'" class="thumbimgcontainer" style="'.$strDivThumbPosImgStyle.$strStyleOutput.'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.');">
+	                              <div id="divThumbPosImg'.$objRow->id.'" class="thumbimgcontainer" style="'.$strDivThumbPosImgStyle.$strStyleOutput.'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.','.$intDisplayLanuage.');">
 	                                <table>
 	                                  <tr>
 	                                    <td><img id="Img'.$objRow->id.'" src="'.$this->core->sysConfig->media->paths->thumb.$objRow->filename.'" style="'.$strStyleOutput.'" class="thumb" startWidth="'.$strStartWidth.'"/></td>
@@ -146,7 +149,7 @@ class ViewHelper {
 	                          <tr>
 	                            <td width="5" style="background-color:#e4e4e4;">&nbsp;</td>
 	                            <td id="tdThumbDoc'.$objRow->id.'" fileid="'.$objRow->id.'" class="tdthumbcontainer" valign="middle" align="center" style="width:'.$intSliderValue.'px; height:'.$intSliderValue.'px;">
-	                              <div id="divThumbPosDoc'.$objRow->id.'" class="thumbimgcontainer" style="'.$strDivThumbPosImgStyle.'width:'.$strStartWidth.'px;" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.');">
+	                              <div id="divThumbPosDoc'.$objRow->id.'" class="thumbimgcontainer" style="'.$strDivThumbPosImgStyle.'width:'.$strStartWidth.'px;" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.','.$intDisplayLanuage.');">
 	                                <table>
 	                                  <tr>
 	                                    <td><img id="Doc'.$objRow->id.'" src="'.$this->getDocIcon($objRow->extension, 32).'" style="width:'.$strStartWidth.'px;" class="thumb" startWidth="'.$strStartWidth.'"/></td>
@@ -198,13 +201,16 @@ class ViewHelper {
 	        $strFileIconSrc = $this->getDocIcon($objRow->extension, 32);
 	      }
 	      
+	      $intDisplayLanuage = $objRow->idLanguages;
+	      $intDisplayLanuage = ($intDisplayLanuage == '' && isset($objRow->alternativLanguageId)) ? $objRow->alternativLanguageId : 0;
+	      
 	      /**
 	       * list row entry
 	       */
 	      $strOutput .= '<tr id="Row'.$objRow->id.'" class="listrow" fileid="'.$objRow->id.'">
 	                      <td colspan="2" class="rowcheckbox"><input type="checkbox" id="listSelect'.$objRow->id.'" name="listSelect'.$objRow->id.'" value="'.$objRow->id.'" class="listSelectRow"/></td>
-	                      <td class="rowicon"><img width="32" height="32" src="'.$strFileIconSrc.'" alt="'.htmlentities($objRow->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.');"/></td>
-	                      <td class="rowtitle">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>
+	                      <td class="rowicon"><img width="32" height="32" src="'.$strFileIconSrc.'" alt="'.htmlentities($objRow->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.','.$intDisplayLanuage.');"/></td>
+	                      <td class="rowtitle">'.htmlentities((($objRow->title == '' && isset($objRow->alternativTitle)) ? $objRow->alternativTitle : $objRow->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>
 	                      <td class="rowauthor">'.$objRow->creator.'</td>
 	                      <td colspan="2" class="rowcreated">'.$created->format('d.m.y, H:i').'</td>
 	                    </tr>';
@@ -237,7 +243,7 @@ class ViewHelper {
 	                      <tr class="listrow" id="Row'.$objRow->id.'">
 	                        <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->id.'" name="listSelect'.$objRow->id.'" id="listSelect'.$objRow->id.'"/></td>
 	                        <td class="rowicon"><img width="32" height="32" src="'.$strFileIconSrc.'" alt="'.htmlentities($objRow->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.');"/></td>
-	                        <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree('.$objRow->idParent.', \'folder\'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>
+	                        <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree('.$objRow->idParent.', \'folder\'); return false;">'.htmlentities((($objRow->title == '' && isset($objRow->alternativTitle)) ? $objRow->alternativTitle : $objRow->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>
 	                        <td class="rowauthor">'.$objRow->creator.'</td>
 	                        <td class="rowcreated" colspan="2">'.$created->format('d.m.y, H:i').'</td>
 	                      </tr>'; 

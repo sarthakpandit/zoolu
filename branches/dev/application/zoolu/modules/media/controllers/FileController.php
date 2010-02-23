@@ -111,14 +111,14 @@ class Media_FileController extends AuthControllerAction  {
   public function getaddeditformAction(){
     $this->core->logger->debug('media->controllers->FileController->getaddeditformAction()');
 
-  if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()){
-
+    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()){
+  
       $this->getModelFiles();
-
+    
       $objRequest = $this->getRequest();
       $strFileIds = $objRequest->getParam('fileIds');
       $objFiles = $this->objModelFiles->loadFilesById($strFileIds);
-
+    
       $this->view->assign('strEditFormAction', '/zoolu/media/file/edit');
       $this->view->assign('strFileIds', $strFileIds);
       $this->view->assign('objFiles', $objFiles);

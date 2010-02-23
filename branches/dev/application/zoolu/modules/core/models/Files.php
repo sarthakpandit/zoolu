@@ -81,7 +81,7 @@ class Model_Files {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadFiles($intFolderId, $intLimitNumber = -1){
+  public function loadFiles($intFolderId, $intLimitNumber = -1, $blnAddLanguageSpecificFilter = true){
     $this->core->logger->debug('core->models->Model_Files->loadFiles('.$intFolderId.','.$intLimitNumber.')');
     
     try{
@@ -101,9 +101,11 @@ class Model_Files {
 	     */
 	    $objSelect->from('files', array('id', 'fileId', 'idParent', 'idParentTypes', 'filename', 'isImage', 'created', 'extension', 'mimeType'));
 	    $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
-	    $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description'));
+	    $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
 	    
-      if($this->intAlternativLanguageId > 0){
+      if($blnAddLanguageSpecificFilter == false){
+        $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.isDisplayTitle = 1', array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
+      }else if($this->intAlternativLanguageId > 0){
         $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
       }
       
@@ -117,8 +119,8 @@ class Model_Files {
 	    	$objSelect->limit($intLimitNumber);	
 	    }
 	    
-	    $objSelect->where('(files.isLanguageSpecific = 0) OR (files.isLanguageSpecific = 1 AND fileTitles.idLanguages IS NOT NULL)');
-	    
+	    if($blnAddLanguageSpecificFilter == true) $objSelect->where('(files.isLanguageSpecific = 0) OR (files.isLanguageSpecific = 1 AND fileTitles.idLanguages IS NOT NULL)');
+
 	    return $this->objFileTable->fetchAll($objSelect); 
 	  }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -394,6 +396,34 @@ class Model_Files {
         $this->objFileTable->update(array('idParent' => $intParentFolderId), $strWhere);
       }
       
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    } 
+  }
+  
+  /**
+   * hasDisplayTitle 
+   * @param integer $intFileId
+   * @return boolean
+   * @author Thomas Schedler <tsh@massiveart.com>   
+   */
+  public function hasDisplayTitle($intFileId){
+     $this->core->logger->debug('core->models->Model_Files->hasDisplayTitle('.$intFileId.')');    
+    try{ 
+      $this->getFileTable();
+      
+      if($intFileId != '' && $intFileId > 0){       
+        $objSelect = $this->objFileTable->select();   
+        $objSelect->setIntegrityCheck(false);
+      
+        $objSelect->from('files', array('id'));
+        $objSelect->join('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.isDisplayTitle = 1', array('title'));
+        $objSelect->where('files.id = ?', $intFileId);
+               
+        $objRowset = $this->objFileTable->fetchAll($objSelect);
+        
+        return (count($objRowset) > 0) ? true : false;
+      } 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     } 

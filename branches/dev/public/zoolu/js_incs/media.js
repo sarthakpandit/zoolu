@@ -328,7 +328,7 @@ Massiveart.Media = Class.create({
   /**
    * addUploadedFileId
    */
-  addUploadedFileId: function(fileId){    
+  addUploadedFileId: function(fileId){  
     if($('UploadedFileIds')){ 
       $('UploadedFileIds').value = $('UploadedFileIds').value + '[' + fileId + ']';
     }    
@@ -414,9 +414,14 @@ Massiveart.Media = Class.create({
   /**
    * getSingleFileEditForm
    */
-  getSingleFileEditForm: function(fileId){
+  getSingleFileEditForm: function(fileId, languageId){
     
     var intLanguageId = -1;
+    
+    if(typeof(languageId) != 'undefined'){
+      intLanguageId = languageId;
+    }
+    
     if($('mediaFormLanguageId')) {
       intLanguageId = $F('mediaFormLanguageId');
     }
@@ -430,20 +435,20 @@ Massiveart.Media = Class.create({
     if(fileId != ''){
       this.lastFileId = fileId;
       this.lastFileIds = '';
-      myCore.addBusyClass(this.constOverlayGenContent);
-      myCore.putCenter('overlayGenContentWrapper');
+      myCore.addBusyClass('overlaySingleEditContent');
+      myCore.putCenter('overlaySingleEdit');
       
       $('overlayBlack75').show();
-      $('overlayGenContentWrapper').show();
+      $('overlaySingleEdit').show();
                   
-      new Ajax.Updater(this.constOverlayGenContent, '/zoolu/media/file/geteditform', {
+      new Ajax.Updater('overlaySingleEditContent', '/zoolu/media/file/geteditform', {
         parameters: { fileIds: fileId, languageId: intLanguageId },
         evalScripts: true,
         onComplete: function() {
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
-          myCore.putOverlayCenter('overlayGenContentWrapper');          
-          myCore.removeBusyClass(this.constOverlayGenContent);                    
-          this.toggleMediaEditMenu('buttonmediaedittitle', true);                   
+          myCore.putOverlayCenter('overlaySingleEdit');          
+          myCore.removeBusyClass('overlaySingleEditContent');                    
+          this.toggleMediaEditMenu('buttonmediaedittitle', true);
         }.bind(this)
       });
     }   
