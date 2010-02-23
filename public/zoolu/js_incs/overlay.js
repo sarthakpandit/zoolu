@@ -455,8 +455,10 @@ Massiveart.Overlay = Class.create({
   close: function(viewType){
     if($('overlayGenContentWrapper')) $('overlayGenContentWrapper').hide();
     if($('overlayUpload')) $('overlayUpload').hide();
+    if($('overlaySingleEdit')) $('overlaySingleEdit').hide();
     if($('overlayBlack75')) $('overlayBlack75').hide();
     if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';
+    if($('overlayGenContent')) $('overlaySingleEditContent').innerHTML = '';
     this.lastFolderId = null;
   }
 });
