@@ -220,7 +220,7 @@ class OverlayHelper {
                            <tbody>
                              <tr>
                                <td>
-                                 <img onclick="myOverlay.addItemToThumbArea(\'olMediaItem'.$row->id.'\', '.$row->id.'); return false;" id="Img'.$row->id.'" alt="'.$row->title.'" title="'.$row->title.'" src="'.$this->core->sysConfig->media->paths->thumb.$row->filename.'" '.$strMediaSize.'/>
+                                 <img onclick="myOverlay.addItemToThumbArea(\'olMediaItem'.$row->id.'\', '.$row->id.'); return false;" id="Img'.$row->id.'" alt="'.$row->title.'" title="'.$row->title.'" src="'.sprintf($this->core->sysConfig->media->paths->thumb, $row->path).$row->filename.'?v='.$row->version.'" '.$strMediaSize.'/>
                                </td>
                              </tr>
                            </tbody>
@@ -286,7 +286,7 @@ class OverlayHelper {
               <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToThumbArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
                 <div class="oldocleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
-                <div class="oldocitemicon"><img '.$strMediaSize.' id="Doc'.$row->id.'" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" alt="'.$row->description.'"/></div>
+                <div class="oldocitemicon"><img '.$strMediaSize.' id="Doc'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->description.'"/></div>
                 <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                 <div class="oldocright"></div>
                 <div class="clear"></div>
@@ -370,7 +370,7 @@ class OverlayHelper {
             <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
             <div class="oldocitemicon">';
       if($row->filename != ''){
-        $strOutput .= '<img width="32" height="32" id="Doc'.$row->id.'" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" alt="'.$row->title.'" width="16" height="16"/>';
+        $strOutput .= '<img width="32" height="32" id="Doc'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->title.'" width="16" height="16"/>';
       }
 
       $strOutput .= '</div>

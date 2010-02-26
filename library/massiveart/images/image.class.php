@@ -56,7 +56,7 @@ class Image extends File {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function upload(){
+  public function upload($blnIsNewVersion = false){
     $this->core->logger->debug('massiveart.images.Image->upload()');
 
     try{
@@ -72,15 +72,19 @@ class Image extends File {
         $this->dblSize = $this->objUpload->getFileSize($this->_FILE_NAME);
         $this->strMimeType = $this->objUpload->getMimeType($this->_FILE_NAME);
         
-        /**
-         * make fileId conform
-         */
-        $this->strFileId = $this->makeFileIdConform($this->strTitle);        
-        
-        /**
-         * check uniqueness of fileId
-         */
-        $this->strFileId = $this->checkFileIdUniqueness($this->strFileId);
+        if($blnIsNewVersion == true && $this->objFileData instanceof Zend_Db_Table_Row_Abstract){
+          $this->strFileId = $this->objFileData->fileId;          
+        }else{
+          /**
+           * make fileId conform
+           */
+          $this->strFileId = $this->makeFileIdConform($this->strTitle);        
+          
+          /**
+           * check uniqueness of fileId
+           */
+          $this->strFileId = $this->checkFileIdUniqueness($this->strFileId);
+        }
         
         /**
          * receive file
@@ -219,6 +223,29 @@ class Image extends File {
   	}catch(Exception $exc){
       $this->core->logger->err($exc);
     }	
+  }
+  
+  /**
+   * archive
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  protected function archive(){
+    try{
+      if($this->objFileData instanceof Zend_Db_Table_Row_Abstract && file_exists($this->getUploadPath().$this->objFileData->filename)){
+        rename($this->getUploadPath().$this->objFileData->filename, $this->getUploadPath().$this->objFileData->fileId.'.v'.$this->objFileData->version.'.'.$this->objFileData->extension);
+        
+        if(count($this->arrDefaultImageSizes) > 0){
+          /**
+           * rename all image sizes
+           */
+          foreach($this->arrDefaultImageSizes as $arrImageSize){
+            rename($this->getPublicFilePath().$arrImageSize['folder'].'/'.$this->objFileData->filename, $this->getPublicFilePath().$arrImageSize['folder'].'/'.$this->objFileData->fileId.'.v'.$this->objFileData->version.'.'.$this->objFileData->extension);
+          }
+        }
+      }
+    }catch(Exception $exc){
+      $this->core->logger->err($exc);
+    }
   }
 
   /**

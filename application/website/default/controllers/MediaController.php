@@ -92,13 +92,15 @@ class MediaController extends Zend_Controller_Action {
       if(count($objFile) > 0){
         $objFileData = $objFile->current();
         
-        $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private.$objFileData->filename;
+        $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private.$objFileData->path.$objFileData->filename;
         
         if(file_exists($strFilePath)){
           if(isset($objFileData->mimeType) && $objFileData->mimeType != ''){
+            $this->objModelFiles->increaseDownloadCounter($objFileData->id);
             header('Content-Type: '.$objFileData->mimeType);
             readfile($strFilePath); 	
           }else if(isset($objFileData->extension) && $objFileData->extension != ''){
+            $this->objModelFiles->increaseDownloadCounter($objFileData->id);
           	header('Content-Type: image/'.$objFileData->extension);
           	readfile($strFilePath); 
           }else{
@@ -131,10 +133,11 @@ class MediaController extends Zend_Controller_Action {
       if(count($objFile) > 0){
         $objFileData = $objFile->current();
         
-        $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private.$objFileData->filename;
+        $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private.$objFileData->path.$objFileData->filename;
         
         if(file_exists($strFilePath)){
           if(isset($objFileData->mimeType) && $objFileData->mimeType != ''){
+            $this->objModelFiles->increaseDownloadCounter($objFileData->id);
             
           	// fix for IE catching or PHP bug issue
             header("Pragma: public");
@@ -146,6 +149,9 @@ class MediaController extends Zend_Controller_Action {
             header("Content-Disposition: attachment; filename=\"".$objFileData->filename."\"");
                       	
           	header('Content-Type: '.$objFileData->mimeType);
+          	header("Content-Length: ".$objFileData->size);
+          	
+          	// Datei ausgeben
             readfile($strFilePath);   
           }else{
             // no mimetype and no extension
@@ -180,12 +186,13 @@ class MediaController extends Zend_Controller_Action {
         
         $strFilePath = '';
         If($objFileData->isImage){
-          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private.$objFileData->filename;	
+          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private.$objFileData->path.$objFileData->filename;	
         }else{
-          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private.$objFileData->filename;	
+          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private.$objFileData->path.$objFileData->filename;	
         }
 
         if(file_exists($strFilePath)){
+        	$this->objModelFiles->increaseDownloadCounter($objFileData->id);
         	
         	// fix for IE catching or PHP bug issue
 			    header("Pragma: public");

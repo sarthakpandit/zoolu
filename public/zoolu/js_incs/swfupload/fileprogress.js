@@ -55,8 +55,8 @@ function FileProgress(file, targetID) {
 	this.height = this.fileProgressWrapper.offsetHeight;
 
 }
-FileProgress.prototype.setProgress = function (percentage) {
-	this.fileProgressElement.className = "progressContainer green";
+FileProgress.prototype.setProgress = function (percentage, cssClass) {
+	this.fileProgressElement.className = cssClass;
 	this.fileProgressElement.childNodes[3].className = "progressBarInProgress";
 	this.fileProgressElement.childNodes[3].style.width = percentage + "%";
 };

@@ -329,7 +329,7 @@ class Model_Products {
 
       $sqlStmt = $this->core->dbh->query('SELECT products.id,
                                             '.$strSqlInstanceFields.'
-                                            files.filename, fileTitles.title AS filetitle
+                                            files.filename, files.version AS fileversion, files.path AS filepath, fileTitles.title AS filetitle
                                           FROM products
                                           LEFT JOIN `product-'.$strGenForm.'-Instances` ON
                                             `product-'.$strGenForm.'-Instances`.productId = products.productId AND

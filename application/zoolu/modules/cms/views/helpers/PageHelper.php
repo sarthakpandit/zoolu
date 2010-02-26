@@ -87,7 +87,7 @@ class PageHelper {
 	                           <tbody>
 	                             <tr>
 	                               <td>
-	                                 <img src="'.$this->core->sysConfig->media->paths->thumb.$row->filename.'" id="Img'.$row->id.'" '.$strMediaSize.'/>
+	                                 <img src="'.sprintf($this->core->sysConfig->media->paths->thumb, $row->path).$row->filename.'?v='.$row->version.'" id="Img'.$row->id.'" '.$strMediaSize.'/>
 	                               </td>
 	                             </tr>
 	                           </tbody>
@@ -100,7 +100,7 @@ class PageHelper {
 	      	$strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem_'.$row->id.'">
 						               <div class="oldocleft"></div>
 	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
-						               <div class="oldocitemicon"><img width="32" height="32" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
+						               <div class="oldocitemicon"><img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
 						               <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
 						               <div class="clear"></div>
 						             </div>';
@@ -133,7 +133,7 @@ class PageHelper {
                        <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
                        <div class="oldocitemicon">';
       if($row->filename != ''){
-        $strOutput .= '<img width="32" height="32" src="'.$this->core->sysConfig->media->paths->icon32.$row->filename.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
+        $strOutput .= '<img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
       }
       $strOutput .= '</div>
                        <div class="oldocitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>

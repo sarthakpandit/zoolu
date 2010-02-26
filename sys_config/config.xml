@@ -30,8 +30,8 @@
     <!-- Standard web-server user & group -->
     <server>
       <executing>
-        <user>apache</user>
-        <group>apache</group>
+        <user>www-data</user>
+        <group>www-data</group>
       </executing>
     </server>
     
@@ -206,6 +206,12 @@
         <!-- Save destination (local, s3) -->
         <destination>local</destination>
         
+        <!-- file system segmenting -->
+        <segmenting>
+          <enabled>true</enabled>
+          <number_of_segments>10</number_of_segments>
+        </segmenting>
+        
         <!-- upload pathes -->
         <path>
           <local>
@@ -225,59 +231,8 @@
           <extension>exe</extension>
         </excluded_extensions>
         <default_sizes>
-          <!-- OLD 
           <default_size>
-            <size>32</size>
-            <mode>SquareCrop</mode>
-            <folder>icon32</folder>
-            <compression>85</compression>
-            <watermark>false</watermark>
-          </default_size>
-          <default_size>
-            <size>200</size>
-            <mode>PropX</mode>
-            <folder>thumb</folder>
-            <compression>90</compression>
-            <watermark>false</watermark>
-          </default_size>
-          <default_size>
-            <size>660</size>
-            <mode>PropX</mode>
-            <folder>660x</folder>
-            <compression>90</compression>
-            <watermark>false</watermark>
-          </default_size>
-          <default_size>
-            <size>420</size>
-            <mode>PropX</mode>
-            <folder>420x</folder>
-            <compression>90</compression>
-            <watermark>false</watermark>
-          </default_size>
-          <default_size>
-            <size>180</size>
-            <mode>PropX</mode>
-            <folder>180x</folder>
-            <compression>90</compression>
-            <watermark>false</watermark>
-          </default_size>
-          <default_size>
-            <size>80</size>
-            <mode>SquareCrop</mode>
-            <folder>80x80</folder>
-            <compression>90</compression>
-            <watermark>false</watermark>
-          </default_size>
-          <default_size>
-            <size>40</size>
-            <mode>SquareCrop</mode>
-            <folder>40x40</folder>
-            <compression>90</compression>
-            <watermark>false</watermark>
-          </default_size>  -->
-          
-          <!-- NEW -->
-          <default_size>
+            <display>true</display>
             <folder>icon32</folder>
             <actions>
 	            <action>
@@ -287,6 +242,7 @@
             </actions>                        
           </default_size>
           <default_size>
+            <display>true</display>
             <folder>thumb</folder>
             <actions>
               <action>
@@ -294,31 +250,7 @@
                 <params>200</params>
               </action>             
             </actions>                        
-          </default_size>
-          <!--<default_size>
-            <folder>290x150</folder>
-            <actions>
-              <action>
-                <method>scale</method>
-                <params>290,150</params>
-              </action>
-              <action>
-                <method>roundCorners</method>
-              </action>
-              <action>
-                <method>shadow</method>
-              </action>
-            </actions>                        
-          </default_size>
-          <default_size>
-            <folder>400x640</folder>
-            <actions>
-              <action>
-                <method>scale</method>
-                <params>400,640</params>
-              </action>
-            </actions>                        
-          </default_size> -->
+          </default_size>          
           <default_size>
             <folder>660x</folder>
             <actions>
@@ -376,6 +308,7 @@
 
           <!-- ivoclarvivadent -->
           <default_size>
+            <display>true</display>
             <folder>933x</folder>
             <actions>
               <action>
@@ -385,6 +318,7 @@
             </actions>
           </default_size>
           <default_size>
+            <display>true</display>
             <folder>677x</folder>
             <actions>
               <action>
@@ -403,6 +337,7 @@
             </actions>
           </default_size>
           <default_size>
+            <display>true</display>
             <folder>219x</folder>
             <actions>
               <action>
@@ -412,6 +347,7 @@
             </actions>
           </default_size>
           <default_size>
+            <display>true</display>
             <folder>159x</folder>
             <actions>
               <action>
@@ -421,6 +357,7 @@
             </actions>
           </default_size>
           <default_size>
+            <display>true</display>
             <folder>117x88</folder>
             <actions>
               <action>
@@ -430,6 +367,7 @@
             </actions>
           </default_size>
           <default_size>
+            <display>true</display>
             <folder>47x47</folder>
             <actions>
               <action>
@@ -437,8 +375,7 @@
                 <params>47,47</params>
               </action>
             </actions>
-          </default_size>
-          
+          </default_size>          
         </default_sizes>
       </images>
       
@@ -446,6 +383,12 @@
       <documents>
         <!-- Save destination (local, S3) -->
         <destination>local</destination>
+        
+        <!-- file system segmenting -->
+        <segmenting>
+          <enabled>true</enabled>
+          <number_of_segments>10</number_of_segments>
+        </segmenting>
         
         <!-- upload pathes -->
         <path>
@@ -472,8 +415,8 @@
       <paths>
         <docbase>/website/uploads/documents/</docbase>
         <imgbase>/website/uploads/images/</imgbase>
-        <thumb>/website/uploads/images/thumb/</thumb>
-        <icon32>/website/uploads/images/icon32/</icon32>
+        <thumb>/website/uploads/images/%sthumb/</thumb>
+        <icon32>/website/uploads/images/%sicon32/</icon32>
       </paths>
     </media>
     

@@ -326,6 +326,58 @@ Massiveart.Media = Class.create({
   },
   
   /**
+   * initSingleSWFUpload
+   */
+  initSingleSWFUpload: function(fileId){
+            
+    var settings = {
+      flash_url: "/zoolu/flash/swfupload/swfupload.swf",
+      upload_url: "/zoolu/media/upload/version",
+      post_params: {
+        PHPSESSID: sessionId,
+        fileId: fileId
+      }, 
+      file_size_limit: "100 MB",
+      file_types: "*.*",
+      file_types_description: "All Files",
+      file_upload_limit: "0",
+      file_queue_limit: "1",
+      custom_settings: {
+        progress_target: "fsUploadProgress",
+        upload_successful: false
+      },
+      debug: false,
+  
+      // Button Settings
+      button_image_url: "/zoolu/images/buttons/button_selectfiles_de.png",
+      button_placeholder_id: "spanButtonPlaceholder",
+      button_width: 113,
+      button_height: 25,
+      button_cursor: -2,
+      button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+  
+      // Event handler settings
+      swfupload_loaded_handler: singleSWFUploadLoaded,
+      
+      file_dialog_start_handler: singleFileDialogStart,
+      file_queued_handler: singleFileQueued,
+      file_queue_error_handler: singleFileQueueError,
+      file_dialog_complete_handler: singleFileDialogComplete,
+      
+      //upload_start_handler: singleUploadStart, // I could do some client/JavaScript validation here, but I don't need to.
+      upload_progress_handler: singleUploadProgress,
+      upload_error_handler: singleUploadError,
+      upload_success_handler: singleUploadSuccess,
+      upload_complete_handler: singleUploadComplete,
+      
+      // SWFObject settings
+      minimum_flash_version : "9.0.28"
+    };
+
+    swfu = new SWFUpload(settings);
+  },
+  
+  /**
    * addUploadedFileId
    */
   addUploadedFileId: function(fileId){  
@@ -441,25 +493,53 @@ Massiveart.Media = Class.create({
       $('overlayBlack75').show();
       $('overlaySingleEdit').show();
                   
-      new Ajax.Updater('overlaySingleEditContent', '/zoolu/media/file/geteditform', {
-        parameters: { fileIds: fileId, languageId: intLanguageId },
+      new Ajax.Updater('overlaySingleEditContent', '/zoolu/media/file/getsingleeditform', {
+        parameters: { fileId: fileId, languageId: intLanguageId },
         evalScripts: true,
         onComplete: function() {
+          this.initSingleSWFUpload(fileId);
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
           myCore.putOverlayCenter('overlaySingleEdit');          
           myCore.removeBusyClass('overlaySingleEditContent');                    
           this.toggleMediaEditMenu('buttonmediaedittitle', true);
+          this.iniZeroClipboard();
         }.bind(this)
       });
     }   
   },
   
   /**
+   * iniZeroClipboard
+   */
+  iniZeroClipboard: function(){
+    clip = new ZeroClipboard.Client();
+    
+    clip.setText(''); // will be set later on mouseDown
+    clip.setHandCursor(true);
+    clip.setCSSEffects(false);
+    
+    clip.addEventListener('load', function(client){
+      //alert("movie is loaded");      
+    });
+    
+    clip.addEventListener('mouseDown', function(client){ 
+      //set text to copy here
+      clip.setText($F('singleMediaUrl'));
+    });
+    
+    clip.glue('d_clip_button', 'd_clip_container');    
+  },
+  
+  /**
    * editFiles
    */
-  editFiles: function(){
+  editFiles: function(isSingleEdit){
     
     if($(this.editFormId)){      
+      
+      if(typeof(isSingleEdit) == 'undefined'){
+        isSingleEdit = false;
+      }
       
       var arrFields = $(this.editFormId).getElements();
       arrFields.each(function(el){
@@ -476,7 +556,10 @@ Massiveart.Media = Class.create({
       
       new Ajax.Request($(this.editFormId).readAttribute('action'), {
         parameters: serializedForm,
-        onComplete: function(transport) {          
+        onComplete: function(transport) {  
+          if(isSingleEdit == true && transport.responseText != ''){
+            //TODO
+          }        
           this.getMediaFolderContent(this.intFolderId);
           myCore.removeBusyClass('overlayMediaWrapper');
           //$('overlayBlack75').hide();

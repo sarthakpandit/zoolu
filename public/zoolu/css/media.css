@@ -333,16 +333,48 @@ input[disabled]{
   border:1px solid #ccc;
 }
 
+.mediacontainer .field {
+  margin:5px 0 0 0;
+}
+
+.mediacontainer .field input.checkbox{
+  width:26px;
+} 
+
 .overlaycontentwrapper .buttoncancel {
   padding:15px 0 0 0;
   float:left;
   cursor:pointer;
 }
 
-.overlaycontentwrapper #buttoneditsave {
+.overlaycontentwrapper #buttoneditsave,
+.overlaycontentwrapper #btnSingleEditSubmit {
   padding:10px 0 0 0;
   float:right;
   cursor:pointer;
+}
+
+.mediasizes{
+  padding:0 10px 0 0;
+  width:128px;
+  float:left;
+}
+
+.mediasizes select{
+  width:128px;
+}
+
+.mediasingleupload{
+  margin:0 0 0 138px;
+}
+
+.mediasingleupload input {
+  width:222px;
+}
+
+.mediasingleupload .swfupload {
+  float:right;
+  margin:-2px 10px 0 0;
 }
 
 /* Message */

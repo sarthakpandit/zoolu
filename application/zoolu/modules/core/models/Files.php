@@ -59,7 +59,12 @@ class Model_Files {
    * @var Model_Table_FileAttributes
    */
   protected $objFileAttributeTable;
-    
+  
+  /**
+   * @var Model_Table_FileVersions
+   */
+  protected $objFileVersionTable;
+
   /**
    * @var Core
    */
@@ -99,7 +104,7 @@ class Model_Files {
 	     * INNER JOIN users ON users.id = files.creator  
 	     * WHERE files.idParent = ?
 	     */
-	    $objSelect->from('files', array('id', 'fileId', 'idParent', 'idParentTypes', 'filename', 'isImage', 'created', 'extension', 'mimeType'));
+	    $objSelect->from('files', array('id', 'fileId', 'version', 'idParent', 'idParentTypes', 'filename', 'isImage', 'created', 'path', 'extension', 'mimeType'));
 	    $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	    $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
 	    
@@ -161,7 +166,7 @@ class Model_Files {
 	        $strIds .= $intFileId.',';
 	      }
 	    	
-	    	$objSelect->from('files', array('id', 'fileId', 'filename', 'isLanguageSpecific', 'isImage', 'created', 'extension', 'mimeType', 'size'));
+	    	$objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isLanguageSpecific', 'isImage', 'created', 'path', 'extension', 'mimeType', 'size'));
 	      $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
   	      
@@ -207,7 +212,7 @@ class Model_Files {
       }      
 
       $objSelect->distinct();
-      $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'extension', 'mimeType', 'size'));
+      $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size'));
       $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
       $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
       
@@ -235,7 +240,6 @@ class Model_Files {
       $this->core->logger->err($exc);
     }
   }
-
   
   /**
    * loadFileById 
@@ -252,13 +256,33 @@ class Model_Files {
       	$objSelect = $this->objFileTable->select();   
         $objSelect->setIntegrityCheck(false);
       
-        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'extension', 'mimeType', 'size'));
+        $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter'));
         $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
         $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
         $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));   
         $objSelect->where('files.id = ?', $intFileId);
                
         return $this->objFileTable->fetchAll($objSelect);
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }  
+  }
+  
+  /**
+   * increaseDownloadCounter 
+   * @param integer $intFileId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function increaseDownloadCounter($intFileId){
+    $this->core->logger->debug('core->models->Model_Files->increaseDownloadCounter('.$intFileId.')');
+    try{
+      $objFileData = $this->getFileTable()->find($intFileId);
+      
+      if(count($objFileData) == 1){
+        $objFile = $objFileData->current();
+        $objFile->downloadCounter++;
+        $objFile->save();
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -280,7 +304,7 @@ class Model_Files {
         $objSelect = $this->objFileTable->select();   
         $objSelect->setIntegrityCheck(false);
       
-        $objSelect->from('files', array('id', 'fileId', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'extension', 'mimeType', 'size'));           
+        $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size'));           
         $objSelect->where('files.fileId = ?', $strFileId);
         
         return $this->objFileTable->fetchAll($objSelect);
@@ -311,7 +335,7 @@ class Model_Files {
        * WHERE files.isImage = 1
        */
       
-      $objSelect->from('files', array('id', 'fileId', 'filename', 'created', 'extension', 'mimeType', 'size'));
+      $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'created', 'path', 'extension', 'mimeType', 'size'));
       $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));   
       $objSelect->where('files.isImage = 1');
       
@@ -475,6 +499,22 @@ class Model_Files {
     }
     
     return $this->objFileAttributeTable;
+  }
+  
+  /**
+   * getFileVersionTable 
+   * @return Model_Table_FileVersions
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getFileVersionTable(){
+    
+    if($this->objFileVersionTable === null){
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/tables/FileVersions.php';
+      $this->objFileVersionTable = new Model_Table_FileVersions();
+    }
+    
+    return $this->objFileVersionTable;
   }
   
   /**

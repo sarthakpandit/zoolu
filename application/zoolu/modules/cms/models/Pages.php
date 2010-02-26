@@ -849,7 +849,7 @@ class Model_Pages {
 
       $sqlStmt = $this->core->dbh->query('SELECT pages.id,
                                             '.$strSqlInstanceFields.'
-                                            files.filename, fileTitles.title AS filetitle
+                                            files.filename, files.version AS fileversion, files.path AS filepath, fileTitles.title AS filetitle
                                           FROM pages
                                           LEFT JOIN `page-'.$strGenForm.'-Instances` ON
                                             `page-'.$strGenForm.'-Instances`.pageId = pages.pageId AND

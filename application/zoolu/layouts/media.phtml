@@ -369,6 +369,7 @@
     <!-- libaries -->
     <script type="text/javascript" src="/min/g=zJs&v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/min/g=zMediaJs&v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu/zeroclipboard/ZeroClipboard.js?v=1.0"></script>    
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
     
     <script type="text/javascript">//<![CDATA[
@@ -377,6 +378,8 @@
       var swfu;
       var sessionId = '<?php echo session_id(); ?>';
 
+      var clip = null;
+      
       var currSliderValue = 100;
 
       //document.observe('dom:loaded', function() {
@@ -387,6 +390,8 @@
         myNavigation = new Massiveart.Navigation.Media();
         myForm = new Massiveart.Form();
         myOverlay = new Massiveart.Overlay();
+
+        ZeroClipboard.setMoviePath('/zoolu/zeroclipboard/ZeroClipboard.swf');
 
         myNavigation.constRequestChildNav = '/zoolu/media/navigation/childnavigation';
         myNavigation.topNaviTitle = '<?php echo $this->translate->_('Media'); ?>';

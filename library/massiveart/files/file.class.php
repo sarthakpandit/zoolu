@@ -124,6 +124,18 @@ class File {
   protected $blnSetOwnerAndGroup = false;
   
   /**
+   * Zend_Db_Table_Row_Abstract 
+   */
+  protected $objFileData;
+   
+  /**
+   * file system segmenting
+   */
+  protected $blnSegmenting = false;
+  protected $intNumberOfSegments = 10;
+  protected $strSegmentPath = '';
+  
+  /**
    * for tags
    */
   protected $arrNewTagIds = array();
@@ -145,15 +157,49 @@ class File {
     try{
       $this->_FILE_NAME = $_FILE_NAME;
 
-      $this->upload();
-
       $this->getModelFile();
       $this->intUserId = Zend_Auth::getInstance()->getIdentity()->id;
       $this->intVersion = 1;
 
-      $arrInsertData = array('fileId'         => $this->strFileId,
+      /**
+       * insert file data
+       */
+      $arrInsertData = array('idUsers'        => $this->intUserId,
+                             'idParent'       => $this->intParentId,
+                             'idParentTypes'  => $this->intParentTypeId,
+                             'isS3Stored'     => 0,
+                             'creator'        => $this->intUserId,
+                             'created'        => date('Y-m-d H:i:s'),
+                             'version'        => $this->intVersion);
+      $this->intId = $this->objModelFile->getFileTable()->insert($arrInsertData);
+
+      if($this->blnSegmenting === true){
+        $this->strSegmentPath = sprintf('%02d', ($this->intId % $this->intNumberOfSegments + 1)).'/';
+      }
+      
+      $this->upload();
+      
+      /**
+       * update file data
+       */
+      $arrUpdateData = array('fileId'         => $this->strFileId,
+                             'path'           => $this->strSegmentPath,
+                             'isImage'        => $this->getIsImage(),
+                             'filename'       => $this->strFileId.'.'.$this->strExtension,
+                             'size'           => $this->dblSize,
+                             'extension'      => $this->strExtension,
+                             'mimeType'       => $this->strMimeType,
+                             'version'        => $this->intVersion);
+      $strWhere = $this->objModelFile->getFileTable()->getAdapter()->quoteInto('id = ?', $this->intId);
+      $this->objModelFile->getFileTable()->update($arrUpdateData, $strWhere);
+      
+      /**
+       * insert version data
+       */
+      $arrInsertData = array('idFiles'        => $this->intId,
+                             'fileId'         => $this->strFileId,
                              'idUsers'        => $this->intUserId,
-                             'path'           => '',
+                             'path'           => $this->strSegmentPath,
                              'idParent'       => $this->intParentId,
                              'idParentTypes'  => $this->intParentTypeId,
                              'isS3Stored'     => 0,
@@ -165,9 +211,8 @@ class File {
                              'extension'      => $this->strExtension,
                              'mimeType'       => $this->strMimeType,
                              'version'        => $this->intVersion);
-
-      $this->intId = $this->objModelFile->getFileTable()->insert($arrInsertData);
-
+      $this->objModelFile->getFileVersionTable()->insert($arrInsertData);
+      
       if($this->getIsImage()){
         $arrInsertAttributeData = array('idFiles'  => $this->intId,
                                         'xDim'     => $this->intXDim,
@@ -176,6 +221,93 @@ class File {
         $this->objModelFile->getFileAttributeTable()->insert($arrInsertAttributeData);
       }
 
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * addVersion
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function addVersion($_FILE_NAME){
+    $this->core->logger->debug('massiveart.files.File->addVersion()');
+    try{
+      $this->_FILE_NAME = $_FILE_NAME;
+      $this->intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+      $objFileData = $this->getModelFile()->getFileTable()->find($this->intId);
+      
+      if(count($objFileData) == 1){
+        $this->objFileData = $objFileData->current();
+        
+        $this->strSegmentPath = $this->objFileData->path;
+        
+        /**
+         * archive file now
+         */
+        $this->archive();
+        
+        /**
+         * update file version data
+         */
+        $arrUpdateData = array('archiver'         => $this->intUserId,
+                               'archived'         => date('Y-m-d H:i:s'),
+                               'downloadCounter'  => $this->objFileData->downloadCounter);
+        $strWhere = $this->objModelFile->getFileVersionTable()->getAdapter()->quoteInto('idFiles = ?', $this->objFileData->id);
+        $strWhere .= $this->objModelFile->getFileVersionTable()->getAdapter()->quoteInto(' AND version = ?', $this->objFileData->version);
+        $this->objModelFile->getFileVersionTable()->update($arrUpdateData, $strWhere);
+        
+        /**
+         * upload new version
+         */
+        $this->upload(true);
+        
+        $this->objFileData->isImage = $this->getIsImage();
+        $this->objFileData->filename = $this->objFileData->fileId.'.'.$this->strExtension;
+        $this->objFileData->size = $this->dblSize;
+        $this->objFileData->extension = $this->strExtension;
+        $this->objFileData->mimeType = $this->strMimeType;
+        $this->objFileData->version++;
+        
+        /**
+         * update file data
+         */
+        $this->objFileData->save();
+
+        /**
+         * insert new version data
+         */
+        $arrInsertData = array('idFiles'        => $this->objFileData->id,
+                               'fileId'         => $this->objFileData->fileId,
+                               'idUsers'        => $this->intUserId,
+                               'path'           => $this->objFileData->path,
+                               'idParent'       => $this->objFileData->idParent,
+                               'idParentTypes'  => $this->objFileData->idParentTypes,
+                               'isS3Stored'     => 0,
+                               'isImage'        => $this->objFileData->isImage,
+                               'filename'       => $this->objFileData->filename,
+                               'creator'        => $this->intUserId,
+                               'created'        => date('Y-m-d H:i:s'),
+                               'size'           => $this->objFileData->size,
+                               'extension'      => $this->objFileData->extension,
+                               'mimeType'       => $this->objFileData->mimeType,
+                               'version'        => $this->objFileData->version);
+        $this->objModelFile->getFileVersionTable()->insert($arrInsertData);
+        
+        /**
+         * upate image file attributes
+         */
+        if($this->getIsImage()){
+          $arrUpdateAttributeData = array('xDim'     => $this->intXDim,
+                                          'yDim'     => $this->intYDim);
+          $strWhere = $this->objModelFile->getFileAttributeTable()->getAdapter()->quoteInto('idFiles = ?', $this->objFileData->id);
+          $this->objModelFile->getFileAttributeTable()->update($arrUpdateAttributeData, $strWhere);
+        }
+        
+      }else{
+        throw new Exception('Not able to add new version, because there is no file with given ID!');
+      }
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -323,9 +455,8 @@ class File {
   /**
    * upload
    * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
    */
-  protected function upload(){
+  protected function upload($blnIsNewVersion = false){
     $this->core->logger->debug('massiveart.files.File->upload()');
 
     try{
@@ -341,32 +472,39 @@ class File {
         $this->dblSize = $this->objUpload->getFileSize($this->_FILE_NAME);
         $this->strMimeType = $this->objUpload->getMimeType($this->_FILE_NAME);
         
-        /**
-         * make fileId conform
-         */
-        $this->strFileId = $this->makeFileIdConform($this->strTitle);        
-        
-        /**
-         * check uniqueness of fileId
-         */
-        $this->strFileId = $this->checkFileIdUniqueness($this->strFileId);
+        if($blnIsNewVersion == true && $this->objFileData instanceof Zend_Db_Table_Row_Abstract){
+          $this->strFileId = $this->objFileData->fileId;
+        }else{
+          /**
+           * make fileId conform
+           */
+          $this->strFileId = $this->makeFileIdConform($this->strTitle);        
+          
+          /**
+           * check uniqueness of fileId
+           */
+          $this->strFileId = $this->checkFileIdUniqueness($this->strFileId);
+        }
         
         /**
          * receive file
          */
         $this->objUpload->addFilter('Rename', $this->getUploadPath().$this->strFileId.'.'.$this->strExtension, $this->_FILE_NAME);
         $this->objUpload->receive($this->_FILE_NAME);
-
-        /**
-         * check public file path
-         */
-        $this->checkPublicFilePath();
-
-        /**
-         * public copy
-         */
-        //FIXME why ???
-        copy($this->getUploadPath().$this->strFileId.'.'.$this->strExtension, $this->getPublicFilePath().$this->strFileId.'.'.$this->strExtension);
+      }
+    }catch(Exception $exc){
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * archive
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  protected function archive(){
+    try{
+      if($this->objFileData instanceof Zend_Db_Table_Row_Abstract && file_exists($this->getUploadPath().$this->objFileData->filename)){
+        rename($this->getUploadPath().$this->objFileData->filename, $this->getUploadPath().$this->objFileData->fileId.'.v'.$this->objFileData->version.'.'.$this->objFileData->extension);
       }
     }catch(Exception $exc){
       $this->core->logger->err($exc);
@@ -638,12 +776,17 @@ class File {
 
   /**
    * getUploadPath
+   * @param boolean $blnWithSegmentPath
    * @return string $strUploadPath
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getUploadPath(){
-    return $this->strUploadPath;
+  public function getUploadPath($blnWithSegmentPath = true){
+    if($blnWithSegmentPath === true){
+      return $this->strUploadPath.$this->strSegmentPath;
+    }else{
+      return $this->strUploadPath;  
+    }    
   }
 
   /**
@@ -658,12 +801,17 @@ class File {
 
   /**
    * getPublicFilePath
+   * @param boolean $blnWithSegmentPath
    * @return string $strPublicFilePath
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getPublicFilePath(){
-    return $this->strPublicFilePath;
+  public function getPublicFilePath($blnWithSegmentPath = true){
+    if($blnWithSegmentPath === true){
+      return $this->strPublicFilePath.$this->strSegmentPath;
+    }else{
+      return $this->strPublicFilePath;  
+    }
   }
 
   /**
@@ -918,6 +1066,38 @@ class File {
    */
   public function getLanguageId(){
     return $this->intLanguageId;  
+  } 
+  
+  /**
+   * setSegmenting
+   * @param boolean $blnSegmenting
+   */
+  public function setSegmenting($blnSegmenting){
+    $this->blnSegmenting = $blnSegmenting;  
+  }
+  
+  /**
+   * getSegmenting
+   * @param boolean $blnSegmenting
+   */
+  public function getSegmenting(){
+    return $this->blnSegmenting;  
+  } 
+  
+  /**
+   * setNumberOfSegments
+   * @param integer $intNumberOfSegments
+   */
+  public function setNumberOfSegments($intNumberOfSegments){
+    $this->intNumberOfSegments = $intNumberOfSegments;  
+  }
+  
+  /**
+   * getNumberOfSegments
+   * @param integer $intNumberOfSegments
+   */
+  public function getNumberOfSegments(){
+    return $this->intNumberOfSegments;  
   } 
 }
 
