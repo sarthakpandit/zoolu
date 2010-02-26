@@ -124,7 +124,7 @@ class EventHelper {
                   $strOutput .= '
                       <div class="divEventCalItemImage">
                         <a href="'.$objEventEntry->url.'">
-                          <img title="'.$objEventEntry->filetitle.'" alt="'.$objEventEntry->filetitle.'" src="'.$this->core->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objEventEntry->filename.'"/>
+                          <img title="'.$objEventEntry->filetitle.'" alt="'.$objEventEntry->filetitle.'" src="'.$this->core->sysConfig->media->paths->imgbase.$objEventEntry->filepath.$strImageFolder.'/'.$objEventEntry->filename.'?v='.$objEventEntry->fileversion.'"/>
                         </a>
                       </div>';
             }        

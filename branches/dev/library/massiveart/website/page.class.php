@@ -657,6 +657,8 @@ class Page {
                   $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
                   $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
                   $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
+                  $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
+                  $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
                   $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
 
                   $arrContainer[$arrPageEntries[$objPageRow->id]]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
@@ -738,7 +740,7 @@ class Page {
                 array_push($arrGenFormPageIds, $value);
               }
             }
-            $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+            $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
 
             /**
              * overwrite page entries
@@ -749,6 +751,8 @@ class Page {
                 $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
                 $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
                 $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
+                $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
+                $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
                 $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
 
                 $objContainer->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
@@ -830,7 +834,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -843,6 +847,8 @@ class Page {
                   $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
                   $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
                   $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
+                  $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
+                  $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
                   $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
 
                   $arrContainer[$arrPageEntries[$objPageRow->id]]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
@@ -945,7 +951,7 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModel->loadPagesInstanceDataByIds($key, $arrGenFormPageIds);
+          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
 
           /**
            * overwrite page entries
@@ -959,6 +965,8 @@ class Page {
                   $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
                   $objPageEntry->event_status = (isset($objPageRow->event_status)) ? $objPageRow->event_status : '';
                   $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
+                  $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
+                  $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
                   $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
 
                   $arrContainer[$arrPageEntries[$objPageRow->id]]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);

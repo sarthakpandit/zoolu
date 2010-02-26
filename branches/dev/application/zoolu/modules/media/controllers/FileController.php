@@ -105,8 +105,7 @@ class Media_FileController extends AuthControllerAction  {
   
   /**
    * getaddeditformAction
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
+   * @author Thomas Schedler <tsh@massiveart.com>   
    */
   public function getaddeditformAction(){
     $this->core->logger->debug('media->controllers->FileController->getaddeditformAction()');
@@ -128,6 +127,32 @@ class Media_FileController extends AuthControllerAction  {
 
     $this->renderScript('file/addform.phtml');
   }
+  
+  /**
+   * getsingleeditformAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function getsingleeditformAction(){
+    $this->core->logger->debug('media->controllers->FileController->getsingleeditformAction()');
+
+    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()){
+
+      $this->getModelFiles();
+
+      $objRequest = $this->getRequest();
+      $intFileId = $objRequest->getParam('fileId');
+      $objFile = $this->objModelFiles->loadFileById($intFileId);
+
+      $this->view->assign('strEditFormAction', '/zoolu/media/file/edit');
+      $this->view->assign('intFileId', $intFileId);
+      $this->view->assign('objFile', $objFile);
+      
+      $this->view->assign('imagesSizes', $this->core->sysConfig->upload->images->default_sizes->default_size->toArray());
+      $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
+    }
+
+    $this->renderScript('file/singleform.phtml');
+  }
 
   /**
    * editAction
@@ -147,11 +172,19 @@ class Media_FileController extends AuthControllerAction  {
       $objFile->updateFileData();
     }
 
-    /**
-     * no rendering
-     */
-    $this->_helper->viewRenderer->setNoRender();
-  }
+    if(isset($arrFormData['IsSingleEdit']) && $arrFormData['IsSingleEdit'] == 'true'){
+      //TODO     
+      /**
+       * no rendering
+       */
+      $this->_helper->viewRenderer->setNoRender(); 
+    }else{
+      /**
+       * no rendering
+       */
+      $this->_helper->viewRenderer->setNoRender();
+    }
+  }  
 
   /**
    * deleteAction

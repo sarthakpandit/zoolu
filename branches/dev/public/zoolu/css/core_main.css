@@ -388,6 +388,10 @@ Screen Overlay */
   width:460px;
 }
 
+#overlaySingleEdit {
+  width:560px;
+}
+
 /* --- overlay header --- */
 
 td.headercenter {

@@ -93,8 +93,7 @@ class ViewHelper {
 	        $strDivThumbPosImgStyle = '';
 	      }
 	      
-	      $intDisplayLanuage = $objRow->idLanguages;
-        $intDisplayLanuage = ($intDisplayLanuage == '' && isset($objRow->alternativLanguageId)) ? $objRow->alternativLanguageId : 0;
+	      $intDisplayLanuage = ($objRow->idLanguages == '') ? (isset($objRow->alternativLanguageId) && $objRow->alternativLanguageId != '')  ? $objRow->alternativLanguageId : $this->core->sysConfig->languages->default->id : $objRow->idLanguages;
 	      
 	      if(strpos($objRow->mimeType, 'image/') !== false){
 	        
@@ -114,7 +113,7 @@ class ViewHelper {
 	                              <div id="divThumbPosImg'.$objRow->id.'" class="thumbimgcontainer" style="'.$strDivThumbPosImgStyle.$strStyleOutput.'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.','.$intDisplayLanuage.');">
 	                                <table>
 	                                  <tr>
-	                                    <td><img id="Img'.$objRow->id.'" src="'.$this->core->sysConfig->media->paths->thumb.$objRow->filename.'" style="'.$strStyleOutput.'" class="thumb" startWidth="'.$strStartWidth.'"/></td>
+	                                    <td><img id="Img'.$objRow->id.'" src="'.sprintf($this->core->sysConfig->media->paths->thumb, $objRow->path).$objRow->filename.'?v='.$objRow->version.'" style="'.$strStyleOutput.'" class="thumb" startWidth="'.$strStartWidth.'"/></td>
 	                                    <!--<td class="thumbshadowright">&nbsp;</td>-->
 	                                  </tr>
 	                                  <!--<tr>
@@ -196,13 +195,12 @@ class ViewHelper {
 	      $created = new DateTime($objRow->created);
 	      
 	      if(strpos($objRow->mimeType, 'image/') !== false){
-	        $strFileIconSrc = $this->core->sysConfig->media->paths->icon32.$objRow->filename; 
+	        $strFileIconSrc = sprintf($this->core->sysConfig->media->paths->icon32, $objRow->path).$objRow->filename.'?v='.$objRow->version; 
 	      }else{        
 	        $strFileIconSrc = $this->getDocIcon($objRow->extension, 32);
 	      }
 	      
-	      $intDisplayLanuage = $objRow->idLanguages;
-	      $intDisplayLanuage = ($intDisplayLanuage == '' && isset($objRow->alternativLanguageId)) ? $objRow->alternativLanguageId : 0;
+	      $intDisplayLanuage = ($objRow->idLanguages == '') ? (isset($objRow->alternativLanguageId) && $objRow->alternativLanguageId != '')  ? $objRow->alternativLanguageId : $this->core->sysConfig->languages->default->id : $objRow->idLanguages;
 	      
 	      /**
 	       * list row entry
@@ -234,7 +232,7 @@ class ViewHelper {
 	      $created = new DateTime($objRow->created);
 	      
 	      if(strpos($objRow->mimeType, 'image/') !== false){
-	        $strFileIconSrc = $this->core->sysConfig->media->paths->icon32.$objRow->filename;  
+	        $strFileIconSrc = sprintf($this->core->sysConfig->media->paths->icon32, $objRow->path).$objRow->filename.'?v='.$objRow->version;  
 	      }else{        
 	        $strFileIconSrc = $this->getDocIcon($objRow->extension, 32);
 	      }
@@ -266,7 +264,7 @@ class ViewHelper {
   	foreach ($rowset as $row) {
       
   	  if(strpos($row->mimeType, 'image/') !== false){
-        $strFileIconSrc = $this->core->sysConfig->media->paths->icon32.$row->filename;  
+        $strFileIconSrc = sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version;  
       }else{        
         $strFileIconSrc = $this->getDocIcon($row->extension, 32);
       }
@@ -331,6 +329,141 @@ class ViewHelper {
                      </div>';  		
   	}
   	return $strOutput;
+  }
+  
+  /**
+   * getSingleEditForm
+   * @param Zend_Db_Table_Rowset_Abstract $objFileData
+   * @param array $arrImagesSizes 
+   * @author Thomas Schedler <tsh@massiveart.com>   
+   */
+  public function getSingleEditForm(Zend_Db_Table_Rowset_Abstract $objFileData, $arrImagesSizes){
+    $this->core->logger->debug('media->views->helpers->ViewHelper->getSingleEditForm()');
+    
+    $strOutput = '';
+    
+    if(count($objFileData) == 1) {
+      $objFile = $objFileData->current();
+      
+      if(strpos($objFile->mimeType, 'image/') !== false){
+        $blnIsImage = true;
+        $strFileIconSrc = sprintf($this->core->sysConfig->media->paths->thumb, $objFile->path).$objFile->filename.'?v='.$objFile->version;
+        $strDownloadLink = '/zoolu-website/media/image/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)); 
+        $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->imgbase.$objFile->path;
+      }else{
+        $blnIsImage = false;        
+        $strFileIconSrc = $this->getDocIcon($objFile->extension, 128);
+        $strDownloadLink = '/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title));
+        $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->docbase.$objFile->path;
+      }
+
+      if($objFile->description != ''){
+        $strDescription = $objFile->description;
+        $strTextareaCss = ' class="textarea"';      
+      }else{
+        $strDescription = 'Beschreibung hinzufügen...';
+        $strTextareaCss = '';
+      }
+            
+      // build the element
+      $strTags = '';
+      
+      if($objFile->idLanguages != ''){
+        require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php'; // FIXME : quick and dirty solution
+        $objModelTags = new Model_Tags(); 
+        $objModelTags->setLanguageId($objFile->idLanguages);     
+        $objTags = $objModelTags->loadTypeTags('file', $objFile->id, 1); // TODO : version      
+        
+        if(count($objTags) > 0){
+          foreach($objTags as $objTag){ 
+            $strTags .= '<li value="'.$objTag->id.'">'.htmlentities($objTag->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</li>';        
+          }
+        }
+      }
+      
+      $strLanguageSpecificChecked = ($objFile->isLanguageSpecific == 1) ? ' checked="checked"' : '';
+       
+      $strOutput .= '<div class="mediacontainer">
+                       <div class="mediaicon">
+                          <a href="'.$strDownloadLink.'" target="_blank"><img width="128" src="'.$strFileIconSrc.'"/></a><br/>';
+      if($blnIsImage == false){
+        $strOutput .= '<div class="spacer2" style="text-align:center">'.$objFile->downloadCounter.' Downloads</div>';
+      }
+      
+      $strOutput .= '
+                          <div class="field">
+                           <label for="FileIsLanguageSpecific'.$objFile->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$objFile->id.'" name="FileIsLanguageSpecific'.$objFile->id.'"> Sprachspezifisch</label>                            
+                         </div>
+                       </div>
+                       <div class="mediainfos">
+                         <div class="mediainfotitle"><label for="FileTitle'.$objFile->id.'" class="gray666 bold">Titel</label><br/><input type="text" value="'.$objFile->title.'" id="FileTitle'.$objFile->id.'" name="FileTitle'.$objFile->id.'"/></div>
+                         <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription'.$objFile->id.'" name="FileDescription'.$objFile->id.'"'.$strTextareaCss.'>'.$strDescription.'</textarea></div>
+                         <div class="mediainfotags">
+                           <label for="FileTitle'.$objFile->id.'" class="gray666 bold">Tags</label><br/>
+                           <ol>        
+                             <li class="autocompletList input-text">
+                               <input type="text" value="" id="FileTags'.$objFile->id.'" name="FileTags'.$objFile->id.'"/>
+                               <div id="FileTags'.$objFile->id.'_autocompleter" class="autocompleter">
+                                 <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+                                 <ul class="feed">
+                                   '.$strTags.'  
+                                 </ul>
+                               </div>
+                             </li>
+                           </ol>
+                           <script type="text/javascript" language="javascript">//<![CDATA[
+                             FileTags'.$objFile->id.'_list = new FacebookList(\'FileTags'.$objFile->id.'\', \'FileTags'.$objFile->id.'_autocompleter\',{ newValues: true, regexSearch: true });
+                             '.$this->getAllTagsForAutocompleter('FileTags'.$objFile->id).'
+                             //]]>
+                           </script>                           
+                         </div>                         
+                         <div class="clear"></div>  
+                       </div>
+                       <div class="clear"></div>
+                       <div class="spacer1"></div>
+                       <div class="mediasizes">';
+      
+      $strMediaUrl = '';
+      if($blnIsImage == true){
+        $strOutput .= '
+                         <select id="mediaSizes" onchange="$(\'singleMediaUrl\').value = $F(\'singleFileBasePath\') + this.value + $F(\'singleFileName\')">';
+        foreach($arrImagesSizes as $arrImageSize){
+          if(isset($arrImageSize['display']) && $arrImageSize['display'] == 'true'){
+            if($strMediaUrl == '') $strMediaUrl = $strBasePath.$arrImageSize['folder'].'/'.$objFile->filename.'?v='.$objFile->version;
+            $strOutput .= '
+                           <option value="'.$arrImageSize['folder'].'/">'.$arrImageSize['folder'].'</option>';
+          }
+        }
+        $strOutput .= '
+                         </select>';
+      }else{
+        $strOutput .= '&nbsp;';
+        $strMediaUrl = 'http://'.$_SERVER['HTTP_HOST'].$strDownloadLink;
+      }
+      $strOutput .= '
+                       </div>
+                       <div class="medialink">
+                         <input type="text" id="singleMediaUrl" readonly="readonly" value="'.$strMediaUrl.'" onclick="this.select()"/>
+                         <div id="d_clip_container" style="float:right; margin:0 10px 0 0; position:relative;">
+                           <div id="d_clip_button">[copy to clipboard]</div>
+                         </div>
+                         <div class="clear"></div> 
+                         <input type="hidden" id="singleFileName" value="'.$objFile->filename.'?v='.$objFile->version.'"/>
+                         <input type="hidden" id="singleFileBasePath" value="'.$strBasePath.'"/>
+                       </div>                       
+                       <div class="clear"></div>
+                       <div class="spacer1"></div>
+                       <div class="mediasingleupload">
+                         <label for="txtFileName" class="gray666 bold">Neue Version</label><br/>
+                         <div>
+                           <input type="text" id="txtFileName" disabled="true" />
+                           <span id="spanButtonPlaceholder"></span>
+                         </div>
+                         <div id="fsUploadProgress"></div>                       
+                       </div>
+                     </div>';     
+    }
+    return $strOutput;
   }
   
   /**
