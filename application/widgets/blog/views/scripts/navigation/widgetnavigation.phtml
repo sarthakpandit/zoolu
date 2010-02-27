@@ -5,7 +5,7 @@ $objHelper = new NavigationHelper();
             <div id="level<?php echo $this->currLevel; ?>" class="navlevelinner" onmouseover="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'show');return false;" onmouseout="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'hide'); return false;">
               <div id="widgetproperties" class="startpage">
                 <div class="icon img_startpage_on"></div>
-                <div class="title" onclick="myNavigation.getWidgetPropertiesForm('<?php echo $this->widgetName; ?>', <?php echo $this->parentId; ?>); return false;">Blog-Einstellungen</div>
+                <div class="title" onclick="myNavigation.getWidgetPropertiesForm('<?php echo $this->widgetName; ?>', <?php echo $this->idWidgetInstance; ?>); return false;">Blog-Einstellungen</div>
               </div>
               <div class="linegray"></div>
               <?php echo $objHelper->getNavigationElements($this->childElements, $this->currLevel, $this->widgetName); ?>

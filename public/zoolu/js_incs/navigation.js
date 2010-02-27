@@ -1232,41 +1232,41 @@ Massiveart.Navigation = Class.create({
     
     this.setParentFolderId(itemId);
 		
-		if(this.levelArray.indexOf(this.currLevel) == -1){
-		  this.levelArray.push(this.currLevel);
-		  
-		  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" widgetInstanceId="'+widgetInstanceId+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
-		  new Insertion.Bottom('divNaviCenterInner', levelContainer);
-		}else{
-	      myCore.addBusyClass('navlevel'+this.currLevel);   
-	      $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
-	      $('navlevel'+this.currLevel).writeAttribute('widgetInstanceId', widgetInstanceId);
-	      
-	      var levelPos = this.levelArray.indexOf(this.currLevel);
-	      for(var i = levelPos; i < this.levelArray.length; i++){
-	        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
-	      }
-	    }
-		
-		new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
-		  parameters: {
-				currLevel: this.currLevel,
-				instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
-				idWidgetInstances: itemId,
-				elementType: 'widget'
-		  },
-		  evalScripts: true,
-		  onComplete: function(){
-		  	myCore.removeBusyClass('navlevel'+this.currLevel);
-		  	this.initFolderHover();
-		  	this.initPageHover();
-	      this.initAddMenuHover();
-	      this.initWidgetHover();
-	        
-	      this.scrollNavigationBar();
-	      this.updateCurrentWidget();
-		  }.bind(this)
-		});
+	if(this.levelArray.indexOf(this.currLevel) == -1){
+	  this.levelArray.push(this.currLevel);
+	  
+	  var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="'+this.getParentFolderId()+'" widgetInstanceId="'+widgetInstanceId+'" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+	  new Insertion.Bottom('divNaviCenterInner', levelContainer);
+	}else{
+      myCore.addBusyClass('navlevel'+this.currLevel);   
+      $('navlevel'+this.currLevel).writeAttribute('parentid', this.getParentFolderId());
+      $('navlevel'+this.currLevel).writeAttribute('widgetInstanceId', widgetInstanceId);
+      
+      var levelPos = this.levelArray.indexOf(this.currLevel);
+      for(var i = levelPos; i < this.levelArray.length; i++){
+        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+      }
+    }
+	
+	new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
+	  parameters: {
+			currLevel: this.currLevel,
+			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
+			idWidgetInstances: itemId,
+			elementType: 'widget'
+	  },
+	  evalScripts: true,
+	  onComplete: function(){
+	  	myCore.removeBusyClass('navlevel'+this.currLevel);
+	  	this.initFolderHover();
+	  	this.initPageHover();
+      this.initAddMenuHover();
+      this.initWidgetHover();
+        
+      this.scrollNavigationBar();
+      this.updateCurrentWidget();
+	  }.bind(this)
+	});
   },
   
   /**
