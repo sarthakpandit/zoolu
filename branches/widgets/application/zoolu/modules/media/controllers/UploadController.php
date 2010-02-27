@@ -85,10 +85,10 @@ class Media_UploadController extends AuthControllerAction  {
       /**
        * check if upload is valid
        */
-      if (!$this->objUpload->isValid(self::UPLOAD_FIELD)) {
-        $this->core->logger->warn('isValid: '.implode('\n', $this->objUpload->getMessages()));
-      	throw new Exception('Uploaded file is not valid!');
-      }
+//      if (!$this->objUpload->isValid(self::UPLOAD_FIELD)) {
+//        $this->core->logger->warn('isValid: '.implode('\n', $this->objUpload->getMessages()));
+//      	throw new Exception('Uploaded file is not valid!');
+//      }
 
       if($this->getRequest()->isPost()){
   	    $objRequest = $this->getRequest();

@@ -83,7 +83,7 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 				
 				$this->insertCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
         //NOT TESTED!
-//        $this->insertFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
+        $this->insertFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->insertMultiFieldData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->insertInstanceData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->insertMultiplyRegionData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
@@ -113,7 +113,7 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
         }
 				$this->updateCoreData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 				//NOT TESTED!
-//        $this->updateFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
+        $this->updateFileData('subwidget', array('Id' => $strSubwidgetId, 'Version' => $intSubwidgetVersion));
 //        $this->updateMultiFieldData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 //        $this->updateInstanceData('subwidget', $strSubwidgetId, $intSubwidgetVersion);
 //        $this->updateMultiplyRegionData('subwidget', $strSubwidgetId, $intSubwidgetVersion);

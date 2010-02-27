@@ -168,6 +168,7 @@ function uploadError(file, errorCode, message) {
 		switch (errorCode) {
 		case SWFUpload.UPLOAD_ERROR.HTTP_ERROR:
 			progress.setStatus("Upload Error: " + message);
+			alert("Error Code: HTTP Error, File name: " + file.name + ", Message: " + message);
 			this.debug("Error Code: HTTP Error, File name: " + file.name + ", Message: " + message);
 			break;
 		case SWFUpload.UPLOAD_ERROR.UPLOAD_FAILED:
