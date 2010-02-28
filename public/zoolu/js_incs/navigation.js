@@ -1248,7 +1248,7 @@ Massiveart.Navigation = Class.create({
       }
     }
 	
-	new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, 'blog'), {
+	new Ajax.Updater('navlevel'+this.currLevel, this.constRequestWidgetNav.replace(/%WIDGET%/, widgetType), {
 	  parameters: {
 			currLevel: this.currLevel,
 			instanceId: $('navlevel'+this.currLevel).readAttribute('widgetInstanceId'),
