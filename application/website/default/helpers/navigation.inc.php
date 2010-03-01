@@ -146,7 +146,7 @@ function get_main_navigation_title(){
   
   if(count($objNavigation->MainNavigation()) > 0){    
     foreach($objNavigation->MainNavigation() as $objNavigationItem){
-
+			
       $blnIsSelected = false;
       if($strPageId == $objNavigationItem->pageId){
         $blnIsSelected = true;
@@ -154,6 +154,10 @@ function get_main_navigation_title(){
         $blnIsSelected = true;
       }else if($strWidgetId == $objNavigationItem->widgetId){
       	$blnIsSelected = true;
+      }else if(is_object($objNavigation->Widget())){
+      	if($objNavigationItem->title == $objNavigation->Widget()->getWidgetTitle()){
+      		$blnIsSelected = true;
+      	}
       }
       
       if($blnIsSelected){

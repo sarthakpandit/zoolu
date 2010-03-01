@@ -73,7 +73,9 @@ class Navigation {
    * @return Widget
    */
   public function Widget(){
-  	return Zend_Registry::get('Widget');
+  	if(Zend_Registry::isRegistered('Widget')) {
+  		return Zend_Registry::get('Widget');
+  	}
   }
   
   /**
