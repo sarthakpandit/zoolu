@@ -86,6 +86,7 @@ class Blog_View_Helper_Pager {
 	
 	    $this->total = $total;
 	    $this->perPage = $perPage;
+
 	    $this->totalPage = ceil($this->total / $this->perPage);
 	     
 	    if ($this->totalPage < $this->currentPage) $this->currentPage = 1;
