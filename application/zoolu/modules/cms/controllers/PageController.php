@@ -541,7 +541,11 @@ class Cms_PageController extends AuthControllerAction {
       /**
        * set action
        */
-      $this->objForm->setAction('/zoolu/cms/page/edit');
+      if(intval($this->objRequest->getParam('id')) > 0){
+        $this->objForm->setAction('/zoolu/cms/page/edit');
+      }else{
+        $this->objForm->setAction('/zoolu/cms/page/add');
+      }
 
       /**
        * prepare form (add fields and region to the Zend_Form)
@@ -577,7 +581,11 @@ class Cms_PageController extends AuthControllerAction {
     $this->core->logger->debug('cms->controllers->PageController->changelanguageAction()');
 
     try{
-      $this->_forward('geteditform');
+      if(intval($this->objRequest->getParam('id')) > 0){
+        $this->_forward('geteditform');
+      }else{
+        $this->_forward('getaddform');
+      }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
       exit();
@@ -647,7 +655,11 @@ class Cms_PageController extends AuthControllerAction {
       /**
        * set action
        */
-      $this->objForm->setAction('/zoolu/cms/page/edit');
+      if(intval($this->objRequest->getParam('id')) > 0){
+        $this->objForm->setAction('/zoolu/cms/page/edit');
+      }else{
+        $this->objForm->setAction('/zoolu/cms/page/add');
+      }
 
       /**
        * prepare form (add fields and region to the Zend_Form)

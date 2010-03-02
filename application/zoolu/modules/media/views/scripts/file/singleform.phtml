@@ -18,7 +18,7 @@
 <form id="editForm" name="editForm" method="post" action="<?php echo $this->strEditFormAction; ?>" onsubmit="return false;">
   <input type="hidden" id="mediaFormLanguageId" value="<?php echo $this->languageId; ?>" name="languageId"/>
   <div id="overlayMediaWrapper" class="mediawrapper">
-	  <?php echo $objHelper->getSingleEditForm($this->objFile, $this->imagesSizes); ?>
+	  <?php echo $objHelper->getSingleEditForm($this->objFile, $this->imagesSizes, $this->objFileVersions); ?>
 	  <input type="hidden" name="FileIds" id="EditFileIds" value="<?php echo $this->intFileId; ?>"/>
     <input type="hidden" name="IsSingleEdit" id="EditIsSingleEdit" value="true"/>
   </div>

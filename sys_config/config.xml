@@ -26,6 +26,7 @@
     <client>dev</client>
     <language>de</language>
     <location>de_AT</location>
+    <timezone>Europe/Vienna</timezone>
     
     <!-- Standard web-server user & group -->
     <server>
@@ -42,7 +43,7 @@
         <code>de</code>
       </default>
     </languages>
-    
+        
     <!-- VERSION -->
     <version>
       <js>1.0</js>
@@ -142,6 +143,7 @@
         <category>3</category>
         <unit>4</unit>
         <contact>5</contact>
+        <product>6</product>
       </types>
       <!-- default status for folder/page creation(1...Test, 2...Published, 3...Approval) -->
       <!-- table: status -->
@@ -555,6 +557,7 @@
       <collection>5</collection>
       <product>6</product>
       <product_tree>7</product_tree>
+      <product_overview>8</product_overview>
     </types>
 
     <!-- URL TYPES -->

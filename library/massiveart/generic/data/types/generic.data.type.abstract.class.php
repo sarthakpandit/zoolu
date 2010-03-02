@@ -73,6 +73,11 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    */
   protected $objModelGenericData;
 
+  protected $blnHasLoadedFileData = false;
+  protected $blnHasLoadedMultiFieldData = false;
+  protected $blnHasLoadedInstanceData = false;
+  protected $blnHasLoadedMultiplyRegionData = false;
+  
   /**
    * Constructor
    */
@@ -1073,7 +1078,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
 
           if(count($arrGenFormsData) > 0){
-            //$this->blnHasLoadedInstanceData = true;
+            $this->blnHasLoadedMultiplyRegionData = true;
 
             foreach ($arrGenFormsData as $arrRowGenFormData) {
               $intRegionInstanceCounter++;
@@ -1113,7 +1118,8 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
             $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
 
             if(count($arrGenFormsData) > 0){
-              //$this->blnHasLoadedFileData = true;
+              $this->blnHasLoadedMultiplyRegionData = true;
+              
               foreach($arrGenFormsData as $arrGenRowFormsData){
                 $intRegionInstanceId = $arrGenRowFormsData['idRegionInstances'];
                 $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
@@ -1146,7 +1152,8 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
             $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
 
             if(count($arrGenFormsData) > 0){
-              //$this->blnHasLoadedFileData = true;
+              $this->blnHasLoadedMultiplyRegionData = true;
+              
               foreach($arrGenFormsData as $arrGenRowFormsData){
                 $intRegionInstanceId = $arrGenRowFormsData['idRegionInstances'];
                 $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
@@ -1194,7 +1201,8 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
             $arrGenFormsData = $objGenTable->fetchAll($objSelect);
 
             if(count($arrGenFormsData) > 0){
-              //$this->blnHasLoadedMultiFieldData = true;
+              $this->blnHasLoadedMultiplyRegionData = true;
+              
               foreach($arrGenFormsData as $arrGenRowFormsData){
                 $intRegionInstanceId = $arrGenRowFormsData->idRegionInstances;
                 $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);

@@ -560,23 +560,26 @@ function get_image_slogan_main($strImageFolder = '', $blnZoom = true, $blnUseLig
  * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
  */
-function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = 'divTextBlock', $strImageContainerClass = 'divImgLeft'){
+function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = 'divTextBlock', $strImageContainerClass = 'divImgLeft', $bln2Columned = false){
   $core = getCoreObject();
   $objPage = getPageObject();
 
   $objMyMultiRegion = $objPage->getRegion(45); //45 is the default text block extended region
 
   $strHtmlOutput = '';
-
+  $arrHtmlOuput = array();
+  $intItemCounter = 0;
+   
   if($objMyMultiRegion instanceof GenericElementRegion){
     foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
 
       $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
       if($strBlockTitle != ''){
+        
         $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
 
         $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
-        $strImageAddonClasses = ($objMyMultiRegion->getField('block_pics')->getInstanceProperty($intRegionInstanceId, 'display_option') == 'RIGHT_ALIGNED') ? ' mLeft20 right' : ' mRight20 left';
+        $strImageAddonClasses = ($objMyMultiRegion->getField('block_pics')->getInstanceProperty($intRegionInstanceId, 'display_option') == 'RIGHT_ALIGNED') ? ' mLeft10 right' : ' mRight10 left';
         
         if($objFiles != '' && count($objFiles) > 0){
           $strHtmlOutput .= '<div class="'.$strImageContainerClass.$strImageAddonClasses.'">';
@@ -614,9 +617,29 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
         $strHtmlOutput .= '</div>';
         $strHtmlOutput .= '<div class="clear"></div>';
         $strHtmlOutput .= '</div>';
+        
+        if($bln2Columned){
+          if(!array_key_exists('col0'.($intItemCounter % 2 + 1), $arrHtmlOuput)){
+            $arrHtmlOuput['col0'.($intItemCounter % 2 + 1)] = $strHtmlOutput;
+          }else{
+            $arrHtmlOuput['col0'.($intItemCounter % 2 + 1)] .= $strHtmlOutput;
+          }
+          $strHtmlOutput = '';
+        }
+        $intItemCounter++;
       }
     }
   }
+  
+  if($bln2Columned && count($arrHtmlOuput) > 0){
+    foreach($arrHtmlOuput as $strKey => $strColOutput){
+      $strHtmlOutput .= '
+          <div class="'.$strKey.'">
+            '.$strColOutput.'      
+          </div>';
+    }
+  }
+  
   echo $strHtmlOutput;
 }
 

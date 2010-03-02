@@ -337,7 +337,7 @@ class ViewHelper {
    * @param array $arrImagesSizes 
    * @author Thomas Schedler <tsh@massiveart.com>   
    */
-  public function getSingleEditForm(Zend_Db_Table_Rowset_Abstract $objFileData, $arrImagesSizes){
+  public function getSingleEditForm(Zend_Db_Table_Rowset_Abstract $objFileData, $arrImagesSizes, $objFileVersions = null){
     $this->core->logger->debug('media->views->helpers->ViewHelper->getSingleEditForm()');
     
     $strOutput = '';
@@ -391,7 +391,7 @@ class ViewHelper {
       }
       
       $strOutput .= '
-                          <div class="field">
+                         <div class="field">
                            <label for="FileIsLanguageSpecific'.$objFile->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$objFile->id.'" name="FileIsLanguageSpecific'.$objFile->id.'"> Sprachspezifisch</label>                            
                          </div>
                        </div>
@@ -422,7 +422,7 @@ class ViewHelper {
                        <div class="clear"></div>
                        <div class="spacer1"></div>
                        <div class="mediasizes">';
-      
+            
       $strMediaUrl = '';
       if($blnIsImage == true){
         $strOutput .= '
@@ -440,6 +440,7 @@ class ViewHelper {
         $strOutput .= '&nbsp;';
         $strMediaUrl = 'http://'.$_SERVER['HTTP_HOST'].$strDownloadLink;
       }
+      
       $strOutput .= '
                        </div>
                        <div class="medialink">
@@ -459,9 +460,30 @@ class ViewHelper {
                            <input type="text" id="txtFileName" disabled="true" />
                            <span id="spanButtonPlaceholder"></span>
                          </div>
-                         <div id="fsUploadProgress"></div>                       
+                         <div id="fsUploadProgress"></div>';
+      
+      if($objFileVersions != null && $objFileVersions instanceof Zend_Db_Table_Rowset_Abstract){
+        $objCreated = DateTimeHelper::getDateObject();
+        $objArchived = DateTimeHelper::getDateObject();
+        
+        $strOutput .= '
+                         <div class="spacer1"></div>
+                         <label for="txtFileName" class="gray666 bold">Ältere Versionen</label><br/>
+                         <div class="mediaversions">';
+        foreach($objFileVersions as $objFileVersion){
+          $objCreated->set($objFileVersion->created);
+          $objArchived->set($objFileVersion->archived);
+          $strOutput .= '
+                           <div class="version"><a href="/zoolu-website/media/download/'.$objFileVersion->idFiles.'/'.urlencode(str_replace('.', '-', $objFileVersion->title)).'?v='.$objFileVersion->version.'" target="_blank">Version '.$objFileVersion->version.'</a> ('.$objCreated->get(Zend_Date::DATETIME_MEDIUM).' - '.$objArchived->get(Zend_Date::DATETIME_MEDIUM).')</div>';  
+        }
+
+        $strOutput .= '
+                         </div>';
+      }
+      
+      $strOutput .= '
                        </div>
-                     </div>';     
+                     </div>';
     }
     return $strOutput;
   }

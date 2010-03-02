@@ -248,6 +248,8 @@ class Media_UploadController extends AuthControllerAction  {
     $this->view->assign('fileFileId', $objFile->getFileId());
     $this->view->assign('fileExtension', $objFile->getExtension());
     $this->view->assign('fileTitle', $objFile->getTitle());
+    $this->view->assign('fileVersion', $objFile->getVersion());
+    $this->view->assign('filePath', sprintf($this->core->sysConfig->media->paths->icon32, $objFile->getSegmentPath()));
     $this->view->assign('mimeType', $objFile->getMimeType());
     $this->view->assign('strDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : guiTexts
     $this->view->assign('languageId', $this->intLanguageId);

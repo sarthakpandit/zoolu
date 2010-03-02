@@ -16,6 +16,15 @@ Massiveart.List = Class.create({
     
     this.sortColumn = '';
     this.sortOrder = '';
+    this.searchValue = '';
+    
+    if($('search')){
+      $('search').observe('keypress', function(event){
+        if(event.keyCode == Event.KEY_RETURN) {
+          this.search();
+        }
+      }.bind(this));  
+    }
   },
   
   /**
@@ -30,12 +39,13 @@ Massiveart.List = Class.create({
       
       new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/list', {
         parameters: { 
-    	  rootLevelId: myNavigation.rootLevelId, 
-    	  page: this.page, 
-    	  itemsPerPage: this.ItemsPerPage,
-    	  order: this.sortColumn,
-    	  sort: this.sortOrder
-    	},      
+      	  rootLevelId: myNavigation.rootLevelId, 
+      	  page: this.page, 
+      	  itemsPerPage: this.ItemsPerPage,
+      	  order: this.sortColumn,
+      	  sort: this.sortOrder,
+      	  search: this.searchValue
+      	},      
         evalScripts: true,     
         onComplete: function() {
           $(myNavigation.genListContainer).show();
@@ -53,7 +63,28 @@ Massiveart.List = Class.create({
   sort: function(sortColumn, sortOrder){
     if(typeof(sortColumn != 'undefined')) this.sortColumn = sortColumn;
     if(typeof(sortOrder != 'undefined')) this.sortOrder = sortOrder;
-    myList.getListPage();
+    this.getListPage();
+  },
+  
+  /**
+   * search
+   */
+  search: function(){
+    if($('search')){
+      if($F('search') != ''){
+        this.searchValue = $F('search');
+        this.getListPage();
+      }
+    }
+  },
+  
+  /**
+   * resetSearch
+   */
+  resetSearch: function(){
+    if($('search')) $('search').value = '';
+    this.searchValue = '';
+    this.getListPage();
   },
   
   /**
@@ -63,32 +94,32 @@ Massiveart.List = Class.create({
     var arrEntries = [];
     var strEntries = '';
     var index = 0;
-	$$('#listEntries input').each(function(e){ 
-      if(e.type == 'checkbox'){
-        if(e.checked){
-          arrEntries[index] = e.value;
-          strEntries += '[' + e.value + ']';
-          index++;
-        }
-      }      
-	});
-	if(arrEntries.size() > 0){
+  	$$('#listEntries input').each(function(e){ 
+        if(e.type == 'checkbox'){
+          if(e.checked){
+            arrEntries[index] = e.value;
+            strEntries += '[' + e.value + ']';
+            index++;
+          }
+        }      
+  	});
+  	if(arrEntries.size() > 0){
       myCore.showDeleteAlertMessage(arrEntries.size());
       $('buttonOk').observe('click', function(event){
         new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/listdelete', {
-    	  parameters: { 
-    	    values: strEntries   
-          },      
-    	  evalScripts: true,     
-    	  onComplete: function() {
-            myCore.hideDeleteAlertMessage();  
-    	  }.bind(this)
-    	});        
+      	  parameters: { 
+      	    values: strEntries   
+            },      
+      	  evalScripts: true,     
+      	  onComplete: function() {
+              myCore.hideDeleteAlertMessage();  
+      	  }.bind(this)
+        });        
       }.bind(this));
       $('buttonCancel').observe('click', function(event){
         myCore.hideDeleteAlertMessage();
       }.bind(this));
-	}
+  	}
   },
   
   /**

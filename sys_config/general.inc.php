@@ -57,6 +57,11 @@ $core = Core::getInstance(true, $sysConfig, $zooConfig, $webConfig);
 Zend_Registry::set('Core', $core);
 
 /**
+ * set default timezone
+ */
+date_default_timezone_set($sysConfig->timezone);
+
+/**
  * initialize location
  * (using for: Zend_Date, Zend_Translate, Zend_Currency, ...)
  */

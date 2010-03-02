@@ -558,12 +558,11 @@ Massiveart.Media = Class.create({
         parameters: serializedForm,
         onComplete: function(transport) {  
           if(isSingleEdit == true && transport.responseText != ''){
-            //TODO
-          }        
-          this.getMediaFolderContent(this.intFolderId);
-          myCore.removeBusyClass('overlayMediaWrapper');
-          //$('overlayBlack75').hide();
-          //$('overlayGenContentWrapper').hide();
+            this.getSingleFileEditForm(transport.responseText);
+          }else{
+            myCore.removeBusyClass('overlayMediaWrapper');
+          }
+          this.getMediaFolderContent(this.intFolderId);          
         }.bind(this)
       });          
     }    

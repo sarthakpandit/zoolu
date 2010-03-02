@@ -123,11 +123,17 @@ class Users_UserController extends Zend_Controller_Action {
 
     $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'sname');
     $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
+    $strSearchValue = (($this->getRequest()->getParam('search') != '') ? $this->getRequest()->getParam('search') : '');
 
     $objSelect = $this->getModelUsers()->getUserTable()->select();
-    $objSelect->from($this->getModelUsers()->getUserTable(), array('id', 'fname', 'sname'))
-              ->joinInner('users AS editor', 'editor.id = users.idUsers', array('CONCAT(`editor`.`fname`, \' \', `editor`.`sname`) AS editor', 'users.changed'))
-              ->order($strOrderColumn.' '.strtoupper($strSortOrder));
+    $objSelect->setIntegrityCheck(false);
+    $objSelect->from($this->getModelUsers()->getUserTable(), array('id', 'fname', 'sname'));
+    $objSelect->joinInner('users AS editor', 'editor.id = users.idUsers', array('CONCAT(`editor`.`fname`, \' \', `editor`.`sname`) AS editor', 'users.changed'));
+    if($strSearchValue != ''){
+      $objSelect->where('users.fname LIKE ?', '%'.$strSearchValue.'%');
+      $objSelect->orWhere('users.sname LIKE ?', '%'.$strSearchValue.'%');  
+    }
+    $objSelect->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objUsersPaginator = new Zend_Paginator($objAdapter);
@@ -137,7 +143,8 @@ class Users_UserController extends Zend_Controller_Action {
 
     $this->view->assign('userPaginator', $objUsersPaginator);
     $this->view->assign('orderColumn', $strOrderColumn);
-    $this->view->assign('sortOrder', $strSortOrder);    
+    $this->view->assign('sortOrder', $strSortOrder);
+    $this->view->assign('searchValue', $strSearchValue);    
   }
 
   /**

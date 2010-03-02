@@ -64,13 +64,13 @@ class ListHelper {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getList($objPaginator, $strOrderColumn, $strSortOrder) {
+  public function getList($objPaginator, $strOrderColumn, $strSortOrder, $strSearchValue) {
     $this->core->logger->debug('users->views->helpers->ListHelper->getList()');
-
+    
+    $intCounter = 0;
+    
     $strThead = '<thead>';
     $strTbody = '<tbody id="listEntries">';
-
-    $intCounter = 0;
     foreach ($objPaginator as $objItem) {
       $intCounter ++;
 
@@ -93,12 +93,12 @@ class ListHelper {
         $intColumCounter++;
         
         if($intCounter == 1){
-        	$strSortOrderClass = '';
-        	$strOrderColumnClass = '';
-        	if($column == $strOrderColumn){
-        		$strSortOrderClass = ' class="'.$strSortOrder.'"';
-        		$strOrderColumnClass = ' sort';
-        	}
+          $strSortOrderClass = '';
+          $strOrderColumnClass = '';
+          if($column == $strOrderColumn){
+            $strSortOrderClass = ' class="'.$strSortOrder.'"';
+            $strOrderColumnClass = ' sort';
+          }
           $strThead .= '<th class="top'.$column.$strOrderColumnClass.'"><div'.$strSortOrderClass.' onclick="myList.sort(\''.$column.'\''.(($column == $strOrderColumn && $strSortOrder == 'asc') ? ', \'desc\'' : ', \'asc\'').'); return false;">'.$this->core->translate->_($column).'</div></th>';
         }
 
@@ -124,12 +124,40 @@ class ListHelper {
     }
     $strThead .= '</thead>';
     $strTbody .= '</tbody>';
-
-    $strOutput = '
-              <table class="tablelist">
-                '.$strThead.'
-                '.$strTbody.'
-              </table>';
+    
+    $strOutput = '';
+    /**
+     * if list is filtered by search
+     */
+    if($strSearchValue != ''){
+      if(count($objPaginator) > 0){
+        $strOutput = '
+            <div class="formsubtitle searchtitle">Suche nach "'.$strSearchValue.'"</div>'; 
+      }else{
+        $strOutput = '
+            <div class="formsubtitle searchtitle">Es wurden keine Ergebnisse für "'.$strSearchValue.'" gefunden.</div>';   
+      }
+      $strOutput .= '
+            <div class="bttnSearchReset" onclick="myList.resetSearch();">
+              <div class="button17leftOff"></div>
+              <div class="button17centerOff">
+                <div>Zurücksetzen</div>
+                <div class="clear"></div>
+              </div>
+              <div class="button17rightOff"></div>
+              <div class="clear"></div>
+            </div>
+            <div class="clear"></div>';
+    }else{
+      $strOutput = '
+            <div class="spacer2"></div>';
+    }
+    
+    $strOutput .= '
+            <table class="tablelist">
+              '.$strThead.'
+              '.$strTbody.'
+            </table>';
 
     return $strOutput;
   }

@@ -55,11 +55,7 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
    * @var Model_Folders
    */
   protected $objModelFolders;
-
-  protected $blnHasLoadedFileData = false;
-  protected $blnHasLoadedMultiFieldData = false;
-  protected $blnHasLoadedInstanceData = false;
-
+  
   /**
    * save
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -106,15 +102,54 @@ class GenericDataTypeProduct extends GenericDataTypeAbstract {
             $this->updateInstanceData('product', $objProduct->productId, $objProduct->version);
             $this->updateMultiplyRegionData('product', $objProduct->productId, $objProduct->version);
           }
-
           break;
 
         case $this->core->sysConfig->generic->actions->change_template :
 
+          $objProduct = $this->objModelProducts->load($this->setup->getElementId());
+          
+          if(count($objProduct) > 0){
+            $objProduct = $objProduct->current();
+
+            $this->objModelProducts->update($this->setup, $objProduct);
+            
+            $this->insertCoreData('product', $objProduct->productId, $objProduct->version);
+
+            if($this->blnHasLoadedFileData){
+              $this->updateFileData('product', array('Id' => $objProduct->productId, 'Version' => $objProduct->version));
+            }else{
+              $this->insertFileData('product', array('Id' => $objProduct->productId, 'Version' => $objProduct->version));
+            }
+
+            if($this->blnHasLoadedMultiFieldData){
+              $this->updateMultiFieldData('product', $objProduct->productId, $objProduct->version);
+            }else{
+              $this->insertMultiFieldData('product', array('Id' => $objProduct->productId, 'Version' => $objProduct->version));
+            }
+
+            if($this->blnHasLoadedInstanceData){
+              $this->updateInstanceData('product', $objProduct->productId, $objProduct->version);
+            }else{
+              $this->insertInstanceData('product', array('Id' => $objProduct->productId, 'Version' => $objProduct->version));
+            }
+            
+            if($this->blnHasLoadedMultiplyRegionData){
+              $this->updateMultiplyRegionData('product', $objProduct->productId, $objProduct->version);
+            }else{
+              $this->insertMultiplyRegionData('product', $objProduct->productId, $objProduct->version); 
+            }
+          }          
           break;
 
         case $this->core->sysConfig->generic->actions->change_template_id :
 
+          $objProduct = $this->objModelProducts->load($this->setup->getElementId());
+          
+          if(count($objProduct) > 0){
+            $objProduct = $objProduct->current();
+
+            $this->objModelProducts->update($this->setup, $objProduct);                        
+          }          
           break;
       }
 

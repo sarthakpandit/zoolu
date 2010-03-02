@@ -498,12 +498,14 @@ Massiveart.Form = Class.create({
    */
   changeTemplate: function(newTemplateId){
     
-    $('divTemplate'+newTemplateId).addClassName('busy');
-    
     // loader
+    myCore.addBusyClass(myNavigation.genFormContainer);
     this.getFormSaveLoader();
-      
-    new Ajax.Updater(this.updateContainer, '/zoolu/cms/page/changeTemplate', {
+    
+    var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
+    var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
+    
+    new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'changeTemplate', {
       parameters: {
         newTemplateId: newTemplateId, 
         templateId: $F('templateId'),
@@ -534,6 +536,9 @@ Massiveart.Form = Class.create({
         this.loadFileFilterFieldsContent('documentFilter');
         // load contacts
         this.loadContactFieldsContent();
+        
+        myCore.removeBusyClass(myNavigation.genFormContainer);
+        this.cancleFormSaveLoader();
       }.bind(this)
     });
       

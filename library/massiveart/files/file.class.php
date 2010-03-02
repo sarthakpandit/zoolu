@@ -1083,6 +1083,22 @@ class File {
   public function getSegmenting(){
     return $this->blnSegmenting;  
   } 
+
+  /**
+   * setSegmentPath
+   * @param string $strSegmentPath
+   */
+  public function setSegmentPath($strSegmentPath){
+    $this->strSegmentPath = $strSegmentPath;
+  }
+  
+  /**
+   * getSegmentPath
+   * @return string $strSegmentPath
+   */
+  public function getSegmentPath(){
+    return $this->strSegmentPath;
+  }
   
   /**
    * setNumberOfSegments

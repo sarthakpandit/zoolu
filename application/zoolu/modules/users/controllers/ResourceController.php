@@ -83,12 +83,17 @@ class Users_ResourceController extends AuthControllerAction {
 
     $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'title');
     $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
+    $strSearchValue = (($this->getRequest()->getParam('search') != '') ? $this->getRequest()->getParam('search') : '');
 
     $objSelect = $this->getModelUsers()->getResourceTable()->select();
     $objSelect->setIntegrityCheck(false);
-    $objSelect->from($this->getModelUsers()->getResourceTable(), array('id', 'title', 'key'))
-              ->joinInner('users', 'users.id = resources.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'resources.changed'))
-              ->order($strOrderColumn.' '.strtoupper($strSortOrder));
+    $objSelect->from($this->getModelUsers()->getResourceTable(), array('id', 'title', 'key'));
+    $objSelect->joinInner('users', 'users.id = resources.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'resources.changed'));
+    if($strSearchValue != ''){
+      $objSelect->where('resources.title LIKE ?', '%'.$strSearchValue.'%');
+      $objSelect->orWhere('resources.key LIKE ?', '%'.$strSearchValue.'%');  
+    }
+    $objSelect->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objResourcesPaginator = new Zend_Paginator($objAdapter);
@@ -99,6 +104,7 @@ class Users_ResourceController extends AuthControllerAction {
     $this->view->assign('resourcePaginator', $objResourcesPaginator);
     $this->view->assign('orderColumn', $strOrderColumn);
     $this->view->assign('sortOrder', $strSortOrder);
+    $this->view->assign('searchValue', $strSearchValue);
   }
 
   /**

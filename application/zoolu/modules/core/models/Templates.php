@@ -168,7 +168,7 @@ class Model_Templates {
    * @return Zend_Db_Table_Rowset
    * @version 1.0
    */
-  public function loadActiveTemplates($blnIsStartPage = false, $intPageTypeId, $intParentTypeId){
+  public function loadActiveTemplates($blnIsStartElement = false, $intElementTypeId, $intParentTypeId, $intFormTypeId){
     $this->core->logger->debug('core->models->Model_Templates->loadTemplates()');
 
     $objSelect = $this->getTemplateTable()->select();
@@ -183,28 +183,43 @@ class Model_Templates {
     $objSelect->join('types', 'types.id = templateTypes.idTypes', array());
     $objSelect->joinLeft('templateTitles', 'templateTitles.idTemplates = templates.id AND templateTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->where('templates.active = ?', 1);
-
-    switch ($intPageTypeId){
-      case $this->core->sysConfig->page_types->page->id:
-        if($blnIsStartPage && $intParentTypeId == $this->core->sysConfig->parent_types->rootlevel){
-          $objSelect->where('types.id = ?', $this->core->sysConfig->types->portal_startpage);
-        }else if($blnIsStartPage){
-          $objSelect->where('types.id = ?', $this->core->sysConfig->types->startpage);
-        }else{
-          $objSelect->where('types.id = ?', $this->core->sysConfig->types->page);
+    
+    switch ($intFormTypeId){
+      case $this->core->sysConfig->form->types->page:
+        switch ($intElementTypeId){
+          case $this->core->sysConfig->page_types->page->id:
+            if($blnIsStartElement && $intParentTypeId == $this->core->sysConfig->parent_types->rootlevel){
+              $objSelect->where('types.id = ?', $this->core->sysConfig->types->portal_startpage);
+            }else if($blnIsStartElement){
+              $objSelect->where('types.id = ?', $this->core->sysConfig->types->startpage);
+            }else{
+              $objSelect->where('types.id = ?', $this->core->sysConfig->types->page);
+            }
+            break;
+          case $this->core->sysConfig->page_types->overview->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->overview);
+            break;
+          case $this->core->sysConfig->page_types->collection->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->collection);
+            break;
+          case $this->core->sysConfig->page_types->product_tree->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_tree);
+            break;
         }
         break;
-      case $this->core->sysConfig->page_types->overview->id:
-        $objSelect->where('types.id = ?', $this->core->sysConfig->types->overview);
-        break;
-      case $this->core->sysConfig->page_types->collection->id:
-        $objSelect->where('types.id = ?', $this->core->sysConfig->types->collection);
-        break;
-      case $this->core->sysConfig->page_types->product_tree->id:
-        $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_tree);
+      case $this->core->sysConfig->form->types->product:
+        switch ($intElementTypeId){
+          case $this->core->sysConfig->product_types->product->id:
+          case $this->core->sysConfig->product_types->link->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->product);
+            break;          
+          case $this->core->sysConfig->product_types->overview->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_overview);
+            break;
+        }
         break;
     }
-
+    
     return $this->getTemplateTable()->fetchAll($objSelect);
   }
 

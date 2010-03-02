@@ -64,7 +64,7 @@ class ListHelper {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  function getList($objPaginator, $strOrderColumn, $strSortOrder) {
+  function getList($objPaginator, $strOrderColumn, $strSortOrder, $strSearchValue) {
     $this->core->logger->debug('products->views->helpers->ListHelper->getList()');
 
     $strThead = '<thead>';
@@ -125,11 +125,39 @@ class ListHelper {
     $strThead .= '</thead>';
     $strTbody .= '</tbody>';
 
-    $strOutput = '
-              <table class="tablelist">
-                '.$strThead.'
-                '.$strTbody.'
-              </table>';
+    $strOutput = '';
+    /**
+     * if list is filtered by search
+     */
+    if($strSearchValue != ''){
+      if(count($objPaginator) > 0){
+        $strOutput = '
+            <div class="formsubtitle searchtitle">Suche nach "'.$strSearchValue.'"</div>'; 
+      }else{
+        $strOutput = '
+            <div class="formsubtitle searchtitle">Es wurden keine Ergebnisse für "'.$strSearchValue.'" gefunden.</div>';   
+      }
+      $strOutput .= '
+            <div class="bttnSearchReset" onclick="myList.resetSearch();">
+              <div class="button17leftOff"></div>
+              <div class="button17centerOff">
+                <div>Zurücksetzen</div>
+                <div class="clear"></div>
+              </div>
+              <div class="button17rightOff"></div>
+              <div class="clear"></div>
+            </div>
+            <div class="clear"></div>';
+    }else{
+      $strOutput = '
+            <div class="spacer2"></div>';
+    }
+    
+    $strOutput .= '
+            <table class="tablelist">
+              '.$strThead.'
+              '.$strTbody.'
+            </table>';
 
     return $strOutput;
   }
