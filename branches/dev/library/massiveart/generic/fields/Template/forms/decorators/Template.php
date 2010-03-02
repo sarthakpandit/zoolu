@@ -105,9 +105,9 @@ class Form_Decorator_Template extends Zend_Form_Decorator_Abstract {
 
     require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Templates.php';
     $objModelTemplates = new Model_Templates();
-    $objModelTemplates->setLanguageId($element->getAttrib('FormLanguageId'));
+    $objModelTemplates->setLanguageId($element->getAttrib('FormLanguageId')); 
 
-    $objTemplatesData = $objModelTemplates->loadActiveTemplates($element->isStartPage, $element->intElementTypeId, $element->intParentTypeId);
+    $objTemplatesData = $objModelTemplates->loadActiveTemplates($element->isStartElement, $element->intElementTypeId, $element->intParentTypeId, $element->intFormTypeId);
 
     $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $objTemplatesData);
 

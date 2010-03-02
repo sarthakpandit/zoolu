@@ -176,19 +176,27 @@ class MediaController extends Zend_Controller_Action {
     
     $this->getModelFiles();
     
-    $intMediaId = $this->_getParam('id', 0);    
+    $intMediaId = $this->_getParam('id', 0);
+    $intMediaVersion = $this->_getParam('v', 0);
     
     if($intMediaId > 0){
-      $objFile = $this->objModelFiles->loadFileById($intMediaId);
-
+      $objFile = $this->objModelFiles->loadFileById($intMediaId, $intMediaVersion);
+      
       if(count($objFile) > 0){
         $objFileData = $objFile->current();
-        
-        $strFilePath = '';
-        If($objFileData->isImage){
-          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private.$objFileData->path.$objFileData->filename;	
+
+        if($intMediaVersion > 0 && $objFileData->version != $objFileData->archiveVersion){
+          $strFileName =  $objFileData->fileId.'.v'.$objFileData->archiveVersion.'.'.$objFileData->archiveExtension;
+          $dblFileSize = $objFileData->archiveSize;
         }else{
-          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private.$objFileData->path.$objFileData->filename;	
+          $strFileName = $objFileData->filename;
+          $dblFileSize = $objFileData->size;  
+        }
+                
+        If($objFileData->isImage){
+          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private.$objFileData->path.$strFileName;	
+        }else{
+          $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->documents->path->local->private.$objFileData->path.$strFileName;	
         }
 
         if(file_exists($strFilePath)){
@@ -206,14 +214,13 @@ class MediaController extends Zend_Controller_Action {
 			    header("Content-Type: application/download");
 			
 			    // Passenden Dateinamen im Download-Requester vorgeben,
-			    header("Content-Disposition: attachment; filename=\"".$objFileData->filename."\"");
+			    header("Content-Disposition: attachment; filename=\"".$strFileName."\"");
 			    
 			    header("Content-Transfer-Encoding: binary");
-			    header("Content-Length: ".$objFileData->size);
+			    header("Content-Length: ".$dblFileSize);
 			
 			    // Datei ausgeben.
 			    readfile($strFilePath);
-			    exit(); 
                 
         }else{
           // file doesn't exist         

@@ -244,11 +244,13 @@ class Model_Files {
   /**
    * loadFileById 
    * @param integer $intFileId
+   * @param integer $intVersion
    * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
    * @version 1.0
    */
-  public function loadFileById($intFileId){
-    $this->core->logger->debug('core->models->Model_Files->loadFileById('.$intFileId.')');
+  public function loadFileById($intFileId, $intVersion = 0){
+    $this->core->logger->debug('core->models->Model_Files->loadFileById('.$intFileId.','.$intVersion.')');
     try{
       $this->getFileTable();
       
@@ -259,11 +261,43 @@ class Model_Files {
         $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter'));
         $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
         $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+        
+        if($intVersion > 0){
+          $objSelect->join('fileVersions', 'fileVersions.idFiles = files.id AND fileVersions.version = '.$intVersion, array('archiveVersion' => 'version', 'archiveExtension' => 'extension', 'archiveSize' => 'size', 'archived'));          
+        }
+        
         $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));   
         $objSelect->where('files.id = ?', $intFileId);
-               
+        
         return $this->objFileTable->fetchAll($objSelect);
       }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }  
+  }
+  
+  /**
+   * loadFileVersions
+   * @param integer $intFileId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function loadFileVersions($intFileId){
+    $this->core->logger->debug('core->models->Model_Files->loadFileVersions('.$intFileId.')');
+    try{
+      $this->getFileVersionTable();
+      
+        
+      $objSelect = $this->objFileVersionTable->select();   
+      $objSelect->setIntegrityCheck(false);
+    
+      $objSelect->from($this->objFileVersionTable, array('id', 'idFiles', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter', 'archiver', 'archived'))
+                ->join('users', 'users.id = fileVersions.archiver', array('CONCAT(users.fname, \' \', users.sname) AS archiver'))   
+                ->joinLeft('fileTitles', 'fileTitles.idFiles = fileVersions.idFiles AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'))
+                ->where('fileVersions.idFiles = ?', $intFileId)
+                ->order('archived DESC');
+
+      return $this->objFileVersionTable->fetchAll($objSelect);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }  

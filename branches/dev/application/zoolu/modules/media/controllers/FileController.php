@@ -147,6 +147,11 @@ class Media_FileController extends AuthControllerAction  {
       $this->view->assign('intFileId', $intFileId);
       $this->view->assign('objFile', $objFile);
       
+      if(count($objFile) == 1 && $objFile->current()->version > 1){
+        $objFileVersions = $this->objModelFiles->loadFileVersions($intFileId);
+        $this->view->assign('objFileVersions', $objFileVersions);
+      }
+      
       $this->view->assign('imagesSizes', $this->core->sysConfig->upload->images->default_sizes->default_size->toArray());
       $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
     }
@@ -173,7 +178,8 @@ class Media_FileController extends AuthControllerAction  {
     }
 
     if(isset($arrFormData['IsSingleEdit']) && $arrFormData['IsSingleEdit'] == 'true'){
-      //TODO     
+      echo $arrFormData['FileIds'];
+            
       /**
        * no rendering
        */

@@ -1022,7 +1022,35 @@ Buttons: Save, Delete */
   padding-top:0;
 }
 
+/* ----------------
+Search */
 
+.searchContainer {
+  float:right;
+}
+
+#buttonsearch {
+  float:left;
+  cursor:pointer;
+  margin:7px 10px 0 0;
+  display:inline;
+}
+
+.searchContainer .searchInput {
+  width:180px; 
+  margin:8px 10px 0 0;
+  float:left;
+}
+
+.bttnSearchReset {
+  cursor:pointer;
+  margin:32px 0 0 10px;
+  float:left;
+}
+
+.searchtitle {
+  float:left;
+}
 
 /* ----------------
 Save Message & Loader */

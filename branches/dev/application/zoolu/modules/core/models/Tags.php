@@ -189,7 +189,7 @@ class Model_Tags {
    * @param string $strTagType
    * @param string $strElementId
    * @param integet $intVersion
-   * @return Zend_Db_Table_Rowset
+   * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */

@@ -109,18 +109,22 @@ class Products_ProductController extends AuthControllerAction {
 
     $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'title');
     $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
+    $strSearchValue = (($this->getRequest()->getParam('search') != '') ? $this->getRequest()->getParam('search') : '');
 
     $objSelect = $this->getModelProducts()->getProductTable()->select();
     $objSelect->setIntegrityCheck(false);
-    $objSelect->from($this->getModelProducts()->getProductTable(), array('id', 'productTitles.title'))
+    $objSelect->from($this->getModelProducts()->getProductTable(), array('id'))
               ->joinInner('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote(Zend_Auth::getInstance()->getIdentity()->languageId, Zend_Db::INT_TYPE), array())
-              ->joinInner('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote(Zend_Auth::getInstance()->getIdentity()->languageId, Zend_Db::INT_TYPE), array())
+              ->joinInner('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productProperties.idLanguages = '.$this->core->dbh->quote(Zend_Auth::getInstance()->getIdentity()->languageId, Zend_Db::INT_TYPE), array('title'))
               ->joinInner(array('editor' => 'users'), 'editor.id = productProperties.idUsers', array('editor' => 'CONCAT(`editor`.`fname`, \' \', `editor`.`sname`)', 'productProperties.changed'))
               ->where('idParent = ?', $this->core->sysConfig->product->rootLevels->list->id)
               ->where('idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel)
               ->where('isStartProduct = 0')
-              ->where('productTitles.idLanguages = ?', Zend_Auth::getInstance()->getIdentity()->languageId)
-              ->order($strOrderColumn.' '.strtoupper($strSortOrder));
+              ->where('productTitles.idLanguages = ?', Zend_Auth::getInstance()->getIdentity()->languageId);
+    if($strSearchValue != ''){
+      $objSelect->where('productTitles.title LIKE ?', '%'.$strSearchValue.'%'); 
+    }
+    $objSelect->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objProductsPaginator = new Zend_Paginator($objAdapter);
@@ -131,6 +135,7 @@ class Products_ProductController extends AuthControllerAction {
     $this->view->assign('productPaginator', $objProductsPaginator);
     $this->view->assign('orderColumn', $strOrderColumn);
     $this->view->assign('sortOrder', $strSortOrder);
+    $this->view->assign('searchValue', $strSearchValue);
 
     $this->getModelFolders();
     $objRootLevels = $this->objModelFolders->loadAllRootLevels($this->core->sysConfig->modules->products);
@@ -139,7 +144,7 @@ class Products_ProductController extends AuthControllerAction {
     $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
     $this->view->assign('productFormDefaultId', $this->core->sysConfig->product_types->product->default_formId);
     $this->view->assign('productTemplateDefaultId', $this->core->sysConfig->product_types->product->default_templateId);
-    $this->view->assign('productTypeDefaultId', $this->core->sysConfig->product_types->product->id);
+    $this->view->assign('productTypeDefaultId', $this->core->sysConfig->product_types->product->id);    
   }
 
   /**
@@ -545,6 +550,7 @@ class Products_ProductController extends AuthControllerAction {
       $objGenericData->Setup()->setFormTypeId($this->objRequest->getParam("formTypeId"));
       $objGenericData->Setup()->setTemplateId($this->objRequest->getParam("templateId"));
       $objGenericData->Setup()->setElementId($this->objRequest->getParam("id"));
+      $objGenericData->Setup()->setElementLinkId($this->objRequest->getParam("linkId", -1));
       $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
       $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
       $objGenericData->Setup()->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
@@ -570,7 +576,11 @@ class Products_ProductController extends AuthControllerAction {
       /**
        * set action
        */
-      $this->objForm->setAction('/zoolu/products/product/edit');
+      if(intval($this->objRequest->getParam('id')) > 0){
+        $this->objForm->setAction('/zoolu/products/product/edit');
+      }else{
+        $this->objForm->setAction('/zoolu/products/product/add');
+      }
 
       /**
        * prepare form (add fields and region to the Zend_Form)
@@ -667,7 +677,11 @@ class Products_ProductController extends AuthControllerAction {
       /**
        * set action
        */
-      $this->objForm->setAction('/zoolu/products/product/edit');
+      if(intval($this->objRequest->getParam('id')) > 0){
+        $this->objForm->setAction('/zoolu/products/product/edit');
+      }else{
+        $this->objForm->setAction('/zoolu/products/product/add');
+      }
 
       /**
        * prepare form (add fields and region to the Zend_Form)

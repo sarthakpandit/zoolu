@@ -23,7 +23,7 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
    * getModuleRootLevelList
    * @param integer rootLevelId
    */
-   getModuleRootLevelList: function(rootLevelId, rootLevelType){
+  getModuleRootLevelList: function(rootLevelId, rootLevelType){
     
     this.rootLevelId = rootLevelId;
     this.rootLevelType = rootLevelType;
@@ -40,6 +40,7 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     
     myList.sortColumn = '';
     myList.sortOrder = '';
+    myList.resetSearch();
     myList.getListPage();
   },
   

@@ -83,12 +83,17 @@ class Users_GroupController extends AuthControllerAction {
 
     $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'title');
     $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
+    $strSearchValue = (($this->getRequest()->getParam('search') != '') ? $this->getRequest()->getParam('search') : '');
 
     $objSelect = $this->getModelUsers()->getGroupTable()->select();
     $objSelect->setIntegrityCheck(false);
-    $objSelect->from($this->getModelUsers()->getGroupTable(), array('id', 'title', 'key'))
-              ->joinInner('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'groups.changed'))
-              ->order($strOrderColumn.' '.strtoupper($strSortOrder));
+    $objSelect->from($this->getModelUsers()->getGroupTable(), array('id', 'title', 'key'));
+    $objSelect->joinInner('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'groups.changed'));
+    if($strSearchValue != ''){
+      $objSelect->where('groups.title LIKE ?', '%'.$strSearchValue.'%');
+      $objSelect->orWhere('groups.key LIKE ?', '%'.$strSearchValue.'%');  
+    }
+    $objSelect->order($strOrderColumn.' '.strtoupper($strSortOrder));
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objGroupsPaginator = new Zend_Paginator($objAdapter);
@@ -99,6 +104,7 @@ class Users_GroupController extends AuthControllerAction {
     $this->view->assign('groupPaginator', $objGroupsPaginator);
     $this->view->assign('orderColumn', $strOrderColumn);
     $this->view->assign('sortOrder', $strSortOrder);
+    $this->view->assign('searchValue', $strSearchValue);
   }
 
   /**

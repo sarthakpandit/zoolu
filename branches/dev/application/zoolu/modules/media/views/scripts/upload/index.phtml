@@ -5,10 +5,10 @@
 <div class="mediacontainer">
   <div class="mediaicon">
     <?php if(strpos($this->mimeType, 'image/') !== false) : ?>
-      <img src="/website/uploads/images/icon32/<?php echo $this->fileFileId; ?>.<?php echo $this->fileExtension; ?>" width="32" height="32"/>
+      <img src="<?php echo $this->filePath.$this->fileFileId.'.'.$this->fileExtension.'?v='.$this->fileVersion; ?>" width="32" height="32"/>
     <?php else : ?>
       <img src="<?php echo $objHelper->getDocIcon($this->fileExtension, 32); ?>" width="32" height="32"/>
-    <?php endif; ?>
+    <?php endif; ?>    
   </div>
   <div class="mediainfos">
     <div class="mediainfotitle"><input id="FileTitle<?php echo $this->fileId; ?>" name="FileTitle<?php echo $this->fileId; ?>" type="text" value="<?php echo $this->fileTitle; ?>"/></div>

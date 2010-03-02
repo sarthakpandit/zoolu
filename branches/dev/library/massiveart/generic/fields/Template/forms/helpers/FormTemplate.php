@@ -57,7 +57,7 @@ class Form_Helper_FormTemplate extends Zend_View_Helper_FormElement {
    */
   public function formTemplate($name, $value = null, $attribs = null, $options = null, $objTemplatesData){
     $info = $this->_getInfo($name, $value, $attribs);
-    extract($info); // name, value, attribs, options, listsep, disable
+    extract($info); // name, id, value, attribs, options, listsep, disable
     
     // XHTML or HTML end tag
     $endTag = ' />';
@@ -65,43 +65,56 @@ class Form_Helper_FormTemplate extends Zend_View_Helper_FormElement {
       $endTag= '>';
     }
     
-    $strSelectedTemplate = '';
-    $strOtherTemplates = '';
-    
+    // now start building the XHTML.
+    $disabled = '';
+    if (true === $disable) {
+        $disabled = ' disabled="disabled"';
+    }
+  
+    // Build the surrounding select element first.
+    $xhtml = '<select'
+            . ' name="' . $this->view->escape($name) . '"'
+            . ' id="' . $this->view->escape($id) . '"'
+            . ' onchange="myForm.changeTemplate(this.value);"'
+            . ' class="select"'
+            . $disabled            
+            //. $this->_htmlAttribs($attribs)
+            . ">\n    ";
+  
+    // build the list of options
+    $list = array();
+  
     if(count($objTemplatesData)){
       foreach($objTemplatesData as $objTemplate){
-        if($objTemplate->id == $value){
-          $strSelectedTemplate = '
-                    <div id="divCurrTemplate"><img src="/zoolu/images/templates/'.$objTemplate->thumbnail.'" width="160"/></div>
-                    <div id="divDescTemplate">'.$this->view->escape($objTemplate->title).'</div>
-          ';  
-        }else{
-          $strOtherTemplates .= '
-                        <div id="divTemplate'.$objTemplate->id.'" class="tmpElement"><a href="#" onclick="myForm.changeTemplate('.$objTemplate->id.'); return false;" title="'.$this->view->escape($objTemplate->title).'"><img src="/zoolu/images/templates/'.$objTemplate->thumbnail.'" alt="'.$this->view->escape($objTemplate->title).'" width="160"/></a></div>';
-        }
+        $list[] = $this->_build($objTemplate->id, $objTemplate->title, $value);  
       }
-    }
-    
-    // build the element
-    $strOutput = '<div id="divTemplateChooser">
-                    '.$strSelectedTemplate;
-    
-    if($strOtherTemplates != ''){
-      $strOutput .= '
-                    <div id="divChangeTemplate"><a href="#" onclick="myForm.toggleTemplateChooser(); return false;">Template &auml;ndern</a></div>
-                    <div class="spacer1"></div>
-                    <div id="divAllTemplates" style="display:none;">
-                      <div>
-                        '.$strOtherTemplates.'
-                      </div>
-                    </div>';
-    }
-    
-    $strOutput .= '
-                    <input type="hidden" value="'.$this->view->escape($value).'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$this->_htmlAttribs($attribs).$endTag.'      
-                  </div>';
+    }    
+    // add the options to the xhtml and close the select
+    $xhtml .= implode("\n    ", $list) . "\n</select>";
+  
+    return $xhtml;   
+  }
+  
+  /**
+   * Builds the actual <option> tag
+   *
+   * @param string $value Options Value
+   * @param string $label Options Label
+   * @param string  $selected The option value to mark as 'selected'   
+   * @return string Option Tag XHTML
+   */
+  protected function _build($value, $label, $selected) {
+    $opt = '<option'
+         . ' value="' . $this->view->escape($value) . '"';
 
-    return $strOutput;
+    // selected?
+    if ((string) $value == $selected) {
+      $opt .= ' selected="selected"';
+    }
+    
+    $opt .= '>'.$this->view->escape($label).'</option>';
+
+    return $opt;
   }
   
 }
