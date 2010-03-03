@@ -364,6 +364,7 @@ class Blog_FormController extends AuthControllerAction {
        * Here because the Setup isn't updated at the call of getForm()
        */
       $this->objForm->addElement('hidden', 'idStatus', array('value' => $this->objForm->Setup()->getStatusId(), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'publishDate', array('value' => $this->objForm->Setup()->getPublishDate('Y-m-d H:i:s'), 'decorators' => array('Hidden')));
     }
 	}
 	
