@@ -59,7 +59,7 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 	public function save() {
 		$this->core->logger->debug('massiveart->generic->data->GenericDataTypeSubwidget->save()');
 		
-		$intSubwidgetVersion = 0;
+		$intSubwidgetVersion = 1;
 		$strSubwidgetId = $this->Setup()->getSubwidgetId();
 		
 		switch($this->setup->getActionType()) {
@@ -136,16 +136,16 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 	public function load() {
 	  $this->core->logger->debug('massiveart->generic->data->GenericDataTypeSubwidget->load()');
 		
-	  $intSubwidgetVersion = 0;
+	  $intSubwidgetVersion = 1;
 	  $objSubwidgetsData = $this->getModelSubwidgets()->load($this->Setup()->getElementId());
 	  
 	  if(count($objSubwidgetsData) > 0){
 	  	$objSubwidgetData = $objSubwidgetsData->current();
 			
 	  	$this->setup->setMetaInformation($objSubwidgetData);
-//      $this->setup->setElementTypeId($objWidgetData->idPageTypes);
-//      $this->setup->setIsStartElement($objWidgetData->isStartPage);
-//      $this->setup->setParentTypeId($objWidgetData->idParentTypes);
+//      $this->setup->setElementTypeId($objSubwidgetData->idPageTypes);
+//      $this->setup->setIsStartElement($objSubwidgetData->isStartPage);
+//      $this->setup->setParentTypeId($objSubwidgetData->idParentTypes);
 
 			if(count($this->setup->SpecialFields()) > 0){
 		    foreach($this->setup->SpecialFields() as $objField){
@@ -198,6 +198,34 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
 			    }
 		    }
 		  }
+		  
+      /**
+       * generic form file fields
+       */
+      if(count($this->setup->FileFields()) > 0){
+
+        $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-InstanceFiles');
+        $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+        $objSelect = $objGenTable->select();
+        $objSelect->setIntegrityCheck(false);
+
+        $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFiles'));
+        $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+        $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
+        $objSelect->where('version = ?', $intSubwidgetVersion);
+        $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+        $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+        if(count($arrGenFormsData) > 0){
+          $this->blnHasLoadedFileData = true;
+          foreach($arrGenFormsData as $arrGenRowFormsData){
+            $strFileIds = $this->setup->getFileField($arrGenRowFormsData['name'])->getValue().'['.$arrGenRowFormsData['idFiles'].']';
+            $this->setup->getFileField($arrGenRowFormsData['name'])->setValue($strFileIds);
+          }
+        }
+      }
 	  }
 	}
 	
