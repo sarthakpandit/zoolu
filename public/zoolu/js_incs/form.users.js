@@ -21,6 +21,14 @@ Massiveart.Form.Users = Class.create(Massiveart.Form, {
   save: function(){
    if($(this.formId)){      
       
+     /**
+      * write/save texteditor content to generic form
+      */
+      if($$('.texteditor')){
+        tinyMCE.triggerSave();
+        myCore.resetTinyMCE(true);
+      }
+     
       /**
        * serialize generic form
        */

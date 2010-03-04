@@ -725,6 +725,8 @@ Massiveart.Navigation = Class.create({
     myCore.addBusyClass(this.genFormContainer);
     myCore.addBusyClass('divWidgetMetaInfos');
     
+    myCore.resetTinyMCE(true);
+    
     new Ajax.Updater('genFormContainer', '/zoolu/cms/page/getaddform', {
       parameters: {
         templateId: pageTemplateDefaultId,
@@ -764,6 +766,8 @@ Massiveart.Navigation = Class.create({
     
     myCore.addBusyClass(this.genFormContainer);
     myCore.addBusyClass('divWidgetMetaInfos');
+    
+    myCore.resetTinyMCE(true);
     
     new Ajax.Updater('genFormContainer', '/zoolu/cms/page/getaddform', {
       parameters: {
@@ -859,6 +863,8 @@ Massiveart.Navigation = Class.create({
     } else {
       strAjaxAction = '/zoolu/cms/' + elType + '/geteditform';
     }
+    
+    myCore.resetTinyMCE(true);
     
     new Ajax.Updater('genFormContainer', strAjaxAction, {
        parameters: { 
