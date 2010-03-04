@@ -53,6 +53,7 @@ Massiveart.Form = Class.create({
        */
       if($$('.texteditor')){
         tinyMCE.triggerSave();
+        myCore.resetTinyMCE(true);
       }
            
       /**
@@ -848,18 +849,58 @@ Massiveart.Form = Class.create({
       only:nodeClass
       });
     }
+  },  
+  
+  /**
+   * updateMediaDisplaySize
+   */
+  updateMediaDisplaySize: function(elementId, size){
+    if($(elementId)){
+      obj = $F(elementId).evalJSON();
+      obj.size = size;
+      this.updateMediaDisplayOption(elementId, obj);
+    }
   },
+  
+  /**
+   * updateMediaDisplayPosition
+   */
+  updateMediaDisplayPosition: function(elementId, position){
+    if($(elementId)){
+      obj = $F(elementId).evalJSON();
+      
+      if($(elementId+'_'+obj.position)){
+        $(elementId+'_'+obj.position).setStyle({backgroundImage: $(elementId+'_'+obj.position).getStyle('backgroundImage').replace('selected', 'active') }); 
+      }
+      
+      obj.position = position;
+      this.updateMediaDisplayOption(elementId, obj);
+      
+      if($(elementId+'_'+obj.position)){
+        $(elementId+'_'+obj.position).setStyle({backgroundImage: $(elementId+'_'+obj.position).getStyle('backgroundImage').replace('active', 'selected') }); 
+      }
+    }
+  },
+  
+  /**
+   * updateMediaDisplayOption
+   */
+  updateMediaDisplayOption: function(elementId, obj){
+    if($(elementId)) $(elementId).value = Object.toJSON(obj).gsub('"', "'");
+  },
+  
   /**
    * edit the page Url
    */
   editUrl: function(elementId){
-	if($(elementId) && $F(elementId) !== ''){
+  	if($(elementId) && $F(elementId) !== ''){
       $(elementId+'_UrlValue').innerHTML = '<input style="width:40%;" id="'+elementId+'_tmpUrl" type="text" value="'+$F(elementId+'_EditableUrl')+'"></input>';
       $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.addUrl(\''+elementId+'\'); return false;">&Uuml;bernehmen</span>';
       $(elementId+'_tmpUrl').focus();
       this.intValidUrlObserver(elementId+'_tmpUrl', elementId);
-	}
+  	}
   },
+  
   /**
    * add page url
    */
@@ -871,8 +912,9 @@ Massiveart.Form = Class.create({
       
       $(elementId+'_UrlValue').innerHTML = $F(elementId+'_tmpUrl');
       $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.editUrl(\''+elementId+'\'); return false;">Editieren</span>';
-	}
+    }
   },
+  
   /**
    * toggleUrlHistory
    */

@@ -490,13 +490,36 @@ Media Chooser Element */
 
 .mediawrapper .mediabottom {
   background-color:#e4e4e4;
-  padding:5px;
+  padding:2px;
   border:1px solid #ccc;
   border-top:0px;
 }
 
 .mediawrapper .mediabottom select {
   width:100%;
+}
+
+.mediawrapper .mediabottom .mediaposition {
+  width:42px; 
+  float:right;
+}
+
+.mediawrapper .mediabottom .mediaposition .item {
+  width:12px; 
+  height:12px; 
+  margin:1px; 
+  padding:0;
+  float:left;
+}
+
+.mediawrapper .mediabottom .mediaposition .active {
+  cursor:pointer;
+}
+
+.mediawrapper .mediabottom .mediasize {
+  width:60%; 
+  float:left; 
+  padding:12px 10px 0 0;
 }
 
 .mediawrapper .media {

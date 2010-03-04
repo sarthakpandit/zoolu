@@ -234,24 +234,28 @@
         </excluded_extensions>
         <default_sizes>
           <default_size>
-            <display>true</display>
             <folder>icon32</folder>
             <actions>
 	            <action>
 	              <method>scale</method>
 	              <params>32,32</params>
-	            </action>	            
-            </actions>                        
+	            </action>              
+            </actions> 
+            <display>
+              <single_edit>true</single_edit>              
+            </display>                       
           </default_size>
           <default_size>
-            <display>true</display>
             <folder>thumb</folder>
             <actions>
               <action>
                 <method>resize</method>
                 <params>200</params>
               </action>             
-            </actions>                        
+            </actions>
+            <display>
+              <single_edit>true</single_edit>              
+            </display>                        
           </default_size>          
           <default_size>
             <folder>660x</folder>
@@ -310,7 +314,6 @@
 
           <!-- ivoclarvivadent -->
           <default_size>
-            <display>true</display>
             <folder>933x</folder>
             <actions>
               <action>
@@ -318,9 +321,11 @@
                 <params>933</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>              
+            </display>
           </default_size>
           <default_size>
-            <display>true</display>
             <folder>677x</folder>
             <actions>
               <action>
@@ -328,6 +333,9 @@
                 <params>677</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>              
+            </display>
           </default_size>
           <default_size>
             <folder>331x</folder>
@@ -337,9 +345,12 @@
                 <params>331</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>
+              <text_block>true</text_block>
+            </display>
           </default_size>
           <default_size>
-            <display>true</display>
             <folder>219x</folder>
             <actions>
               <action>
@@ -347,9 +358,12 @@
                 <params>219</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>
+              <text_block>true</text_block>
+            </display>
           </default_size>
           <default_size>
-            <display>true</display>
             <folder>159x</folder>
             <actions>
               <action>
@@ -357,9 +371,12 @@
                 <params>159</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>
+              <text_block>default</text_block>
+            </display>
           </default_size>
           <default_size>
-            <display>true</display>
             <folder>117x88</folder>
             <actions>
               <action>
@@ -367,9 +384,12 @@
                 <params>117,88</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>
+              <text_block>true</text_block>
+            </display>
           </default_size>
           <default_size>
-            <display>true</display>
             <folder>47x47</folder>
             <actions>
               <action>
@@ -377,6 +397,10 @@
                 <params>47,47</params>
               </action>
             </actions>
+            <display>
+              <single_edit>true</single_edit>
+              <text_block>true</text_block>
+            </display>
           </default_size>          
         </default_sizes>
       </images>

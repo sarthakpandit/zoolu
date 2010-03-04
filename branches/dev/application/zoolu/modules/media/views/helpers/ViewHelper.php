@@ -428,7 +428,7 @@ class ViewHelper {
         $strOutput .= '
                          <select id="mediaSizes" onchange="$(\'singleMediaUrl\').value = $F(\'singleFileBasePath\') + this.value + $F(\'singleFileName\')">';
         foreach($arrImagesSizes as $arrImageSize){
-          if(isset($arrImageSize['display']) && $arrImageSize['display'] == 'true'){
+          if(isset($arrImageSize['display']) && isset($arrImageSize['display']['single_edit'])){
             if($strMediaUrl == '') $strMediaUrl = $strBasePath.$arrImageSize['folder'].'/'.$objFile->filename.'?v='.$objFile->version;
             $strOutput .= '
                            <option value="'.$arrImageSize['folder'].'/">'.$arrImageSize['folder'].'</option>';

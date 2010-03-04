@@ -208,6 +208,36 @@ Massiveart.Core = Class.create({
       $(busyElement).addClassName(cssClass);
     }
   },
+  
+  /**
+   * resetTinyMCE
+   */
+  resetTinyMCE: function(blnAndDestroy){
+    
+    if(typeof(blnAndDestroy) == 'undefined'){
+      blnAndDestroy = false;
+    }
+    
+    /**
+     * reset some tiny mce issues
+     */
+    tinyMCE.editors.each(function(e) {
+      if(e.controlManager.get('formatselect')){
+        if(e.controlManager.get('formatselect').menu){
+          if($('menu_' + e.controlManager.get('formatselect').menu.id)){
+            $('menu_' + e.controlManager.get('formatselect').menu.id).remove(); 
+          }
+        }
+      }  
+    });  
+    
+    /**
+     * destroy all editors
+     */
+    if(blnAndDestroy){
+      tinyMCE.editors = [];
+    }
+  },
 
   /**
    * removeBusyClassExtended
