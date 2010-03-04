@@ -32,12 +32,20 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
   save: function(){
       
     if($(this.formId)){
-       
+      
+      /**
+       * write/save texteditor content to generic form
+       */
+      if($$('.texteditor')){
+        tinyMCE.triggerSave();
+        myCore.resetTinyMCE(true);
+      }
+      
       /**
        * serialize generic form
        */
       var serializedForm = $(this.formId).serialize();
-      
+            
       // loader
       this.getFormSaveLoader();      
       if($(this.formId).readAttribute('action') != ''){
@@ -81,6 +89,7 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
       
       // loader
       this.getFormSaveLoader();
+      myCore.resetTinyMCE(true);
       
       if($('formType')){
         navItemId = $F('formType')+elementId;

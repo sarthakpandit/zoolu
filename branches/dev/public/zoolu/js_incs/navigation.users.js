@@ -52,7 +52,9 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     $(this.genListContainer).hide();
     $(this.genListFunctions).hide();
     
-    if($('buttondelete')) $('buttondelete').hide(); 
+    if($('buttondelete')) $('buttondelete').hide();
+    
+    myCore.resetTinyMCE(true);
     
     new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/addform', {
       parameters: { rootLevelId: this.rootLevelId },      
@@ -74,6 +76,8 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     $(this.genListFunctions).hide();
     
     if($('buttondelete')) $('buttondelete').show();
+    
+    myCore.resetTinyMCE(true);
     
     new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/editform', {
       parameters: { rootLevelId: this.rootLevelId, id: itemId },      

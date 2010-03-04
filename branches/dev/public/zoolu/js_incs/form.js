@@ -120,6 +120,8 @@ Massiveart.Form = Class.create({
       // loader
       this.getFormSaveLoader();
       
+      myCore.resetTinyMCE(true);
+      
       new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'delete', {
         parameters: {id: elementId, linkId: linkId},
         evalScripts: true,
@@ -503,6 +505,8 @@ Massiveart.Form = Class.create({
     myCore.addBusyClass(myNavigation.genFormContainer);
     this.getFormSaveLoader();
     
+    myCore.resetTinyMCE(true);
+    
     var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
     var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
     
@@ -550,7 +554,8 @@ Massiveart.Form = Class.create({
    */
   changeLanguage: function(newLanguageId){
     
-    myCore.addBusyClass(this.updateContainer);
+    myCore.addBusyClass(this.updateContainer);    
+    myCore.resetTinyMCE(true);
     
     var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
     var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);

@@ -322,7 +322,8 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     $(this.genFormContainer).show();
     $(this.genFormSaveContainer).show();
 
-    myCore.addBusyClass(this.genFormContainer);
+    myCore.addBusyClass(this.genFormContainer);    
+    myCore.resetTinyMCE(true);
         
     new Ajax.Updater(this.genFormContainer, '/zoolu/properties/category/getaddform', {
       parameters: {
@@ -354,7 +355,8 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     $(this.genFormContainer).show();
     $(this.genFormSaveContainer).show();
 
-    myCore.addBusyClass(this.genFormContainer);
+    myCore.addBusyClass(this.genFormContainer);    
+    myCore.resetTinyMCE(true);
         
     new Ajax.Updater(this.genFormContainer, '/zoolu/properties/contact/getunitaddform', {
       parameters: {
@@ -385,6 +387,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     $(this.genFormSaveContainer).show();
 
     myCore.addBusyClass(this.genFormContainer);
+    myCore.resetTinyMCE(true);
         
     new Ajax.Updater(this.genFormContainer, '/zoolu/properties/contact/getaddform', {
       parameters: {
@@ -470,6 +473,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     $(this.genFormSaveContainer).show();    
     
     myCore.addBusyClass(this.genFormContainer);
+    myCore.resetTinyMCE(true);
     
     new Ajax.Updater(this.genFormContainer, this.constBasePath+typeEditPath, {
        parameters: { 

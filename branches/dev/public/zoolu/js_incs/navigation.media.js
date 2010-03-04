@@ -33,6 +33,8 @@ Massiveart.Navigation.Media = Class.create(Massiveart.Navigation, {
     $(this.genFormContainer).show();
     myCore.removeBusyClass(this.genFormContainer);
     
+    myCore.resetTinyMCE(true);
+    
     new Ajax.Updater(this.genFormContainer, '/zoolu/media/view/dashboard', {
       parameters: { },      
       evalScripts: true,     

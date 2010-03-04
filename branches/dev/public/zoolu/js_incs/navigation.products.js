@@ -35,6 +35,8 @@ Massiveart.Navigation.Products = Class.create(Massiveart.Navigation, {
     myCore.addBusyClass(this.genFormContainer);
     myCore.addBusyClass('divWidgetMetaInfos');
     
+    myCore.resetTinyMCE(true);
+    
     new Ajax.Updater('genFormContainer', '/zoolu/products/product/getaddform', {
       parameters: {
         templateId: productTemplateDefaultId,
