@@ -40,7 +40,7 @@ Massiveart.Page = Class.create({
     myCore.addBusyClass('tdChangeType');    
     myForm.getFormSaveLoader();
     
-    tinyMCE.editors = {};
+    myCore.resetTinyMCE(true);
     
     new Ajax.Updater(myForm.updateContainer, '/zoolu/cms/page/changeType', {
       parameters: params,

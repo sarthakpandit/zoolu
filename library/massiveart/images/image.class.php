@@ -43,7 +43,20 @@
  */
 
 class Image extends File {
-
+  
+  /**
+   * dispaly option positions
+   */
+  const POSITION_LEFT_TOP = 'LEFT_TOP'; 
+  const POSITION_LEFT_MIDDLE = 'LEFT_MIDDLE';
+  const POSITION_LEFT_BOTTOM = 'LEFT_BOTTOM';
+  const POSITION_CENTER_TOP = 'CENTER_TOP';
+  const POSITION_CENTER_MIDDLE = 'CENTER_MIDDLE';
+  const POSITION_CENTER_BOTTOM = 'CENTER_BOTTOM';
+  const POSITION_RIGHT_TOP = 'RIGHT_TOP';
+  const POSITION_RIGHT_MIDDLE = 'RIGHT_MIDDLE';
+  const POSITION_RIGHT_BOTTOM = 'RIGHT_BOTTOM';
+  
   protected $arrDefaultImageSizes = array();
 
   public function __construct(){

@@ -574,35 +574,54 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
     foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
 
       $strBlockTitle = htmlentities($objMyMultiRegion->getField('block_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
-      if($strBlockTitle != ''){
+      $strBlockDescription = $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
+      if($strBlockTitle != '' || $strBlockDescription != ''){
         
-        $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
+        $strHtmlOutput .= '<div class="'.$strContainerClass.' mBottom10">';
 
         $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_pics')->getInstanceValue($intRegionInstanceId));
-        $strImageAddonClasses = ($objMyMultiRegion->getField('block_pics')->getInstanceProperty($intRegionInstanceId, 'display_option') == 'RIGHT_ALIGNED') ? ' mLeft10 right' : ' mRight10 left';
         
+        $objDisplayOption = json_decode(str_replace("'", '"', $objMyMultiRegion->getField('block_pics')->getInstanceProperty($intRegionInstanceId, 'display_option')));
+        
+        if(!isset($objDisplayOption->position) || $objDisplayOption->position == null) $objDisplayOption->position = 'LEFT_MIDDLE';
+        if(!isset($objDisplayOption->size) || $objDisplayOption->size == null) $objDisplayOption->size = $strImageFolder;
+        
+        $strImageAddonClasses = '';
+        switch($objDisplayOption->position){
+          case Image::POSITION_RIGHT_MIDDLE:
+            $strImageAddonClasses = ' mLeft10 right';
+            break;
+          case Image::POSITION_LEFT_MIDDLE:
+          default:
+            $strImageAddonClasses = ' mRight10 left';
+            break;
+        }
+        
+        $strHtmlOutputImage = '';
         if($objFiles != '' && count($objFiles) > 0){
-          $strHtmlOutput .= '<div class="'.$strImageContainerClass.$strImageAddonClasses.'">';
+          $strHtmlOutputImage .= '<div class="'.$strImageContainerClass.$strImageAddonClasses.'">';
           foreach($objFiles as $objFile){
             if($blnZoom && $strImageFolderZoom != ''){
-              $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolderZoom.'/'.$objFile->filename.'?v='.$objFile->version.'"';
-              if($blnUseLightbox) $strHtmlOutput .= ' rel="lightbox[textblocks]"';
-              $strHtmlOutput .= '>';
+              $strHtmlOutputImage .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolderZoom.'/'.$objFile->filename.'?v='.$objFile->version.'"';
+              if($blnUseLightbox) $strHtmlOutputImage .= ' rel="lightbox[textblocks]"';
+              $strHtmlOutputImage .= '>';
             }
-            $strHtmlOutput .= '<img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolder.'/'.$objFile->filename.'?v='.$objFile->version.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
-            if($blnZoom && $strImageFolderZoom != '') $strHtmlOutput .= '</a>';
+            $strHtmlOutputImage .= '<img class="img'.$objDisplayOption->size.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objFile->path.$objDisplayOption->size.'/'.$objFile->filename.'?v='.$objFile->version.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+            if($blnZoom && $strImageFolderZoom != '') $strHtmlOutputImage .= '</a>';
           }
-          $strHtmlOutput .= '</div>';
+          $strHtmlOutputImage .= '</div>';
         }
-        $strHtmlOutput .= '<div><h3>'.$strBlockTitle.'</h3>';
-        $strHtmlOutput .= $objMyMultiRegion->getField('block_description')->getInstanceValue($intRegionInstanceId);
+
+        $strHtmlOutputContent = '<div>';
+        if($strBlockTitle != '') $strHtmlOutputContent .= '<h3>'.$strBlockTitle.'</h3>';
+        $strHtmlOutputContent .= $strBlockDescription;
 
         if($objMyMultiRegion->getField('block_docs')){
           $objFiles = $objPage->getFileFieldValueById($objMyMultiRegion->getField('block_docs')->getInstanceValue($intRegionInstanceId));
           if($objFiles != '' && count($objFiles) > 0){
-            $strHtmlOutput .= '<div class="documents left">';
+            $strHtmlOutputContent .= '<div class="documents left">';
             foreach($objFiles as $objFile){
-              $strHtmlOutput .= '<div class="item">
+              $strHtmlOutputContent .= '<div class="item">
                       <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
                       <div class="text">
                         <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.$objFile->title.'</a>
@@ -610,12 +629,19 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
                       <div class="clear"></div>
                     </div>';
             }
-            $strHtmlOutput .= '</div>';
+            $strHtmlOutputContent .= '</div>';
           }
         }
 
-        $strHtmlOutput .= '</div>';
-        $strHtmlOutput .= '<div class="clear"></div>';
+        $strHtmlOutputContent .= '</div>';
+        $strHtmlOutputContent .= '<div class="clear"></div>';
+        
+        if($objDisplayOption->position == Image::POSITION_CENTER_BOTTOM){
+          $strHtmlOutput .= $strHtmlOutputContent.$strHtmlOutputImage;
+        }else{
+          $strHtmlOutput .= $strHtmlOutputImage.$strHtmlOutputContent;
+        }
+        
         $strHtmlOutput .= '</div>';
         
         if($bln2Columned){

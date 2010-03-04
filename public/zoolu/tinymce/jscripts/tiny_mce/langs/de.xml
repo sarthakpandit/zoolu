@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <language-pack>
   <!--
-		This language file gets loaded if TinyMCE is in developer mode. This XML is used to generate all <code>.js/<code_dlg>.js files.
-		Consult the Wiki for more details: http://wiki.moxiecode.com/index.php/TinyMCE:Creating_Language
-	-->
+    This language file gets loaded if TinyMCE is in developer mode. This XML is used to generate all <code>.js/<code_dlg>.js files.
+    Consult the Wiki for more details: http://wiki.moxiecode.com/index.php/TinyMCE:Creating_Language
+  -->
   <header>
-    <author>Thomas Gölles</author>
-    <version major="13" minor="1" releasedate="2008-11-03" />
+    <author>Markus Gappa</author>
+    <version major="45" minor="2" releasedate="2010-03-02" />
     <description>deutsch</description>
   </header>
   <language code="de" title="Deutsch" dir="ltr">
@@ -19,11 +19,11 @@
       <item name="cancel">Abbrechen</item>
       <item name="close">Schließen</item>
       <item name="browse">Durchsuchen</item>
-      <item name="class_name">Klasse</item>
-      <item name="not_set">-- Nicht gesetzt --</item>
+      <item name="class_name">CSS-Klasse</item>
+      <item name="not_set">- unbestimmt -</item>
       <item name="clipboard_msg">Kopieren, Ausschneiden und Einfügen sind im Mozilla Firefox nicht möglich.\nMöchten Sie mehr über dieses Problem erfahren?</item>
       <item name="clipboard_no_support">Wird derzeit in Ihrem Browser nicht unterstützt. Bitte benutzen Sie stattdessen die Tastenkürzel.</item>
-      <item name="popup_blocked">Leider hat Ihr Popup-Blocker ein Fenster unterbunden, das für den Betrieb dieses Programms nötig ist. Bitte deaktivieren Sie den Popup-Blocker, um die volle Funktionalität zu erlangen.</item>
+      <item name="popup_blocked">Leider hat Ihr Popup-Blocker ein Fenster unterbunden, das für den Betrieb dieses Programms nötig ist. Bitte deaktivieren Sie den Popup-Blocker f\u00FCr diese Seite.</item>
       <item name="invalid_data">Fehler: Sie haben ungültige Werte eingegeben (rot markiert).</item>
       <item name="more_colors">Weitere Farben</item>
     </group>
@@ -48,7 +48,7 @@
       <item name="block">Vorlage</item>
       <item name="paragraph">Absatz</item>
       <item name="div">Zusammenhängender Bereich</item>
-      <item name="address">Addresse</item>
+      <item name="address">Adresse</item>
       <item name="pre">Rohdaten</item>
       <item name="h1">Überschrift 1</item>
       <item name="h2">Überschrift 2</item>
@@ -79,7 +79,7 @@
       <item name="link_desc">Link einfügen/verändern</item>
       <item name="unlink_desc">Link entfernen</item>
       <item name="image_desc">Bild einfügen/verändern</item>
-      <item name="cleanup_desc">Quellcode aufräufen</item>
+      <item name="cleanup_desc">Quellcode aufräumen</item>
       <item name="code_desc">HTML-Quellcode bearbeiten</item>
       <item name="sub_desc">Tiefgestellt</item>
       <item name="sup_desc">Hochgestellt</item>
@@ -114,7 +114,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="colorpicker_delta_height"></item>
       <item name="charmap_delta_width"></item>
       <item name="charmap_delta_height"></item>
-      <item name="anchor_delta_width"></item>
+      <item name="anchor_delta_width">13</item>
       <item name="anchor_delta_height"></item>
     </group>
     <!-- Advanced theme dialogs -->
@@ -172,16 +172,16 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="link_target_same">Im selben Fenster öffnen</item>
       <item name="link_target_blank">Neues Fenster öffnen</item>
       <item name="link_titlefield">Titel</item>
-      <item name="link_is_email">Bei der Adresse scheint es sich um eine E-Mail-Adresse zu handeln. Wollen Sie das dazu benötigte mailto: voranstellen?</item>
-      <item name="link_is_external">Bei der Adresse scheint es sich um einen externen Link zu handeln. Möchten Sie, dass zur korrekten Verlinkung ein http:// vorangestellt wird?</item>
+      <item name="link_is_email">Diese Adresse scheint eine E-Mail-Adresse zu sein. M\u00F6chten Sie das dazu ben\u00F6tigte mailto: voranstellen?</item>
+      <item name="link_is_external">Diese Adresse scheint ein externer Link zu sein. M\u00F6chten Sie das dazu ben\u00F6tigte http:// voranstellen?</item>
       <item name="link_list">Linkliste</item>
     </group>
     <!-- Contextmenu plugin -->
     <group target="contextmenu">
       <item name="align">Ausrichtung</item>
-      <item name="left">Links</item>
-      <item name="center">Mittig</item>
-      <item name="right">Rechts</item>
+      <item name="left">Linksb\u00FCndig</item>
+      <item name="center">Zentriert</item>
+      <item name="right">Rechtsb\u00FCndig</item>
       <item name="full">Blocksatz</item>
     </group>
     <!-- Insertdatetime plugin -->
@@ -311,7 +311,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="general">Allgemein</item>
       <item name="title">Titel</item>
       <item name="preview">Vorschau</item>
-      <item name="constrain_proportions">Ausmaße</item>
+      <item name="constrain_proportions">Seitenverhältnis beibehalten</item>
       <item name="langdir">Schriftrichtung</item>
       <item name="langcode">Sprachcode</item>
       <item name="long_desc">Ausführliche Beschreibung</item>
@@ -327,7 +327,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="mouseout">bei keinem Mauskontakt</item>
       <item name="misc">Verschiedenes</item>
       <item name="example_img">Aussehen der Vorschau</item>
-      <item name="missing_alt">Wollen Sie wirklich keine Beschreibung eingeben? Bestimmte Benutzer mit körperlichen Einschränkungen können so nicht darauf zugrifen, ebenso solche, die einen Textbrowser benutzen oder die Anzeige von Bildern deaktiviert haben.</item>
+      <item name="missing_alt">Wollen Sie wirklich keine Beschreibung eingeben? Bestimmte Benutzer mit körperlichen Einschränkungen können so nicht darauf zugreifen, ebenso solche, die einen Textbrowser benutzen oder die Anzeige von Bildern deaktiviert haben.</item>
       <item name="dialog_title">Bild einfügen/bearbeiten</item>
       <item name="src">Adresse</item>
       <item name="alt">Beschreibung</item>
@@ -360,8 +360,8 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="url">Adresse</item>
       <item name="target">Fenster</item>
       <item name="titlefield">Titel</item>
-      <item name="is_email">Bei der Adresse scheint es sich um eine E-Mail-Adresse zu handeln. Wollen Sie das dazu benötigte mailto: voranstellen?</item>
-      <item name="is_external">Bei der Adresse scheint es sich um einen externen Link zu handeln. Möchten Sie, dass zur korrekten Verlinkung ein http:// vorangestellt wird?</item>
+      <item name="is_email">Diese Adresse scheint eine E-Mail-Adresse zu sein. Möchten Sie das dazu benötigte mailto: voranstellen?</item>
+      <item name="is_external">Diese Adresse scheint ein externer Link zu sein. Möchten Sie das dazu benötigte http:// voranstellen?</item>
       <item name="list">Linkliste</item>
       <item name="general_tab">Allgemein</item>
       <item name="popup_tab">Popup</item>
@@ -387,7 +387,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="popup_menubar">Browsermenü anzeigen</item>
       <item name="popup_location">Adressleiste anzeigen</item>
       <item name="popup_resizable">Vergrößern des Fenster zulassen</item>
-      <item name="popup_dependent">Vom Elternfenster abhängig (nur Mozilla/Firefox)</item>
+      <item name="popup_dependent">Vom Elternfenster abhängig &lt;br /&gt; (nur Mozilla/Firefox) </item>
       <item name="popup_size">Größe</item>
       <item name="popup_position">Position (X/Y)</item>
       <item name="id">ID</item>
@@ -547,15 +547,15 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
     </group>
     <!-- Table plugin -->
     <group target="table">
-      <item name="desc">Tabelle erstellen</item>
+      <item name="desc">Tabelle erstellen/bearbeiten</item>
       <item name="row_before_desc">Zeile oberhalb einfügen</item>
       <item name="row_after_desc">Zeile unterhalb einfügen</item>
-      <item name="delete_row_desc">Zeile entfernen</item>
+      <item name="delete_row_desc">Zeile löschen</item>
       <item name="col_before_desc">Spalte links einfügen</item>
       <item name="col_after_desc">Spalte rechts einfügen</item>
       <item name="delete_col_desc">Spalte löschen</item>
-      <item name="split_cells_desc">Vereinte Zellen trennen</item>
-      <item name="merge_cells_desc">Zellen vereinen</item>
+      <item name="split_cells_desc">Verbundene Zellen trennen</item>
+      <item name="merge_cells_desc">Zellen verbinden</item>
       <item name="row_desc">Eigenschaften der Zeile</item>
       <item name="cell_desc">Eigenschaften der Zelle</item>
       <item name="props_desc">Eigenschaften der Tabelle</item>
@@ -563,14 +563,14 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="paste_row_after_desc">Zeile unterhalb aus der Zwischenablage einfügen</item>
       <item name="cut_row_desc">Zeile ausschneiden</item>
       <item name="copy_row_desc">Zeile kopieren</item>
-      <item name="del">Tabelle entfernen</item>
+      <item name="del">Tabelle löschen</item>
       <item name="row">Zeile</item>
       <item name="col">Spalte</item>
       <item name="cell">Zelle</item>
       <!-- Language specific relative size of dialog -->
       <item name="rowprops_delta_width"></item>
       <item name="rowprops_delta_height"></item>
-      <item name="cellprops_delta_width"></item>
+      <item name="cellprops_delta_width">150</item>
       <item name="cellprops_delta_height"></item>
       <item name="table_delta_width"></item>
       <item name="table_delta_height"></item>
@@ -583,7 +583,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="advanced_tab">Erweitert</item>
       <item name="general_props">Allgemeine Einstellungen</item>
       <item name="advanced_props">Erweiterte Einstellungen</item>
-      <item name="rowtype">Row in table part</item>
+      <item name="rowtype">Gruppierung</item>
       <item name="title">Tabelle einfügen/bearbeiten</item>
       <item name="width">Breite</item>
       <item name="height">Höhe</item>
@@ -627,30 +627,30 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="thead">Tabellenkopf</item>
       <item name="tbody">Tabelleninhalt</item>
       <item name="tfoot">Tabellenfuß</item>
-      <item name="scope">Zusammenhang</item>
+      <item name="scope">Bezug</item>
       <item name="rowgroup">Vertikal gruppieren</item>
       <item name="colgroup">Horizontal gruppieren</item>
       <item name="col_limit">Sie haben die maximale Spaltenzahl von {$cols} überschritten.</item>
       <item name="row_limit">Sie haben die maximale Zeilenzahl von {$rows} überschritten.</item>
       <item name="cell_limit">Sie haben die maximale Zellenzahl von {$cells} überschritten.</item>
-      <item name="missing_scope">Sind Sie sicher, dass Sie keinen Zusammenhang für diese Überschrift angeben wollen? Benutzer mit körperlichen Einschränkungen könnten Schwierigkeiten haben, den Inhalt der Tabelle zu verstehen.</item>
+      <item name="missing_scope">Wollen Sie wirklich keine Beziehung f\u00FCr diese \u00DCberschrift angeben? Benutzer mit k\u00F6rperlichen Einschr\u00E4nkungen k\u00F6nnten Schwierigkeiten haben, den Inhalt der Tabelle zu verstehen.</item>
       <item name="caption">Beschriftung der Tabelle</item>
-      <item name="frame">Gitter</item>
-      <item name="frame_none">keins</item>
-      <item name="frame_groups">Gruppen</item>
-      <item name="frame_rows">Zeilen</item>
-      <item name="frame_cols">Spalten</item>
-      <item name="frame_all">Alle</item>
-      <item name="rules">Rules</item>
-      <item name="rules_void">void</item>
-      <item name="rules_above">above</item>
-      <item name="rules_below">below</item>
-      <item name="rules_hsides">hsides</item>
-      <item name="rules_lhs">lhs</item>
-      <item name="rules_rhs">rhs</item>
-      <item name="rules_vsides">vsides</item>
-      <item name="rules_box">box</item>
-      <item name="rules_border">border</item>
+      <item name="frame">Rahmen</item>
+      <item name="frame_none">keine</item>
+      <item name="frame_groups">zwischen Gruppen</item>
+      <item name="frame_rows">zwischen Zeilen</item>
+      <item name="frame_cols">zwischen Spalten</item>
+      <item name="frame_all">zwischen allen Zellen</item>
+      <item name="rules">Gitter</item>
+      <item name="rules_void">keins</item>
+      <item name="rules_above">nur oben</item>
+      <item name="rules_below">nur unten</item>
+      <item name="rules_hsides">oben und unten</item>
+      <item name="rules_lhs">nur links</item>
+      <item name="rules_rhs">nur rechts</item>
+      <item name="rules_vsides">links und rechts</item>
+      <item name="rules_box">alle 4 Seiten (Box)</item>
+      <item name="rules_border">alle 4 Seiten (Border)</item>
     </group>
     <!-- Autosave plugin -->
     <group target="autosave">
@@ -670,7 +670,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
     </group>
     <!-- Media plugin dialog -->
     <group target="media_dlg">
-      <item name="title">Multimedia-Inhalte einfügen / bearbeiten</item>
+      <item name="title">Multimedia-Inhalte einfügen/bearbeiten</item>
       <item name="general">Allgemein</item>
       <item name="advanced">Erweitert</item>
       <item name="file">Datei/URL</item>
@@ -749,7 +749,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="sound">Ton</item>
       <item name="progress">Fortschritt</item>
       <item name="qtsrc">QT Src</item>
-      <item name="qt_stream_warn">In den Erweiterten Einstellungen sollten im Feld 'QT Src' gestreamte rtsp Resourcen hinzugefügt werden.\nzusätzlich sollten Sie dort auch eine nicht-gestreamte Resource angeben.</item>
+      <item name="qt_stream_warn">In den Erweiterten Einstellungen sollten im Feld 'QT Src' gestreamte RTSP Resourcen hinzugefügt werden.\nZusätzlich sollten Sie dort auch eine nicht-gestreamte Resource angeben.</item>
       <item name="align_top">Oben</item>
       <item name="align_right">Rechts</item>
       <item name="align_bottom">Unten</item>
@@ -796,7 +796,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
       <item name="langdir">Sprachrichtung</item>
       <item name="ltr">Links nach Rechts</item>
       <item name="rtl">Rechts nach Links</item>
-      <item name="xml_pi">XML declaration</item>
+      <item name="xml_pi">XML Deklaration</item>
       <item name="encoding">Zeichencodierung</item>
       <item name="appearance_bgprops">Hintergrund-Eigenschaften</item>
       <item name="appearance_marginprops">Abstände des Body</item>
@@ -867,14 +867,14 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
     </group>
     <!-- Template plugin -->
     <group target="template">
-      <item name="desc">Vorgefertigten Vorlageninhalt einfügen</item>
+      <item name="desc">Vorgefertigter Vorlageninhalt einfügen</item>
     </group>
     <!-- Template plugin dialog -->
     <group target="template_dlg">
       <item name="title">Vorlagen</item>
       <item name="label">Vorlage</item>
       <item name="desc_label">Beschreibung</item>
-      <item name="desc">Vorgefertigten Vorlageninhalt einfügen</item>
+      <item name="desc">Vorgefertigter Vorlageninhalt einfügen</item>
       <item name="select">Vorlage auswählen</item>
       <item name="preview">Vorschau</item>
       <item name="warning">Warnung: Eine Vorlage mit einer anderen zu aktualisieren kann einen Datenverlust herbeiführen!</item>
@@ -887,7 +887,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
     </group>
     <!-- Visualchars plugin -->
     <group target="visualchars">
-      <item name="desc">Sichtbarkeit der Steuerzeichen an/aus.</item>
+      <item name="desc">Sichtbarkeit der Steuerzeichen an/aus</item>
     </group>
     <!-- Spellchecker plugin -->
     <group target="spellchecker">
@@ -903,7 +903,7 @@ Wollen Sie mehr über dieses Problem erfahren?</item>
     </group>
     <!-- Pagebreak plugin -->
     <group target="pagebreak">
-      <item name="desc">Seitenumbruch Einfügen.</item>
+      <item name="desc">Seitenumbruch einfügen</item>
     </group>
   </language>
 </language-pack>

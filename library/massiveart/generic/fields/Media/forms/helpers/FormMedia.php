@@ -45,6 +45,27 @@
 
 class Form_Helper_FormMedia extends Zend_View_Helper_FormElement {
 
+  // display position options 
+  protected static $arrPositionOptions = array(array('Image' => '_left_top_45.gif',
+                                                     'Key'   => Image::POSITION_LEFT_TOP), 
+                                               array('Image' => '_center_top.gif',
+                                                     'Key'   => Image::POSITION_CENTER_TOP), 
+                                               array('Image' => '_right_top_45.gif',
+                                                     'Key'   => Image::POSITION_RIGHT_TOP), 
+                                               array('Image' => '_left_middle.gif',
+                                                     'Key'   => Image::POSITION_LEFT_MIDDLE), 
+                                               array('Image' => '_center_middle.gif',
+                                                     'Key'   => Image::POSITION_CENTER_MIDDLE), 
+                                               array('Image' => '_right_middle.gif',
+                                                     'Key'   => Image::POSITION_RIGHT_MIDDLE), 
+                                               array('Image' => '_left_bottom_45.gif',
+                                                     'Key'   => Image::POSITION_LEFT_BOTTOM), 
+                                               array('Image' => '_center_bottom.gif',
+                                                     'Key'   => Image::POSITION_CENTER_BOTTOM), 
+                                               array('Image' => '_right_bottom_45.gif',
+                                                     'Key'   => Image::POSITION_RIGHT_BOTTOM)
+  );
+  
   /**
    * formMedia
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -72,19 +93,70 @@ class Form_Helper_FormMedia extends Zend_View_Helper_FormElement {
                     </div>
                     <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>';
     
-    if($attribs['showDisplayOptions'] == 1){
+    if($attribs['showDisplayOptions'] != 0){
       $strDisplayOption = (isset($attribs['display_option'])) ? $attribs['display_option'] : '';
+      $objDisplayOption = json_decode(str_replace("'", '"', $strDisplayOption));  
+         
+      if(!isset($objDisplayOption->position)) $objDisplayOption->position = 'LEFT_MIDDLE';
+      if(!isset($objDisplayOption->size)) $objDisplayOption->size = null;
+      
       $strOutput .= '
                     <div class="mediabottom">
-                      <select id="'.$this->view->escape($id).'_display_option" name="'.$this->view->escape($name).'_display_option">
-                        '.HtmlOutput::getOptionsOfSQL(Zend_Registry::get('Core'), "SELECT catCode.code AS VALUE, categoryTitles.title AS DISPLAY FROM categories AS tbl INNER JOIN categoryTitles ON categoryTitles.idCategories = tbl.id AND categoryTitles.idLanguages = ".$attribs['FormLanguageId']." INNER JOIN categoryCodes AS catCode ON catCode.idCategories = tbl.id AND catCode.idLanguages = 1 INNER JOIN categoryCodes ON categoryCodes.code = 'MEDIA_DISPLAY_OPTIONS' AND categoryCodes.idLanguages = 1, categories AS rootCat WHERE rootCat.id = categoryCodes.idCategories AND tbl.idRootCategory = rootCat.idRootCategory AND tbl.lft BETWEEN (rootCat.lft + 1) AND rootCat.rgt ORDER BY tbl.lft, categoryTitles.title", $strDisplayOption).'
-                      </select>
+                      <div class="mediaposition">';
+      $strOutput .= $this->_buildPositionChooser($attribs['showDisplayOptions'], $name, $objDisplayOption->position);                      
+      $strOutput .= '
+                      </div>
+                      <div class="mediasize">
+                        <select id="'.$this->view->escape($id).'_display_option_size" onchange="myForm.updateMediaDisplaySize(\''.$this->view->escape($name).'_display_option\', this.value);">';
+
+      $arrImagesSizes = Zend_Registry::get('Core')->sysConfig->upload->images->default_sizes->default_size->toArray();
+      foreach($arrImagesSizes as $arrImageSize){
+        if(isset($arrImageSize['display']) && isset($arrImageSize['display']['text_block'])){
+          if($arrImageSize['display']['text_block'] == 'default' && $objDisplayOption->size == null) $objDisplayOption->size = $arrImageSize['folder'];          
+          $strSelected = ($arrImageSize['folder'] == $objDisplayOption->size) ? ' selected="selected"' : '';          
+          $strOutput .= '
+                         <option value="'.$arrImageSize['folder'].'"'.$strSelected.'>'.$arrImageSize['folder'].'</option>';
+        }
+      }
+      $strOutput .= '
+                        </select>
+                      </div>
+                      <input type="hidden" id="'.$this->view->escape($id).'_display_option" name="'.$this->view->escape($name).'_display_option" value="'.str_replace('"', "'", json_encode($objDisplayOption)).'"/>
+                      <div class="clear"></div>
                     </div>';
     }
     $strOutput .= '
                   </div>';
     
     return $strOutput;
+  }
+    
+  /**
+   * _buildPositionChooser
+   * @param string $displayOptions
+   * @param string $name
+   * @return string
+   */
+  protected function _buildPositionChooser($displayOptions, $name, $selected){
+    
+    $strDisplayOptions = sprintf('%09d', $displayOptions);
+    $arrDisplayOptions = str_split($strDisplayOptions);
+    $strPositionChooser = '';
+    
+    foreach($arrDisplayOptions as $intPos => $intActive){
+      $strCssClass = '';
+      $strAction = '';
+      $strImage = 'inactive.gif';
+      if((int) $intActive === 1){
+        $strCssClass = ' active';
+        $strImage = ($selected == self::$arrPositionOptions[$intPos]['Key']) ? 'selected'.self::$arrPositionOptions[$intPos]['Image'] : 'active'.self::$arrPositionOptions[$intPos]['Image'];
+        $strAction = 'myForm.updateMediaDisplayPosition(\''.$this->view->escape($name).'_display_option\', \''.self::$arrPositionOptions[$intPos]['Key'].'\');';        
+      }
+      
+      $strPositionChooser .= '<div id="'.$this->view->escape($name).'_display_option_'.self::$arrPositionOptions[$intPos]['Key'].'" class="item'.$strCssClass.'" style="background-image:url(\'/zoolu/images/position/'.$strImage.'\');" onclick="'.$strAction.'"></div>'; 
+    }
+    
+    return $strPositionChooser;
   }
 }
 
