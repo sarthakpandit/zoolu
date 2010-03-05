@@ -1044,6 +1044,10 @@ Massiveart.Navigation = Class.create({
         evalScripts: true,
         onComplete: function() {
           myForm.writeMetaInfos();
+          // load medias
+          myForm.loadFileFieldsContent('media');
+          // load documents
+          myForm.loadFileFieldsContent('document');	
     	  myCore.removeBusyClass('divWidgetMetaInfos');
           myCore.removeBusyClass(this.genFormContainer);
         }.bind(this)
