@@ -48,18 +48,14 @@ class Blog_View_Helper_Pager {
    protected $endPage = 1;
    protected $pageRange = 10;
 
-   const FORMAT_PREVIOUS           = '<a href="%s">&laquo; Vorherige Seite</a>';
-   const FORMAT_NEXT               = '<a href="%s">N&auml;chste Seite &raquo;</a>';
+   const FORMAT_PREVIOUS = '<a href="%s">&laquo; Vorherige Seite</a>';
+   const FORMAT_NEXT = '<a href="%s">N&auml;chste Seite &raquo;</a>';
 
-   /**
-    * Base link formats
-    * @var array
-    */
    protected $baseFormats =
-       array(
-           'previous'          => self::FORMAT_PREVIOUS,
-           'next'              => self::FORMAT_NEXT
-       );
+      array(
+       'previous'          => self::FORMAT_PREVIOUS,
+       'next'              => self::FORMAT_NEXT
+      );
 
   /**
    * Pager object
