@@ -10,7 +10,7 @@
 var List = Class.create({
   
   initialize: function(deleteAction){
-    this.constRequest = deleteAction; //FIXME Not blogspecific!
+    this.constRequest = deleteAction;
   },
   
   deleteSelectedElements: function(){
