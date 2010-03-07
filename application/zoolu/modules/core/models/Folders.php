@@ -643,7 +643,7 @@ $this->core->logger->debug(strval($objSelect));
 																			      plTitle.version = pl.version AND
 																			      plTitle.idLanguages = ?
 																			    LEFT JOIN urls AS plUrls ON
-																			      plurls.relationId = pl.pageId AND
+																			      plUrls.relationId = pl.pageId AND
 																			      plUrls.version = pl.version AND
 																			      plUrls.idLanguages = ?
 																				  LEFT JOIN pageExternals AS plExternals ON
