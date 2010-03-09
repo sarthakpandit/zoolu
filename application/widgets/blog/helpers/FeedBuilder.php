@@ -101,7 +101,7 @@ class Blog_FeedBuilder implements Zend_Feed_Builder_Interface {
 	 * @version 1.0
 	 */
 	public function getEntries(){
-		$objBlogEntries = $this->getModelBlogEntries()->getBlogEntries($this->objWidget->getWidgetInstanceId(), $this->intCount, 0, null, $this->objWidget);
+		$objBlogEntries = $this->getModelBlogEntries()->getBlogEntries($this->objWidget->getWidgetInstanceId(), false,  $this->intCount, 0, null, $this->objWidget);
 		
 		$arrEntry = array();
 		
