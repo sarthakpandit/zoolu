@@ -73,6 +73,7 @@ class GenericSetup {
 	protected $intParentTypeId;
 	protected $intRootLevelId;
 	protected $intRootLevelTypeId;
+	protected $intRootLevelGroupId;	
   protected $intElementTypeId;
   protected $blnIsStartElement;
   protected $intShowInNavigation = 0;
@@ -191,7 +192,7 @@ class GenericSetup {
   const TYPE_CATEGORY = 3;
   const TYPE_UNIT = 4;
   const TYPE_CONTACT = 5;
-  const TYPE_PRODUCT = 6;
+  const TYPE_GLOBAL = 6;
 
   /**
    * field type container
@@ -807,9 +808,9 @@ class GenericSetup {
       case GenericSetup::TYPE_CONTACT :
         require_once(dirname(__FILE__).'/data/types/generic.data.type.contact.class.php');
         return new GenericDataTypeContact();
-     case GenericSetup::TYPE_PRODUCT :
-        require_once(dirname(__FILE__).'/data/types/generic.data.type.product.class.php');
-        return new GenericDataTypeProduct();
+     case GenericSetup::TYPE_GLOBAL :
+        require_once(dirname(__FILE__).'/data/types/generic.data.type.global.class.php');
+        return new GenericDataTypeGlobal();
     }
   }
 
@@ -1206,6 +1207,22 @@ class GenericSetup {
    */
   public function getRootLevelTypeId(){
     return $this->intRootLevelTypeId;
+  }
+  
+  /**
+   * setRootLevelGroupId
+   * @param integer $intRootLevelGroupId
+   */
+  public function setRootLevelGroupId($intRootLevelGroupId){
+    $this->intRootLevelGroupId = $intRootLevelGroupId;
+  }
+
+  /**
+   * getRootLevelGroupId
+   * @param integer $intRootLevelGroupId
+   */
+  public function getRootLevelGroupId(){
+    return $this->intRootLevelGroupId;
   }
 
 	/**

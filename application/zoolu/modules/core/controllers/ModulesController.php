@@ -52,7 +52,7 @@ class Core_ModulesController extends AuthControllerAction {
 	 */
   public function indexAction(){ }
 
- /**
+  /**
    * navtopAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0

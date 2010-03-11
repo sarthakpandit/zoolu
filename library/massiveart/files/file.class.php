@@ -489,7 +489,8 @@ class File {
         /**
          * receive file
          */
-        $this->objUpload->addFilter('Rename', $this->getUploadPath().$this->strFileId.'.'.$this->strExtension, $this->_FILE_NAME);
+        $this->objUpload->addFilter('Rename', array('target' => $this->getUploadPath().$this->strFileId.'.'.$this->strExtension,
+                                                    'overwrite' => true), $this->_FILE_NAME);
         $this->objUpload->receive($this->_FILE_NAME);
       }
     }catch(Exception $exc){

@@ -90,9 +90,9 @@ class Core_FolderController extends AuthControllerAction {
       $this->objCommandChain->addCommand(new PageCommand());
     }
 
-    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->products){
-      $this->core->logger->debug('add product command!');
-      $this->objCommandChain->addCommand(new ProductCommand());
+    if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->global){
+      $this->core->logger->debug('add global command!');
+      $this->objCommandChain->addCommand(new GlobalCommand());
     }
   }
 

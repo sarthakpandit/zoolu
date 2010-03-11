@@ -234,9 +234,9 @@ class IndexController extends Zend_Controller_Action {
             $this->objPage->setType('page');
             $this->objPage->setModelSubPath('cms/models/');
             break;
-          case $this->core->sysConfig->url_types->product:
-            $this->objPage->setType('product');
-            $this->objPage->setModelSubPath('products/models/');
+          case $this->core->sysConfig->url_types->global:
+            $this->objPage->setType('global');
+            $this->objPage->setModelSubPath('global/models/');
             $this->objPage->setElementLinkId($objUrlData->linkId);
             $this->objPage->setNavParentId($objUrlData->linkParentId);
             break;

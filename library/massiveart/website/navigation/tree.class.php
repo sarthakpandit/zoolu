@@ -82,6 +82,17 @@ class NavigationTree extends NavigationItem implements Iterator, Countable {
   public function hasSubTrees(){
     return (count($this->arrTrees) > 0) ? true : false;
   }
+  
+  /**
+   * hasSubTree
+   * @param string $strName
+   * @return boolean
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function hasSubTree($strName){
+    return (array_key_exists($strName, $this->arrTrees)) ? true : false;
+  }
 
   /**
    * addTree
@@ -98,18 +109,22 @@ class NavigationTree extends NavigationItem implements Iterator, Countable {
 
   /**
    * addToParentTree
-   * @param NavigationTree $objTree
+   * @param NavigationTree|NavigationItem $objNav
    * @param string $strName
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function addToParentTree($objTree, $strName){
-    if($this->intId == $objTree->getParentId()){
-      $this->addTree($objTree, $strName);
+  public function addToParentTree($objNav, $strName = null){
+    if($this->intId == $objNav->getParentId()){
+      if($objNav instanceof NavigationTree){
+        $this->addTree($objNav, $strName);
+      }else if($objNav instanceof NavigationItem){
+        $this->addItem($objNav, $strName);        
+      }
       return true;
     }else{
       foreach($this->arrTrees as $objSubTree){
-        if($objSubTree->addToParentTree($objTree, $strName)){
+        if($objSubTree->addToParentTree($objNav, $strName)){
           break;
         }
       }

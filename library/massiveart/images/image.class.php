@@ -102,7 +102,8 @@ class Image extends File {
         /**
          * receive file
          */
-        $this->objUpload->addFilter('Rename', $this->getUploadPath().$this->strFileId.'.'.$this->strExtension, $this->_FILE_NAME);
+        $this->objUpload->addFilter('Rename', array('target' => $this->getUploadPath().$this->strFileId.'.'.$this->strExtension,
+                                                    'overwrite' => true), $this->_FILE_NAME);
         $this->objUpload->receive($this->_FILE_NAME);
 
         /**
@@ -187,6 +188,7 @@ class Image extends File {
   		if(count($objImageFiles) > 0){
   			foreach($objImageFiles as $objImageFile){
 		      
+  			  $this->setSegmentPath($objImageFile->path);
   			  $srcFile = $this->getUploadPath().$objImageFile->filename;
       
 		      if(count($this->arrDefaultImageSizes) > 0){

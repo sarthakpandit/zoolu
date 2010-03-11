@@ -37,7 +37,7 @@
    */
   $core->translate->_('portals');
   $core->translate->_('media');
-  $core->translate->_('products');
+  $core->translate->_('global');
   $core->translate->_('user_administration');
   $core->translate->_('settings');
 

@@ -143,7 +143,7 @@
         <category>3</category>
         <unit>4</unit>
         <contact>5</contact>
-        <product>6</product>
+        <global>6</global>
       </types>
       <!-- default status for folder/page creation(1...Test, 2...Published, 3...Approval) -->
       <!-- table: status -->
@@ -466,7 +466,7 @@
       <media>2</media>
       <properties>3</properties>
       <users>4</users>
-      <products>5</products>
+      <global>5</global>
     </modules>
     
     <!-- ROOTLEVEL TYPES -->
@@ -482,7 +482,7 @@
       <users>8</users>
       <groups>9</groups>
       <resources>10</resources>
-      <products>11</products>
+      <global>11</global>
     </root_level_types>
     
     <!-- FOLDER TYPES -->
@@ -538,23 +538,43 @@
       </product_tree>
     </page_types>
     
-    <!-- PAGE TYPES -->
-    <!-- table: productTypes -->
-    <product_types>
+    <!-- GLOBAL TYPES -->
+    <!-- table: globalTypes -->
+    <global_types>
       <product>
         <id>1</id>
         <default_formId>DEFAULT_PRODUCT</default_formId>
         <default_templateId>11</default_templateId>
       </product>
-      <link>
+      <product_link>
         <id>2</id>        
-      </link>
-      <overview>
+      </product_link>
+      <product_overview>
         <id>3</id>
         <default_formId>DEFAULT_PRODUCT_OVERVIEW</default_formId>
         <default_templateId>12</default_templateId>
-      </overview>
-    </product_types>
+      </product_overview>
+      <content>
+        <id>4</id>
+        <default_formId>DEFAULT_CONTENT</default_formId>
+        <default_templateId>15</default_templateId>
+      </content>
+      <content_overview>
+        <id>5</id>
+        <default_formId>DEFAULT_CONTENT_OVERVIEW</default_formId>
+        <default_templateId>16</default_templateId>
+      </content_overview>
+      <press>
+        <id>6</id>
+        <default_formId>DEFAULT_PRESS</default_formId>
+        <default_templateId>17</default_templateId>
+      </press>
+      <press_overview>
+        <id>7</id>
+        <default_formId>DEFAULT_PRESS_OVERVIEW</default_formId>
+        <default_templateId>18</default_templateId>
+      </press_overview>
+    </global_types>
     
     <!-- REGION TYPES -->
     <!-- table: regionTypes -->
@@ -588,7 +608,7 @@
     <!-- table: urlTypes -->
     <url_types>
       <page>1</page>
-      <product>2</product>
+      <global>2</global>
     </url_types>
 
     <!-- FILTER TYPES-->
