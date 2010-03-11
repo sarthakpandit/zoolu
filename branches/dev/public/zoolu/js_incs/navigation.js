@@ -23,7 +23,7 @@ Massiveart.Navigation = Class.create({
     this.constFolder = 'folder';
     this.constPage = 'page';
     this.constStartPage = 'startpage';
-    this.constProduct = 'product';
+    this.constGlobal = 'global';
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
     this.constRequestChildNav = '/zoolu/cms/navigation/childnavigation';
@@ -31,6 +31,10 @@ Massiveart.Navigation = Class.create({
     this.rootLevelId = 0;
     this.preSelectedPortal;
     this.rootLevelTypeId = 0;
+    this.rootLevelGroupId = 0;
+
+    this.preSelectedNaviItem;
+    this.preSelectedSubNaviItem;
     
     this.preSelectedItem;
     this.preSelectedItemId = 0;
@@ -211,6 +215,7 @@ Massiveart.Navigation = Class.create({
     new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
       parameters: { 
         rootLevelId: this.rootLevelId,
+        rootLevelGroupId: this.rootLevelGroupId,
         currLevel: this.currLevel},      
       evalScripts: true,     
       onComplete: function() {
@@ -228,61 +233,106 @@ Massiveart.Navigation = Class.create({
    * getRootLevelTreeStart 
    */
   getRootLevelTreeStart: function(){
-    this.selectRootLevel(this.rootLevelId);
+    this.selectRootLevel(this.rootLevelId, this.rootLevelGroupId);
   },
   
   /**
-   * selectPortal
+   * selectRootLevel
    * @param integer rootLevelId
    */
-   selectRootLevel: function(rootLevelId){            
-    this.currLevel = 1;
+  selectRootLevel: function(rootLevelId, rootLevelGroupId, url, makeRequest, viewType){
     
-    this.hideCurrentFolder();
+    if(typeof(viewType) == 'undefined'){
+      viewType = 'tree';
+    } 
     
-    $(this.genFormContainer).hide();
-    $(this.genFormSaveContainer).hide();    
-    
-    this.makeSelected('naviitem'+rootLevelId);
-    if($(this.preSelectedPortal) && ('naviitem'+rootLevelId) != this.preSelectedPortal){ 
-      this.makeDeselected(this.preSelectedPortal);
-    }  
-    
-    this.preSelectedPortal = 'naviitem'+rootLevelId;
-    this.rootLevelId = rootLevelId;
-    
-    $('divNaviCenterInner').innerHTML = '';
-    this.levelArray = [];
-    
-    var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
-    new Insertion.Bottom('divNaviCenterInner', levelContainer);
-    
-    if(Prototype.Browser.IE){
-      newNavHeight = $('divNaviCenter').getHeight();
-      $$('.navlevel').each(function(elDiv){
-        if((newNavHeight-42) > 0) $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
-      });
+    /**
+     * select root level with layout change -> location href.
+     */
+    if(typeof(url) != 'undefined' && url != '' && (!location.href.endsWith(url) || viewType == 'list')){
+      location.href = url;
+      var myForm = document.createElement('form');
+      myForm.method = 'post';
+      myForm.action = url;
+     
+      var myRootLevelIdInput = document.createElement("input");
+      myRootLevelIdInput.setAttribute('name', 'rootLevelId');
+      myRootLevelIdInput.setAttribute('value', rootLevelId);
+      myRootLevelIdInput.setAttribute('type', 'hidden');
+      myForm.appendChild(myRootLevelIdInput);
+      
+      var myRootLevelGroupIdInput = document.createElement("input");
+      myRootLevelGroupIdInput.setAttribute('name', 'rootLevelGroupId');
+      myRootLevelGroupIdInput.setAttribute('value', rootLevelGroupId);
+      myRootLevelGroupIdInput.setAttribute('type', 'hidden');
+      myForm.appendChild(myRootLevelGroupIdInput);
+      
+      document.body.appendChild(myForm);
+      myForm.submit();      
+    }else{
+      
+      if(typeof(makeRequest) == 'undefined'){
+        makeRequest = true;
+      } 
+      
+      this.currLevel = 1;
+      
+      this.hideCurrentFolder();
+      
+      if($(this.genFormSaveContainer)) $(this.genFormContainer).hide();
+      if($(this.genFormSaveContainer)) $(this.genFormSaveContainer).hide();    
+      
+      if($('naviitem'+rootLevelId)){
+        this.makeSelected('naviitem'+rootLevelId);
+        if($(this.preSelectedNaviItem) && ('naviitem'+rootLevelId) != this.preSelectedNaviItem){ 
+          this.makeDeselected(this.preSelectedNaviItem);
+          this.makeDeselected(this.preSelectedSubNaviItem);
+        }      
+        this.preSelectedNaviItem = 'naviitem'+rootLevelId;
+      }else if($('subnaviitem'+rootLevelId)){
+        this.makeSelected('subnaviitem'+rootLevelId);
+        this.preSelectedSubNaviItem = 'subnaviitem'+rootLevelId;
+      }
+      
+      this.rootLevelId = rootLevelId;
+      this.rootLevelGroupId = rootLevelGroupId;
+      
+      if($('divNaviCenterInner')) $('divNaviCenterInner').innerHTML = '';
+      this.levelArray = [];
+      
+      if(makeRequest == true){
+        var levelContainer = '<div id="navlevel'+this.currLevel+'" rootlevelid="'+this.rootLevelId+'" parentid="" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+        new Insertion.Bottom('divNaviCenterInner', levelContainer);
+        
+        if(Prototype.Browser.IE){
+          newNavHeight = $('divNaviCenter').getHeight();
+          $$('.navlevel').each(function(elDiv){
+            if((newNavHeight-42) > 0) $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
+          });
+        }
+        else if(Prototype.Browser.WebKit){
+          newNavHeight = $('divNaviCenter').getHeight();
+          $$('.navlevel').each(function(elDiv){
+            if((newNavHeight-40) > 0) $(elDiv).setStyle({height: (newNavHeight-40) + 'px'});
+          });
+        }          
+        
+        new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
+          parameters: { 
+            rootLevelId: this.rootLevelId,
+            rootLevelGroupId: this.rootLevelGroupId,
+            currLevel: this.currLevel},      
+          evalScripts: true,     
+          onComplete: function() {
+            myCore.removeBusyClass('navlevel'+this.currLevel);
+            this.levelArray.push(this.currLevel);
+            this.initFolderHover();
+            this.initPageHover();
+            this.initAddMenuHover();
+          }.bind(this)
+        });
+      }
     }
-    else if(Prototype.Browser.WebKit){
-      newNavHeight = $('divNaviCenter').getHeight();
-      $$('.navlevel').each(function(elDiv){
-        if((newNavHeight-40) > 0) $(elDiv).setStyle({height: (newNavHeight-40) + 'px'});
-      });
-    }          
-    
-    new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
-      parameters: { 
-        rootLevelId: this.rootLevelId,
-        currLevel: this.currLevel},      
-      evalScripts: true,     
-      onComplete: function() {
-        myCore.removeBusyClass('navlevel'+this.currLevel);
-        this.levelArray.push(this.currLevel);
-        this.initFolderHover();
-        this.initPageHover();
-        this.initAddMenuHover();
-      }.bind(this)
-    });
   },
     
   /**
@@ -525,7 +575,7 @@ Massiveart.Navigation = Class.create({
 		  strParams = 'currLevel='+currLevel+'&folderId='+parentId;
 		} else {
 		  strAjaxAction = this.constRequestRootNav;
-		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId;
+		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;
 		}
     
     if(strParams != '' && strAjaxAction != ''){      
@@ -595,6 +645,7 @@ Massiveart.Navigation = Class.create({
 		    elementType: elType,
 		    sortPosition: $(posElement).getValue(),
 		    rootLevelId: this.rootLevelId,
+		    rootLevelGroupId: this.rootLevelGroupId,
 		    parentId: parentId		    
 		  },      
 		  evalScripts: true,     
@@ -684,11 +735,14 @@ Massiveart.Navigation = Class.create({
 
     myCore.addBusyClass(this.genFormContainer);
     myCore.addBusyClass('divWidgetMetaInfos');
+    
+    myCore.resetTinyMCE(true);
         
     new Ajax.Updater('genFormContainer', '/zoolu/core/folder/getaddform', {
       parameters: {
         formId: folderFormDefaultId,
         rootLevelId: this.rootLevelId,
+        rootLevelGroupId: this.rootLevelGroupId,
         rootLevelTypeId: this.rootLevelTypeId,
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
@@ -731,6 +785,7 @@ Massiveart.Navigation = Class.create({
       parameters: {
         templateId: pageTemplateDefaultId,
         rootLevelId: this.rootLevelId,
+        rootLevelGroupId: this.rootLevelGroupId,
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
         pageTypeId: pageTypeDefaultId,
@@ -773,6 +828,7 @@ Massiveart.Navigation = Class.create({
       parameters: {
         templateId: pageTemplateDefaultId,
         rootLevelId: this.rootLevelId,
+        rootLevelGroupId: this.rootLevelGroupId,
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
         pageTypeId: pageTypeDefaultId,
@@ -858,8 +914,8 @@ Massiveart.Navigation = Class.create({
     strAjaxAction = '';    
     if(elType == this.constFolder){      
       strAjaxAction = '/zoolu/core/' + elType + '/geteditform';
-    } else if(elType == this.constProduct) {
-      strAjaxAction = '/zoolu/products/' + elType + '/geteditform';
+    } else if(elType == this.constGlobal) {
+      strAjaxAction = '/zoolu/global/element/geteditform';
     } else {
       strAjaxAction = '/zoolu/cms/' + elType + '/geteditform';
     }
@@ -875,6 +931,7 @@ Massiveart.Navigation = Class.create({
          linkId: linkId,
          currLevel: currLevel,
          rootLevelId: this.rootLevelId,
+         rootLevelGroupId: this.rootLevelGroupId,
          parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
          elementType: elType,
          zoolu_module: this.module,
@@ -912,6 +969,14 @@ Massiveart.Navigation = Class.create({
    */
   setRootLevelId: function(rootLevelId){
     this.rootLevelId = rootLevelId;
+  },
+  
+  /**
+   * setRootLevelGroupId
+   * @param integer rootLevelGroupId
+   */
+  setRootLevelGroupId: function(rootLevelGroupId){
+    this.rootLevelGroupId = rootLevelGroupId;
   },
   
   /**

@@ -172,9 +172,9 @@ class Core {
      * set up zoolu translate obj
      */
     if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo')){
-      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);  
+      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo');  
     }else{
-      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->sysConfig->languages->default->code.'.mo', $this->strLanguageCode);
+      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->sysConfig->languages->default->code.'.mo');
     }
     
     /**

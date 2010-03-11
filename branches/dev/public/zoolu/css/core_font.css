@@ -152,10 +152,19 @@ Navigation Top */
   font-weight:bold;
 }
 
+#divNaviLeftMain .menutitle,
 #divNaviLeftMain .portalmenutitle {
   color:#754480;
   font-size:12px;
   font-weight:normal;
+}
+
+#divNaviLeftMain .selected .menutitle a,
+#divNaviLeftMain .selected .menutitle a:hover,
+#divNaviLeftMain .selected .portalmenutitle a,
+#divNaviLeftMain .selected .portalmenutitle a:hover {
+  color:#000;
+  text-decoration:none;
 }
 
 #divNaviLeftMain .hover {

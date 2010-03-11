@@ -251,6 +251,36 @@ class Model_Folders {
 
     return $this->getRootLevelTable()->fetchAll($objSelect);
   }
+  
+  /**
+   * loadAllRootLevelsWithGroups
+   * @param integer $intRootLevelModule
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function loadAllRootLevelsWithGroups($intRootLevelModule){
+    $this->core->logger->debug('core->models->Folders->loadAllRootLevels('.$intRootLevelModule.')');
+
+    $objSelect = $this->getRootLevelTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    /**
+     * SELECT rootLevels.id, rootLevels.idRootLevelTypes, rootLevelTitles.title FROM rootLevels
+     * INNER JOIN rootLevelTitles ON rootLevelTitles.idRootLevels = rootLevels.id
+     * WHERE rootLevelTitles.idLanguages = ?
+     *  AND rootLevels.idModules = ?
+     *  AND rootLevels.idRootLevelTypes = ?
+     */
+    $objSelect->from('rootLevels', array('id', 'idRootLevelTypes', 'href', 'idRootLevelGroups'));
+    $objSelect->join('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id', array('title'));
+    $objSelect->join('rootLevelGroups', 'rootLevelGroups.id = rootLevels.idRootLevelGroups', array('name'));
+    $objSelect->joinLeft('rootLevelGroupTitles', 'rootLevelGroupTitles.idRootLevelGroups = rootLevelGroups.id AND rootLevelGroupTitles.idLanguages = '.$this->intLanguageId, array('rootLevelGroupTitle' => 'title'));
+    $objSelect->where('rootLevelTitles.idLanguages = ?', $this->intLanguageId);
+    $objSelect->where('rootLevels.idModules = ?', $intRootLevelModule);
+    $objSelect->order('idRootLevelGroups');
+    
+    return $this->getRootLevelTable()->fetchAll($objSelect);
+  }  
 
   /**
    * getThemeByDomain
@@ -336,17 +366,17 @@ class Model_Folders {
   }
 
   /**
-   * loadProductRootNavigation
+   * loadGlobalRootNavigation
    * @param integer $intRootId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadProductRootNavigation($intRootId){
-    $this->core->logger->debug('core->models->Folders->loadProductRootNavigation('.$intRootId.')');
+  public function loadGlobalRootNavigation($intRootId){
+    $this->core->logger->debug('core->models->Folders->loadGlobalRootNavigation('.$intRootId.')');
 
     $objFolderSelect = $this->core->dbh->select();
-    $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'folderProperties.idFolderTypes', 'productType' => new Zend_Db_Expr('-1'), 'isStartProduct' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'folderProperties.idStatus', 'linkProductId' => new Zend_Db_Expr('-1')));
+    $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'folderProperties.idFolderTypes', 'globalType' => new Zend_Db_Expr('-1'), 'isStartGlobal' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'folderProperties.idStatus', 'linkGlobalId' => new Zend_Db_Expr('-1')));
     $objFolderSelect->joinLeft('folderProperties', 'folderProperties.folderId = folders.folderId AND folderProperties.version = folders.version AND folderProperties.idLanguages = '.$this->intLanguageId, array());
     $objFolderSelect->joinLeft('folderTitles', 'folderTitles.folderId = folders.folderId AND folderTitles.version = folders.version AND folderTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objFolderSelect->join('genericForms', 'genericForms.id = folderProperties.idGenericForms', array('genericFormId', 'version'));
@@ -354,20 +384,20 @@ class Model_Folders {
     $objFolderSelect->where('folders.idRootLevels = ? AND folders.idParentFolder = 0', $intRootId);
 
 
-    $objProductSelect = $this->core->dbh->select();
-    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'lP.sortPosition', 'lP.sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
-    $objProductSelect->join('productLinks', 'productLinks.productId = products.productId', array());
-    $objProductSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());
-    $objProductSelect->join('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->intLanguageId, array());
-    $objProductSelect->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objProductSelect->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version'));
-    $objProductSelect->join('productTypes', 'productTypes.id = productProperties.idProductTypes', array('title AS type'));
-    $objProductSelect->where('lP.idParent = ?', $intRootId);
-    $objProductSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
-    $objProductSelect->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
+    $objGlobalSelect = $this->core->dbh->select();
+    $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'lP.sortPosition', 'lP.sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => 'lP.id'));
+    $objGlobalSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
+    $objGlobalSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
+    $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
+    $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
+    $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
+    $objGlobalSelect->where('lP.idParent = ?', $intRootId);
+    $objGlobalSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
+    $objGlobalSelect->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
 
     $objSelect = $this->getFolderTable()->select()
-                                        ->union(array($objFolderSelect, $objProductSelect))
+                                        ->union(array($objFolderSelect, $objGlobalSelect))
                                         ->order(array('sortPosition', 'sortTimestamp DESC', 'id'));
 
     return $this->getFolderTable()->fetchAll($objSelect);
@@ -600,17 +630,17 @@ class Model_Folders {
   }
 
   /**
-   * loadProductChildNavigation
+   * loadGlobalChildNavigation
    * @param integer $intFolderId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadProductChildNavigation($intFolderId){
-    $this->core->logger->debug('core->models->Folders->loadProductChildNavigation('.$intFolderId.')');
+  public function loadGlobalChildNavigation($intFolderId){
+    $this->core->logger->debug('core->models->Folders->loadGlobalChildNavigation('.$intFolderId.')');
 
     $objFolderSelect = $this->core->dbh->select();
-    $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'folderProperties.idFolderTypes', 'productType' => new Zend_Db_Expr('-1'), 'isStartProduct' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'folderProperties.idStatus', 'linkProductId' => new Zend_Db_Expr('-1')));
+    $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'folderProperties.idFolderTypes', 'globalType' => new Zend_Db_Expr('-1'), 'isStartGlobal' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'folderProperties.idStatus', 'linkGlobalId' => new Zend_Db_Expr('-1')));
     $objFolderSelect->joinLeft('folderProperties', 'folderProperties.folderId = folders.folderId AND folderProperties.version = folders.version AND folderProperties.idLanguages = '.$this->intLanguageId, array());
     $objFolderSelect->joinLeft('folderTitles', 'folderTitles.folderId = folders.folderId AND folderTitles.version = folders.version AND folderTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objFolderSelect->join('genericForms', 'genericForms.id = folderProperties.idGenericForms', array('genericFormId', 'version'));
@@ -618,20 +648,20 @@ class Model_Folders {
     $objFolderSelect->where('folders.idParentFolder  = ?', $intFolderId);
 
 
-    $objProductSelect = $this->core->dbh->select();
-    $objProductSelect->from('products', array('id', 'templateId' => 'productProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'productType' => 'productProperties.idProductTypes', 'isStartProduct', 'lP.sortPosition', 'lP.sortTimestamp', 'productProperties.idStatus', 'linkProductId' => 'lP.id'));
-    $objProductSelect->join('productLinks', 'productLinks.productId = products.productId', array());
-    $objProductSelect->join(array('lP' => 'products'), 'lP.id = productLinks.idProducts', array());
-    $objProductSelect->join('productProperties', 'productProperties.productId = products.productId AND productProperties.version = products.version AND productProperties.idLanguages = '.$this->intLanguageId, array());
-    $objProductSelect->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objProductSelect->join('genericForms', 'genericForms.id = productProperties.idGenericForms', array('genericFormId', 'version'));
-    $objProductSelect->join('productTypes', 'productTypes.id = productProperties.idProductTypes', array('title AS type'));
-    $objProductSelect->where('lP.idParent = ?', $intFolderId);
-    $objProductSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
-    $objProductSelect->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
+    $objGlobalSelect = $this->core->dbh->select();
+    $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'lP.sortPosition', 'lP.sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => 'lP.id'));
+    $objGlobalSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
+    $objGlobalSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
+    $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
+    $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
+    $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
+    $objGlobalSelect->where('lP.idParent = ?', $intFolderId);
+    $objGlobalSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
+    $objGlobalSelect->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
 
     $objSelect = $this->getFolderTable()->select()
-                                 ->union(array($objFolderSelect, $objProductSelect))
+                                 ->union(array($objFolderSelect, $objGlobalSelect))
                                  ->order(array('sortPosition', 'sortTimestamp DESC', 'id'));
 
     return $this->getFolderTable()->fetchAll($objSelect);
@@ -809,14 +839,14 @@ class Model_Folders {
   }
 
   /**
-   * loadProductRootLevelChilds
+   * loadGlobalRootLevelChilds
    * @param integer $intRootLevelId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadProductRootLevelChilds($intRootLevelId){
-    $this->core->logger->debug('core->models->Folders->loadProductRootLevelChilds('.$intRootLevelId.')');
+  public function loadGlobalRootLevelChilds($intRootLevelId){
+    $this->core->logger->debug('core->models->Folders->loadGlobalRootLevelChilds('.$intRootLevelId.')');
 
     $objSelect = $this->getFolderTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -828,21 +858,21 @@ class Model_Folders {
               ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND
                                       folderTitles.version = folders.version AND
                                       folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'))
-              ->join('products AS lP', 'lP.idParent = folders.id AND
-                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idProduct' => 'id', 'productId', 'isStartProduct'))
-              ->join('productLinks', 'productLinks.idProducts = lP.id', array())
-              ->join('products', 'products.productId = productLinks.productId', array())
-              ->join('productProperties', 'productProperties.productId = products.productId AND 
-                                           productProperties.version = products.version AND
-                                           productProperties.idLanguages = '.$this->intLanguageId, array('productStatus' => 'idStatus'))
-              ->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('productTitle' => 'title'))
+              ->join('globals AS lP', 'lP.idParent = folders.id AND
+                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idGlobal' => 'id', 'globalId', 'isStartGlobal'))
+              ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
+              ->join('globals', 'globals.globalId = globalLinks.globalId', array())
+              ->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
+                                           globalProperties.version = globals.version AND
+                                           globalProperties.idLanguages = '.$this->intLanguageId, array('globalStatus' => 'idStatus'))
+              ->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('globalTitle' => 'title'))
               ->where('folders.idRootLevels = ?', $intRootLevelId)
-              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)')
+              ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)')
               ->order('folders.lft')
-              ->order('products.isStartProduct DESC')
-              ->order('products.sortPosition ASC')
-              ->order('products.sortTimestamp DESC')
-              ->order('products.id ASC');
+              ->order('globals.isStartGlobal DESC')
+              ->order('globals.sortPosition ASC')
+              ->order('globals.sortTimestamp DESC')
+              ->order('globals.id ASC');
 
     return $this->objFolderTable->fetchAll($objSelect);
   }
@@ -950,20 +980,20 @@ class Model_Folders {
   }
   
   /**
-   * loadWebsiteProductTree
+   * loadWebsiteGlobalTree
    * @param integer $intParentId
    * @param array $arrFilterOptions
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  public function loadWebsiteProductTree($intParentId, $arrFilterOptions = array()){
-    $this->core->logger->debug('core->models->Folders->loadWebsiteProductTree('.$intParentId.','.$arrFilterOptions.')');
+  public function loadWebsiteGlobalTree($intParentId, $arrFilterOptions = array()){
+    $this->core->logger->debug('core->models->Folders->loadWebsiteGlobalTree('.$intParentId.','.$arrFilterOptions.')');
 
     $strFolderFilter = '';
-    $strProductFilter = '';
+    $strGlobalFilter = '';
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
       $strFolderFilter = 'AND folderProperties.idStatus = '.$this->core->sysConfig->status->live;
-      $strProductFilter = 'AND productProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strGlobalFilter = 'AND globalProperties.idStatus = '.$this->core->sysConfig->status->live;
     }
     
     $objSelect = $this->getFolderTable()->select();
@@ -978,33 +1008,33 @@ class Model_Folders {
                                       folderTitles.version = folders.version AND
                                       folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'))
               ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'))
-              ->join('products AS lP', 'lP.idParent = folders.id AND
-                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idProduct' => 'id', 'productId', 'isStartProduct', 'productOrder' => 'sortPosition'))
-              ->join('productLinks', 'productLinks.idProducts = lP.id', array())
-              ->join('products', 'products.productId = productLinks.productId', array())
-              ->join('productProperties', 'productProperties.productId = products.productId AND 
-                                           productProperties.version = products.version AND
-                                           productProperties.idLanguages = '.$this->intLanguageId.' AND
-                                           productProperties.showInNavigation = 1', array('productStatus' => 'idStatus', 'idProductTypes'))
-              ->joinLeft('productTitles', 'productTitles.productId = products.productId AND productTitles.version = products.version AND productTitles.idLanguages = '.$this->intLanguageId, array('productTitle' => 'title'))
-              ->joinLeft('urls', 'urls.relationId = lP.productId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->product.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
-              ->joinLeft('productCategories', 'productCategories.productId = products.productId AND productCategories.version = products.version', array())
-              ->joinLeft('productLabels', 'productLabels.productId = products.productId AND productLabels.version = products.version', array())
+              ->join('globals AS lP', 'lP.idParent = folders.id AND
+                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idGlobal' => 'id', 'globalId', 'isStartGlobal', 'globalOrder' => 'sortPosition'))
+              ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
+              ->join('globals', 'globals.globalId = globalLinks.globalId', array())
+              ->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
+                                           globalProperties.version = globals.version AND
+                                           globalProperties.idLanguages = '.$this->intLanguageId.' AND
+                                           globalProperties.showInNavigation = 1', array('globalStatus' => 'idStatus', 'idGlobalTypes'))
+              ->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('globalTitle' => 'title'))
+              ->joinLeft('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
+              ->joinLeft('globalCategories', 'globalCategories.globalId = globals.globalId AND globalCategories.version = globals.version', array())
+              ->joinLeft('globalLabels', 'globalLabels.globalId = globals.globalId AND globalLabels.version = globals.version', array())
               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
               ->where('folders.idRootLevels = parent.idRootLevels')
-              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)')              
+              ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)')              
               ->order('folders.lft')
-              ->order('products.isStartProduct DESC')
-              ->order('products.sortPosition ASC')
-              ->order('products.sortTimestamp DESC')
-              ->order('products.id ASC');
+              ->order('globals.isStartGlobal DESC')
+              ->order('globals.sortPosition ASC')
+              ->order('globals.sortTimestamp DESC')
+              ->order('globals.id ASC');
               
     if($arrFilterOptions['CategoryId'] > 0 && $arrFilterOptions['CategoryId'] != ''){
-      $objSelect->where('productCategories.category = ?', $arrFilterOptions['CategoryId']);      
+      $objSelect->where('globalCategories.category = ?', $arrFilterOptions['CategoryId']);      
     }
 
     if($arrFilterOptions['LabelId'] > 0 && $arrFilterOptions['LabelId']  != ''){
-      $objSelect->where('productLabels.label = ?', $arrFilterOptions['LabelId'] );
+      $objSelect->where('globalLabels.label = ?', $arrFilterOptions['LabelId'] );
     }
 
     return $this->objFolderTable->fetchAll($objSelect);
@@ -1127,14 +1157,14 @@ class Model_Folders {
   }
   
   /**
-   * loadProductParentFolders
+   * loadGlobalParentFolders
    * @param integer $intFolderId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadProductParentFolders($intFolderId){
-    $this->core->logger->debug('core->models->Folders->loadProductParentFolders('.$intFolderId.')');
+  public function loadGlobalParentFolders($intFolderId){
+    $this->core->logger->debug('core->models->Folders->loadGlobalParentFolders('.$intFolderId.')');
 
     $objSelect = $this->getFolderTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -1148,16 +1178,16 @@ class Model_Folders {
                                       folderTitles.version = folders.version AND
                                       folderTitles.idLanguages = '.$this->intLanguageId, array('title'))
               ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'))
-              ->join('products AS lP', 'lP.idParent = folders.id AND
+              ->join('globals AS lP', 'lP.idParent = folders.id AND
                                         lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND
                                         lP.sortPosition = 0', array())
-              ->join('productLinks', 'productLinks.idProducts = lP.id', array())
-              ->join('products', 'products.productId = productLinks.productId', array())
-              ->join('urls', 'urls.relationId = lP.productId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->product.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
+              ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
+              ->join('globals', 'globals.globalId = globalLinks.globalId', array())
+              ->join('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
               ->where('folders.lft <= parent.lft')
               ->where('folders.rgt >= parent.rgt')
               ->where('folders.idRootLevels = parent.idRootLevels')
-              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)')
+              ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)')
               ->order('folders.rgt');
 
     return $this->objFolderTable->fetchAll($objSelect);    

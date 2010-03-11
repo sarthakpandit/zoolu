@@ -522,6 +522,7 @@ Massiveart.Form = Class.create({
         languageId: $F('languageId'),
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
+        rootLevelGroupId: ($('rootLevelGroupId') ? $F('rootLevelGroupId') : 0),
         parentFolderId: $F('parentFolderId'),
         elementType: $F('elementType')                   
       },
@@ -573,6 +574,7 @@ Massiveart.Form = Class.create({
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
         rootLevelTypeId: $F('rootLevelTypeId'),
+        rootLevelGroupId: ($('rootLevelGroupId') ? $F('rootLevelGroupId') : 0),
         parentFolderId: $F('parentFolderId'),
         elementType: $F('elementType')
       },      

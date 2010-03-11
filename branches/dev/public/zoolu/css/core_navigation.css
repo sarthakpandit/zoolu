@@ -384,6 +384,27 @@ Navigtion left */
   overflow-x:hidden;
 }
 
+.naviitemcontainer .menu {
+  margin-left:5px;
+  width:230px;
+  background-color:#fff;
+  padding:5px 0 5px 0;
+}
+
+.naviitemcontainer .menulink {
+  padding:0 0 5px 0;
+}
+
+.naviitemcontainer .menutitle {
+  height:16px;
+  padding-right:0;
+  padding-top:3px;
+  padding-left:10px;
+  float:left;
+  width:150px;
+  overflow:hidden;
+}
+
 .naviitemcontainer .top,
 .naviitemcontainer .bottom {
   width:230px;
@@ -529,9 +550,9 @@ Navigtion left */
    
 }
 
-.portalmenu .portalcontenticon,
-.portalmenu .portalwidgetsicon,
-.portalmenu .portalsettingsicon {
+.portalcontenticon,
+.portalwidgetsicon,
+.portalsettingsicon {
   margin-top:3px;
   margin-left:35px;  
   width:20px;
@@ -539,15 +560,19 @@ Navigtion left */
   float:left;
 }
 
-.portalmenu .portalcontenticon {
+.portalcontenticon {
   background:transparent url(/zoolu/images/icons/icon_menu_content.png) no-repeat 0 0;  
 }
 
-.portalmenu .portalwidgetsicon {
+.selected .portalcontenticon {
+  background:transparent url(/zoolu/images/icons/icon_menu_content.png) no-repeat 0 -32px;  
+}
+
+.portalwidgetsicon {
   background:transparent url(/zoolu/images/icons/icon_menu_widgets.png) no-repeat 0 0;
 }
 
-.portalmenu .portalsettingsicon {
+.portalsettingsicon {
   background:transparent url(/zoolu/images/icons/icon_menu_settings.png) no-repeat 0 0;
 }
 
@@ -692,7 +717,7 @@ Navigtion center */
 }
 
 .page,
-.product,
+.global,
 div.navlevelinner .contact {
   position:relative;
   padding-right:15px;
@@ -825,7 +850,7 @@ Icons */
 }
 
 .img_page_on,
-.img_product_on {
+.img_global_on {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -187px;
   position:relative;
   width:16px;
@@ -833,7 +858,7 @@ Icons */
 }
 
 .img_page_off,
-.img_product_off {
+.img_global_off {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -170px;
   position:relative;
   width:16px;

@@ -56,7 +56,7 @@ class Page {
   /**
    * @var Model_Pages 
    */
-  private $objModel; // or Model_Product
+  private $objModel; // or Model_Global
 
   /**
    * @var Model_Folders
@@ -178,7 +178,7 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadPage($blnLoadByParentId = false, $blnLoadProductTreeStartPage = true){
+  public function loadPage($blnLoadByParentId = false, $blnLoadGlobalTreeStartPage = true){
     try{
       $this->getModel();
       $objPageData = ($blnLoadByParentId == true) ? $this->objModel->loadByParentId($this->intParentId, true) : $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
@@ -198,7 +198,7 @@ class Page {
         $this->setChangeUserName($objPage->changeUser);
         $this->setChangeDate($objPage->changed);
         if(isset($objPage->idPageTypes)) $this->setTypeId($objPage->idPageTypes);
-        if(isset($objPage->idProductTypes)) $this->setTypeId($objPage->idProductTypes);
+        if(isset($objPage->idGlobalTypes)) $this->setTypeId($objPage->idGlobalTypes);
         if(isset($objPage->linkId)) $this->setElementLinkId($objPage->linkId);
         $this->setIsStartElement($objPage->isStartElement);
         $this->setShowInNavigation($objPage->showInNavigation);
@@ -247,13 +247,13 @@ class Page {
             header('Location: http://'.$_SERVER['HTTP_HOST'].$this->getField('internal_link')->strLinkedPageUrl);
             exit();
           case  $this->core->sysConfig->page_types->product_tree->id:
-            if($blnLoadProductTreeStartPage == true){
+            if($blnLoadGlobalTreeStartPage == true){
               $this->objParentPage = clone $this;
                           
-              $this->setType('product');
-              $this->setModelSubPath('products/models/');
-              $this->setParentId($this->getFieldValue('entry_product_point'));
-              $this->setNavParentId($this->getFieldValue('entry_product_point'));
+              $this->setType('global');
+              $this->setModelSubPath('global/models/');
+              $this->setParentId($this->getFieldValue('entry_point'));
+              $this->setNavParentId($this->getFieldValue('entry_point'));
               $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
               
               $this->objModel = null;            

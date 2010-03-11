@@ -86,7 +86,6 @@ class Model_Urls {
               ->where('urls.idLanguages = ?', $this->intLanguageId)
               ->where('urls.isMain = 1')
               ->where('urls.idParent IS NULL');
-
     return $this->objUrlTable->fetchAll($objSelect);
   }
   
@@ -121,29 +120,29 @@ class Model_Urls {
 					                 ->where('urls.idLanguages = ?', $this->intLanguageId)
 					                 ->where('rootLevels.id = ?', $intRootLevelId);
 	  
-    $objProductSelect = $this->core->dbh->select();
-    $objProductSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lP.id', 'linkParentId' => 'lP.idParent'));
-    $objProductSelect->join(array('lP' => 'products'), 'lP.productId = urls.relationId AND lP.version = urls.version', array());
-    $objProductSelect->join('productLinks', 'productLinks.idProducts = lP.id', array());
-    $objProductSelect->join('products', 'products.productId = productLinks.productId', array());
-    $objProductSelect->where('urls.url = ?', $strUrl)
-                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->product)
+    $objGlobalSelect = $this->core->dbh->select();
+    $objGlobalSelect->from('urls', array('relationId' => 'globals.globalId', 'globals.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lG.id', 'linkParentId' => 'lG.idParent'));
+    $objGlobalSelect->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version', array());
+    $objGlobalSelect->join('globalLinks', 'globalLinks.idGlobals = lG.id', array());
+    $objGlobalSelect->join('globals', 'globals.globalId = globalLinks.globalId', array());
+    $objGlobalSelect->where('urls.url = ?', $strUrl)
+                     ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->global)
                      ->where('urls.idLanguages = ?', $this->intLanguageId)
-                     ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
+                     ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
     
     $objSelect = $this->getUrlTable()->select()
-                                     ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objProductSelect));
+                                     ->union(array($objFolderPageSelect, $objRootLevelPageSelect, $objGlobalSelect));
 
     $objUrlData->url = $this->objUrlTable->fetchAll($objSelect);
     
     /**
-     * check if url is product of a linkde product tree
+     * check if url is global of a linkde global tree
      */
     if(count($objUrlData->url) == 0){
-      $objProductTreeBaseUrls = $this->loadProductTreeBaseUrls($intRootLevelId);
-      foreach($objProductTreeBaseUrls as $objBaseUrl){
+      $objGlobalTreeBaseUrls = $this->loadGlobalTreeBaseUrls($intRootLevelId);
+      foreach($objGlobalTreeBaseUrls as $objBaseUrl){
         if(strpos($strUrl, $objBaseUrl->url) === 0){
-          $objUrlData->url = $this->loadProductByUrl(str_replace($objBaseUrl->url, '', $strUrl));
+          $objUrlData->url = $this->loadGlobalByUrl(str_replace($objBaseUrl->url, '', $strUrl));
           $objUrlData->baseUrl = $objBaseUrl;
           break;
         }
@@ -154,13 +153,13 @@ class Model_Urls {
   }
   
   /**
-   * loadProductTreeBaseUrls
+   * loadGlobalTreeBaseUrls
    * @param integer $intRootLevelId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  public function loadProductTreeBaseUrls($intRootLevelId){
-    $this->core->logger->debug('core->models->Model_Urls->loadProductTreeBaseUrls('.$intRootLevelId.')');
+  public function loadGlobalTreeBaseUrls($intRootLevelId){
+    $this->core->logger->debug('core->models->Model_Urls->loadGlobalTreeBaseUrls('.$intRootLevelId.')');
     
     $objSelect = $this->getUrlTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -178,25 +177,25 @@ class Model_Urls {
   }
   
   /**
-   * loadProductByUrl
+   * loadGlobalByUrl
    * @param string $strUrl
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  public function loadProductByUrl($strUrl){
-    $this->core->logger->debug('core->models->Model_Urls->loadProductByUrl('.$strUrl.')');
+  public function loadGlobalByUrl($strUrl){
+    $this->core->logger->debug('core->models->Model_Urls->loadGlobalByUrl('.$strUrl.')');
     
     $objSelect = $this->getUrlTable()->select();
     $objSelect->setIntegrityCheck(false);
     
-    $objSelect->from('urls', array('relationId' => 'products.productId', 'products.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lP.id', 'linkParentId' => 'lP.idParent'));
-    $objSelect->join(array('lP' => 'products'), 'lP.productId = urls.relationId AND lP.version = urls.version', array());
-    $objSelect->join('productLinks', 'productLinks.idProducts = lP.id', array());
-    $objSelect->join('products', 'products.productId = productLinks.productId', array());
+    $objSelect->from('urls', array('relationId' => 'globals.globalId', 'globals.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'linkId' => 'lG.id', 'linkParentId' => 'lG.idParent'));
+    $objSelect->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version', array());
+    $objSelect->join('globalLinks', 'globalLinks.idGlobals = lG.id', array());
+    $objSelect->join('globals', 'globals.globalId = globalLinks.globalId', array());
     $objSelect->where('urls.url = ?', $strUrl)
-              ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->product)
+              ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->global)
               ->where('urls.idLanguages = ?', $this->intLanguageId)
-              ->where('products.id = (SELECT p.id FROM products p WHERE p.productId = products.productId ORDER BY p.version DESC LIMIT 1)');
+              ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
 
     return $this->objUrlTable->fetchAll($objSelect);
   }

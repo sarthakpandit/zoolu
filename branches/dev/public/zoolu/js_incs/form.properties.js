@@ -122,6 +122,7 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
   changeLanguage: function(newLanguageId){
     
     myCore.addBusyClass(this.updateContainer);
+    myCore.resetTinyMCE(true);
     
     var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
     var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);

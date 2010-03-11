@@ -207,13 +207,13 @@ class Model_Templates {
             break;
         }
         break;
-      case $this->core->sysConfig->form->types->product:
+      case $this->core->sysConfig->form->types->global:
         switch ($intElementTypeId){
-          case $this->core->sysConfig->product_types->product->id:
-          case $this->core->sysConfig->product_types->link->id:
+          case $this->core->sysConfig->global_types->product->id:
+          case $this->core->sysConfig->global_types->product_link->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->product);
             break;          
-          case $this->core->sysConfig->product_types->overview->id:
+          case $this->core->sysConfig->global_types->product_overview->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_overview);
             break;
         }
