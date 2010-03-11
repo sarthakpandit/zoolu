@@ -50,16 +50,16 @@ if (isset($_POST["PHPSESSID"])) {
 Zend_Session::start(); // TODO Zend_Session ????
 
 /**
+ * set default timezone
+ */
+date_default_timezone_set($sysConfig->timezone);
+
+/**
  * initialize the core class
  * (Zend_Db, Zend_Log, ...)
  */
 $core = Core::getInstance(true, $sysConfig, $zooConfig, $webConfig);
 Zend_Registry::set('Core', $core);
-
-/**
- * set default timezone
- */
-date_default_timezone_set($sysConfig->timezone);
 
 /**
  * initialize location
