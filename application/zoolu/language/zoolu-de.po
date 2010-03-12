@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-05 11:36+0100\n"
+"POT-Creation-Date: 2010-03-11 16:18+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -107,14 +107,14 @@ msgstr "Bestätigen Sie Ihr neues Passwort"
 msgid "User_groups"
 msgstr "Benutzergruppen"
 
-#: application/zoolu/modules/products/views/helpers/ListHelper.php:183
-#, fuzzy, php-format
+#: application/zoolu/modules/global/views/helpers/ListHelper.php:183
+#, php-format
 msgid "No_search_result"
 msgstr "Ihre Suche nach \"%s\" ergab leider keinen Treffer."
 
-#: application/zoolu/modules/products/controllers/ProductController.php:720
-msgid "Search_Product"
-msgstr "Produkt Suche"
+#: application/zoolu/modules/global/controllers/ElementController.php:726
+msgid "Search"
+msgstr "Suchen"
 
 #: application/zoolu/language/addon-language-keys.php:38
 msgid "portals"
@@ -144,6 +144,22 @@ msgstr "Geändert von"
 msgid "changed"
 msgstr "Geändert am"
 
+#: application/zoolu/language/addon-language-keys.php:65
+msgid "New_Content"
+msgstr "Neuer Inhalt"
+
+#: application/zoolu/language/addon-language-keys.php:66
+msgid "New_Product"
+msgstr "Neues Produkt"
+
+#: application/zoolu/language/addon-language-keys.php:67
+msgid "New_Product_Link"
+msgstr "Neuer Produktlink"
+
+#: application/zoolu/language/addon-language-keys.php:68
+msgid "New_Press"
+msgstr "Neue Pressemitteilung"
+
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:13
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:22
 msgid "previous"
@@ -170,43 +186,32 @@ msgstr "Meine Einstellungen"
 msgid "Logout"
 msgstr "Log Out"
 
-#: application/zoolu/modules/products/views/scripts/product/getoverlaysearch.phtml:10
-msgid "Search"
-msgstr "Suchen"
-
-#: application/zoolu/modules/products/views/scripts/product/getoverlaysearch.phtml:16
-msgid "Reset"
-msgstr "Reset"
-
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:14
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:14
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:23
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:14
 msgid "Show_Add_Menu"
 msgstr "Hinzufügen"
 
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:23
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:24
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:23
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:24
-msgid "New_Product"
-msgstr "Neues Produkt"
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:32
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:33
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:37
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:38
+msgid "New_"
+msgstr ""
 
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:28
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:29
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:28
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:29
-msgid "New_Product_Link"
-msgstr "Neuer Produktlink"
-
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:33
-#: application/zoolu/modules/products/views/scripts/navigation/rootnavigation.phtml:34
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:33
-#: application/zoolu/modules/products/views/scripts/navigation/childnavigation.phtml:34
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:42
+#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:43
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:33
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:34
 msgid "New_Folder"
 msgstr "Neuer Ordner"
 
+#: application/zoolu/modules/global/views/scripts/element/getoverlaysearch.phtml:16
+msgid "Reset"
+msgstr "Reset"
+
 #: application/zoolu/layouts/properties.phtml:28
+#: application/zoolu/layouts/global-tree.phtml:28
 #: application/zoolu/layouts/index.phtml:28
-#: application/zoolu/layouts/products-tree.phtml:28
 #: application/zoolu/layouts/users.phtml:28
 #: application/zoolu/layouts/media.phtml:28
 #: application/zoolu/layouts/cms.phtml:28
@@ -214,8 +219,8 @@ msgid "Report_bugs"
 msgstr "Fehler melden"
 
 #: application/zoolu/layouts/properties.phtml:28
+#: application/zoolu/layouts/global-tree.phtml:28
 #: application/zoolu/layouts/index.phtml:28
-#: application/zoolu/layouts/products-tree.phtml:28
 #: application/zoolu/layouts/users.phtml:28
 #: application/zoolu/layouts/media.phtml:28
 #: application/zoolu/layouts/cms.phtml:28
@@ -226,13 +231,9 @@ msgstr "Hilfe & FAQ"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: application/zoolu/layouts/products-tree.phtml:6
-msgid "products"
-msgstr "PRODUKTE"
-
-#: application/zoolu/layouts/products-tree.phtml:195
-msgid "Products"
-msgstr "Produkte"
+#: application/zoolu/layouts/global-tree.phtml:195
+msgid "Global"
+msgstr "Global"
 
 #: application/zoolu/layouts/users.phtml:236
 msgid "User_administration"
@@ -245,4 +246,11 @@ msgstr "Medien"
 #: application/zoolu/layouts/cms.phtml:194
 msgid "Portals"
 msgstr "Portale"
+
+#~ msgid "Search_Product"
+#~ msgstr "Produkt Suche"
+#~ msgid "products"
+#~ msgstr "PRODUKTE"
+#~ msgid "Products"
+#~ msgstr "Produkte"
 

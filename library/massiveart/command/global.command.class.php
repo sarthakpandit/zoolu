@@ -61,13 +61,18 @@ class GlobalCommand implements CommandInterface {
    * @var Model_Templates
    */
   protected $objModelTemplates;
+  
+  protected $intRootLevelGroupId;
+  protected $strRootLevelGroupKey;
 
   /**
    * Constructor
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function __construct(){
+  public function __construct($intRootLevelGroupId, $strRootLevelGroupKey){
+    $this->intRootLevelGroupId = $intRootLevelGroupId;
+    $this->strRootLevelGroupKey = $strRootLevelGroupKey;
     $this->core = Zend_Registry::get('Core');
   }
 
@@ -101,8 +106,10 @@ class GlobalCommand implements CommandInterface {
     try{
       if(array_key_exists('GenericSetup', $arrArgs) && $arrArgs['GenericSetup'] instanceof GenericSetup){
         $objGenericSetup = $arrArgs['GenericSetup'];
-
-        $intTemplateId = $this->core->sysConfig->global_types->product_overview->default_templateId;
+        
+        $strGlobalType = $this->strRootLevelGroupKey.'_overview';
+        
+        $intTemplateId = $this->core->sysConfig->global_types->$strGlobalType->default_templateId;
         $objTemplateData = $this->getModelTemplates()->loadTemplateById($intTemplateId);
 
         if(count($objTemplateData) == 1){
@@ -129,7 +136,7 @@ class GlobalCommand implements CommandInterface {
 
         $objGenericData->Setup()->setParentId($arrArgs['ParentId']);
         $objGenericData->Setup()->setRootLevelId($objGenericSetup->getRootLevelId());
-        $objGenericData->Setup()->setElementTypeId($this->core->sysConfig->global_types->product_overview->id);
+        $objGenericData->Setup()->setElementTypeId($this->core->sysConfig->global_types->$strGlobalType->id);
         $objGenericData->Setup()->setCreatorId($objGenericSetup->getCreatorId());
         $objGenericData->Setup()->setStatusId($objGenericSetup->getStatusId());
         $objGenericData->Setup()->setShowInNavigation($objGenericSetup->getShowInNavigation());
@@ -175,7 +182,7 @@ class GlobalCommand implements CommandInterface {
                           'idLanguages' => $objGenericSetup->getLanguageId(),
                           'changed'     => date('Y-m-d H:i:s'));
 
-        $this->getModelGlobals($arrArgs)->updateFolderStartGlobal($intFolderId, $arrProperties, $arrTitle);
+        $this->getModelGlobals($arrArgs)->updateFolderStartGlobal($intFolderId, $arrProperties, $arrTitle, $this->intRootLevelGroupId);
         return true;
       }else{
         throw new Exception('There ist now GenericSetup in the args array!');

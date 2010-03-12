@@ -30,6 +30,7 @@ Massiveart.Global = Class.create({
                  currLevel: $F('currLevel'),
                  rootLevelId: $F('rootLevelId'),
                  rootLevelGroupId: $F('rootLevelGroupId'),
+                 rootLevelGroupKey: ($('rootLevelGroupKey'+$F('rootLevelGroupId'))) ? $F('rootLevelGroupKey'+$F('rootLevelGroupId')) : '',
                  parentFolderId: $F('parentFolderId'),
                  parentTypeId: $F('parentTypeId'),
                  elementType: $F('elementType'),
@@ -95,6 +96,8 @@ Massiveart.Global = Class.create({
     if($('elementSearchCurrLevel')){
       currLevel = $F('elementSearchCurrLevel');
 
+      myCore.resetTinyMCE(true);
+      
       new Ajax.Request('/zoolu/global/element/addelementlink', {
         parameters: {
             templateId: elementTemplateDefaultId,

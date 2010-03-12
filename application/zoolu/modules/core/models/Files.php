@@ -234,6 +234,7 @@ class Model_Files {
       }
       
       $objSelect->where('(files.isLanguageSpecific = 0) OR (files.isLanguageSpecific = 1 AND fileTitles.idLanguages IS NOT NULL)');
+      $objSelect->order('title');
       
       return $this->objFileTable->fetchAll($objSelect);
     }catch (Exception $exc) {

@@ -20,15 +20,17 @@
               <div class="clear"></div>
               <div class="addmenucontent">
                 <div class="addmenuelement" onclick="myNavigation.addElement(<?php echo $this->currLevel; ?>); return false;">
-                  <img class="icon" src="/zoolu/images/icons/icon_document_new.png" width="16" height="16" alt="<?php echo $this->translate->_('New_Product'); ?>"/>
-                  <div class="small white"><?php echo $this->translate->_('New_Product'); ?></div>
+                  <img class="icon" src="/zoolu/images/icons/icon_document_new.png" width="16" height="16" alt="<?php echo $this->translate->_('New_'.ucfirst($this->rootLevelGroupKey)); ?>"/>
+                  <div class="small white"><?php echo $this->translate->_('New_'.ucfirst($this->rootLevelGroupKey)); ?></div>
                   <div class="clear"></div>
                 </div>
+                <?php if($this->rootLevelGroupId == Zend_Registry::get('Core')->sysConfig->root_level_groups->product): ?>
                 <div class="addmenuelement" onclick="myNavigation.getElementLinkChooser(<?php echo $this->currLevel; ?>); return false;">
-                  <img class="icon" src="/zoolu/images/icons/icon_document_new.png" width="16" height="16" alt="<?php echo $this->translate->_('New_Product_Link'); ?>"/>
-                  <div class="small white"><?php echo $this->translate->_('New_Product_Link'); ?></div>
+                  <img class="icon" src="/zoolu/images/icons/icon_document_new.png" width="16" height="16" alt="<?php echo $this->translate->_('New_'.ucfirst($this->rootLevelGroupKey).'_Link'); ?>"/>
+                  <div class="small white"><?php echo $this->translate->_('New_'.ucfirst($this->rootLevelGroupKey).'_Link'); ?></div>
                   <div class="clear"></div>
                 </div>
+                <?php endif; ?>
                 <div class="addmenuelement" onclick="myNavigation.addFolder(<?php echo $this->currLevel; ?>); return false;">
                   <img class="icon" src="/zoolu/images/icons/icon_folder_new.png" width="16" height="16" alt="<?php echo $this->translate->_('New_Folder'); ?>"/>
                   <div class="small white"><?php echo $this->translate->_('New_Folder'); ?></div>

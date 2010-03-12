@@ -92,7 +92,7 @@ class Core_FolderController extends AuthControllerAction {
 
     if($this->objRequest->getParam('rootLevelTypeId') == $this->core->sysConfig->root_level_types->global){
       $this->core->logger->debug('add global command!');
-      $this->objCommandChain->addCommand(new GlobalCommand());
+      $this->objCommandChain->addCommand(new GlobalCommand((int) $this->objRequest->getParam('rootLevelGroupId'), $this->objRequest->getParam('rootLevelGroupKey')));
     }
   }
 
@@ -185,7 +185,7 @@ class Core_FolderController extends AuthControllerAction {
         $this->view->assign('blnShowFormAlert', true);
 
         $arrArgs = array('ParentId'         => $intFolderId,
-                         'LanguageId'       => $this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id),
+                         'LanguageId'       => $this->objRequest->getParam('languageId', $this->core->sysConfig->languages->default->id),
                          'GenericSetup'     => $this->objForm->Setup());
         if($this->objCommandChain->runCommand('addFolderStartElement', $arrArgs)){
           $this->view->assign('selectNavigationItemNow', true);
@@ -581,6 +581,7 @@ class Core_FolderController extends AuthControllerAction {
     $this->objForm->Setup()->setStatusId((($this->objRequest->getParam('idStatus') != '') ? $this->objRequest->getParam('idStatus') : $this->core->sysConfig->form->status->default));
     $this->objForm->Setup()->setRootLevelId((($this->objRequest->getParam('rootLevelId') != '') ? $this->objRequest->getParam('rootLevelId') : null));
     $this->objForm->Setup()->setRootLevelTypeId((($this->objRequest->getParam('rootLevelTypeId') != '') ? $this->objRequest->getParam('rootLevelTypeId') : null));
+    $this->objForm->Setup()->setRootLevelGroupId((($this->objRequest->getParam('rootLevelGroupId') != '') ? $this->objRequest->getParam('rootLevelGroupId') : null));
     $this->objForm->Setup()->setParentId((($this->objRequest->getParam('parentFolderId') != '') ? $this->objRequest->getParam('parentFolderId') : null));
     $this->objForm->Setup()->setUrlFolder((($this->objRequest->getParam('isUrlFolder') != '') ? $this->objRequest->getParam('isUrlFolder') : 1));
     $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam('showInNavigation') != '') ? $this->objRequest->getParam('showInNavigation') : 0));
@@ -615,6 +616,8 @@ class Core_FolderController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'idStatus', array('value' => $this->objForm->Setup()->getStatusId(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'rootLevelId', array('value' => $this->objForm->Setup()->getRootLevelId(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'rootLevelTypeId', array('value' => $this->objForm->Setup()->getRootLevelTypeId(), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'rootLevelGroupId', array('value' => $this->objForm->Setup()->getRootLevelGroupId(), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'rootLevelGroupKey', array('value' => $this->objRequest->getParam('rootLevelGroupKey', 'content'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'parentFolderId', array('value' => $this->objForm->Setup()->getParentId(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'isUrlFolder', array('value' => $this->objForm->Setup()->getUrlFolder(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden'), 'ignore' => true));

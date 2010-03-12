@@ -78,7 +78,7 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
           $objGlobal = $this->objModelGlobals->add($this->setup);
 
           $this->setup->setElementId($objGlobal->id);
-          $this->setup->setElementLinkId($objGlobal->linkId);
+          if(isset($objGlobal->linkId)) $this->setup->setElementLinkId($objGlobal->linkId);
 
           $this->insertCoreData('global', $objGlobal->globalId, $objGlobal->version);
           $this->insertFileData('global', array('Id' => $objGlobal->globalId, 'Version' => $objGlobal->version));

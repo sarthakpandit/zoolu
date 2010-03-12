@@ -636,6 +636,10 @@ class Cms_PageController extends AuthControllerAction {
             $this->objRequest->setParam('formId', '');
             $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->product_tree->default_templateId);
             break;
+          case $this->core->sysConfig->page_types->press_area->id :
+            $this->objRequest->setParam('formId', '');
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->press_area->default_templateId);
+            break;
         }
       }
 

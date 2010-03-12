@@ -641,28 +641,27 @@ class Global_ElementController extends AuthControllerAction {
     $this->core->logger->debug('global->controllers->ElementController->changetypeAction()');
 
     try{
-
+      $strGroupKey = $this->objRequest->getParam('rootLevelGroupKey');
+      $strGroupKeyLink = $strGroupKey.'_link';
+      $strGroupKeyOverview = $strGroupKey.'_overview';
       if($this->objRequest->getParam('elementTypeId') != '' && $this->objRequest->getParam('elementTypeId') > 0){
       	switch($this->objRequest->getParam('elementTypeId')){
-        	case $this->core->sysConfig->global_types->product->id :
+        	case $this->core->sysConfig->global_types->$strGroupKey->id :
             $this->objRequest->setParam('formId', '');
             if($this->objRequest->getParam('isStartGlobal') == 'true' && $this->objRequest->getParam('parentTypeId') == $this->core->sysConfig->parent_types->rootlevel){
-              echo 'portal_startpage_templateId';
-              $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->product->default_templateId);
+              $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->$strGroupKey->default_templateId);
             }else if($this->objRequest->getParam('isStartGlobal') == 'true'){
-              echo 'startpage_templateId';
-              $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->product->default_templateId);
+              $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->$strGroupKey->default_templateId);
             }else{
-              echo 'default_templateId';
-              $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->product->default_templateId);
+              $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->$strGroupKey->default_templateId);
             }
             break;
-          case $this->core->sysConfig->global_types->product_link->id :
-            $this->objRequest->setParam('formId', $this->core->sysConfig->global_types->product_link->default_formId);
-            break;
-          case $this->core->sysConfig->global_types->product_overview->id :
+          case $this->core->sysConfig->global_types->$strGroupKeyOverview->id :
             $this->objRequest->setParam('formId', '');
-            $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->product_overview->default_templateId);
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->global_types->$strGroupKeyOverview->default_templateId);
+            break;
+          case $this->core->sysConfig->global_types->$strGroupKeyLink->id :
+            $this->objRequest->setParam('formId', $this->core->sysConfig->global_types->$strGroupKeyLink->default_formId);
             break;         
         }
       }

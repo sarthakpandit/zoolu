@@ -78,6 +78,16 @@ class PageHelper {
     //TODO default product overview
   }
     
+  
+  /**
+   * getPressOverview
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getPressOverview(){
+    //TODO default product overview
+  }
+  
   /**
    * setPage    
    * @param Page $objPage   

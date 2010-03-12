@@ -24,7 +24,7 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.products.controllers
+ * @package    application.zoolu.modules.global.controllers
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
@@ -109,6 +109,7 @@ class Global_NavigationController extends AuthControllerAction {
 
     $this->view->assign('rootLevelId', $this->getRequest()->getParam('rootLevelId'));
     $this->view->assign('rootLevelGroupId', $this->getRequest()->getParam('rootLevelGroupId'));
+    $this->view->assign('rootLevelGroupKey', $this->getRequest()->getParam('rootLevelGroupKey'));
     
     $strRenderSciprt = ($this->getRequest()->getParam('layoutType') == 'list') ? 'list.phtml' : 'tree.phtml';
     $this->renderScript('navigation/'.$strRenderSciprt);
@@ -126,23 +127,26 @@ class Global_NavigationController extends AuthControllerAction {
     $objRequest = $this->getRequest();
     $intCurrLevel = $objRequest->getParam("currLevel");
     $this->setRootLevelId($objRequest->getParam("rootLevelId"));
-
+    $intRootLevelGroupId = $objRequest->getParam('rootLevelGroupId');
+    $strRootLevelGroupKey = $objRequest->getParam('rootLevelGroupKey', 'content');
+    
     /**
      * get navigation
      */
     $this->getModelFolders();
-    $objRootelements = $this->objModelFolders->loadGlobalRootNavigation($this->intRootLevelId);
+    $objRootelements = $this->objModelFolders->loadGlobalRootNavigation($this->intRootLevelId, $intRootLevelGroupId);
 
     $this->view->assign('rootelements', $objRootelements);
     $this->view->assign('currLevel', $intCurrLevel);
-    
+        
     $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
-    $this->view->assign('elementFormDefaultId', $this->core->sysConfig->global_types->product->default_formId);
-    $this->view->assign('elementTemplateDefaultId', $this->core->sysConfig->global_types->product->default_templateId);
-    $this->view->assign('elementTypeDefaultId', $this->core->sysConfig->global_types->product->id);
+    $this->view->assign('elementFormDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->default_formId);
+    $this->view->assign('elementTemplateDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->default_templateId);
+    $this->view->assign('elementTypeDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->id);
     
-    $this->view->assign('rootLevelId', $this->getRequest()->getParam('rootLevelId'));
-    $this->view->assign('rootLevelGroupId', $this->getRequest()->getParam('rootLevelGroupId'));
+    $this->view->assign('rootLevelId', $this->intRootLevelId);
+    $this->view->assign('rootLevelGroupId', $intRootLevelGroupId);
+    $this->view->assign('rootLevelGroupKey', $strRootLevelGroupKey);
   }
 
   /**
@@ -157,36 +161,24 @@ class Global_NavigationController extends AuthControllerAction {
 	    $objRequest = $this->getRequest();
 	    $intCurrLevel = $objRequest->getParam("currLevel");
 	    $this->setFolderId($objRequest->getParam("folderId"));
-
+	    $this->setRootLevelId($objRequest->getParam("rootLevelId"));
+      $intRootLevelGroupId = $objRequest->getParam('rootLevelGroupId');
+      $strRootLevelGroupKey = $objRequest->getParam('rootLevelGroupKey', 'content');
+      
 	    /**
 	     * get childnavigation
 	     */
 	    $this->getModelFolders();
-	    $objChildelements = $this->objModelFolders->loadGlobalChildNavigation($this->intFolderId);
+	    $objChildelements = $this->objModelFolders->loadGlobalChildNavigation($this->intFolderId, $intRootLevelGroupId);
 
 	    $this->view->assign('childelements', $objChildelements);
 	    $this->view->assign('currLevel', $intCurrLevel);
+	    
+	    $this->view->assign('rootLevelId', $this->intRootLevelId);
+      $this->view->assign('rootLevelGroupId', $intRootLevelGroupId);
+      $this->view->assign('rootLevelGroupKey', $strRootLevelGroupKey);
     }
   }
-
-  /**
-   * treeAction
-   * @author Thomas Schedler <tsh@massiveart.com>
-   * @version 1.0
-
-  public function treeAction(){
-    $this->core->logger->debug('global->controllers->NavigationController->treeAction()');
-
-    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
-      $objRequest = $this->getRequest();
-
-      /**
-       * get navigation tree
-       *
-      $this->getModelFolders();
-      $objNavigationTree = $this->objModelFolders();
-    }
-  }   */
 
   /**
    * updatepositionAction
