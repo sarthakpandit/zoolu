@@ -1384,6 +1384,15 @@ function get_product_overview(){
 }
 
 /**
+ * get_press_overview
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_press_overview(){
+  echo getPageHelperObject()->getPressOverview();
+}
+
+/**
  * get_collection
  * @return string $strHtmlOutput
  * @author Thomas Schedler <tsh@massiveart.com>

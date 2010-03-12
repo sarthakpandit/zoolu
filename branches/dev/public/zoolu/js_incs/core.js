@@ -213,29 +213,34 @@ Massiveart.Core = Class.create({
    * resetTinyMCE
    */
   resetTinyMCE: function(blnAndDestroy){
-    
-    if(typeof(blnAndDestroy) == 'undefined'){
-      blnAndDestroy = false;
-    }
-    
-    /**
-     * reset some tiny mce issues
-     */
-    tinyMCE.editors.each(function(e) {
-      if(e.controlManager.get('formatselect')){
-        if(e.controlManager.get('formatselect').menu){
-          if($('menu_' + e.controlManager.get('formatselect').menu.id)){
-            $('menu_' + e.controlManager.get('formatselect').menu.id).remove(); 
+    if($$('.texteditor')){
+      if(typeof(blnAndDestroy) == 'undefined'){
+        blnAndDestroy = false;
+      }
+      
+      if(tinyMCE.editors.length > 0){
+        /**
+         * reset some tiny mce issues
+         */
+        tinyMCE.editors.each(function(e) {
+          if(e.controlManager.controls){
+            if(e.controlManager.get('formatselect')){
+              if(e.controlManager.get('formatselect').menu){
+                if($('menu_' + e.controlManager.get('formatselect').menu.id)){
+                  $('menu_' + e.controlManager.get('formatselect').menu.id).remove(); 
+                }
+              }
+            }
           }
+        });  
+        
+        /**
+         * destroy all editors
+         */
+        if(blnAndDestroy){
+          tinyMCE.editors = [];
         }
-      }  
-    });  
-    
-    /**
-     * destroy all editors
-     */
-    if(blnAndDestroy){
-      tinyMCE.editors = [];
+      }
     }
   },
 

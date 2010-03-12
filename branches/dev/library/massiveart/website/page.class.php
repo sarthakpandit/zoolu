@@ -181,7 +181,7 @@ class Page {
   public function loadPage($blnLoadByParentId = false, $blnLoadGlobalTreeStartPage = true){
     try{
       $this->getModel();
-      $objPageData = ($blnLoadByParentId == true) ? $this->objModel->loadByParentId($this->intParentId, true) : $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
+      $objPageData = ($blnLoadByParentId == true) ? $this->objModel->loadByParentId($this->intParentId, $this->intTypeId, true) : $this->objModel->loadByIdAndVersion($this->strPageId, $this->intPageVersion);
                  
       if(count($objPageData) > 0){
         $objPage = $objPageData->current();
@@ -233,33 +233,36 @@ class Page {
         /**
          * page type based fallbacks
          */
-        switch($this->intTypeId){
-          case  $this->core->sysConfig->page_types->external->id:
-            if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
-              header('Location: '.$this->getFieldValue('external'));
-            }else if(filter_var('http://'.$this->getFieldValue('external'), FILTER_VALIDATE_URL)){
-              header('Location: http://'.$this->getFieldValue('external'));
-            }else{
-              header('Location: http://'.$_SERVER['HTTP_HOST']);
-            }
-            exit();
-          case  $this->core->sysConfig->page_types->link->id:
-            header('Location: http://'.$_SERVER['HTTP_HOST'].$this->getField('internal_link')->strLinkedPageUrl);
-            exit();
-          case  $this->core->sysConfig->page_types->product_tree->id:
-            if($blnLoadGlobalTreeStartPage == true){
-              $this->objParentPage = clone $this;
-                          
-              $this->setType('global');
-              $this->setModelSubPath('global/models/');
-              $this->setParentId($this->getFieldValue('entry_point'));
-              $this->setNavParentId($this->getFieldValue('entry_point'));
-              $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
-              
-              $this->objModel = null;            
-              $this->loadPage(true);  
-            }           
-            break;
+        if(isset($objPage->idPageTypes)){
+          switch($objPage->idPageTypes){
+            case $this->core->sysConfig->page_types->external->id:
+              if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
+                header('Location: '.$this->getFieldValue('external'));
+              }else if(filter_var('http://'.$this->getFieldValue('external'), FILTER_VALIDATE_URL)){
+                header('Location: http://'.$this->getFieldValue('external'));
+              }else{
+                header('Location: http://'.$_SERVER['HTTP_HOST']);
+              }
+              exit();
+            case $this->core->sysConfig->page_types->link->id:
+              header('Location: http://'.$_SERVER['HTTP_HOST'].$this->getField('internal_link')->strLinkedPageUrl);
+              exit();
+            case $this->core->sysConfig->page_types->product_tree->id:
+            case $this->core->sysConfig->page_types->press_area->id:
+              if($blnLoadGlobalTreeStartPage == true){
+                $this->objParentPage = clone $this;
+                            
+                $this->setType('global');
+                $this->setModelSubPath('global/models/');
+                $this->setParentId($this->getFieldValue('entry_point'));
+                $this->setNavParentId($this->getFieldValue('entry_point'));
+                $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
+                
+                $this->objModel = null;            
+                $this->loadPage(true);  
+              }           
+              break;
+          }
         }
         
         if($this->objBaseUrl instanceof Zend_Db_Table_Row_Abstract){

@@ -58,5 +58,13 @@
    * resources list
    */
   $core->translate->_('key');
-
+  
+  /**
+   * navigation mehtods
+   */
+  $core->translate->_('New_Content');
+  $core->translate->_('New_Product');
+  $core->translate->_('New_Product_Link');
+  $core->translate->_('New_Press');
+  
 ?>

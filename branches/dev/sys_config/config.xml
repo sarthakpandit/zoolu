@@ -485,6 +485,21 @@
       <global>11</global>
     </root_level_types>
     
+    <!-- ROOTLEVEL GROUPS -->
+    <!-- table: rootLevelGroups -->
+    <root_level_groups>
+      <portal>1</portal>
+      <file>2</file>
+      <category>3</category>
+      <contact>4</contact>
+      <user>5</user>
+      <group>6</group>
+      <resource>7</resource>
+      <content>8</content>
+      <product>9</product>
+      <press>10</press>
+    </root_level_groups>
+    
     <!-- FOLDER TYPES -->
     <!-- table: folderTypes -->
     <folder_types>
@@ -536,6 +551,11 @@
         <default_formId>DEFAULT_PRODUCT_TREE</default_formId>        
         <default_templateId>13</default_templateId>
       </product_tree>
+      <press_area>
+        <id>8</id>
+        <default_formId>DEFAULT_PRESS_AREA</default_formId>        
+        <default_templateId>19</default_templateId>
+      </press_area>
     </page_types>
     
     <!-- GLOBAL TYPES -->
@@ -602,6 +622,11 @@
       <product>6</product>
       <product_tree>7</product_tree>
       <product_overview>8</product_overview>
+      <content>9</content>
+      <content_overview>10</content_overview>
+      <press>11</press>
+      <press_overview>12</press_overview>
+      <press_area>13</press_area>
     </types>
 
     <!-- URL TYPES -->

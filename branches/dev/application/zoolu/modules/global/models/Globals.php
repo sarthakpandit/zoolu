@@ -146,31 +146,48 @@ class Model_Globals {
   /**
    * loadByParentId
    * @param integer $intParentId
+   * @param integer $intTypeId
    * @param boolean $blnOnlyStartGlobal
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadByParentId($intParentId, $blnOnlyStartGlobal = false){
-    $this->core->logger->debug('global->models->Model_Globals->loadByParentId('.$intParentId.', '.$blnOnlyStartGlobal.')');
+  public function loadByParentId($intParentId, $intTypeId, $blnOnlyStartGlobal = false){
+    $this->core->logger->debug('global->models->Model_Globals->loadByParentId('.$intParentId.', '.$intTypeId.', '.$blnOnlyStartGlobal.')');
     
     $objSelect = $this->getGlobalTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => 'lP.id','version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
-    $objSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
-    $objSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());              
-    $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
-    $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
-    $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = globalProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
-    $objSelect->joinLeft(array('ucr' => 'users'), 'ucr.id = globalProperties.creator', array('creator' => 'CONCAT(ucr.fname, \' \', ucr.sname)'));
-    $objSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
-    $objSelect->join('templates', 'templates.id = globalProperties.idTemplates', array('filename'));
-    $objSelect->where('lP.idParent = ?', $intParentId)
-              ->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
-    
-    if($blnOnlyStartGlobal == true){
-      $objSelect->where('lP.isStartGlobal = 1');
+    if($intTypeId == $this->core->sysConfig->page_types->product_tree->id){
+      $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => 'lP.id', 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
+      $objSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
+      $objSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());              
+      $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+      $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
+      $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = globalProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
+      $objSelect->joinLeft(array('ucr' => 'users'), 'ucr.id = globalProperties.creator', array('creator' => 'CONCAT(ucr.fname, \' \', ucr.sname)'));
+      $objSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
+      $objSelect->join('templates', 'templates.id = globalProperties.idTemplates', array('filename'));
+      $objSelect->where('lP.idParent = ?', $intParentId)
+                ->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
+      
+      if($blnOnlyStartGlobal == true){
+        $objSelect->where('lP.isStartGlobal = 1');
+      }  
+    }else{
+      $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => new Zend_Db_Expr('-1'), 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
+      $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+      $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
+      $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = globalProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
+      $objSelect->joinLeft(array('ucr' => 'users'), 'ucr.id = globalProperties.creator', array('creator' => 'CONCAT(ucr.fname, \' \', ucr.sname)'));
+      $objSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
+      $objSelect->join('templates', 'templates.id = globalProperties.idTemplates', array('filename'));
+      $objSelect->where('idParent = ?', $intParentId)
+                ->where('idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
+      
+      if($blnOnlyStartGlobal == true){
+        $objSelect->where('isStartGlobal = 1');
+      }  
     }
         
     return $this->getGlobalTable()->fetchAll($objSelect);   
@@ -337,7 +354,7 @@ class Model_Globals {
                                             `global-'.$strGenForm.'-Instances`.idLanguages = ?
                                           LEFT JOIN `global-'.$strGenForm.'-InstanceFiles` AS iFiles ON
                                             iFiles.id = (SELECT iFl.id FROM `global-'.$strGenForm.'-InstanceFiles` AS iFl
-                                                         WHERE iFl.globalId = globals.globalId AND iFl.version = globals.version AND iFl.idFields IN (5,55)
+                                                         WHERE iFl.globalId = globals.globalId AND iFl.version = globals.version AND iFl.idLanguages = ? AND iFl.idFields IN (5,55)
                                                          ORDER BY iFl.idFields DESC LIMIT 1)
                                           LEFT JOIN files ON
                                             files.id = iFiles.idFiles AND
@@ -345,7 +362,7 @@ class Model_Globals {
                                           LEFT JOIN fileTitles ON
                                             fileTitles.idFiles = files.id AND
                                             fileTitles.idLanguages = ?
-                                          '.$strSqlWhereGlobalIds, array($this->intLanguageId, $this->intLanguageId));
+                                          '.$strSqlWhereGlobalIds, array($this->intLanguageId, $this->intLanguageId, $this->intLanguageId));
 
       return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
     }
@@ -392,16 +409,39 @@ class Model_Globals {
     $objGlobal->sortPosition = GenericSetup::DEFAULT_SORT_POSITION;
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
+    if($objGenericSetup->getRootLevelGroupId() == $this->core->sysConfig->root_level_groups->product){
+      $objGlobal->parentId = $this->core->sysConfig->product->rootLevels->list->id;
+      $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
+    }else{
+      /**
+       * check if parent element is rootlevel or folder and get sort position
+       */
+      if($objGenericSetup->getParentId() != '' && $objGenericSetup->getParentId() > 0){
+        $objGlobal->parentId = $objGenericSetup->getParentId();
+        $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->folder;
+        $objNaviData = $this->getModelFolders()->loadGlobalChildNavigation($objGenericSetup->getParentId(), $objGenericSetup->getRootLevelGroupId());
+      }else{
+        if($objGenericSetup->getRootLevelId() != '' && $objGenericSetup->getRootLevelId() > 0){
+          $objGlobal->parentId = $objGenericSetup->getRootLevelId();          
+        }else{
+          $this->core->logger->err('zoolu->modules->global->models->Model_Globals->add(): intRootLevelId is empty!');
+        }
+        $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
+        $objNaviData = $this->getModelFolders()->loadGlobalRootNavigation($objGenericSetup->getRootLevelId(), $objGenericSetup->getRootLevelGroupId());
+      }
+      $objGlobal->sortPosition = count($objNaviData);
+    }
+    
     /**
      * insert main data
      */
-    $arrMainData = array('idParent'         => $this->core->sysConfig->product->rootLevels->list->id,
-                         'idParentTypes'    => $this->core->sysConfig->parent_types->rootlevel,
-                         'isStartGlobal'   => $objGenericSetup->getIsStartElement(),
+    $arrMainData = array('idParent'         => $objGlobal->parentId,
+                         'idParentTypes'    => $objGlobal->parentTypeId,
+                         'isStartGlobal'    => $objGenericSetup->getIsStartElement(),
                          'idUsers'          => $intUserId,
                          'sortPosition'     => $objGlobal->sortPosition,
                          'sortTimestamp'    => date('Y-m-d H:i:s'),
-                         'globalId'        => $objGlobal->globalId,
+                         'globalId'         => $objGlobal->globalId,
                          'version'          => $objGlobal->version,
                          'creator'          => $objGenericSetup->getCreatorId(),
                          'created'          => date('Y-m-d H:i:s'));
@@ -410,12 +450,12 @@ class Model_Globals {
     /**
      * insert language specific properties
      */
-    $arrProperties = array('globalId'        => $objGlobal->globalId,
+    $arrProperties = array('globalId'         => $objGlobal->globalId,
                            'version'          => $objGlobal->version,
                            'idLanguages'      => $this->intLanguageId,
                            'idGenericForms'   => $objGenericSetup->getGenFormId(),
                            'idTemplates'      => $objGenericSetup->getTemplateId(),
-                           'idGlobalTypes'   => $objGenericSetup->getElementTypeId(),
+                           'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
                            'showInNavigation' => $objGenericSetup->getShowInNavigation(),
                            'idUsers'          => $intUserId,
                            'creator'          => $objGenericSetup->getCreatorId(),
@@ -431,6 +471,7 @@ class Model_Globals {
     if($objGenericSetup->getRootLevelId() == $this->core->sysConfig->product->rootLevels->tree->id){
       $objGlobal->parentId = $objGenericSetup->getParentId();
       $objGlobal->rootLevelId = $objGenericSetup->getRootLevelId();
+      $objGlobal->rootLevelGroupId = $objGenericSetup->getRootLevelGroupId();
       $objGlobal->isStartElement = $objGenericSetup->getIsStartElement();
       $this->addLink($objGlobal);
     }
@@ -456,7 +497,7 @@ class Model_Globals {
      */
     if($objGlobal->parentId != '' && $objGlobal->parentId > 0){
       $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->folder;
-      $objNaviData = $this->getModelFolders()->loadGlobalChildNavigation($objGlobal->parentId);
+      $objNaviData = $this->getModelFolders()->loadGlobalChildNavigation($objGlobal->parentId, $objGlobal->rootLevelGroupId);
     }else{
       if($objGlobal->rootLevelId != '' && $objGlobal->rootLevelId > 0){
         $objGlobal->parentId = $objGlobal->rootLevelId;
@@ -464,7 +505,7 @@ class Model_Globals {
         $this->core->logger->err('zoolu->modules->global->models->Model_Globals->addLink(): intRootLevelId is empty!');
       }
       $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
-      $objNaviData = $this->getModelFolders()->loadGlobalRootNavigation($objGlobal->rootLevelId);
+      $objNaviData = $this->getModelFolders()->loadGlobalRootNavigation($objGlobal->rootLevelId, $objGlobal->rootLevelGroupId);
     }
     $objGlobal->sortPosition = count($objNaviData);
 
@@ -504,14 +545,14 @@ class Model_Globals {
     $strWhere .= $this->getGlobalTable()->getAdapter()->quoteInto(' AND version = ?', $objGlobal->version);
 
     $this->getGlobalTable()->update(array('idUsers'  => $intUserId,
-                                           'changed'  => date('Y-m-d H:i:s')), $strWhere);
+                                          'changed' => date('Y-m-d H:i:s')), $strWhere);
     /**
      * update language specific global properties
      */
     $strWhere .= $this->getGlobalTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
-    $intNumOfEffectedRows = $this->getGlobalPropertyTable()->update(array('idGenericForms'   => $objGenericSetup->getGenFormId(),
+    $intNumOfEffectedRows = $this->getGlobalPropertyTable()->update(array('idGenericForms'    => $objGenericSetup->getGenFormId(),
                                                                            'idTemplates'      => $objGenericSetup->getTemplateId(),
-                                                                           'idGlobalTypes'   => $objGenericSetup->getElementTypeId(),
+                                                                           'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
                                                                            'showInNavigation' => $objGenericSetup->getShowInNavigation(),
                                                                            'idUsers'          => $intUserId,
                                                                            'creator'          => $objGenericSetup->getCreatorId(),
@@ -523,12 +564,12 @@ class Model_Globals {
      * insert language specific global properties
      */
     if($intNumOfEffectedRows == 0){      
-      $arrProperties = array('globalId'        => $objGlobal->globalId,
+      $arrProperties = array('globalId'         => $objGlobal->globalId,
                              'version'          => $objGlobal->version,
                              'idLanguages'      => $this->intLanguageId,
                              'idGenericForms'   => $objGenericSetup->getGenFormId(),
                              'idTemplates'      => $objGenericSetup->getTemplateId(),
-                             'idGlobalTypes'   => $objGenericSetup->getElementTypeId(),
+                             'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
                              'showInNavigation' => $objGenericSetup->getShowInNavigation(),
                              'idUsers'          => $intUserId,
                              'creator'          => $objGenericSetup->getCreatorId(),
@@ -545,19 +586,27 @@ class Model_Globals {
    * updateFolderStartGlobal
    * @param integer $intFolderId
    * @param array $arrProperties
-   * @param string $strTitle
+   * @param string $arrTitle
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function updateFolderStartGlobal($intFolderId, $arrProperties, $arrTitle){
+  public function updateFolderStartGlobal($intFolderId, $arrProperties, $arrTitle, $intRootLevelGroupId){
     $objSelect = $this->getGlobalTable()->select();
     $objSelect->from('globals', array('globalId', 'version'));
-    $objSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
-    $objSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
-    $objSelect->where('lP.idParent = ?', $intFolderId)
-              ->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
-              ->where('lP.isStartGlobal = 1');
-    $objSelect->order(array('lP.version DESC'));
+    
+    if($intRootLevelGroupId == $this->core->sysConfig->root_level_groups->product){
+      $objSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
+      $objSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
+      $objSelect->where('lP.idParent = ?', $intFolderId)
+                ->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
+                ->where('lP.isStartGlobal = 1');
+      $objSelect->order(array('lP.version DESC'));      
+    }else{
+      $objSelect->where('idParent = ?', $intFolderId)
+                ->where('idParentTypes = ?', $this->core->sysConfig->parent_types->folder)
+                ->where('isStartGlobal = 1');
+      $objSelect->order(array('version DESC'));
+    }
     $objSelect->limit(1);
     
     $objStartGlobal = $this->objGlobalTable->fetchAll($objSelect);
@@ -646,7 +695,7 @@ class Model_Globals {
 
     $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
 
-    $arrData = array('globalId'   => $strElementId,
+    $arrData = array('globalId'     => $strElementId,
                      'version'     => $intVersion,
                      'idLanguages' => $this->intLanguageId,
                      'idUsers'     => $intUserId,
@@ -757,7 +806,7 @@ class Model_Globals {
 
       if($mixedVideoId != ''){
         $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
-        $arrData = array('globalId'       => $objGlobal->globalId,
+        $arrData = array('globalId'      => $objGlobal->globalId,
                          'version'      => $objGlobal->version,
                          'idLanguages'  => $this->intLanguageId,
                          'userId'       => $strVideoUserId,

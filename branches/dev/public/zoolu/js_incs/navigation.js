@@ -216,6 +216,7 @@ Massiveart.Navigation = Class.create({
       parameters: { 
         rootLevelId: this.rootLevelId,
         rootLevelGroupId: this.rootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         currLevel: this.currLevel},      
       evalScripts: true,     
       onComplete: function() {
@@ -321,6 +322,7 @@ Massiveart.Navigation = Class.create({
           parameters: { 
             rootLevelId: this.rootLevelId,
             rootLevelGroupId: this.rootLevelGroupId,
+            rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
             currLevel: this.currLevel},      
           evalScripts: true,     
           onComplete: function() {
@@ -406,6 +408,9 @@ Massiveart.Navigation = Class.create({
       new Ajax.Updater('navlevel'+this.currLevel, this.constRequestChildNav, {
         parameters: { 
   	      folderId: this.currItemId,
+  	      rootLevelId: this.rootLevelId,
+          rootLevelGroupId: this.rootLevelGroupId,
+          rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
 	        currLevel: this.currLevel
 	      },      
 	      evalScripts: true,     
@@ -572,11 +577,14 @@ Massiveart.Navigation = Class.create({
         
 		if(parentId != '' && parentId > 0){
 		  strAjaxAction = this.constRequestChildNav;
-		  strParams = 'currLevel='+currLevel+'&folderId='+parentId;
+		  strParams = 'currLevel='+currLevel+'&folderId='+parentId+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;
 		} else {
 		  strAjaxAction = this.constRequestRootNav;
 		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;
 		}
+		
+		var rootLevelGroupKey = ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '';
+		strParams += '&rootLevelGroupKey='+rootLevelGroupKey; 
     
     if(strParams != '' && strAjaxAction != ''){      
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
@@ -646,6 +654,7 @@ Massiveart.Navigation = Class.create({
 		    sortPosition: $(posElement).getValue(),
 		    rootLevelId: this.rootLevelId,
 		    rootLevelGroupId: this.rootLevelGroupId,
+		    rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
 		    parentId: parentId		    
 		  },      
 		  evalScripts: true,     
@@ -742,8 +751,9 @@ Massiveart.Navigation = Class.create({
       parameters: {
         formId: folderFormDefaultId,
         rootLevelId: this.rootLevelId,
-        rootLevelGroupId: this.rootLevelGroupId,
         rootLevelTypeId: this.rootLevelTypeId,
+        rootLevelGroupId: this.rootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
         elementType: this.constFolder,
@@ -786,6 +796,7 @@ Massiveart.Navigation = Class.create({
         templateId: pageTemplateDefaultId,
         rootLevelId: this.rootLevelId,
         rootLevelGroupId: this.rootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
         pageTypeId: pageTypeDefaultId,
@@ -829,6 +840,7 @@ Massiveart.Navigation = Class.create({
         templateId: pageTemplateDefaultId,
         rootLevelId: this.rootLevelId,
         rootLevelGroupId: this.rootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
         pageTypeId: pageTypeDefaultId,
@@ -932,6 +944,7 @@ Massiveart.Navigation = Class.create({
          currLevel: currLevel,
          rootLevelId: this.rootLevelId,
          rootLevelGroupId: this.rootLevelGroupId,
+         rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
          parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
          elementType: elType,
          zoolu_module: this.module,

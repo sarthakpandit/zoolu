@@ -205,16 +205,32 @@ class Model_Templates {
           case $this->core->sysConfig->page_types->product_tree->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_tree);
             break;
+          case $this->core->sysConfig->page_types->press_area->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->press_area);
+            break; 
+            
         }
         break;
       case $this->core->sysConfig->form->types->global:
         switch ($intElementTypeId){
+          case $this->core->sysConfig->global_types->content->id:          
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->content);
+            break;          
+          case $this->core->sysConfig->global_types->content_overview->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->content_overview);
+            break;
           case $this->core->sysConfig->global_types->product->id:
           case $this->core->sysConfig->global_types->product_link->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->product);
             break;          
           case $this->core->sysConfig->global_types->product_overview->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->product_overview);
+            break;
+          case $this->core->sysConfig->global_types->press->id:          
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->press);
+            break;          
+          case $this->core->sysConfig->global_types->press_overview->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->press_overview);
             break;
         }
         break;

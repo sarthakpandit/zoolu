@@ -24,7 +24,7 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.modules.products.views
+ * @package    application.zoolu.modules.global.views.helpers
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
@@ -87,6 +87,7 @@ class NavigationHelper {
             <div class="producticon"></div>
             <div id="divRootLevelTitle_'.$objNavigation->getId().'" class="itemtitle">'.htmlentities($objNavigation->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
             <div class="clear"></div>
+            <input type="hidden" value="'.$objNavigationTree->getItemId().'" id="rootLevelGroupKey'.$objNavigationTree->getTypeId().'"/>
           </div>
           <div id="naviitem'.$objNavigation->getId().'bottom" class="bottom'.$strSelected.'"><img src="/zoolu/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
           <div class="clear"></div>
@@ -125,7 +126,8 @@ class NavigationHelper {
           <div id="naviitem'.$objNavigationTree->getId().'" class="naviitem'.$strSubNaviSelected.'" onclick="myNavigation.selectRootLevel('.$objNavigationTree->getId().', '.$objNavigationTree->getTypeId().', \'\', false, \''.$strViewType.'\'); return false;">
             <div class="producticon"></div>
             <div id="divRootLevelTitle_'.$objNavigationTree->getId().'" class="itemtitle">'.htmlentities($objNavigationTree->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
-            <div class="clear"></div>            
+            <div class="clear"></div>  
+            <input type="hidden" value="'.$objNavigationTree->getItemId().'" id="rootLevelGroupKey'.$objNavigationTree->getTypeId().'"/>          
           </div>
           <div id="naviitem'.$objNavigationTree->getId().'menu" class="menu"'.$strDisplaySubNavi.'>
           '.$strSubNavi.'
@@ -169,7 +171,7 @@ class NavigationHelper {
             <div class="icon img_startproduct_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
             <div class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.','.$objRow->linkGlobalId.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
-    		}else if($objRow->globalType == $this->core->sysConfig->global_types->product->id){
+    		}else if($objRow->folderType == 0){
     		  
     		  /**
            * overwrite type with 'global'

@@ -857,7 +857,7 @@ class Model_Pages {
                                             `page-'.$strGenForm.'-Instances`.idLanguages = ?
                                           LEFT JOIN `page-'.$strGenForm.'-InstanceFiles` AS iFiles ON
                                             iFiles.id = (SELECT iFl.id FROM `page-'.$strGenForm.'-InstanceFiles` AS iFl
-                                                         WHERE iFl.pageId = pages.pageId AND iFl.version = pages.version AND iFl.idFields IN (5,55)
+                                                         WHERE iFl.pageId = pages.pageId AND iFl.version = pages.version AND iFl.idLanguages = ? AND iFl.idFields IN (5,55)
                                                          ORDER BY iFl.idFields DESC LIMIT 1)
                                           LEFT JOIN files ON
                                             files.id = iFiles.idFiles AND
@@ -865,7 +865,7 @@ class Model_Pages {
                                           LEFT JOIN fileTitles ON
                                             fileTitles.idFiles = files.id AND
                                             fileTitles.idLanguages = ?
-                                          '.$strSqlWherePageIds, array($this->intLanguageId, $this->intLanguageId));
+                                          '.$strSqlWherePageIds, array($this->intLanguageId, $this->intLanguageId, $this->intLanguageId));
 
       return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
     }

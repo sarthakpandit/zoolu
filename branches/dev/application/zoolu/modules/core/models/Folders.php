@@ -245,9 +245,11 @@ class Model_Folders {
     $objSelect->join('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id', array('title'));
     $objSelect->where('rootLevelTitles.idLanguages = ?', $this->intLanguageId);
     $objSelect->where('rootLevels.idModules = ?', $intRootLevelModule);
+    $objSelect->where('rootLevels.active = 1');
     if($intRootLevelType != -1){
       $objSelect->where('rootLevels.idRootLevelTypes = ?', $intRootLevelType);
     }
+    $objSelect->order('rootLevels.order');
 
     return $this->getRootLevelTable()->fetchAll($objSelect);
   }
@@ -277,7 +279,9 @@ class Model_Folders {
     $objSelect->joinLeft('rootLevelGroupTitles', 'rootLevelGroupTitles.idRootLevelGroups = rootLevelGroups.id AND rootLevelGroupTitles.idLanguages = '.$this->intLanguageId, array('rootLevelGroupTitle' => 'title'));
     $objSelect->where('rootLevelTitles.idLanguages = ?', $this->intLanguageId);
     $objSelect->where('rootLevels.idModules = ?', $intRootLevelModule);
+    $objSelect->where('rootLevels.active = 1');
     $objSelect->order('idRootLevelGroups');
+    $objSelect->order('rootLevels.order');
     
     return $this->getRootLevelTable()->fetchAll($objSelect);
   }  
@@ -367,13 +371,14 @@ class Model_Folders {
 
   /**
    * loadGlobalRootNavigation
-   * @param integer $intRootId
+   * @param integer $intRootLevelId
+   * @param integer $intRootLevelGroupId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadGlobalRootNavigation($intRootId){
-    $this->core->logger->debug('core->models->Folders->loadGlobalRootNavigation('.$intRootId.')');
+  public function loadGlobalRootNavigation($intRootLevelId, $intRootLevelGroupId){
+    $this->core->logger->debug('core->models->Folders->loadGlobalRootNavigation('.$intRootLevelId.','.$intRootLevelGroupId.')');
 
     $objFolderSelect = $this->core->dbh->select();
     $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'folderProperties.idFolderTypes', 'globalType' => new Zend_Db_Expr('-1'), 'isStartGlobal' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'folderProperties.idStatus', 'linkGlobalId' => new Zend_Db_Expr('-1')));
@@ -381,21 +386,31 @@ class Model_Folders {
     $objFolderSelect->joinLeft('folderTitles', 'folderTitles.folderId = folders.folderId AND folderTitles.version = folders.version AND folderTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objFolderSelect->join('genericForms', 'genericForms.id = folderProperties.idGenericForms', array('genericFormId', 'version'));
     $objFolderSelect->join('folderTypes', 'folderTypes.id = folderProperties.idFolderTypes', array('title AS type'));
-    $objFolderSelect->where('folders.idRootLevels = ? AND folders.idParentFolder = 0', $intRootId);
+    $objFolderSelect->where('folders.idRootLevels = ? AND folders.idParentFolder = 0', $intRootLevelId);
 
-
-    $objGlobalSelect = $this->core->dbh->select();
-    $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'lP.sortPosition', 'lP.sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => 'lP.id'));
-    $objGlobalSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
-    $objGlobalSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
-    $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
-    $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
-    $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
-    $objGlobalSelect->where('lP.idParent = ?', $intRootId);
-    $objGlobalSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
-    $objGlobalSelect->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
-
+    if($intRootLevelGroupId == $this->core->sysConfig->root_level_groups->product){
+      $objGlobalSelect = $this->core->dbh->select();
+      $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'lP.sortPosition', 'lP.sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => 'lP.id'));
+      $objGlobalSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
+      $objGlobalSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
+      $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
+      $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
+      $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
+      $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
+      $objGlobalSelect->where('lP.idParent = ?', $intRootLevelId);
+      $objGlobalSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
+      $objGlobalSelect->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
+    }else{
+      $objGlobalSelect = $this->core->dbh->select();
+      $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'sortPosition', 'sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => new Zend_Db_Expr('-1')));
+      $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
+      $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
+      $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
+      $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
+      $objGlobalSelect->where('globals.idParent = ?', $intRootLevelId);
+      $objGlobalSelect->where('globals.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
+    }
+    
     $objSelect = $this->getFolderTable()->select()
                                         ->union(array($objFolderSelect, $objGlobalSelect))
                                         ->order(array('sortPosition', 'sortTimestamp DESC', 'id'));
@@ -632,12 +647,13 @@ class Model_Folders {
   /**
    * loadGlobalChildNavigation
    * @param integer $intFolderId
+   * @param integer $intRootLevelGroupId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadGlobalChildNavigation($intFolderId){
-    $this->core->logger->debug('core->models->Folders->loadGlobalChildNavigation('.$intFolderId.')');
+  public function loadGlobalChildNavigation($intFolderId, $intRootLevelGroupId){
+    $this->core->logger->debug('core->models->Folders->loadGlobalChildNavigation('.$intFolderId.','.$intRootLevelGroupId.')');
 
     $objFolderSelect = $this->core->dbh->select();
     $objFolderSelect->from('folders', array('id', 'templateId' => new Zend_Db_Expr('-1'), 'folderType' => 'folderProperties.idFolderTypes', 'globalType' => new Zend_Db_Expr('-1'), 'isStartGlobal' => new Zend_Db_Expr('-1'), 'sortPosition', 'sortTimestamp', 'folderProperties.idStatus', 'linkGlobalId' => new Zend_Db_Expr('-1')));
@@ -647,18 +663,28 @@ class Model_Folders {
     $objFolderSelect->join('folderTypes', 'folderTypes.id = folderProperties.idFolderTypes', array('title AS type'));
     $objFolderSelect->where('folders.idParentFolder  = ?', $intFolderId);
 
-
-    $objGlobalSelect = $this->core->dbh->select();
-    $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'lP.sortPosition', 'lP.sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => 'lP.id'));
-    $objGlobalSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
-    $objGlobalSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
-    $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
-    $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
-    $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
-    $objGlobalSelect->where('lP.idParent = ?', $intFolderId);
-    $objGlobalSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
-    $objGlobalSelect->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
+    if($intRootLevelGroupId == $this->core->sysConfig->root_level_groups->product){
+      $objGlobalSelect = $this->core->dbh->select();
+      $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'lP.sortPosition', 'lP.sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => 'lP.id'));
+      $objGlobalSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
+      $objGlobalSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());
+      $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
+      $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
+      $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
+      $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
+      $objGlobalSelect->where('lP.idParent = ?', $intFolderId);
+      $objGlobalSelect->where('lP.idParentTypes = ?', $this->core->sysConfig->parent_types->folder);
+      $objGlobalSelect->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
+    }else{
+      $objGlobalSelect = $this->core->dbh->select();
+      $objGlobalSelect->from('globals', array('id', 'templateId' => 'globalProperties.idTemplates', 'folderType' => new Zend_Db_Expr('-1'), 'globalType' => 'globalProperties.idGlobalTypes', 'isStartGlobal', 'sortPosition', 'sortTimestamp', 'globalProperties.idStatus', 'linkGlobalId' => new Zend_Db_Expr('-1')));
+      $objGlobalSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->intLanguageId, array());
+      $objGlobalSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('title'));
+      $objGlobalSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version'));
+      $objGlobalSelect->join('globalTypes', 'globalTypes.id = globalProperties.idGlobalTypes', array('title AS type'));
+      $objGlobalSelect->where('idParent = ?', $intFolderId);
+      $objGlobalSelect->where('idParentTypes = ?', $this->core->sysConfig->parent_types->folder);      
+    }
 
     $objSelect = $this->getFolderTable()->select()
                                  ->union(array($objFolderSelect, $objGlobalSelect))

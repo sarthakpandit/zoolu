@@ -42,6 +42,7 @@ Massiveart.Navigation.Global = Class.create(Massiveart.Navigation, {
         templateId: elementTemplateDefaultId,
         rootLevelId: this.rootLevelId,
         rootLevelGroupId: this.rootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
         currLevel: currLevel,
         elementTypeId: elementTypeDefaultId,
