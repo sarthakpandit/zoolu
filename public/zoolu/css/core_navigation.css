@@ -778,7 +778,7 @@ div.navlevelinner .contact {
 Icons */
 
 .img_startpage_on,
-.img_startproduct_on {
+.img_start_on {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -136px;
   position:relative;
   width:16px;
@@ -786,7 +786,7 @@ Icons */
 }
 
 .img_startpage_off,
-.img_startproduct_off {
+.img_start_off {
   background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -153px;
   position:relative;
   width:16px;

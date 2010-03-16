@@ -835,8 +835,7 @@ function get_documents($strContainerCss = 'documents', $strItemCss = 'item', $st
       $strHtmlOutput .= '<div class="'.$strItemCss.'">
               <div class="'.$strIconCss.'"><img src="/website/themes/default/images/icons/'.$strIcon.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
               <div class="'.$strTitleCss.'">
-                <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.$objFile->title.'</a><br/>
-                <span>Format:</span> <span class="black">'.$objFile->extension.'</span> <span>Gr&ouml;&szlig;e:</span> <span class="black">'.$objFile->size.' KB</span>
+                <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.$objFile->title.'</a>                
               </div>
               <div class="clear"></div>
             </div>';
