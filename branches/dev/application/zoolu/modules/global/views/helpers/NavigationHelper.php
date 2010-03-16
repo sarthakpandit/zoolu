@@ -168,7 +168,7 @@ class NavigationHelper {
            * get values of the row and create startproduct output
            */
           $strOutputStartElement .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
-            <div class="icon img_startproduct_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
+            <div class="icon img_start_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
             <div class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.','.$objRow->linkGlobalId.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
     		}else if($objRow->folderType == 0){

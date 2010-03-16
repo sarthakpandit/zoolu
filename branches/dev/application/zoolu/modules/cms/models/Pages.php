@@ -568,6 +568,7 @@ class Model_Pages {
 
   /**
    * loadItems
+   * @param integer $intTypeId
    * @param integer $intParentId
    * @param integer $intCategoryId
    * @param integer $intLabelId
@@ -576,11 +577,12 @@ class Model_Pages {
    * @param integer $intSortOrderId
    * @param integer $intEntryDepthId
    * @param array $arrPageIds
+   * @param boolean $blnOnlyItems load only items, no start items
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadItems($intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array()){
+  public function loadItems($intTypeId, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array(), $blnOnlyItems = false){
     $this->core->logger->debug('cms->models->Model_Pages->loadItems('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
 
     $strSortOrder = '';

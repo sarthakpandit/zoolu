@@ -134,6 +134,14 @@
           <default>DEFAULT_EVENT</default>
           <overview>DEFAULT_EVENT_OVERVIEW</overview>
         </events>
+        <press>
+          <default>DEFAULT_PRESS</default>          
+          <overview>DEFAULT_PRESS_OVERVIEW</overview>
+        </press>
+        <course>
+          <default>DEFAULT_COURSE</default>          
+          <overview>DEFAULT_COURSE_OVERVIEW</overview>
+        </course>
       </ids>
       <!-- GENERIC FORM TYPES -->
       <!-- table: genericFormTypes -->
@@ -498,6 +506,7 @@
       <content>8</content>
       <product>9</product>
       <press>10</press>
+      <course>11</course>
     </root_level_groups>
     
     <!-- FOLDER TYPES -->
@@ -594,6 +603,16 @@
         <default_formId>DEFAULT_PRESS_OVERVIEW</default_formId>
         <default_templateId>18</default_templateId>
       </press_overview>
+      <course>
+        <id>8</id>
+        <default_formId>DEFAULT_COURSE</default_formId>
+        <default_templateId>20</default_templateId>
+      </course>
+      <course_overview>
+        <id>9</id>
+        <default_formId>DEFAULT_COURSE_OVERVIEW</default_formId>
+        <default_templateId>21</default_templateId>
+      </course_overview>
     </global_types>
     
     <!-- REGION TYPES -->
@@ -627,6 +646,8 @@
       <press>11</press>
       <press_overview>12</press_overview>
       <press_area>13</press_area>
+      <course>14</course>
+      <course_overview>15</course_overview>
     </types>
 
     <!-- URL TYPES -->
@@ -719,21 +740,20 @@
         </users>
       </vimeo>
       <youtube>
-      	<id>2</id>
-				<users>
-      		<user>
-      			<id>GoogleDevelopers</id>
-      			<name>GoogleDevelopers</name>
-      		</user>
-      	
-      	</users>
+        <id>2</id>
+        <users>
+          <user>
+            <id>GoogleDevelopers</id>
+            <name>GoogleDevelopers</name>
+          </user>      	
+        </users>
       </youtube>
     </video_channels>
     
-  	<!-- Plugins / Fields Javascript -->
-  	<pluginsJs>
-    	<gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
-  	</pluginsJs>
+    <!-- Plugins / Fields Javascript -->
+    <pluginsJs>
+      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
+    </pluginsJs>
   </production>
 
   <!--

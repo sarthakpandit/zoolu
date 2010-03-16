@@ -23,6 +23,7 @@ Massiveart.Navigation = Class.create({
     this.constFolder = 'folder';
     this.constPage = 'page';
     this.constStartPage = 'startpage';
+    this.constStartItem = 'start';
     this.constGlobal = 'global';
     
     this.constRequestRootNav = '/zoolu/cms/navigation/rootnavigation';
@@ -911,7 +912,7 @@ Massiveart.Navigation = Class.create({
     
     this.showFormContainer();
 
-    if($(element).down('.icon').className.indexOf(this.constStartPage) == -1){
+    if($(element).down('.icon').className.indexOf(this.constStartItem) == -1){
       $('buttondelete').show();
     }else{
       $('buttondelete').hide();

@@ -565,7 +565,7 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function getOverviewContainer(){
+  public function getOverviewContainer($blnOnlyPages = false){
     try{
       $arrContainer = array();
       $arrGenForms = array();
@@ -598,7 +598,7 @@ class Page {
               $objContainer->setContainerLabel($this->objParentPage->getFieldValue('entry_label'));
             }
 
-            $objEntries = $this->getOverviewPages($objContainer->getContainerKey(), $objContainer->getContainerLabel(), $objContainer->getEntryNumber(), $objContainer->getContainerSortType(), $objContainer->getContainerSortOrder(), $objContainer->getContainerDepth(), $arrPageIds);
+            $objEntries = $this->getOverviewPages($objContainer->getContainerKey(), $objContainer->getContainerLabel(), $objContainer->getEntryNumber(), $objContainer->getContainerSortType(), $objContainer->getContainerSortOrder(), $objContainer->getContainerDepth(), $arrPageIds, $blnOnlyPages);
             if(count($objEntries) > 0){
               foreach($objEntries as $objEntryData){
                 $objEntry = new PageEntry();
@@ -657,6 +657,7 @@ class Page {
               if(array_key_exists($objPageRow->id, $arrPageEntries)){
                 if(array_key_exists($arrPageEntries[$objPageRow->id], $arrContainer)){
                   $objPageEntry = $arrContainer[$arrPageEntries[$objPageRow->id]]->getPageEntry('entry_'.$objPageRow->id);
+                  $objPageEntry->datetime = (isset($objPageRow->datetime)) ? strtotime($objPageRow->datetime) : '';
                   $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
                   $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
                   $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
@@ -686,17 +687,18 @@ class Page {
    * @param integer $intSortOrder
    * @param integer $intEntryDepth
    * @param array $arrPageIds
+   * @param boolean $blnOnlyPages load only pages (items), no start elements
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds){
+  public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages = false){
     try{
       $this->getModel();
       
       if($this->intNavParentId !== null && $this->intNavParentId > 0){
-        $objPages = $this->objModel->loadItems($this->intNavParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);  
+        $objPages = $this->objModel->loadItems((($this->ParentPage() instanceof Page) ? $this->ParentPage()->getTypeId() : $this->getTypeId()), $this->intNavParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages);  
       }else{
-        $objPages = $this->objModel->loadItems($this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds);
+        $objPages = $this->objModel->loadItems($this->getTypeId, $this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages);
       }
       
       return $objPages;

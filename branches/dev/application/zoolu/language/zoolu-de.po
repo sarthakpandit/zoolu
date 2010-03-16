@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-11 16:18+0100\n"
+"POT-Creation-Date: 2010-03-15 15:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -112,7 +112,7 @@ msgstr "Benutzergruppen"
 msgid "No_search_result"
 msgstr "Ihre Suche nach \"%s\" ergab leider keinen Treffer."
 
-#: application/zoolu/modules/global/controllers/ElementController.php:726
+#: application/zoolu/modules/global/controllers/ElementController.php:725
 msgid "Search"
 msgstr "Suchen"
 
@@ -160,6 +160,10 @@ msgstr "Neuer Produktlink"
 msgid "New_Press"
 msgstr "Neue Pressemitteilung"
 
+#: application/zoolu/language/addon-language-keys.php:69
+msgid "New_Course"
+msgstr "Neuer Kurs"
+
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:13
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:22
 msgid "previous"
@@ -193,17 +197,17 @@ msgstr "Hinzufügen"
 
 #: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:32
 #: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:33
-#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:37
-#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:38
-msgid "New_"
-msgstr ""
-
-#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:42
-#: application/zoolu/modules/global/views/scripts/navigation/rootnavigation.phtml:43
-#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:33
-#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:34
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:35
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:36
 msgid "New_Folder"
 msgstr "Neuer Ordner"
+
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:23
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:24
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:29
+#: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:30
+msgid "New_"
+msgstr ""
 
 #: application/zoolu/modules/global/views/scripts/element/getoverlaysearch.phtml:16
 msgid "Reset"

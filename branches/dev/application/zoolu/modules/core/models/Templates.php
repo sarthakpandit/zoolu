@@ -232,6 +232,12 @@ class Model_Templates {
           case $this->core->sysConfig->global_types->press_overview->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->press_overview);
             break;
+          case $this->core->sysConfig->global_types->course->id:          
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->course);
+            break;          
+          case $this->core->sysConfig->global_types->course_overview->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->course_overview);
+            break;
         }
         break;
     }
