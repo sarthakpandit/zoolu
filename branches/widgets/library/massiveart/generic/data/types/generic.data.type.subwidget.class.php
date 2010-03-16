@@ -227,6 +227,130 @@ class GenericDataTypeSubwidget extends GenericDataTypeAbstract {
         }
       }
 	  }
+	  
+	/**
+     * if the generic form, has multiply regions
+     */
+    if(count($this->setup->MultiplyRegionIds()) > 0){
+
+      /**
+       * for each multiply region, load region data
+       */
+      foreach($this->setup->MultiplyRegionIds() as $intRegionId){
+        $objRegion = $this->setup->getRegion($intRegionId);
+
+        $arrRegionInstanceIds = array();
+        $intRegionInstanceCounter = 0;
+
+        $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-Instances');
+        $objSelect = $objGenTable->select();
+
+        $arrSelectFields = array('id');
+        /**
+         * for each instance field, add to select array data array
+         */
+        foreach($objRegion->InstanceFieldNames() as $strField){
+          $arrSelectFields[] = $strField;
+        }
+
+        $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), $arrSelectFields);
+        $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
+        $objSelect->where('version = ?', $intSubwidgetVersion);
+        $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+        $objSelect->order(array('sortPosition'));
+
+        $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+        if(count($arrGenFormsData) > 0){
+          //$this->blnHasLoadedInstanceData = true;
+
+          foreach ($arrGenFormsData as $arrRowGenFormData) {
+            $intRegionInstanceCounter++;
+            $intRegionInstanceId = $arrRowGenFormData['id'];
+            $arrRegionInstanceIds[$intRegionInstanceCounter] = $intRegionInstanceId;
+
+            $objRegion->addRegionInstanceId($intRegionInstanceCounter);
+            foreach ($arrRowGenFormData as $column => $value) {
+              if($column != 'id'){
+                if(is_array(json_decode($value))){
+                  $objRegion->getField($column)->setInstanceValue($intRegionInstanceCounter, json_decode($value));
+                }else{
+                  $objRegion->getField($column)->setInstanceValue($intRegionInstanceCounter, $value);
+                }
+              }
+            }
+          }
+        }
+
+        /**
+         * generic multipy region file fields
+         */
+        if(count($objRegion->FileFieldNames()) > 0){
+
+          $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFiles');
+          $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+          $objSelect = $objGenTable->select();
+          $objSelect->setIntegrityCheck(false);
+
+          $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idFiles', 'idRegionInstances'));
+          $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+          $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
+          $objSelect->where('version = ?', $intSubwidgetVersion);
+          $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+          $arrGenFormsData = $objGenTable->fetchAll($objSelect)->toArray();
+
+          if(count($arrGenFormsData) > 0){
+            //$this->blnHasLoadedFileData = true;
+            foreach($arrGenFormsData as $arrGenRowFormsData){
+              $intRegionInstanceId = $arrGenRowFormsData['idRegionInstances'];
+              $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
+              if($intRegionPos !== false){
+                $strFileIds = $objRegion->getField($arrGenRowFormsData['name'])->getInstanceValue($intRegionPos).'['.$arrGenRowFormsData['idFiles'].']';
+                $objRegion->getField($arrGenRowFormsData['name'])->setInstanceValue($intRegionPos, $strFileIds);
+              }
+            }
+          }
+        }
+
+        /**
+         * generic multipy region multi fields
+         */
+        if(count($objRegion->MultiFieldNames()) > 0){
+
+          $objGenTable = $this->getModelGenericData()->getGenericTable('subwidget-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceMultiFields');
+          $strTableName = $objGenTable->info(Zend_Db_Table_Abstract::NAME);
+
+          $objSelect = $objGenTable->select();
+          $objSelect->setIntegrityCheck(false);
+
+          $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idRelation', 'value', 'idRegionInstances'));
+          $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
+          $objSelect->where('subwidgetId = ?', $this->Setup()->getSubwidgetId());
+          $objSelect->where('version = ?', $objPageData->version);
+          $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
+
+          $arrGenFormsData = $objGenTable->fetchAll($objSelect);
+
+          if(count($arrGenFormsData) > 0){
+            //$this->blnHasLoadedMultiFieldData = true;
+            foreach($arrGenFormsData as $arrGenRowFormsData){
+              $intRegionInstanceId = $arrGenRowFormsData->idRegionInstances;
+              $intRegionPos = array_search($intRegionInstanceId, $arrRegionInstanceIds);
+
+              $arrTmpRelationIds = $objRegion->getField($arrGenRowFormsData->name)->getInstanceValue($intRegionPos);
+              if(is_array($arrTmpRelationIds)){
+                array_push($arrTmpRelationIds, $arrGenRowFormsData->idRelation);
+              }else{
+                $arrTmpRelationIds = array($arrGenRowFormsData->idRelation);
+              }
+              $objRegion->getField($arrGenRowFormsData->name)->setInstanceValue($intRegionPos, $arrTmpRelationIds);
+            }
+          }
+        }
+      }
+    }
 	}
 	
   /**
