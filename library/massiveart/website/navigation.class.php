@@ -249,6 +249,7 @@ class Navigation {
         foreach($objNavigationData as $objNavigationItem){
 
           if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0){
+            
            /**
             * add to parent tree
             */
@@ -272,6 +273,7 @@ class Navigation {
             $intTreeId = $objNavigationItem->idFolder;
 
           }else{
+            
             if($intTreeId != $objNavigationItem->idFolder){
 
               /**
@@ -309,7 +311,7 @@ class Navigation {
                 $objItem->setParentId($objNavigationItem->idFolder);
                 $objItem->setItemId($objNavigationItem->pageId);
                 $objItem->setOrder($objNavigationItem->pageOrder);
-                $objTree->addItem($objItem, 'item_'.$objItem->getId());
+                $objTree->addItem($objItem, 'item_'.$objItem->getId());                
               }
             }
           }
@@ -350,6 +352,7 @@ class Navigation {
           $intTreeId = 0;
           
           foreach($objNavigationData as $objNavigationItem){
+            
             if($intTreeId != $objNavigationItem->idFolder){
 
               /**
@@ -366,7 +369,6 @@ class Navigation {
               $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
               $objTree->setItemId($objNavigationItem->folderId);
               $objTree->setOrder($objNavigationItem->folderOrder);
-              //$objTree->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
               $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
                            
               $intTreeId = $objNavigationItem->idFolder;
@@ -374,12 +376,10 @@ class Navigation {
             
             if($objNavigationItem->globalId != null){
               if($objNavigationItem->isStartGlobal == 1){
-                //$objTree->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
                 $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
               }else{
                 $objItem = new NavigationItem();
                 $objItem->setTitle($objNavigationItem->globalTitle);
-                //$objItem->setUrl('/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
                 $objItem->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
                 $objItem->setId($objNavigationItem->idGlobal);
                 $objTree->setTypeId($objNavigationItem->idGlobalTypes);

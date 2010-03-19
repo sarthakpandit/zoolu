@@ -175,9 +175,7 @@ class PageCommand implements CommandInterface {
                           'idLanguages' => $objGenericSetup->getLanguageId(),
                           'changed'     => date('Y-m-d H:i:s'));
 
-        $this->getModelPages($arrArgs)->updateStartPageMainData($intFolderId,
-                                                        $arrProperties,
-                                                        $arrTitle);
+        $this->getModelPages($arrArgs)->updateStartPageMainData($intFolderId, $arrProperties, $arrTitle);
         return true;
       }else{
         throw new Exception('There ist now GenericSetup in the args array!');

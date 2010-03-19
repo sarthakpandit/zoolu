@@ -224,9 +224,9 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
          * set some metainformations of current page to get them in the output
          */
         $this->setup->setMetaInformation($objPage);
-        $this->setup->setElementTypeId($objPage->idPageTypes);
-        $this->setup->setIsStartElement($objPage->isStartPage);
-        $this->setup->setParentTypeId($objPage->idParentTypes);
+        if($objPage->idPageTypes > 0) $this->setup->setElementTypeId($objPage->idPageTypes);
+        if($objPage->isStartPage != null) $this->setup->setIsStartElement($objPage->isStartPage);
+        if($objPage->idParentTypes != null) $this->setup->setParentTypeId($objPage->idParentTypes);
 
         parent::loadGenericData('page', array('Id' => $objPage->pageId, 'Version' => $objPage->version));
         

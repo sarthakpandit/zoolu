@@ -422,7 +422,7 @@ class Global_ElementController extends AuthControllerAction {
 
       if($this->objForm->Setup()->getField('url')) $this->view->globalurl = $this->objForm->Setup()->getField('url')->getValue();
 
-      if($this->objForm->Setup()->getElementTypeId() != $this->core->sysConfig->global_types->product_link->id) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
     }
   }
 
@@ -621,6 +621,12 @@ class Global_ElementController extends AuthControllerAction {
     try{
 
       if(intval($this->objRequest->getParam('id')) > 0){
+        $objGlobalData = $this->getModelGlobals()->loadFormAndTemplateById($this->objRequest->getParam('id'));
+        if(count($objGlobalData) == 1){
+          $objGlobal = $objGlobalData->current();
+          if((int) $objGlobal->idTemplates > 0) $this->objRequest->setParam('templateId', $objGlobal->idTemplates);
+          if($objGlobal->genericFormId != '') $this->objRequest->setParam('formId', $objGlobal->genericFormId);          
+        }
         $this->_forward('geteditform');
       }else{
         $this->_forward('getaddform');

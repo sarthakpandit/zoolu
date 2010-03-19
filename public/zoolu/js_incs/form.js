@@ -81,6 +81,10 @@ Massiveart.Form = Class.create({
             if($('isStartPage') && $F('isStartPage') == 0){
               $('buttondelete').show();
             }
+            
+            if($('isStartGlobal') && $F('isStartGlobal') == 0){
+              $('buttondelete').show();
+            }
           }else{
             this.getFormSaveError();
           }
@@ -509,6 +513,7 @@ Massiveart.Form = Class.create({
     
     var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
     var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
+    var intRootLevelGroupId = $('rootLevelGroupId') ? $F('rootLevelGroupId') : 0;
     
     new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'changeTemplate', {
       parameters: {
@@ -522,7 +527,8 @@ Massiveart.Form = Class.create({
         languageId: $F('languageId'),
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
-        rootLevelGroupId: ($('rootLevelGroupId') ? $F('rootLevelGroupId') : 0),
+        rootLevelGroupId: intRootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+intRootLevelGroupId)) ? $F('rootLevelGroupKey'+intRootLevelGroupId) : '',
         parentFolderId: $F('parentFolderId'),
         elementType: $F('elementType')                   
       },
@@ -560,7 +566,8 @@ Massiveart.Form = Class.create({
     
     var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
     var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
-                
+    var intRootLevelGroupId = $('rootLevelGroupId') ? $F('rootLevelGroupId') : 0;
+    
     new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'changeLanguage', {
       parameters: {
         templateId: $F('templateId'),
@@ -574,9 +581,12 @@ Massiveart.Form = Class.create({
         currLevel: $F('currLevel'),
         rootLevelId: $F('rootLevelId'),
         rootLevelTypeId: $F('rootLevelTypeId'),
-        rootLevelGroupId: ($('rootLevelGroupId') ? $F('rootLevelGroupId') : 0),
+        rootLevelGroupId: intRootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+intRootLevelGroupId)) ? $F('rootLevelGroupKey'+intRootLevelGroupId) : '',
         parentFolderId: $F('parentFolderId'),
-        elementType: $F('elementType')
+        elementType: $F('elementType'),
+        elementTypeId:($('elementTypeId') ? $F('elementTypeId') : null),
+        pageTypeId:($('pageTypeId') ? $F('pageTypeId') : null)
       },      
       evalScripts: true,
       onComplete: function() {    

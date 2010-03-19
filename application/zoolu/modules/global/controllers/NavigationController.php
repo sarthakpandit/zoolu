@@ -194,11 +194,13 @@ class Global_NavigationController extends AuthControllerAction {
       $objRequest = $this->getRequest();
       $intElementId = $objRequest->getParam("id");
       $strElementType = $objRequest->getParam("elementType");
+      $intRootLevelTypeId = $objRequest->getParam("rootLevelTypeId");
+      $intRootLevelGroupId = $objRequest->getParam("rootLevelGroupId");
       $intSortPosition = $objRequest->getParam("sortPosition");
       $this->setRootLevelId($objRequest->getParam("rootLevelId"));
       $this->setParentId($objRequest->getParam("parentId"));
 
-      $this->objModelFolders->updateSortPosition($intElementId, $strElementType, $intSortPosition, $this->intRootLevelId, $this->intParentId);
+      $this->objModelFolders->updateSortPosition($intElementId, $strElementType, $intSortPosition, $this->intRootLevelId, $this->intParentId, $intRootLevelTypeId, $intRootLevelGroupId);
     }
 
     /**

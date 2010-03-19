@@ -136,12 +136,13 @@ class GlobalCommand implements CommandInterface {
 
         $objGenericData->Setup()->setParentId($arrArgs['ParentId']);
         $objGenericData->Setup()->setRootLevelId($objGenericSetup->getRootLevelId());
+        $objGenericData->Setup()->setRootLevelGroupId($this->intRootLevelGroupId);
         $objGenericData->Setup()->setElementTypeId($this->core->sysConfig->global_types->$strGlobalType->id);
         $objGenericData->Setup()->setCreatorId($objGenericSetup->getCreatorId());
         $objGenericData->Setup()->setStatusId($objGenericSetup->getStatusId());
         $objGenericData->Setup()->setShowInNavigation($objGenericSetup->getShowInNavigation());
         $objGenericData->Setup()->setModelSubPath('global/models/');
-
+        
         $objGenericData->addFolderStartElement($objGenericSetup->getCoreField('title')->getValue());
 
         return true;

@@ -200,6 +200,26 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 	            $objGenTable->insert($arrCoreData);
 	          }
 	        }
+	        
+          /**
+           * add title for zoolu gui
+           */        
+          if($strField == 'title'){
+            $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
+            foreach($arrZooluLanguages as $arrZooluLanguage){
+              echo $arrZooluLanguage['id'];
+              if($arrZooluLanguage['id'] != $this->setup->getLanguageId()){
+                $arrCoreData = array($strType.'Id' => $strTypeId,
+                                   'version'     => $intTypeVersion,
+                                   'idLanguages' => $arrZooluLanguage['id'],
+                                   'title'       => $objField->getValue(),
+                                   'idUsers'     => $intUserId,
+                                   'creator'     => $intUserId,
+                                   'created'     => date('Y-m-d H:i:s'));
+                $objGenTable->insert($arrCoreData);
+              }
+            }
+          }
       	}
       }
     }

@@ -232,9 +232,9 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
          * set some metainformations of current global to get them in the output
          */
         $this->setup->setMetaInformation($objGlobal);
-        $this->setup->setElementTypeId($objGlobal->idGlobalTypes);
-        $this->setup->setIsStartElement($objGlobal->isStartGlobal);
-        $this->setup->setParentTypeId($objGlobal->idParentTypes);
+        if($objGlobal->idGlobalTypes > 0) $this->setup->setElementTypeId($objGlobal->idGlobalTypes);
+        if($objGlobal->isStartGlobal != null) $this->setup->setIsStartElement($objGlobal->isStartGlobal);
+        if($objGlobal->idParentTypes != null) $this->setup->setParentTypeId($objGlobal->idParentTypes);
 
         parent::loadGenericData('global', array('Id' => $objGlobal->globalId, 'Version' => $objGlobal->version));
         

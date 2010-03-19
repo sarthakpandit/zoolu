@@ -157,19 +157,21 @@ class NavigationHelper {
 
     if(count($objRowset) > 0){
     	foreach ($objRowset as $objRow){
+    	  
+    	  $intSortRowId = ($objRow->linkGlobalId > 0) ? $objRow->linkGlobalId : $objRow->id;
 
     		if($objRow->isStartGlobal == 1){
     		  /**
            * overwrite type with 'global'
            */
           $objRow->type = 'global';
-
+          
     			/**
            * get values of the row and create startproduct output
            */
           $strOutputStartElement .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
             <div class="icon img_start_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
-            <div class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.','.$objRow->linkGlobalId.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            <div class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.','.$intSortRowId.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
     		}else if($objRow->folderType == 0){
     		  
@@ -183,8 +185,8 @@ class NavigationHelper {
            */
           $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
             <div class="icon img_'.$objRow->type.'_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>
-            <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_'.$objRow->type.'_'.$objRow->linkGlobalId.'" id="pos_'.$objRow->type.'_'.$objRow->linkGlobalId.'" value="'.$counter.'" onfocus="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->linkGlobalId.'\'); return false;" onkeyup="if(event.keyCode==13){ myNavigation.updateSortPosition(\'pos_'.$objRow->type.'_'.$objRow->linkGlobalId.'\',\''.$objRow->type.'\','.$currLevel.'); myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->linkGlobalId.'\'); return false; }" onblur="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$objRow->linkGlobalId.'\'); return false;" /></div>
-            <div class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.','.$objRow->linkGlobalId.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            <div class="navsortpos"><input class="iptsortpos" type="text" name="pos_'.$objRow->type.'_'.$intSortRowId.'" id="pos_'.$objRow->type.'_'.$intSortRowId.'" value="'.$counter.'" onfocus="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$intSortRowId.'\'); return false;" onkeyup="if(event.keyCode==13){ myNavigation.updateSortPosition(\'pos_'.$objRow->type.'_'.$intSortRowId.'\',\''.$objRow->type.'\','.$currLevel.'); myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$intSortRowId.'\'); return false; }" onblur="myNavigation.toggleSortPosBox(\'pos_'.$objRow->type.'_'.$intSortRowId.'\'); return false;" /></div>
+            <div class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.','.$objRow->templateId.','.$intSortRowId.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           </div>';
 
           $counter++;

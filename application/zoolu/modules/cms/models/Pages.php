@@ -125,7 +125,7 @@ class Model_Pages {
 
   	return $objPagePluginTable->fetchAll($objSelect);
   }
-
+  
   /**
    * addPlugin
    * @param integer $intElementId
@@ -158,7 +158,7 @@ class Model_Pages {
   		return $objSelect = $objPagePluginTable->insert($arrData);
   	}
   }
-
+  
   /**
    * load
    * @param integer $intElementId
@@ -180,6 +180,7 @@ class Model_Pages {
 
     return $this->getPageTable()->fetchAll($objSelect);
   }
+  
 
   /**
    * loadByIdAndVersion
@@ -209,6 +210,27 @@ class Model_Pages {
   }
   
   /**
+   * loadFormAndTemplateById
+   * @param integer $intElementId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadFormAndTemplateById($intElementId){
+    $this->core->logger->debug('cms->models->Model_Pages->load('.$intElementId.')');
+
+    $objSelect = $this->getPageTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('pages', array('pageProperties.idGenericForms', 'pageProperties.idTemplates', 'pageProperties.idPageTypes', 'pageProperties.showInNavigation'));
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->join('genericForms', 'genericForms.id = pageProperties.idGenericForms', array('genericFormId'));
+    $objSelect->where('pages.id = ?', $intElementId);
+
+    return $this->getPageTable()->fetchAll($objSelect);
+  }
+  
+  /**
    * add
    * @param GenericSetup $objGenericSetup
    * @return stdClass Page
@@ -233,6 +255,7 @@ class Model_Pages {
      */
     if($objPage->parentId != '' && $objPage->parentId > 0){
       $objPage->parentTypeId = $this->core->sysConfig->parent_types->folder;
+      $this->getModelFolders()->setLanguageId($this->core->sysConfig->languages->default->id);
       $objNaviData = $this->getModelFolders()->loadChildNavigation($objPage->parentId);
     }else{
       if($objPage->rootLevelId != '' && $objPage->rootLevelId > 0){
@@ -241,6 +264,7 @@ class Model_Pages {
         $this->core->logger->err('zoolu->modules->cms->models->Model_Pages->add(): intRootLevelId is empty!');
       }
       $objPage->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
+      $this->getModelFolders()->setLanguageId($this->core->sysConfig->languages->default->id);
       $objNaviData = $this->getModelFolders()->loadRootNavigation($objPage->rootLevelId);
     }
     $objPage->sortPosition = count($objNaviData);
@@ -278,6 +302,28 @@ class Model_Pages {
                            'idStatus'         => $objGenericSetup->getStatusId());
     $this->getPagePropertyTable()->insert($arrProperties);
 
+    /**
+     * add properties for zoolu gui
+     */
+    $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
+    foreach($arrZooluLanguages as $arrZooluLanguage){
+      if($arrZooluLanguage['id'] != $this->intLanguageId){
+        $arrProperties = array('pageId'           => $objPage->pageId,
+                               'version'          => $objPage->version,
+                               'idLanguages'      => $arrZooluLanguage['id'],
+                               'idGenericForms'   => $objGenericSetup->getGenFormId(),
+                               'idTemplates'      => $objGenericSetup->getTemplateId(),
+                               'idPageTypes'      => $objGenericSetup->getElementTypeId(),
+                               'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                               'idUsers'          => $intUserId,
+                               'creator'          => $objGenericSetup->getCreatorId(),
+                               'publisher'        => $intUserId,
+                               'created'          => date('Y-m-d H:i:s'),
+                               'idStatus'         => $this->core->sysConfig->status->test);
+        $this->getPagePropertyTable()->insert($arrProperties);
+      }
+    }
+    
     return $objPage;
   }
   
@@ -478,7 +524,11 @@ class Model_Pages {
       $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND version = ?',  $objStartPage->version);
       $strWhere .= $this->objPagePropertyTable->getAdapter()->quoteInto(' AND idLanguages = ?',  $this->intLanguageId);
       
-      $this->objPagePropertyTable->update($arrProperties, $strWhere);
+      $intNumOfEffectedRows = $this->objPagePropertyTable->update($arrProperties, $strWhere);
+      if($intNumOfEffectedRows == 0){
+        $arrProperties = array_merge($arrProperties, array('pageId' => $objStartPage->pageId, 'version' => $objStartPage->version, 'idLanguages' => $this->intLanguageId));
+        $this->objPagePropertyTable->insert($arrProperties);
+      }
 
       $intNumOfEffectedRows = $this->core->dbh->update('pageTitles', $arrTitle, $strWhere);
 
@@ -1039,9 +1089,12 @@ class Model_Pages {
 
         $this->objIndex->commit();
       }
+      
+      $strWhere = $this->objPageTable->getAdapter()->quoteInto('relationId = ?', $strPageId);
+      $strWhere .= $this->objPageTable->getAdapter()->quoteInto(' AND idUrlTypes = ?', $this->core->sysConfig->url_types->page);
+      $this->getPageUrlTable()->delete($strWhere);
     }
-
-
+       
     $strWhere = $this->objPageTable->getAdapter()->quoteInto('id = ?', $intElementId);
     return $this->objPageTable->delete($strWhere);
   }

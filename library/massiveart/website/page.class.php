@@ -84,6 +84,11 @@ class Page {
   protected $objModelTags;
 
   /**
+   * @var Model_Urls
+   */
+  private $objModelUrls;
+  
+  /**
    * @var GenericData
    */
   protected $objGenericData;
@@ -118,6 +123,26 @@ class Page {
    * @var Zend_Db_Table_Row_Abstract
    */
   protected $objBaseUrl;
+  public function BaseUrl(){
+    return $this->objBaseUrl;
+  }
+  
+  /**
+   * @var Zend_Db_Table_Rowset_Abstract
+   */
+  protected $objPortalLanguages;
+  public function PortalLanguages(){
+    return $this->objPortalLanguages;
+  }
+  
+  /**
+   * property of page urls
+   * @return array $arrPageUrls
+   */
+  protected $arrPageUrls;
+  public function PageUrls(){
+    return $this->arrPageUrls;
+  }
   
   /**
    * @var array
@@ -144,6 +169,7 @@ class Page {
   protected $intElementId;
   protected $intElementLinkId;
   protected $strPageId;
+  protected $strPageLinkId;
   protected $intPageVersion;
   protected $intLanguageId;
   protected $strType;
@@ -286,6 +312,30 @@ class Page {
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
+  }
+  
+  /**
+   * loadPageUrls
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadPageUrls(){
+    $this->core->logger->debug('massiveart->website->page->loadPageUrls()');
+    
+    if($this->objGenericData instanceof GenericData){
+      $strUrlType = $this->objGenericData->Setup()->getFormType();
+      $this->arrPageUrls = $this->getModelUrls()->loadUrls((($this->strPageLinkId != null) ? $this->strPageLinkId : $this->strPageId), $this->intPageVersion, $strUrlType, $this->objGenericData->Setup()->getElementTypeId());
+    }
+  }
+  
+  /**
+   * loadPortalLanguages
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadPortalLanguages(){
+    $this->core->logger->debug('massiveart->website->page->loadRootLevelLanguages()');
+    $this->objPortalLanguages = $this->getModelFolders()->loadRootLevelLanguages($this->intRootLevelId);   
   }
 
   /**
@@ -1144,9 +1194,31 @@ class Page {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Tags.php';
       $this->objModelTags = new Model_Tags();
+      $this->objModelTags->setLanguageId($this->intLanguageId);
     }
 
-    return $this->objModelFiles;
+    return $this->objModelTags;
+  }
+  
+  /**
+   * getModelUrls
+   * @return Model_Urls
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelUrls(){
+    if (null === $this->objModelUrls) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Urls.php';
+      $this->objModelUrls = new Model_Urls();
+      $this->objModelUrls->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelUrls;
   }
 
   /**
@@ -1212,7 +1284,7 @@ class Page {
   public function getElementLinkId(){
     return $this->intElementLinkId;
   }
-
+  
   /**
    * setPageId
    * @param stirng $strPageId
@@ -1229,6 +1301,22 @@ class Page {
     return $this->strPageId;
   }
 
+  /**
+   * setPageLinkId
+   * @param string $strPageLinkId
+   */
+  public function setPageLinkId($strPageLinkId){
+    $this->strPageLinkId = $strPageLinkId;
+  }
+
+  /**
+   * getPageLinkId
+   * @param string $strPageLinkId
+   */
+  public function getPageLinkId(){
+    return $this->strPageLinkId;
+  }
+  
   /**
    * setPageVersion
    * @param integer $intPageVersion
@@ -1276,7 +1364,7 @@ class Page {
   public function getType(){
     return $this->strType;
   }
-  
+    
   /**
    * setModelSubPath
    * @param string $strModelSubPath
