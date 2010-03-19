@@ -188,7 +188,7 @@
     <!-- UPLOAD -->
     <upload>      
       <!-- maximum filesize -->      
-      <max_filesize>15728640</max_filesize> <!-- 15 MB (1024*1024*15) for each upload media -->      
+      <max_filesize>52428800</max_filesize> <!-- 50 MB (1024*1024*15) for each upload media -->            
       <!-- excluded extensions -->        
       <excluded_extensions>
         <extension>com</extension>
@@ -440,7 +440,7 @@
           <extension>exe</extension>
         </excluded_extensions>
         <!-- maximum filesize -->      
-        <max_filesize>15728640</max_filesize> <!-- 15 MB (1024*1024*15) for each file -->
+        <max_filesize>52428800</max_filesize> <!-- 50 MB (1024*1024*50) for each file -->                      
       </documents>
     </upload>
     

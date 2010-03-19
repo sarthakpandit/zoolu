@@ -7,7 +7,17 @@
   ***********************************************************
   -->
   <production>
-  
+    <!-- languages -->
+    <languages>
+      <language>
+        <id>1</id>
+        <code>de</code>
+      </language>
+      <language>
+        <id>2</id>
+        <code>en</code>
+      </language>
+    </languages>
   </production>
   
   <!--

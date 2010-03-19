@@ -115,7 +115,7 @@ class Model_Globals {
     
     return $this->getGlobalTable()->fetchAll($objSelect);
   }
-  
+    
   /**
    * loadByIdAndVersion
    * @param string $strGlobalId
@@ -141,6 +141,27 @@ class Model_Globals {
               ->where('globals.version = ?', $intVersion);
     
     return $this->getGlobalTable()->fetchAll($objSelect);   
+  }
+  
+  /**
+   * loadFormAndTemplateById
+   * @param integer $intElementId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadFormAndTemplateById($intElementId){
+    $this->core->logger->debug('cms->models->Model_Globals->load('.$intElementId.')');
+
+    $objSelect = $this->getGlobalTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('globals', array('globalProperties.idGenericForms', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation'));
+    $objSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId'));
+    $objSelect->where('globals.id = ?', $intElementId);
+
+    return $this->getGlobalTable()->fetchAll($objSelect);
   }
   
   /**
@@ -375,7 +396,7 @@ class Model_Globals {
   /**
    * loadItemInstanceDataByIds
    * @param string $strGenForm
-   * @param array $arrPageIds
+   * @param array $arrGlobalIds
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
@@ -480,6 +501,7 @@ class Model_Globals {
       if($objGenericSetup->getParentId() != '' && $objGenericSetup->getParentId() > 0){
         $objGlobal->parentId = $objGenericSetup->getParentId();
         $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->folder;
+        $this->getModelFolders()->setLanguageId($this->core->sysConfig->languages->default->id);
         $objNaviData = $this->getModelFolders()->loadGlobalChildNavigation($objGenericSetup->getParentId(), $objGenericSetup->getRootLevelGroupId());
       }else{
         if($objGenericSetup->getRootLevelId() != '' && $objGenericSetup->getRootLevelId() > 0){
@@ -488,6 +510,7 @@ class Model_Globals {
           $this->core->logger->err('zoolu->modules->global->models->Model_Globals->add(): intRootLevelId is empty!');
         }
         $objGlobal->parentTypeId = $this->core->sysConfig->parent_types->rootlevel;
+        $this->getModelFolders()->setLanguageId($this->core->sysConfig->languages->default->id);
         $objNaviData = $this->getModelFolders()->loadGlobalRootNavigation($objGenericSetup->getRootLevelId(), $objGenericSetup->getRootLevelGroupId());
       }
       $objGlobal->sortPosition = count($objNaviData);
@@ -525,6 +548,28 @@ class Model_Globals {
                            'published'        => $objGenericSetup->getPublishDate(),
                            'idStatus'         => $objGenericSetup->getStatusId());
     $this->getGlobalPropertyTable()->insert($arrProperties);
+    
+    /**
+     * add properties for zoolu gui
+     */
+    $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
+    foreach($arrZooluLanguages as $arrZooluLanguage){
+      if($arrZooluLanguage['id'] != $this->intLanguageId){
+        $arrProperties = array('globalId'         => $objGlobal->globalId,
+                               'version'          => $objGlobal->version,
+                               'idLanguages'      => $arrZooluLanguage['id'],
+                               'idGenericForms'   => $objGenericSetup->getGenFormId(),
+                               'idTemplates'      => $objGenericSetup->getTemplateId(),
+                               'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
+                               'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                               'idUsers'          => $intUserId,
+                               'creator'          => $objGenericSetup->getCreatorId(),
+                               'publisher'        => $intUserId,
+                               'created'          => date('Y-m-d H:i:s'),
+                               'idStatus'         => $this->core->sysConfig->status->test);
+        $this->getGlobalPropertyTable()->insert($arrProperties);
+      }
+    }
 
     /**
      * if is tree add, make alis now
@@ -679,8 +724,12 @@ class Model_Globals {
       $strWhere .= $this->objGlobalPropertyTable->getAdapter()->quoteInto(' AND version = ?',  $objStartGlobal->version);
       $strWhere .= $this->objGlobalPropertyTable->getAdapter()->quoteInto(' AND idLanguages = ?',  $this->intLanguageId);
 
-      $this->objGlobalPropertyTable->update($arrProperties, $strWhere);
-
+      $intNumOfEffectedRows = $this->objGlobalPropertyTable->update($arrProperties, $strWhere);
+      if($intNumOfEffectedRows == 0){
+        $arrProperties = array_merge($arrProperties, array('globalId' => $objStartGlobal->globalId, 'version' => $objStartGlobal->version, 'idLanguages' => $this->intLanguageId));
+        $this->objGlobalPropertyTable->insert($arrProperties);
+      }
+      
       $intNumOfEffectedRows = $this->core->dbh->update('globalTitles', $arrTitle, $strWhere);
 
       if($intNumOfEffectedRows == 0){
@@ -703,15 +752,20 @@ class Model_Globals {
     $objGlobal = $this->load($intElementId);
     if(count($objGlobal) == 1){
       $objGlobal = $objGlobal->current();
-
+      $strGlobalId = $objGlobal->globalId;
+      
       if($objGlobal->idParent == $this->core->sysConfig->product->rootLevels->list->id &&
          $objGlobal->idParentTypes == $this->core->sysConfig->parent_types->rootlevel){
         //TODO:: delet all link globals
       }
-
-      $strWhere = $this->getGlobalTable()->getAdapter()->quoteInto('id = ?', $intElementId);
-      return $this->objGlobalTable->delete($strWhere);
+      
+      $strWhere = $this->objGlobalTable->getAdapter()->quoteInto('relationId = ?', $strGlobalId);
+      $strWhere .= $this->objGlobalTable->getAdapter()->quoteInto(' AND idUrlTypes = ?', $this->core->sysConfig->url_types->global);
+      $this->getGlobalUrlTable()->delete($strWhere);
     }
+    
+    $strWhere = $this->getGlobalTable()->getAdapter()->quoteInto('id = ?', $intElementId);
+    return $this->objGlobalTable->delete($strWhere);
   }
   
   /**

@@ -1392,6 +1392,15 @@ function get_press_overview(){
 }
 
 /**
+ * get_portal_language_chooser
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_portal_language_chooser(){
+  echo getPageHelperObject()->getLanguageChooser();
+}
+
+/**
  * get_collection
  * @return string $strHtmlOutput
  * @author Thomas Schedler <tsh@massiveart.com>
@@ -1565,93 +1574,7 @@ function get_video_overview($intVideoBigWidth = 640, $intVideoBigHeight = 360){
  * @version 1.0
  */
 function get_pages_overview($strImageFolder = '80x80', $strThumbImageFolder = '40x40'){
-  $core = getCoreObject();
-  $objPage = getPageObject();
-
-  $arrPagesOverview = $objPage->getPagesContainer();
-
-  $strHtmlOutput = '';
-  if(count($arrPagesOverview) > 0){
-    foreach($arrPagesOverview as $key => $objPageContainer){
-      if(count($objPageContainer) > 0){
-
-        $strCssClassPostfix = '';
-        if($key < 2){
-          $strCssClassPostfix = ' pright20';
-        }
-
-        if($key < 3){
-
-          $strHtmlOutput .= '
-               <div class="col3'.$strCssClassPostfix.'">
-                  <h3>'.htmlentities($objPageContainer->getContainerTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</h3>';
-
-          $arrPageEntries = $objPageContainer->getEntries();
-
-          $strTopPostHtmlOutput = '';
-          $strLinkItemsHtmlOutput = '';
-
-          if(count($arrPageEntries) > 0){
-            $counter = 0;
-            foreach($arrPageEntries as $objPageEntry){
-              if($counter == 0){
-
-                $strTopPostHtmlOutput .= '
-                  <div class="divTopPost">
-                    <h2><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h2>';
-                if($objPageEntry->filename != ''){
-                  $strTopPostHtmlOutput .= '
-                   <div class="divImgLeft">
-                     <img alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objPageEntry->filepath.$strImageFolder.'/'.$objPageEntry->filename.'?v='.$objPageEntry->fileversion.'"/>
-                   </div>';
-                }
-                $strTopPostHtmlOutput .= '
-                    '.(($objPageEntry->shortdescription != '') ? '<p>'.htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default).'</p>' : $objPageEntry->description).'
-                    <a href="'.$objPageEntry->url.'">Weiter lesen...</a>
-                  </div>';
-
-              }else{
-                $objPage->setCreateDate($objPageEntry->created);
-
-                $strLinkItemsHtmlOutput .= '
-                    <div class="divListItemImg">';
-                if($objPageEntry->filename != ''){
-                  $strLinkItemsHtmlOutput .= '
-                      <div class="divListItemImgLeft">
-                        <a href="'.$objPageEntry->url.'"><img title="'.$objPageEntry->filetitle.'" alt="'.$objPageEntry->filetitle.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objPageEntry->filepath.$strThumbImageFolder.'/'.$objPageEntry->filename.'?v='.$objPageEntry->fileversion.'"/></a>
-                      </div>';
-                }
-                $strLinkItemsHtmlOutput .= '
-                      <div class="divListItemImgRight">
-                        <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a><br/>
-                        <span>Erstellt am</span> <span class="black">'.$objPage->getCreateDate().'</span>
-                      </div>
-                      <div class="clear"></div>
-                    </div>';
-              }
-              $counter++;
-            }
-          }
-
-          $strHtmlOutput .= $strTopPostHtmlOutput;
-          if($strLinkItemsHtmlOutput != ''){
-            $strHtmlOutput .= '
-                <div class="divListContainer">
-                  <h3>Weitere Themen</h3>';
-            $strHtmlOutput .= $strLinkItemsHtmlOutput;
-            $strHtmlOutput .= '
-                  <div class="clear"></div>
-                </div>';
-          }
-          $strHtmlOutput .= '
-                <div class="clear"></div>
-              </div>';
-        }
-      }
-    }
-  }
-
-  echo $strHtmlOutput;
+  echo getPageHelperObject()->getPagesOverview($strImageFolder, $strThumbImageFolder);
 }
 
 /**

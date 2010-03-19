@@ -64,7 +64,7 @@ class Core {
 	 * @var Zend_Config_Xml
 	 */
   public $sysConfig;
-  public $modConfig;
+  public $zooConfig;
   public $webConfig;
 
   /**
@@ -90,7 +90,7 @@ class Core {
   /**
    * Constructor
    */
-  protected function __construct($blnWithDbh = true, Zend_Config_Xml &$sysConfig, Zend_Config_Xml &$modConfig, Zend_Config_Xml &$webConfig){
+  protected function __construct($blnWithDbh = true, Zend_Config_Xml &$sysConfig, Zend_Config_Xml &$zooConfig, Zend_Config_Xml &$webConfig){
     /**
      * set sys config object
      */
@@ -99,7 +99,7 @@ class Core {
     /**
      * set modules config object
      */
-    $this->modConfig = $modConfig;
+    $this->zooConfig = $zooConfig;
 
     /**
      * set website config object
@@ -165,9 +165,7 @@ class Core {
       $this->intLanguageId = $this->sysConfig->languages->default->id;
       $this->strLanguageCode = $this->sysConfig->languages->default->code;
     }    
-    
-    //$this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/'.$this->sysConfig->client.'-'.$this->strLanguageCode.'.mo', $this->strLanguageCode);
-    
+        
     /**
      * set up zoolu translate obj
      */
@@ -298,9 +296,9 @@ class Core {
    * getInstance
    * @return object instance of the class
    */
-  public static function getInstance($blnWithDbh = true, Zend_Config_Xml &$sysConfig, Zend_Config_Xml &$modConfig, Zend_Config_Xml &$webConfig){
+  public static function getInstance($blnWithDbh = true, Zend_Config_Xml &$sysConfig, Zend_Config_Xml &$zooConfig, Zend_Config_Xml &$webConfig){
     if(self::$instance == null){
-      self::$instance = new Core($blnWithDbh, $sysConfig, $modConfig, $webConfig);
+      self::$instance = new Core($blnWithDbh, $sysConfig, $zooConfig, $webConfig);
     }
     return self::$instance;
   }

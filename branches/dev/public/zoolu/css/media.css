@@ -337,7 +337,10 @@ input[disabled]{
   margin:5px 0 0 0;
 }
 
-.mediacontainer .field input.checkbox{
+.mediacontainer .field input.radio,
+.mediacontainer .field input.checkbox,
+.mediacontainer .field input.multiCheckbox,
+.mediacontainer .field input.multiCheckboxTree {
   width:26px;
 } 
 

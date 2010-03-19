@@ -98,7 +98,7 @@ class GenericData {
       $this->setup->loadGenericForm();
       $this->setup->loadGenericFormStructure();
 
-      $this->setup->getCoreField('title')->setValue($strPageTitle);
+      if($this->setup->getCoreField('title')) $this->setup->getCoreField('title')->setValue($strPageTitle);
       $this->setup->setIsStartElement(true);
 
 

@@ -642,8 +642,8 @@ Massiveart.Navigation = Class.create({
     var itemId = posElement.substring(intPosLastUnderscore + 1);
     var parentId = $('navlevel'+level).readAttribute('parentid');
 
-    if(elType == this.constProduct) {
-      strAjaxAction = '/zoolu/products/navigation/updateposition';
+    if(elType == this.constGlobal) {
+      strAjaxAction = '/zoolu/global/navigation/updateposition';
     } else {
       strAjaxAction = '/zoolu/cms/navigation/updateposition';
     }
@@ -654,6 +654,7 @@ Massiveart.Navigation = Class.create({
 		    elementType: elType,
 		    sortPosition: $(posElement).getValue(),
 		    rootLevelId: this.rootLevelId,
+		    rootLevelTypeId: this.rootLevelTypeId,
 		    rootLevelGroupId: this.rootLevelGroupId,
 		    rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
 		    parentId: parentId		    

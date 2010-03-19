@@ -459,6 +459,6 @@ Massiveart.Overlay = Class.create({
     if($('overlayBlack75')) $('overlayBlack75').hide();
     if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';
     if($('overlaySingleEditContent')) $('overlaySingleEditContent').innerHTML = '';
-    this.lastFolderId = null;
+    //this.lastFolderId = null;
   }
 });

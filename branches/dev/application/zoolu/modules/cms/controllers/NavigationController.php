@@ -165,11 +165,13 @@ class Cms_NavigationController extends AuthControllerAction {
       $objRequest = $this->getRequest();
       $intElementId = $objRequest->getParam("id");
       $strElementType = $objRequest->getParam("elementType");
+      $intRootLevelTypeId = $objRequest->getParam("rootLevelTypeId");
+      $intRootLevelGroupId = $objRequest->getParam("rootLevelGroupId");
       $intSortPosition = $objRequest->getParam("sortPosition");
       $this->setPortalId($objRequest->getParam("rootLevelId"));
       $this->setParentId($objRequest->getParam("parentId"));
 
-      $this->objModelFolders->updateSortPosition($intElementId, $strElementType, $intSortPosition, $this->intPortalId, $this->intParentId);
+      $this->objModelFolders->updateSortPosition($intElementId, $strElementType, $intSortPosition, $this->intPortalId, $this->intParentId, $intRootLevelTypeId, $intRootLevelGroupId);
     }
 
     /**

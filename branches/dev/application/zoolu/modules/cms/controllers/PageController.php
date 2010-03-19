@@ -356,7 +356,7 @@ class Cms_PageController extends AuthControllerAction {
 
       if($this->objForm->Setup()->getField('url')) $this->view->pageurl = $this->objForm->Setup()->getField('url')->getValue();
 
-      if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit && $this->objForm->Setup()->getElementTypeId() != $this->core->sysConfig->page_types->link->id) $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
     }
   }
 
@@ -582,6 +582,12 @@ class Cms_PageController extends AuthControllerAction {
 
     try{
       if(intval($this->objRequest->getParam('id')) > 0){
+        $objPageData = $this->getModelPages()->loadFormAndTemplateById($this->objRequest->getParam('id'));
+        if(count($objPageData) == 1){
+          $objPage = $objPageData->current();
+          if((int) $objPage->idTemplates > 0) $this->objRequest->setParam('templateId', $objPage->idTemplates);
+          if($objPage->genericFormId != '') $this->objRequest->setParam('formId', $objPage->genericFormId);          
+        }
         $this->_forward('geteditform');
       }else{
         $this->_forward('getaddform');

@@ -61,6 +61,102 @@ class PageHelper {
   }
   
   /**
+   * getPagesOverview
+   * @param string $strImageFolder
+   * @param string $strThumbImageFolder
+   * @return string $strReturn
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getPagesOverview($strImageFolder = '80x80', $strThumbImageFolder = '40x40'){
+      
+    $arrPagesOverview = $this->objPage->getPagesContainer();
+  
+    $strReturn = '';
+    if(count($arrPagesOverview) > 0){
+      foreach($arrPagesOverview as $key => $this->objPageContainer){
+        if(count($this->objPageContainer) > 0){
+  
+          $strCssClassPostfix = '';
+          if($key < 2){
+            $strCssClassPostfix = ' pright20';
+          }
+  
+          if($key < 3){
+  
+            $strReturn .= '
+                 <div class="col3'.$strCssClassPostfix.'">
+                    <h3>'.htmlentities($this->objPageContainer->getContainerTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</h3>';
+  
+            $arrPageEntries = $this->objPageContainer->getEntries();
+  
+            $strTopPostHtmlOutput = '';
+            $strLinkItemsHtmlOutput = '';
+  
+            if(count($arrPageEntries) > 0){
+              $counter = 0;
+              foreach($arrPageEntries as $this->objPageEntry){
+                if($counter == 0){
+  
+                  $strTopPostHtmlOutput .= '
+                    <div class="divTopPost">
+                      <h2><a href="'.$this->objPageEntry->url.'">'.htmlentities($this->objPageEntry->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></h2>';
+                  if($this->objPageEntry->filename != ''){
+                    $strTopPostHtmlOutput .= '
+                     <div class="divImgLeft">
+                       <img alt="'.$this->objPageEntry->filetitle.'" title="'.$this->objPageEntry->filetitle.'" src="'.$this->core->webConfig->domains->static->components.$this->core->sysConfig->media->paths->imgbase.$this->objPageEntry->filepath.$strImageFolder.'/'.$this->objPageEntry->filename.'?v='.$this->objPageEntry->fileversion.'"/>
+                     </div>';
+                  }
+                  $strTopPostHtmlOutput .= '
+                      '.(($this->objPageEntry->shortdescription != '') ? '<p>'.htmlentities($this->objPageEntry->shortdescription, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</p>' : $this->objPageEntry->description).'
+                      <a href="'.$this->objPageEntry->url.'">Weiter lesen...</a>
+                    </div>';
+  
+                }else{
+                  $this->objPage->setCreateDate($this->objPageEntry->created);
+  
+                  $strLinkItemsHtmlOutput .= '
+                      <div class="divListItemImg">';
+                  if($this->objPageEntry->filename != ''){
+                    $strLinkItemsHtmlOutput .= '
+                        <div class="divListItemImgLeft">
+                          <a href="'.$this->objPageEntry->url.'"><img title="'.$this->objPageEntry->filetitle.'" alt="'.$this->objPageEntry->filetitle.'" src="'.$this->core->webConfig->domains->static->components.$this->core->sysConfig->media->paths->imgbase.$this->objPageEntry->filepath.$strThumbImageFolder.'/'.$this->objPageEntry->filename.'?v='.$this->objPageEntry->fileversion.'"/></a>
+                        </div>';
+                  }
+                  $strLinkItemsHtmlOutput .= '
+                        <div class="divListItemImgRight">
+                          <a href="'.$this->objPageEntry->url.'">'.htmlentities($this->objPageEntry->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a><br/>
+                          <span>Erstellt am</span> <span class="black">'.$this->objPage->getCreateDate().'</span>
+                        </div>
+                        <div class="clear"></div>
+                      </div>';
+                }
+                $counter++;
+              }
+            }
+  
+            $strReturn .= $strTopPostHtmlOutput;
+            if($strLinkItemsHtmlOutput != ''){
+              $strReturn .= '
+                  <div class="divListContainer">
+                    <h3>Weitere Themen</h3>';
+              $strReturn .= $strLinkItemsHtmlOutput;
+              $strReturn .= '
+                    <div class="clear"></div>
+                  </div>';
+            }
+            $strReturn .= '
+                  <div class="clear"></div>
+                </div>';
+          }
+        }
+      }
+    }
+  
+    return $strReturn;
+  }
+  
+  /**
    * getCategoryIcons
    * @author Thomas Schedler <tsh@massiveart.com>
    * @return string
@@ -77,14 +173,22 @@ class PageHelper {
   public function getProductOverview(){
     //TODO default product overview
   }
-    
-  
+      
   /**
    * getPressOverview
    * @author Thomas Schedler <tsh@massiveart.com>
    * @return string
    */
   public function getPressOverview(){
+    //TODO default product overview
+  }
+  
+  /**
+   * getLanguageChooser
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getLanguageChooser(){
     //TODO default product overview
   }
   

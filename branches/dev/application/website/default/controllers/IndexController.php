@@ -237,8 +237,9 @@ class IndexController extends Zend_Controller_Action {
           case $this->core->sysConfig->url_types->global:
             $this->objPage->setType('global');
             $this->objPage->setModelSubPath('global/models/');
-            $this->objPage->setElementLinkId($objUrlData->linkId);
-            $this->objPage->setNavParentId($objUrlData->linkParentId);
+            $this->objPage->setElementLinkId($objUrlData->idLink);
+            $this->objPage->setNavParentId($objUrlData->idLinkParent);
+            $this->objPage->setPageLinkId($objUrlData->linkId);
             break;
         }        
 
@@ -258,11 +259,11 @@ class IndexController extends Zend_Controller_Action {
         if(isset($objUrl->baseUrl)){
           $objNavigation->setBaseUrl($objUrl->baseUrl);
           $this->objPage->setBaseUrl($objUrl->baseUrl);
-          $this->objPage->setNavParentId($objUrlData->linkParentId);
+          $this->objPage->setNavParentId($objUrlData->idLinkParent);
         }
 
         $this->objPage->loadPage();
-
+        
         /**
          * set values for replacers
          */
@@ -299,8 +300,6 @@ class IndexController extends Zend_Controller_Action {
         
         Zend_Registry::set('Page', $this->objPage); //FIXME need of registration navigation object??      
       
-        require_once(dirname(__FILE__).'/../helpers/page.inc.php');
-
         $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
         $this->renderScript('master.php');
 
