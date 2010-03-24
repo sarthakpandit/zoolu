@@ -7,7 +7,11 @@
 				von <em><?php if (isset($this->objEntry->username)): print $this->objEntry->username; endif; ?></em> am
 				<?php if (isset($this->objEntry->created)): print date("d.m.Y\, H:i \\U\\h\\r",strtotime($this->objEntry->created)); endif; ?>
 				<br/><br/>
+				<?php get_image_main('220x', true, false, '660x', 'divImgLeft'); ?>
+				
 				<?php print $this->objEntry->text; ?>
+				
+			 <?php get_blog_text_blocks('220x', true, false, '660x'); ?>  
 			 
 			 <!-- Tags -->
 			 <?php 

@@ -78,6 +78,16 @@ function get_tags($objWidgetTag){
 }
 
 /**
+ * getCoreObject
+ * @return Core
+ * @author Florian Mathis <flo@massiveart.com>
+ * @version 1.0
+ */
+function getCoreObject(){
+  return Zend_Registry::get('Core');  
+}
+
+/**
  * has_tags
  * @return boolean
  * @author Florian Mathis <flo@massiveart.com>
@@ -91,6 +101,71 @@ function has_tags($objWidgetTag){
 	    return false;
 	  }
 	}
+}
+
+/**
+ * get_image_main
+ * @param string $strImageFolder        define output folder 
+ * @param boolean $blnZoom              set if image should be enlargeable
+ * @param boolean $blnUseLightbox       set if image zoom should open in a lightbox
+ * @param string $strImageFolderZoom    define folder for zoom
+ * @param string $strContainerClass     css class for the div container
+ * @return string $strHtmlOutput
+ * @author Florian Mathis <flo@massiveart.com>
+ * @version 1.0
+ */
+function get_image_main($strImageFolder = '420x', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '660x', $strContainerClass = 'divMainImage'){
+  $objCore = getCoreObject();
+  $objWidget = getWidgetObject();
+  $strHtmlOutput = '';
+  
+  $objFiles = $objWidget->loadFieldFiles($objWidget->getWidgetInstanceId());  
+ 
+  if($objFiles != '' && count($objFiles) > 0){
+    $strHtmlOutput .= '<div class="'.$strContainerClass.'">';   
+    foreach($objFiles as $objFile){
+    	$objFile = $objWidget->getFileFieldValueById($objFile['idFiles']);
+      $strHtmlOutput .= '<img src="'.$objCore->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile[0]->filename.'" alt="'.$objFile[0]->title.'" title="'.$objFile[0]->title.'"/><br/>';
+    }
+    $strHtmlOutput .= '</div><div class="clear"></div>'; 
+  } 
+  
+  echo $strHtmlOutput; 
+}
+
+/**
+ * get_blog_text_blocks
+ * @return boolean
+ * @author Florian Mathis <flo@massiveart.com>
+ * @version 1.0
+ */
+function get_blog_text_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox = true, $strImageFolderZoom = '', $strContainerClass = 'divTextBlock', $strImageContainerClass = 'divImgLeft'){
+	$objCore = getCoreObject();
+	$objWidget = getWidgetObject();
+	$strHtmlOutput = '';
+	
+	$arrMultiplyFields = $objWidget->loadMultiplyFields();
+	foreach($arrMultiplyFields AS $field){
+		$strBlockTitle = htmlentities($field['block_title'], ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
+		
+		$strHtmlOutput .= '<div class="'.$strContainerClass.'">';      
+    $strHtmlOutput .= '  <h2>'.$strBlockTitle.'</h2>';
+		
+    $objFiles = $objWidget->loadMultiplyFieldFiles($field['id']); 
+		if($objFiles != '' && count($objFiles) > 0){      
+    	$strHtmlOutput .= '<div class="'.$strImageContainerClass.'">';
+      foreach($objFiles as $objFile){
+      	$objFile = $objWidget->getFileFieldValueById($objFile['idFiles']);
+        $strHtmlOutput .= '<img src="'.$objCore->sysConfig->media->paths->imgbase.$strImageFolder.'/'.$objFile[0]->filename.'" alt="'.$objFile[0]->title.'" title="'.$objFile[0]->title.'"/><br/>';   
+      }
+      $strHtmlOutput .= '</div>';         
+    }
+    $strHtmlOutput .= $field['block_description'];
+    $strHtmlOutput .= '<div class="clear"></div>';
+    $strHtmlOutput .= '</div>'; 
+	}
+	
+	echo $strHtmlOutput;
 }
 
 ?>
