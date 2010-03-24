@@ -252,7 +252,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           foreach($arrFileIds as $intSortPosition => $intFileId){
             if($intFileId != ''){
               if(isset($arrTypeProperties['Version'])){
-                $arrFileData = array($strType.'id'  => $arrTypeProperties['Id'],
+                $arrFileData = array($strType.'Id'  => $arrTypeProperties['Id'],
                                      'version'      => $arrTypeProperties['Version'],
                                      'idLanguages'  => $this->setup->getLanguageId(),
                                      'sortPosition' => $intSortPosition + 1,
@@ -296,7 +296,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           foreach($objField->getValue() as $intRelationId){
             if($intRelationId != ''){
               if(isset($arrTypeProperties['Version'])){
-                $arrFileData = array($strType.'id' => $arrTypeProperties['Id'],
+                $arrFileData = array($strType.'Id' => $arrTypeProperties['Id'],
                                      'version'     => $arrTypeProperties['Version'],
                                      'idLanguages' => $this->setup->getLanguageId(),
                                      'idRelation'  => $intRelationId,
@@ -543,7 +543,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           foreach($arrFileIds as $intSortPosition => $intFileId){
             if($intFileId != ''){
               if(isset($arrTypeProperties['Version'])){
-                $arrFileData = array($strType.'id' => $arrTypeProperties['Id'],
+                $arrFileData = array($strType.'Id' => $arrTypeProperties['Id'],
                                      'version'     => $arrTypeProperties['Version'],
                                      'idLanguages' => $this->setup->getLanguageId(),
                                      'sortPosition' => $intSortPosition+1,
@@ -591,7 +591,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         if(is_array($objField->getValue()) && count($objField->getValue()) > 0){
           foreach($objField->getValue() as $intRelationId){
             if($intRelationId != ''){
-              $arrFileData = array($strType.'id' => $strTypeId,
+              $arrFileData = array($strType.'Id' => $strTypeId,
                                    'version'     => $intTypeVersion,
                                    'idLanguages' => $this->setup->getLanguageId(),
                                    'idRelation'  => $intRelationId,
@@ -754,7 +754,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           if(count($arrFileIds) > 0){
             foreach($arrFileIds as $intFileId){
               if($intFileId != ''){
-                $arrFileData = array($strType.'id'        => $strTypeId,
+                $arrFileData = array($strType.'Id'        => $strTypeId,
                                      'version'            => $intTypeVersion,
                                      'idLanguages'        => $this->setup->getLanguageId(),
                                      'idRegionInstances'  => $idRegionInstance,
@@ -788,7 +788,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 
             foreach($objFilter->referenceIds as $intReferenceId){
               if(is_numeric($intReferenceId)){
-                $arrFileFilterData = array($strType.'id'        => $strTypeId,
+                $arrFileFilterData = array($strType.'Id'        => $strTypeId,
                                            'version'            => $intTypeVersion,
                                            'idLanguages'        => $this->setup->getLanguageId(),
                                            'idRegionInstances'  => $idRegionInstance,
@@ -815,7 +815,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           if(is_array($objField->getInstanceValue($intRegionInstanceId)) && count($objField->getInstanceValue($intRegionInstanceId)) > 0){
             foreach($objField->getInstanceValue($intRegionInstanceId) as $intRelationId){
               if($intRelationId != ''){
-                $arrFileData = array($strType.'id'        => $strTypeId,
+                $arrFileData = array($strType.'Id'        => $strTypeId,
                                      'version'            => $intTypeVersion,
                                      'idLanguages'        => $this->setup->getLanguageId(),
                                      'idRegionInstances'  => $idRegionInstance,

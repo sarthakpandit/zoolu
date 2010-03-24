@@ -288,6 +288,7 @@ class GenericSetup {
   public function resetGenericStructure(){
     $this->core->logger->debug('massiveart->generic->GenericSetup->resetGenericStructure()');
 
+    $this->arrTabs = array();
     $this->arrRegions = array();
     $this->arrMultiplyRegionIds = array();
     $this->arrCoreFields = array();
