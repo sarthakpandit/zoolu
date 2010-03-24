@@ -62,7 +62,7 @@ class Model_Urls {
   public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
-
+  
   /**
    * loadUrl
    * @param string $strRelationId
@@ -189,7 +189,7 @@ class Model_Urls {
       $objGlobalTreeBaseUrls = $this->loadGlobalTreeBaseUrls($intRootLevelId);
       foreach($objGlobalTreeBaseUrls as $objBaseUrl){
         if(strpos($strUrl, $objBaseUrl->url) === 0){
-          $objUrlData->url = $this->loadGlobalByUrl(str_replace($objBaseUrl->url, '', $strUrl));
+          $objUrlData->url = $this->loadGlobalByUrl(str_replace($objBaseUrl->url, '', $strUrl), $objBaseUrl->idPageTypes);
           $objUrlData->baseUrl = $objBaseUrl;
           break;
         }
@@ -213,13 +213,13 @@ class Model_Urls {
     
     $objSelect->from('urls', array('url', 'relationId' => 'pages.pageId', 'pages.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'idLink' => new Zend_Db_Expr('-1')));
     $objSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array());
-    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('pageProperties.idPageTypes'));
     $objSelect->join('folders', 'folders.id = pages.idParent', array());
     $objSelect->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
               ->where('urls.idLanguages = ?', $this->intLanguageId)
               ->where('folders.idRootLevels = ?', $intRootLevelId)
-              ->where('pageProperties.idPageTypes = ?', $this->core->sysConfig->page_types->product_tree->id);
-
+              ->where('pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->product_tree->id.' OR pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->press_area->id);
+              
     return $this->objUrlTable->fetchAll($objSelect);
   }
   
@@ -229,20 +229,26 @@ class Model_Urls {
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  public function loadGlobalByUrl($strUrl){
-    $this->core->logger->debug('core->models->Model_Urls->loadGlobalByUrl('.$strUrl.')');
+  public function loadGlobalByUrl($strUrl, $intPageTypeId){
+    $this->core->logger->debug('core->models->Model_Urls->loadGlobalByUrl('.$strUrl.','.$intPageTypeId.')');
     
     $objSelect = $this->getUrlTable()->select();
     $objSelect->setIntegrityCheck(false);
     
-    $objSelect->from('urls', array('relationId' => 'globals.globalId', 'globals.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'idLink' => 'lG.id', 'linkId' => 'lG.globalId', 'idLinkParent' => 'lG.idParent'));
-    $objSelect->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version', array());
-    $objSelect->join('globalLinks', 'globalLinks.idGlobals = lG.id', array());
-    $objSelect->join('globals', 'globals.globalId = globalLinks.globalId', array());
+    if($intPageTypeId == $this->core->sysConfig->page_types->product_tree->id){
+      $objSelect->from('urls', array('relationId' => 'globals.globalId', 'globals.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'idLink' => 'lG.id', 'linkId' => 'lG.globalId', 'idLinkParent' => 'lG.idParent'));
+      $objSelect->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version', array());
+      $objSelect->join('globalLinks', 'globalLinks.idGlobals = lG.id', array());
+      $objSelect->join('globals', 'globals.globalId = globalLinks.globalId', array())
+                ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');;
+    }else{
+      $objSelect->from('urls', array('relationId' => 'globals.globalId', 'globals.version', 'urls.idLanguages', 'urls.idParent', 'urls.idParentTypes', 'urls.idUrlTypes', 'idLink' => new Zend_Db_Expr('-1'), 'linkId' => new Zend_Db_Expr('NULL'), 'idLinkParent' => new Zend_Db_Expr('-1')));
+      $objSelect->join('globals', 'globals.globalId = urls.relationId AND globals.version  = urls.version', array());
+    }
     $objSelect->where('urls.url = ?', $strUrl)
               ->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->global)
-              ->where('urls.idLanguages = ?', $this->intLanguageId)
-              ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)');
+              ->where('urls.idLanguages = ?', $this->intLanguageId);              
+              
 
     return $this->objUrlTable->fetchAll($objSelect);
   }

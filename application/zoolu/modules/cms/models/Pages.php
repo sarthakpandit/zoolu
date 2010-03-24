@@ -618,7 +618,7 @@ class Model_Pages {
 
   /**
    * loadItems
-   * @param integer $intTypeId
+   * @param integer|array $mixedType
    * @param integer $intParentId
    * @param integer $intCategoryId
    * @param integer $intLabelId
@@ -632,9 +632,16 @@ class Model_Pages {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadItems($intTypeId, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array(), $blnOnlyItems = false){
+  public function loadItems($mixedType, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array(), $blnOnlyItems = false){
     $this->core->logger->debug('cms->models->Model_Pages->loadItems('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
 
+    if(!is_array($mixedType)){
+      $mixedType = array('id' => $mixedType);
+    }
+    
+    $intTypeId = (array_key_exists('id', $mixedType)) ? $mixedType['id'] : -1;
+    $strType = (array_key_exists('key', $mixedType)) ? $mixedType['key'].'_types' : 'page_types';
+    
     $strSortOrder = '';
     if($intSortOrderId > 0 && $intSortOrderId != ''){
       switch($intSortOrderId){

@@ -385,6 +385,19 @@
             </display>
           </default_size>
           <default_size>
+            <folder>140x70</folder>
+            <actions>
+              <action>
+                <method>scale</method>
+                <params>140,70</params>
+              </action>
+            </actions>
+            <display>
+              <single_edit>true</single_edit>
+              <text_block>true</text_block>
+            </display>
+          </default_size>
+          <default_size>
             <folder>117x88</folder>
             <actions>
               <action>
@@ -565,6 +578,11 @@
         <default_formId>DEFAULT_PRESS_AREA</default_formId>        
         <default_templateId>19</default_templateId>
       </press_area>
+      <iframe>
+        <id>9</id>
+        <default_formId>DEFAULT_IFRAME</default_formId>
+        <default_templateId>23</default_templateId>
+      </iframe>
     </page_types>
     
     <!-- GLOBAL TYPES -->

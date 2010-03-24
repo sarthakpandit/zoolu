@@ -339,7 +339,7 @@ class Model_Folders {
      * WHERE rootLevelUrls.url = ?
      */
     $objSelect->from('rootLevelUrls', array('id', 'idRootLevels'));
-    $objSelect->join('rootLevels', 'rootLevels.id = rootLevelUrls.idRootLevels', array());
+    $objSelect->join('rootLevels', 'rootLevels.id = rootLevelUrls.idRootLevels', array('idRootLevelGroups'));
     $objSelect->joinLeft('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id AND rootLevelTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->join('themes', 'themes.id = rootLevels.idThemes', array('path'));
     $objSelect->where('rootLevelUrls.url = ?', $strDomain);
@@ -777,16 +777,15 @@ class Model_Folders {
     $strJoinLabel = '';
     if($intLabelId > 0 && $intLabelId != ''){
       $strJoinLabel = ' INNER JOIN pageLabels ON
-                        pageLabels.pageId = pages.pageId AND
-                        pageLabels.version = pages.version AND
-                        pageLabels.label = '.$intLabelId;
+                          pageLabels.pageId = pages.pageId AND
+                          pageLabels.version = pages.version AND
+                          pageLabels.label = '.$intLabelId;
     }
 
     $strSqlLimit = '';
     if($intLimitNumber > 0 && $intLimitNumber != ''){
       $strSqlLimit = ' LIMIT '.$intLimitNumber;
     }
-
 
     $strFolderFilter = '';
     $strPageFilter = '';
@@ -802,9 +801,10 @@ class Model_Folders {
     }
 
   	$sqlStmt = $this->core->dbh->query('SELECT DISTINCT folders.id AS idFolder, folderProperties.idStatus AS folderStatus, folders.depth,
-                                              pages.id AS idPage, pageTitles.title AS title, genericForms.genericFormId, genericForms.version,
+                                              pages.id AS idPage, pageTitles.title AS title, genericForms.genericFormId, genericForms.version, pageProperties.showInNavigation,
                                               pageProperties.idStatus AS pageStatus, urls.url, languageCode, pageProperties.idPageTypes, pageProperties.created AS pageCreated,
-                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished
+                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished,
+                                              CONCAT(users.fname, \' \', users.sname) AS creator
                                           FROM folders
                                             INNER JOIN folderProperties ON 
                                               folderProperties.folderId = folders.folderId AND 
@@ -832,6 +832,8 @@ class Model_Folders {
                                               urls.version = pages.version AND
                                               urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND
                                               urls.idLanguages = ?
+                                            LEFT JOIN users ON
+                                              users.id = pageProperties.creator
                                             LEFT JOIN languages  ON
                                               languages.id = ?
                                           ,folders AS parent
@@ -840,14 +842,148 @@ class Model_Folders {
                                                  folders.idRootLevels = parent.idRootLevels
                                                  '.$strFolderFilter.'
                                            '.$strSqlOrderBy.'
-  	                                       '.$strSqlLimit, array($this->core->sysConfig->parent_types->folder,
-  	                                                             $this->intLanguageId,
+  	                                       '.$strSqlLimit, array($this->intLanguageId,
+  	                                                             $this->core->sysConfig->parent_types->folder,
   	                                                             $this->intLanguageId,
   	                                                             $this->intLanguageId,
   	                                                             $this->intLanguageId,
   	                                                             $this->intLanguageId,
   	                                                             $intFolderId));
 
+    return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+  }
+  
+  /**
+   * loadOverallFolderChildPages
+   * @param integer $intCategoryId
+   * @param integer $intLabelId
+   * @param integer $intLimitNumber
+   * @param integer $intSortTypeId
+   * @param integer $intSortOrderId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function loadOverallFolderChildPages($intCategoryId = 0, $intLabelId = 0, $intLimitNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0){
+    $this->core->logger->debug('core->models->Folders->loadOverallFolderChildPages('.$intCategoryId.','.$intLabelId.','.$intLimitNumber.','.$intSortTypeId.','.$intSortOrderId.')');
+
+  $strSortOrder = '';
+    if($intSortOrderId > 0 && $intSortOrderId != ''){
+      switch($intSortOrderId){
+        case $this->core->sysConfig->sort->orders->asc->id:
+          $strSortOrder = 'ASC';
+          break;
+        case $this->core->sysConfig->sort->orders->desc->id:
+          $strSortOrder = 'DESC';
+          break;
+      }
+    }
+
+    $strSqlOrderBy = ' ORDER BY folders.lft';
+    if($intSortTypeId > 0 && $intSortTypeId != ''){
+      switch($intSortTypeId){
+        case $this->core->sysConfig->sort->types->manual_sort->id:
+          $strSqlOrderBy = ' ORDER BY pages.sortPosition '.$strSortOrder.', pageglobalrtTimestamp '.(($strSortOrder == 'DESC') ? 'ASC' : 'DESC');
+          break;
+        case $this->core->sysConfig->sort->types->created->id:
+          $strSqlOrderBy = ' ORDER BY pageProperties.created '.$strSortOrder;
+          break;
+        case $this->core->sysConfig->sort->types->changed->id:
+          $strSqlOrderBy = ' ORDER BY pageProperties.changed '.$strSortOrder;
+          break;
+        case $this->core->sysConfig->sort->types->published->id:
+          $strSqlOrderBy = ' ORDER BY pageProperties.published '.$strSortOrder;
+          break;
+        case $this->core->sysConfig->sort->types->alpha->id:
+          $strSqlOrderBy = ' ORDER BY title '.$strSortOrder;
+      }
+    }
+
+    $strJoinCategory = '';
+    if($intCategoryId > 0 && $intCategoryId != ''){
+      $strJoinCategory = ' INNER JOIN pageCategories ON
+                            pageCategories.pageId = pages.pageId AND
+                            pageCategories.version = pages.version AND
+                            pageCategories.category = '.$intCategoryId;
+    }
+
+    $strJoinLabel = '';
+    if($intLabelId > 0 && $intLabelId != ''){
+      $strJoinLabel = ' INNER JOIN pageLabels ON
+                          pageLabels.pageId = pages.pageId AND
+                          pageLabels.version = pages.version AND
+                          pageLabels.label = '.$intLabelId;
+    }
+
+    $strSqlLimit = '';
+    if($intLimitNumber > 0 && $intLimitNumber != ''){
+      $strSqlLimit = ' LIMIT '.$intLimitNumber;
+    }
+
+    $strFolderFilter = '';
+    $strPageFilter = '';
+    $strFolderPublishedFilter = '';
+    $strPagePublishedFilter = '';
+    if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
+      $timestamp = time();
+      $now = date('Y-m-d H:i:s', $timestamp);
+
+      $strFolderFilter = 'AND folderProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strPagePublishedFilter = ' AND pageProperties.published <= \''.$now.'\'';
+    }
+
+    $sqlStmt = $this->core->dbh->query('SELECT DISTINCT folders.id AS idFolder, folderProperties.idStatus AS folderStatus, folders.depth,
+                                              pages.id AS idPage, pageTitles.title AS title, genericForms.genericFormId, genericForms.version,
+                                              pageProperties.idStatus AS pageStatus, urls.url, languageCode, pageProperties.idPageTypes, pageProperties.created AS pageCreated,
+                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished, rootLevelTitles.title AS rootTitle,
+                                              CONCAT(users.fname, \' \', users.sname) AS creator
+                                          FROM folders
+                                            INNER JOIN folderProperties ON 
+                                              folderProperties.folderId = folders.folderId AND 
+                                              folderProperties.version = folders.version AND 
+                                              folderProperties.idLanguages = ?
+                                            INNER JOIN pages ON
+                                              pages.idParent = folders.id AND
+                                              pages.idParentTypes = ?
+                                            INNER JOIN pageProperties ON 
+                                              pageProperties.pageId = pages.pageId AND 
+                                              pageProperties.version = pages.version AND 
+                                              pageProperties.idLanguages = ?
+                                              '.$strPageFilter.'
+                                              '.$strPagePublishedFilter.'
+                                              '.$strJoinCategory.'
+                                              '.$strJoinLabel.'                                            
+                                            INNER JOIN genericForms ON
+                                              genericForms.id = pageProperties.idGenericForms
+                                            INNER JOIN pageTitles ON
+                                              pageTitles.pageId = pages.pageId AND
+                                              pageTitles.version = pages.version AND
+                                              pageTitles.idLanguages = ?
+                                            INNER JOIN urls ON
+                                              urls.relationId = pages.pageId AND
+                                              urls.version = pages.version AND
+                                              urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND
+                                              urls.idLanguages = ?
+                                            INNER JOIN rootLevelTitles ON
+                                              rootLevelTitles.idRootLevels = folders.idRootLevels AND
+                                              rootLevelTitles.idLanguages = ?
+                                            LEFT JOIN users ON
+                                              users.id = pageProperties.creator
+                                            LEFT JOIN languages  ON
+                                              languages.id = ?
+                                          ,folders AS parent
+                                           WHERE folders.lft BETWEEN parent.lft AND parent.rgt AND
+                                                 folders.idRootLevels = parent.idRootLevels
+                                                 '.$strFolderFilter.'
+                                           '.$strSqlOrderBy.'
+                                           '.$strSqlLimit, array($this->intLanguageId,
+                                                                 $this->core->sysConfig->parent_types->folder,
+                                                                 $this->intLanguageId,
+                                                                 $this->intLanguageId,
+                                                                 $this->intLanguageId,
+                                                                 $this->intLanguageId,
+                                                                 $this->intLanguageId));
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
 
@@ -954,12 +1090,14 @@ class Model_Folders {
                                             IF(pageProperties.idPageTypes = ?, lUrls.url, urls.url) as url,
                                             IF(pageProperties.idPageTypes = ?, plExternals.external, pageExternals.external) as external,
                                             IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title,
-                                            pageProperties.idPageTypes, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode
+                                            pageProperties.idPageTypes, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode, rootLevels.idRootLevelGroups
                                         FROM folders
                                           INNER JOIN folderProperties ON 
                                             folderProperties.folderId = folders.folderId AND 
                                             folderProperties.version = folders.version AND 
                                             folderProperties.idLanguages = ?
+                                          INNER JOIN rootLevels ON
+                                            folders.idRootLevels = rootLevels.id
                                           INNER JOIN folderTitles ON
                                             folderTitles.folderId = folders.folderId AND
 																			      folderTitles.version = folders.version AND
@@ -1035,11 +1173,12 @@ class Model_Folders {
    * loadWebsiteGlobalTree
    * @param integer $intParentId
    * @param array $arrFilterOptions
+   * @param integer $intRootLevelGroupId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  public function loadWebsiteGlobalTree($intParentId, $arrFilterOptions = array()){
-    $this->core->logger->debug('core->models->Folders->loadWebsiteGlobalTree('.$intParentId.','.$arrFilterOptions.')');
+  public function loadWebsiteGlobalTree($intParentId, $arrFilterOptions = array(), $intRootLevelGroupId = 0){
+    $this->core->logger->debug('core->models->Folders->loadWebsiteGlobalTree('.$intParentId.','.$arrFilterOptions.', '.$intRootLevelGroupId.')');
 
     $strFolderFilter = '';
     $strGlobalFilter = '';
@@ -1059,17 +1198,25 @@ class Model_Folders {
               ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND
                                       folderTitles.version = folders.version AND
                                       folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'))
-              ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'))
-              ->join('globals AS lP', 'lP.idParent = folders.id AND
+              ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'));
+    if($intRootLevelGroupId == $this->core->sysConfig->root_level_groups->product){
+      $objSelect->join('globals AS lP', 'lP.idParent = folders.id AND
                                         lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idGlobal' => 'id', 'globalId', 'isStartGlobal', 'globalOrder' => 'sortPosition'))
-              ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
-              ->join('globals', 'globals.globalId = globalLinks.globalId', array())
-              ->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
-                                           globalProperties.version = globals.version AND
-                                           globalProperties.idLanguages = '.$this->intLanguageId.' AND
-                                           globalProperties.showInNavigation = 1', array('globalStatus' => 'idStatus', 'idGlobalTypes'))
+                ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
+                ->join('globals', 'globals.globalId = globalLinks.globalId', array('id'))
+                ->joinLeft('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'));
+    }else{
+      $objSelect->join('globals', 'globals.idParent = folders.id AND
+                                   globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('id', 'idGlobal' => 'id', 'globalId', 'isStartGlobal', 'globalOrder' => 'sortPosition'))
+                ->joinLeft('urls', 'urls.relationId = globals.globalId AND urls.version = globals.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'));
+      
+    }
+    $objSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
+                                          globalProperties.version = globals.version AND
+                                          globalProperties.idLanguages = '.$this->intLanguageId.' AND
+                                          globalProperties.showInNavigation = 1', array('globalStatus' => 'idStatus', 'idGlobalTypes'))              
+              ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'genericFormVersion' => 'version'))
               ->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('globalTitle' => 'title'))
-              ->joinLeft('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
               ->joinLeft('globalCategories', 'globalCategories.globalId = globals.globalId AND globalCategories.version = globals.version', array())
               ->joinLeft('globalLabels', 'globalLabels.globalId = globals.globalId AND globalLabels.version = globals.version', array())
               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
@@ -1233,8 +1380,8 @@ class Model_Folders {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadGlobalParentFolders($intFolderId){
-    $this->core->logger->debug('core->models->Folders->loadGlobalParentFolders('.$intFolderId.')');
+  public function loadGlobalParentFolders($intFolderId, $intRootLevelGroupId = 0){
+    $this->core->logger->debug('core->models->Folders->loadGlobalParentFolders('.$intFolderId.','.$intRootLevelGroupId.')');
 
     $objSelect = $this->getFolderTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -1247,14 +1394,21 @@ class Model_Folders {
               ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND
                                       folderTitles.version = folders.version AND
                                       folderTitles.idLanguages = '.$this->intLanguageId, array('title'))
-              ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'))
-              ->join('globals AS lP', 'lP.idParent = folders.id AND
-                                       lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND
-                                       lP.sortPosition = 0', array())
-              ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
-              ->join('globals', 'globals.globalId = globalLinks.globalId', array())
-              ->join('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'))
-              ->where('folders.lft <= parent.lft')
+              ->join('languages', 'languages.id = folderTitles.idLanguages',array('languageCode'));
+    if($intRootLevelGroupId == $this->core->sysConfig->root_level_groups->product){
+      $objSelect->join('globals AS lP', 'lP.idParent = folders.id AND
+                                         lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND
+                                         lP.sortPosition = 0', array())
+                ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
+                ->join('globals', 'globals.globalId = globalLinks.globalId', array())
+                ->join('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'));
+    }else{
+      $objSelect->join('globals', 'globals.idParent = folders.id AND
+                                   globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder.' AND
+                                   globals.sortPosition = 0', array())
+                ->join('urls', 'urls.relationId = globals.globalId AND urls.version = globals.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->intLanguageId.' AND urls.isMain = 1', array('url'));
+    }         
+    $objSelect->where('folders.lft <= parent.lft')
               ->where('folders.rgt >= parent.rgt')
               ->where('folders.idRootLevels = parent.idRootLevels')
               ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)')

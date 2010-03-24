@@ -225,6 +225,7 @@ class IndexController extends Zend_Controller_Action {
         $this->objPage = new Page();
         $this->objPage->setRootLevelId($objTheme->idRootLevels);
         $this->objPage->setRootLevelTitle($objTheme->title);
+        $this->objPage->setRootLevelGroupId($objTheme->idRootLevelGroups);        
         $this->objPage->setPageId($objUrlData->relationId);
         $this->objPage->setPageVersion($objUrlData->version);
         $this->objPage->setLanguageId($objUrlData->idLanguages);

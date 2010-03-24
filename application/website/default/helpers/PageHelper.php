@@ -173,7 +173,25 @@ class PageHelper {
   public function getProductOverview(){
     //TODO default product overview
   }
-      
+  
+  /**
+   * getProductCarousel
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getProductCarousel(){
+    //TODO default product overview
+  }
+  
+  /**
+   * getSubPagesOverview
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getSubPagesOverview(){
+    //TODO default product overview
+  }
+        
   /**
    * getPressOverview
    * @author Thomas Schedler <tsh@massiveart.com>
