@@ -39,7 +39,8 @@ Massiveart.List = Class.create({
       
       new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/list', {
         parameters: { 
-      	  rootLevelId: myNavigation.rootLevelId, 
+      	  rootLevelId: myNavigation.rootLevelId,
+      	  itemId: myNavigation.currItemId,
       	  page: this.page, 
       	  itemsPerPage: this.ItemsPerPage,
       	  order: this.sortColumn,
@@ -47,11 +48,14 @@ Massiveart.List = Class.create({
       	  search: this.searchValue
       	},      
         evalScripts: true,     
-        onComplete: function() {
-          $(myNavigation.genListContainer).show();
-          $(myNavigation.genListFunctions).show();
-          myCore.initSelectAll();
-          myCore.initListHover();
+        onComplete: function(transport) {
+      	  if($(myNavigation.genFormContainer)) $(myNavigation.genFormContainer).hide();
+          if($(myNavigation.genFormFunctions)) $(myNavigation.genFormFunctions).hide();
+          if($(myNavigation.genFormSaveContainer)) $(myNavigation.genFormSaveContainer).hide();
+    	    $(myNavigation.genListContainer).show();
+    	    $(myNavigation.genListFunctions).show();
+    	    myCore.initSelectAll();
+    	    myCore.initListHover();
         }.bind(this)
       });
     }

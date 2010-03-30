@@ -62,53 +62,109 @@
     <!-- content -->
     <div id="content">
 
+      <!-- widget: save, delete, infos, ... -->
+      <div id="genListFunctions" style="display:none;">
+        <div class="widgetfunctions">
+          <div class="widgetcontenttop">          
+            <!-- new button -->
+            <div id="buttonsave" onclick="myNavigation.getAddForm();">
+              <div class="button25leftOn"></div>
+              <div class="button25centerOn">
+                <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
+                <div>Neu</div>
+              </div>
+              <div class="button25rightOn"></div>
+              <div class="clear"></div>
+            </div>
+  
+            <!-- edit menu -->
+            <div id="buttonedit" onclick="return false;">
+              <div class="buttonedittop"></div>
+              <div id="buttonmediaedittitle" class="buttoneditmiddle white" onclick="myList.toggleEditMenu(this.id); return false;">Bearbeiten</div>
+              <div class="buttoneditbottom"></div>
+              <div class="clear"></div>
+            </div>
+  
+            <div id="buttonEditMenu" class="buttoneditmenu"  style="display:none;">
+              <div class="buttoneditmenuinner">
+                <div class="buttoneditlink" onclick="myList.deleteListItem(); return false;">L&ouml;schen</div>
+                <div class="clear"></div>
+              </div>
+              <div class="buttoneditbottom"></div>
+              <div class="clear"></div>
+            </div>
+            
+            <!-- search container -->
+            <div id="searchContainer" class="searchContainer">
+              <input type="text" id="search" name="search" class="searchInput" value=""/>
+              <!-- delete button -->
+              <div id="buttonsearch" onclick="myList.search();">
+                <div class="button25leftOff"></div>
+                <div class="button25centerOff">
+                  <img class="icondelete" src="/zoolu/images/icons/icon_search_white.png" width="14" height="14"/>
+                  <div>Suchen</div>
+                </div>
+                <div class="button25rightOff"></div>
+                <div class="clear"></div>
+              </div>
+              <div class="clear"></div> 
+            </div>
+          
+            <div class="clear"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- content list -->
+      <div id="genListContainer" class="contentedit2" style="display:none;"></div>
+      
       <!-- content edit -->
       <div id="genFormContainer" class="contentedit" style="display:none;">
       </div>
 
       <!-- content function widget -->
       <div id="genFormSaveContainer" class="contentfunction" style="display:none;">
-
-      <!-- widget: save, delete, infos, ... -->
-      <div class="widgetfunctions">
-        <div class="widget224content">
-          <div class="widgetcontenttop">
-
-            <!-- alerts for saving, editing, deleting, ... -->
-            <div id="divFormSaveLoader" class="alertsave" style="display:none;">
-              <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
-            </div>
-            <div id="divFormSaveSucces" class="alertsavesucces" style="display:none;">Gespeichert!</div>
-            <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
-            <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;">Gel&ouml;scht!</div>
-
-            <!-- save button -->
-            <div id="buttonsave" onclick="myForm.save();">
-              <div class="button25leftOn"></div>
-              <div class="button25centerOn">
-                <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
-                <div>Speichern</div>
+  
+        <!-- widget: save, delete, infos, ... -->
+        <div class="widgetfunctions">
+          <div class="widget224content">
+            <div class="widgetcontenttop">
+  
+              <!-- alerts for saving, editing, deleting, ... -->
+              <div id="divFormSaveLoader" class="alertsave" style="display:none;">
+                <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
               </div>
-              <div class="button25rightOn"></div>
+              <div id="divFormSaveSucces" class="alertsavesucces" style="display:none;">Gespeichert!</div>
+              <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
+              <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;">Gel&ouml;scht!</div>
+  
+              <!-- save button -->
+              <div id="buttonsave" onclick="myForm.save();">
+                <div class="button25leftOn"></div>
+                <div class="button25centerOn">
+                  <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
+                  <div>Speichern</div>
+                </div>
+                <div class="button25rightOn"></div>
+                <div class="clear"></div>
+              </div>
+  
+              <!-- delete button -->
+              <div id="buttondelete" onclick="myForm.deleteElement();" style="display:none;">
+                <div class="button25leftOff"></div>
+                <div class="button25centerOff">
+                  <img class="icondelete" src="/zoolu/images/icons/icon_delete_white.png" width="11" height="14"/>
+                  <div>L&ouml;schen</div>
+                </div>
+                <div class="button25rightOff"></div>
+                <div class="clear"></div>
+              </div>
+  
               <div class="clear"></div>
             </div>
-
-            <!-- delete button -->
-            <div id="buttondelete" onclick="myForm.deleteElement();" style="display:none;">
-              <div class="button25leftOff"></div>
-              <div class="button25centerOff">
-                <img class="icondelete" src="/zoolu/images/icons/icon_delete_white.png" width="11" height="14"/>
-                <div>L&ouml;schen</div>
-              </div>
-              <div class="button25rightOff"></div>
-              <div class="clear"></div>
+  
+            <div class="widgetcontentmain" id="divWidgetMetaInfos">
             </div>
-
-            <div class="clear"></div>
-          </div>
-
-          <div class="widgetcontentmain" id="divWidgetMetaInfos">
-          </div>
 
           </div>
         </div>
@@ -184,12 +240,13 @@
     <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
 
     <script type="text/javascript">//<![CDATA[
-      var myCore, myNavigation, myForm, myOverlay;
+      var myCore, myNavigation, myList, myForm, myOverlay;
 
       //document.observe('dom:loaded', function() {
       Event.observe(window, 'load', function() {
         myCore = new Massiveart.Core();
         myNavigation = new Massiveart.Navigation.Properties();
+        myList = new Massiveart.List();
         myForm = new Massiveart.Form.Properties();
         myOverlay = new Massiveart.Overlay();
 

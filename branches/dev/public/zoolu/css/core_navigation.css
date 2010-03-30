@@ -460,11 +460,14 @@ Navigtion left */
 .portal .portalicon,
 .portal .imageicon,
 .portal .documenticon,
+.portal .videoicon,
 .portal .categoryicon,
 .portal .usericon,
+.portal .locationicon,
 .portal .labelicon,
 .portal .sysinternicon,
 .naviitem .usericon,
+.naviitem .locationicon,
 .naviitem .groupicon,
 .naviitem .resourceicon,
 .naviitem .producticon {
@@ -488,6 +491,10 @@ Navigtion left */
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -63px;
 }
 
+.portal .videoicon {
+  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -314px;
+}
+
 .portal .categoryicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -105px;
 }
@@ -497,6 +504,11 @@ Navigtion left */
 .naviitem .groupicon,
 .naviitem .resourceicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -147px;
+}
+
+.portal .locationicon,
+.naviitem .locationicon {
+  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -356px;
 }
 
 .portal .labelicon {
@@ -520,6 +532,10 @@ Navigtion left */
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -42px;
 }
 
+.selected .videoicon {
+  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -293px;
+}
+
 .selected .categoryicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -84px;
 }
@@ -530,6 +546,11 @@ Navigtion left */
 .selected .resourceicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -126px;
 }
+
+.selected .locationicon {
+  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -335px;
+}
+
 
 .selected .labelicon {
   background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -251px;

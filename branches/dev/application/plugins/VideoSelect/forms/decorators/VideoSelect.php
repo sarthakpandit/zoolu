@@ -74,7 +74,7 @@ class Plugin_FormDecorator_VideoSelect extends Zend_Form_Decorator_Abstract {
     $element = $this->getElement();
     $helper  = $element->helper;
 
-    $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $element->intVideoTypeId, $element->strVideoUserId, $element->strVideoThumb);
+    $strOutput = $element->getView()->$helper($element->getName(), $element->getValue(), $element->getAttribs(), $element->options, $element->intVideoTypeId, $element->strVideoUserId, $element->strVideoThumb, $element->strVideoTitle);
 
     return $strOutput;
   }

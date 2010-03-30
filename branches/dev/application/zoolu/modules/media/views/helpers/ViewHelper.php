@@ -350,9 +350,14 @@ class ViewHelper {
         $strFileIconSrc = sprintf($this->core->sysConfig->media->paths->thumb, $objFile->path).$objFile->filename.'?v='.$objFile->version;
         $strDownloadLink = '/zoolu-website/media/image/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)); 
         $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->imgbase.$objFile->path;
-      }else{
+      }else if (strpos($objFile->mimeType, 'video/') !== false) {
         $blnIsImage = false;        
         $strFileIconSrc = $this->getDocIcon($objFile->extension, 128);
+        $strDownloadLink = '/zoolu-website/media/video/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title));
+        $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->vidbase.$objFile->path;  
+      }else{
+        $blnIsImage = false;        
+        $strFileIconSrc = $this->getDocIcon($objFile->extension, 128); 
         $strDownloadLink = '/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title));
         $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->docbase.$objFile->path;
       }
@@ -560,6 +565,7 @@ class ViewHelper {
       case 'mpeg' :
       case 'wmv' :
       case 'f4v' :
+      case 'flv' :
       	$strDocIcon = '/zoolu/images/icons/docs/icon_movie.png';
       	break;
       case 'mp3' :
@@ -577,7 +583,6 @@ class ViewHelper {
     return $strDocIcon;
     
   }
-
 }
 
 ?>

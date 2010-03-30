@@ -16,10 +16,13 @@
  */
 require_once('Zend/Config/Xml.php');
 
-$strSection = 'staging';
-$sysConfig = new Zend_Config_Xml(dirname(__FILE__).'/config.xml', $strSection);
-$zooConfig = new Zend_Config_Xml(dirname(__FILE__).'/../application/zoolu/app_config/config.xml', $strSection);
-$webConfig = new Zend_Config_Xml(dirname(__FILE__).'/../application/website/app_config/config.xml', $strSection);
+// Define application environment
+defined('APPLICATION_ENV')
+    || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'staging'));
+    
+$sysConfig = new Zend_Config_Xml(dirname(__FILE__).'/config.xml', APPLICATION_ENV);
+$zooConfig = new Zend_Config_Xml(dirname(__FILE__).'/../application/zoolu/app_config/config.xml', APPLICATION_ENV);
+$webConfig = new Zend_Config_Xml(dirname(__FILE__).'/../application/website/app_config/config.xml', APPLICATION_ENV);
 
 /**
  * include class Zend_Registry

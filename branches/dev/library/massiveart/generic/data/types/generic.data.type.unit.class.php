@@ -71,7 +71,7 @@ class GenericDataTypeUnit extends GenericDataTypeAbstract {
 				  /**
 				   * add unit node to the "Nested Set Model"
 				   */
-				  $this->setup->setElementId($this->objModelContacts->addUnitNode($this->setup->getParentId(), array('idGenericForms' => $this->setup->getGenFormId())));
+				  $this->setup->setElementId($this->objModelContacts->addUnitNode($this->setup->getParentId(), array('idGenericForms' => $this->setup->getGenFormId(), 'idRootLevels' => $this->setup->getRootLevelId())));
 				  
           if(count($this->setup->CoreFields()) > 0){
             foreach($this->setup->CoreFields() as $strField => $obField){

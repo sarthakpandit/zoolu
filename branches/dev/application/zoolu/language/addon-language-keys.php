@@ -44,6 +44,7 @@
   /**
    * user list
    */
+  $core->translate->_('name');
   $core->translate->_('fname');
   $core->translate->_('sname');
   $core->translate->_('editor');

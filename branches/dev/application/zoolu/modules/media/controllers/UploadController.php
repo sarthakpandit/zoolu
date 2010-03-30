@@ -90,7 +90,9 @@ class Media_UploadController extends AuthControllerAction  {
   	    if($this->intParentId > 0 && $this->intParentId != ''){
   	      if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'image/') !== false) {
   	        $this->handleImageUpload();
-  	      }else{
+  	      }else if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'video/') !== false) {
+            $this->handleVideoUpload();
+          }else{
   	        $this->handleFileUpload();
   	      }
   	    }
@@ -121,6 +123,8 @@ class Media_UploadController extends AuthControllerAction  {
         if($this->intFileId > 0 && $this->intFileId != ''){
           if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'image/') !== false) {
             $this->handleImageVersionUpload();
+          }else if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'video/') !== false) {
+            $this->handleVideoVersionUpload();
           }else{
             $this->handleFileVersionUpload();
           }
@@ -130,7 +134,6 @@ class Media_UploadController extends AuthControllerAction  {
       $this->core->logger->err($exc);
     }
   }
-
 
   /**
    * saveAction
@@ -212,9 +215,31 @@ class Media_UploadController extends AuthControllerAction  {
 
   	$this->writeViewData($objImage);
   }
+  
+  /**
+   * handleVideoUpload
+   * @author Cornelius Hansjakob <cha@massiveart.at>
+   * @version 1.0
+   */
+  private function handleVideoUpload(){
+    $this->core->logger->debug('media->controllers->UploadController->handleVideoUpload()');
+
+    $objFile = new File();
+    $objFile->setUpload($this->objUpload);
+    $objFile->setParentId($this->intParentId);
+    $objFile->setParentTypeId($this->core->sysConfig->parent_types->folder);
+    $objFile->setSegmenting((($this->core->sysConfig->upload->documents->segmenting->enabled == 'true') ? true : false));
+    $objFile->setNumberOfSegments($this->core->sysConfig->upload->documents->segmenting->number_of_segments);
+    $objFile->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->videos->path->local->private);
+    $objFile->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->videos->path->local->public);
+    $objFile->setLanguageId($this->intLanguageId);
+    $objFile->add(self::UPLOAD_FIELD);
+
+    $this->writeViewData($objFile);
+  }
 
   /**
-   * handleDocumentUpload
+   * handleFileUpload
    * @author Cornelius Hansjakob <cha@massiveart.at>
    * @version 1.0
    */
@@ -251,7 +276,7 @@ class Media_UploadController extends AuthControllerAction  {
     $this->view->assign('fileVersion', $objFile->getVersion());
     $this->view->assign('filePath', sprintf($this->core->sysConfig->media->paths->icon32, $objFile->getSegmentPath()));
     $this->view->assign('mimeType', $objFile->getMimeType());
-    $this->view->assign('strDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : guiTexts
+    $this->view->assign('strDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : translate
     $this->view->assign('languageId', $this->intLanguageId);
   }
   
@@ -273,6 +298,24 @@ class Media_UploadController extends AuthControllerAction  {
     $objImage->setLanguageId($this->intLanguageId);
     $objImage->addVersion(self::UPLOAD_FIELD);
   }
+  
+  /**
+   * handleVideoVersionUpload
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   */
+  private function handleVideoVersionUpload(){
+    $this->core->logger->debug('media->controllers->UploadController->handleVideoVersionUpload()');
+
+    $objFile = new File();
+    $objFile->setUpload($this->objUpload);
+    $objFile->setId($this->intFileId);
+    $objFile->setSegmenting((($this->core->sysConfig->upload->documents->segmenting->enabled == 'true') ? true : false));
+    $objFile->setNumberOfSegments($this->core->sysConfig->upload->documents->segmenting->number_of_segments);
+    $objFile->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->videos->path->local->private);
+    $objFile->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->videos->path->local->public);
+    $objFile->setLanguageId($this->intLanguageId);
+    $objFile->addVersion(self::UPLOAD_FIELD);
+  }  
 
   /**
    * handleFileVersionUpload

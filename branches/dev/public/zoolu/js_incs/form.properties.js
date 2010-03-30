@@ -67,6 +67,8 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
             this.loadFileFieldsContent('media');
             // load documents
             this.loadFileFieldsContent('document');
+            // load videos
+            this.loadFileFieldsContent('video');
             // load filter documents
             this.loadFileFilterFieldsContent('documentFilter');
 	        }.bind(this)
@@ -148,6 +150,8 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
         this.loadFileFieldsContent('media');
         // load documents
         this.loadFileFieldsContent('document');
+        // load videos
+        this.loadFileFieldsContent('video');
         // load filter documents
         this.loadFileFilterFieldsContent('documentFilter');
         // load contacts

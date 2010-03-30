@@ -56,12 +56,18 @@ class Plugin_DataHelper_VideoSelect extends GenericDataHelperAbstract  {
       if(array_key_exists($this->objElement->name.'Thumb', $_POST)){
         $strVideoThumb = $_POST[$this->objElement->name.'Thumb'];
       }
+      
+      $strVideoTitle = '';
+      if(array_key_exists($this->objElement->name.'Title', $_POST)){
+        $strVideoTitle = $_POST[$this->objElement->name.'Title'];
+      }
 
-      if($intVideoTypeId > 0 && $strVideoThumb != ''){
-        $this->objModel->addVideo($intElementId, $this->objElement->getValue(), $intVideoTypeId, $strVideoUserId, $strVideoThumb);
+      if($intVideoTypeId > 0 && $strVideoThumb != '' && $strVideoTitle != ''){
+        $this->objModel->addVideo($intElementId, $this->objElement->getValue(), $intVideoTypeId, $strVideoUserId, $strVideoThumb, $strVideoTitle);
         $this->objElement->intVideoTypeId = $intVideoTypeId;
         $this->objElement->strVideoUserId = $strVideoUserId;
         $this->objElement->strVideoThumb = $strVideoThumb;
+        $this->objElement->strVideoTitle = $strVideoTitle;
       }else{
         $this->objModel->removeVideo($intElementId);
       }
@@ -96,6 +102,7 @@ class Plugin_DataHelper_VideoSelect extends GenericDataHelperAbstract  {
         $this->objElement->intVideoTypeId = $objVideoSelect->idVideoTypes;
         $this->objElement->strVideoUserId = $objVideoSelect->userId;
         $this->objElement->strVideoThumb = $objVideoSelect->thumb;
+        $this->objElement->strVideoTitle = $objVideoSelect->title;
       }
 
     }catch (Exception $exc) {

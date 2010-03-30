@@ -57,12 +57,12 @@ class OverlayHelper {
   }
 
   /**
-   * getProductTree
+   * getGlobalTree
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getProductTree($objRowset, $strItemAction, $arrProductIds = array()) {
-    $this->core->logger->debug('cms->views->helpers->OverlayHelper->getProductTree()');
+  public function getGlobalTree($objRowset, $strItemAction, $arrElementIds = array()) {
+    $this->core->logger->debug('cms->views->helpers->OverlayHelper->getGlobalTree()');
 
     $strOutput = '';
 
@@ -70,7 +70,7 @@ class OverlayHelper {
       $intLastFolderId = 0;
       foreach ($objRowset as $objRow){
         $strHidden = '';
-        if(array_search($objRow->productId, $arrProductIds) !== false){
+        if(array_search($objRow->globalId, $arrElementIds) !== false){
          $strHidden = ' style="display:none;"';
         }
 
@@ -87,12 +87,12 @@ class OverlayHelper {
           $intLastFolderId = $objRow->folderId;
         }
 
-        if($objRow->idProduct > 0){
+        if($objRow->idGlobal > 0){
           $strOutput .= '
-                        <div id="olItem'.$objRow->productId.'" class="olnavrootitem"'.$strHidden.'>
-                          <div style="display:none;" id="Remove'.$objRow->idProduct.'" class="itemremovelist2"></div>
-                          <div id="Item'.$objRow->idProduct.'" style="position:relative; margin-left:'.(20*$intFolderDepth+20).'px; cursor:pointer;" onclick="'.$strItemAction.'('.$objRow->idProduct.', \''.$objRow->productId.'\'); return false;">
-                            <div class="icon img_'.(($objRow->isStartProduct == 1) ? 'startproduct' : 'product').'_'.(($objRow->productStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->productTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
+                        <div id="olItem'.$objRow->globalId.'" class="olnavrootitem"'.$strHidden.'>
+                          <div style="display:none;" id="Remove'.$objRow->idGlobal.'" class="itemremovelist2"></div>
+                          <div id="Item'.$objRow->idGlobal.'" style="position:relative; margin-left:'.(20*$intFolderDepth+20).'px; cursor:pointer;" onclick="'.$strItemAction.'('.$objRow->idGlobal.', \''.$objRow->globalId.'\'); return false;">
+                            <div class="icon img_'.(($objRow->isStartGlobal == 1) ? 'start' : 'global').'_'.(($objRow->globalStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div>'.htmlentities($objRow->globalTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
                           </div>
                         </div>';
         }

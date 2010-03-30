@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-15 15:12+0100\n"
+"POT-Creation-Date: 2010-03-29 12:23+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -112,7 +112,7 @@ msgstr "Benutzergruppen"
 msgid "No_search_result"
 msgstr "Ihre Suche nach \"%s\" ergab leider keinen Treffer."
 
-#: application/zoolu/modules/global/controllers/ElementController.php:725
+#: application/zoolu/modules/global/controllers/ElementController.php:731
 msgid "Search"
 msgstr "Suchen"
 
@@ -136,49 +136,59 @@ msgstr "Benutzerverwaltung"
 msgid "settings"
 msgstr "Einstellungen"
 
-#: application/zoolu/language/addon-language-keys.php:49
+#: application/zoolu/language/addon-language-keys.php:47
+msgid "name"
+msgstr "Name"
+
+#: application/zoolu/language/addon-language-keys.php:50
 msgid "editor"
 msgstr "Geändert von"
 
-#: application/zoolu/language/addon-language-keys.php:50
+#: application/zoolu/language/addon-language-keys.php:51
 msgid "changed"
 msgstr "Geändert am"
 
-#: application/zoolu/language/addon-language-keys.php:65
+#: application/zoolu/language/addon-language-keys.php:66
 msgid "New_Content"
 msgstr "Neuer Inhalt"
 
-#: application/zoolu/language/addon-language-keys.php:66
+#: application/zoolu/language/addon-language-keys.php:67
 msgid "New_Product"
 msgstr "Neues Produkt"
 
-#: application/zoolu/language/addon-language-keys.php:67
+#: application/zoolu/language/addon-language-keys.php:68
 msgid "New_Product_Link"
 msgstr "Neuer Produktlink"
 
-#: application/zoolu/language/addon-language-keys.php:68
+#: application/zoolu/language/addon-language-keys.php:69
 msgid "New_Press"
 msgstr "Neue Pressemitteilung"
 
-#: application/zoolu/language/addon-language-keys.php:69
+#: application/zoolu/language/addon-language-keys.php:70
 msgid "New_Course"
 msgstr "Neuer Kurs"
 
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:13
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:22
+#: application/zoolu/modules/global/views/scripts/pagination.phtml:13
+#: application/zoolu/modules/global/views/scripts/pagination.phtml:22
 msgid "previous"
 msgstr "zurück"
 
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:28
+#: application/zoolu/modules/global/views/scripts/pagination.phtml:28
 msgid "Page"
 msgstr "Seite"
 
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:43
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:52
+#: application/zoolu/modules/global/views/scripts/pagination.phtml:43
+#: application/zoolu/modules/global/views/scripts/pagination.phtml:52
 msgid "next"
 msgstr "weiter"
 
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:60
+#: application/zoolu/modules/global/views/scripts/pagination.phtml:60
 msgid "Messages_per_page"
 msgstr "Einträge pro Seite"
 
@@ -207,7 +217,7 @@ msgstr "Neuer Ordner"
 #: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:29
 #: application/zoolu/modules/global/views/scripts/navigation/childnavigation.phtml:30
 msgid "New_"
-msgstr ""
+msgstr "Neu"
 
 #: application/zoolu/modules/global/views/scripts/element/getoverlaysearch.phtml:16
 msgid "Reset"
@@ -219,6 +229,7 @@ msgstr "Reset"
 #: application/zoolu/layouts/users.phtml:28
 #: application/zoolu/layouts/media.phtml:28
 #: application/zoolu/layouts/cms.phtml:28
+#: application/zoolu/layouts/global-list.phtml:28
 msgid "Report_bugs"
 msgstr "Fehler melden"
 
@@ -228,14 +239,16 @@ msgstr "Fehler melden"
 #: application/zoolu/layouts/users.phtml:28
 #: application/zoolu/layouts/media.phtml:28
 #: application/zoolu/layouts/cms.phtml:28
+#: application/zoolu/layouts/global-list.phtml:28
 msgid "Help_and_FAQ"
 msgstr "Hilfe & FAQ"
 
-#: application/zoolu/layouts/properties.phtml:197
+#: application/zoolu/layouts/properties.phtml:254
 msgid "Settings"
 msgstr "Einstellungen"
 
 #: application/zoolu/layouts/global-tree.phtml:195
+#: application/zoolu/layouts/global-list.phtml:239
 msgid "Global"
 msgstr "Global"
 

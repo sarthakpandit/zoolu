@@ -50,6 +50,8 @@ Massiveart.Page = Class.create({
         myForm.loadFileFieldsContent('media');
         // load documents
         myForm.loadFileFieldsContent('document');
+        // load videos
+        myForm.loadFileFieldsContent('video');
         
         $('divMetaInfos').innerHTML = '';
         myCore.removeBusyClass(myNavigation.genFormContainer);

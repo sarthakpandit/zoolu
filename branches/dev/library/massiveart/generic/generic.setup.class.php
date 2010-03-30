@@ -193,6 +193,7 @@ class GenericSetup {
   const TYPE_UNIT = 4;
   const TYPE_CONTACT = 5;
   const TYPE_GLOBAL = 6;
+  const TYPE_LOCATION = 7;
 
   /**
    * field type container
@@ -809,9 +810,12 @@ class GenericSetup {
       case GenericSetup::TYPE_CONTACT :
         require_once(dirname(__FILE__).'/data/types/generic.data.type.contact.class.php');
         return new GenericDataTypeContact();
-     case GenericSetup::TYPE_GLOBAL :
+      case GenericSetup::TYPE_GLOBAL :
         require_once(dirname(__FILE__).'/data/types/generic.data.type.global.class.php');
         return new GenericDataTypeGlobal();
+      case GenericSetup::TYPE_LOCATION :
+        require_once(dirname(__FILE__).'/data/types/generic.data.type.location.class.php');
+        return new GenericDataTypeLocation();
     }
   }
 

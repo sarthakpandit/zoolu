@@ -85,6 +85,11 @@ class IndexController extends Zend_Controller_Action {
   private $strLanguageCode;
 
   /**
+   * @var HtmlTranslate
+   */
+  private $translate;
+  
+  /**
    * init index controller and get core obj
    */
   public function init(){
@@ -163,6 +168,21 @@ class IndexController extends Zend_Controller_Action {
     $this->intLanguageId = $this->core->intLanguageId;
     $this->strLanguageCode = $this->core->strLanguageCode;
     
+    $this->view->languageId = $this->intLanguageId;
+    $this->view->languageCode = $this->strLanguageCode;
+    
+    /**
+     * set up zoolu translate obj
+     */
+    if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo')){
+       $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo');  
+    }else{
+       $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->sysConfig->languages->default->code.'.mo');
+    }
+    
+    $this->view->translate = $this->translate;
+    
+    
     $this->getModelFolders();
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
 
@@ -204,7 +224,8 @@ class IndexController extends Zend_Controller_Action {
         $objNavigationHelper = new NavigationHelper();        
       }
       
-      $objNavigationHelper->setNavigation($objNavigation);      
+      $objNavigationHelper->setNavigation($objNavigation);
+      $objNavigationHelper->setTranslate($this->translate);      
       Zend_Registry::set('NavigationHelper', $objNavigationHelper);
       
       Zend_Registry::set('Navigation', $objNavigation); //FIXME need of registration navigation object??      
@@ -297,6 +318,7 @@ class IndexController extends Zend_Controller_Action {
         }
         
         $objPageHelper->setPage($this->objPage);
+        $objPageHelper->setTranslate($this->translate);
         Zend_Registry::set('PageHelper', $objPageHelper);
         
         Zend_Registry::set('Page', $this->objPage); //FIXME need of registration navigation object??      

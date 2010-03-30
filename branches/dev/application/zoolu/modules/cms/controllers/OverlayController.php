@@ -96,6 +96,20 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
     $this->renderScript('overlay/overlay.phtml');
   }
+  
+  /**
+   * videoAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function videoAction(){
+    $this->core->logger->debug('cms->controllers->OverlayController->videoAction()');
+    $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->videos);
+    $this->view->assign('rootLevelType', $this->core->sysConfig->root_level_types->videos);
+    $this->view->assign('overlaytitle', 'Video zuweisen');
+    $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
+    $this->renderScript('overlay/overlay.phtml');
+  }
 
   /**
    * contactAction

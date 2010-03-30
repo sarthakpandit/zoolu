@@ -20,6 +20,8 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     this.categoryTypeId = 1;
     
     this.constContact = 'contact';
+    
+    this.currLevel = 0;
   },
   
   /**
@@ -58,6 +60,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
    * selectContacts
    */
   selectContacts: function(portalId){
+    this.resetGenContainer();
     this.currLevel = 1;
     this.navigationItemType = 'unit';
    
@@ -74,6 +77,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
             
     this.preSelectedPortal = 'portal'+portalId;
     this.rootLevelId = portalId;
+    this.rootLevelType = 'contact';
     
     $('divNaviCenterInner').innerHTML = '';
     this.levelArray = [];
@@ -112,9 +116,69 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
   },
   
   /**
+   * selectLocations
+   */
+  selectLocations: function(rootLevelId){
+    this.resetGenContainer();
+    this.currLevel = 1;
+    this.navigationItemType = 'unit';
+   
+    $(this.genFormContainer).hide();
+    $(this.genFormSaveContainer).hide();
+    
+    // add css classes to mark an item as 'selected'
+    this.makeSelected('portal'+rootLevelId);
+    
+    // remove css classes to deselect an item
+    if($(this.preSelectedPortal) && ('portal'+rootLevelId) != this.preSelectedPortal){ 
+      this.makeDeselected(this.preSelectedPortal);
+    }  
+            
+    this.preSelectedPortal = 'portal'+rootLevelId;
+    this.rootLevelId = rootLevelId;
+    this.rootLevelType = 'location';
+    
+    $('divNaviCenterInner').innerHTML = '';
+    this.levelArray = [];
+    
+    var levelContainer = '<div id="navlevel'+this.currLevel+'" parentid="" class="navlevel busy" style="left: '+(201*this.currLevel-201)+'px"></div>'; 
+    new Insertion.Bottom('divNaviCenterInner', levelContainer);
+    
+    if(Prototype.Browser.IE){
+      newNavHeight = $('divNaviCenter').getHeight();
+      $$('.navlevel').each(function(elDiv){
+        $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
+      });
+    }
+    else if(Prototype.Browser.WebKit){
+      newNavHeight = $('divNaviCenter').getHeight();
+      $$('.navlevel').each(function(elDiv){
+        $(elDiv).setStyle({height: (newNavHeight-40) + 'px'});
+      });
+    }
+    
+    this.navigationPath = '/navigation/locationnavigation';
+    new Ajax.Updater('navlevel' + this.currLevel, this.constBasePath + this.navigationPath, {
+      parameters: { 
+        rootLevelId: this.rootLevelId,
+        currLevel: this.currLevel
+      },      
+      evalScripts: true,     
+      onComplete: function() {
+        myCore.removeBusyClass('navlevel'+this.currLevel);
+        this.initItemHover();
+        this.initAddMenuHover();
+        this.levelArray.push(this.currLevel);   
+      }.bind(this)
+    });
+    
+  },
+    
+  /**
    * selectCategories
    */
   selectCategories: function(portalId, categoryTypeId){
+    this.resetGenContainer();
     this.currLevel = 1;
     this.categoryTypeId = categoryTypeId;
     this.navigationItemType = 'category';
@@ -132,6 +196,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
             
     this.preSelectedPortal = 'portal'+portalId;
     this.rootLevelId = portalId;
+    this.rootLevelType = 'category';
     
     $('divNaviCenterInner').innerHTML = '';
     this.levelArray = [];
@@ -268,6 +333,8 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
       currLevel = level;
     }
     
+    this.currLevel = currLevel;
+    
     if($('rootLevelId') && $F('rootLevelId') != ''){ 
       rootId = $F('rootLevelId');
     }else{
@@ -288,7 +355,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     
     strAjaxAction = this.constBasePath+this.navigationPath;    
 		if(parentId != '' && parentId > 0){
-		  strParams = 'currLevel='+currLevel+'&itemId='+parentId+'&categoryTypeId='+this.categoryTypeId;
+		  strParams = 'currLevel='+currLevel+'&itemId='+parentId+'&rootLevelId='+rootId+'&categoryTypeId='+this.categoryTypeId;
 		}else{
       strParams = 'currLevel='+currLevel+'&rootLevelId='+rootId+'&categoryTypeId='+this.categoryTypeId;
 		} 
@@ -406,14 +473,45 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
   },
   
   /**
+   * getAddForm
+   */
+  getAddForm: function(){
+    
+    this.resetGenContainer();
+    
+    if($('buttondelete')) $('buttondelete').hide();
+    
+    myCore.addBusyClass(this.genFormContainer);
+    myCore.resetTinyMCE(true);
+    
+    new Ajax.Updater(this.genFormContainer, this.constBasePath + '/' + this.rootLevelType + '/getaddform', {
+      parameters: { 
+        rootLevelId: this.rootLevelId, 
+        parentId: $('navlevel'+this.currLevel).readAttribute('parentid'),
+        currLevel: this.currLevel  
+      },      
+      evalScripts: true,     
+      onComplete: function() {        
+        if($(this.genFormContainer)) $(this.genFormContainer).show();
+        if($(this.genFormFunctions)) $(this.genFormFunctions).show();
+        if($(this.genFormSaveContainer)) $(this.genFormSaveContainer).show();
+        if($('widgetfunctions')) $(this.genFormContainer).scrollTo($('widgetfunctions'));   
+        myCore.removeBusyClass(this.genFormContainer);
+      }.bind(this)
+    });
+  },
+  
+  /**
    * getEditForm
    * @param integer itemId
    */
   getEditForm: function(itemId, elType, formId, version, categoryTypeId){
     $(this.genFormContainer).innerHTML = '';
-        
+    
+    this.resetGenContainer();
+    
     var element = elType+itemId;
-    this.currItemId = itemId;
+    if($(element)) this.currItemId = itemId;
     
     this.categoryTypeId = (typeof(categoryTypeId) != 'undefined') ? categoryTypeId : -1;
     
@@ -426,7 +524,10 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
         formDefaultId = contactFormDefaultId;
         typeEditPath = '/contact/geteditform';
         break;
-      case 'contact':
+      case 'location':
+        formDefaultId = contactFormDefaultId;
+        typeEditPath = '/location/geteditform';
+        break;      
       default:
         formDefaultId = categoryFormDefaultId;
         typeEditPath = '/category/geteditform';
@@ -438,7 +539,7 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
     
     var currLevel = 0;
     // e.g. level1 - cut level to get currLevel number
-    currLevel = parseInt($(element).up().id.substr(5)); 
+    currLevel = ($(element)) ? parseInt($(element).up().id.substr(5)) : this.currLevel; 
         
     if(this.navigation[currLevel]){
       this.makeDeselected(this.navigation[currLevel]);
@@ -492,6 +593,8 @@ Massiveart.Navigation.Properties = Class.create(Massiveart.Navigation, {
          myForm.loadFileFieldsContent('media');
          // load documents
          myForm.loadFileFieldsContent('document');
+         // load videos
+         myForm.loadFileFieldsContent('video');
          // load filter documents
          myForm.loadFileFilterFieldsContent('documentFilter');
        }.bind(this)

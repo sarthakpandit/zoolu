@@ -142,6 +142,9 @@
           <default>DEFAULT_COURSE</default>          
           <overview>DEFAULT_COURSE_OVERVIEW</overview>
         </course>
+        <locations>
+          <default>DEFAULT_LOCATION</default>
+        </locations>
       </ids>
       <!-- GENERIC FORM TYPES -->
       <!-- table: genericFormTypes -->
@@ -319,7 +322,6 @@
               </action>             
             </actions>                        
           </default_size>
-
           <!-- ivoclarvivadent -->
           <default_size>
             <folder>933x</folder>
@@ -327,6 +329,10 @@
               <action>
                 <method>resize</method>
                 <params>933</params>
+              </action>
+              <action>
+                <method>watermark</method>
+                <params>/var/data/tmp/watermark-933x.png,Center,5</params>
               </action>
             </actions>
             <display>
@@ -340,7 +346,11 @@
                 <method>resize</method>
                 <params>677</params>
               </action>
-            </actions>
+              <action>
+                <method>watermark</method>
+                <params>/var/data/tmp/watermark-933x.png,Center,5</params>
+              </action>
+            </actions>            
             <display>
               <single_edit>true</single_edit>              
             </display>
@@ -351,7 +361,11 @@
               <action>
                 <method>resize</method>
                 <params>331</params>
-              </action>
+              </action> 
+              <action>
+                <method>watermark</method>
+                <params>/var/data/tmp/watermark-933x.png,Center,5</params>
+              </action>             
             </actions>
             <display>
               <single_edit>true</single_edit>
@@ -416,7 +430,7 @@
               <action>
                 <method>scale</method>
                 <params>47,47</params>
-              </action>
+              </action>              
             </actions>
             <display>
               <single_edit>true</single_edit>
@@ -448,13 +462,35 @@
             <public>public/documents/</public>
           </s3>
         </path>
-        <!-- excluded extensions -->        
-        <excluded_extensions>
-          <extension>exe</extension>
-        </excluded_extensions>
         <!-- maximum filesize -->      
-        <max_filesize>52428800</max_filesize> <!-- 50 MB (1024*1024*50) for each file -->                      
+        <max_filesize>52428800</max_filesize> <!-- 50 MB (1024*1024*15) for each upload media -->              
       </documents>
+      
+      <!-- VIDEOS -->
+      <videos>
+        <!-- Save destination (local, S3) -->
+        <destination>local</destination>
+        
+        <!-- file system segmenting -->
+        <segmenting>
+          <enabled>true</enabled>
+          <number_of_segments>10</number_of_segments>
+        </segmenting>
+        
+        <!-- upload pathes -->
+        <path>
+          <local>
+            <private>uploads/videos/</private>
+            <public>public/website/uploads/videos/</public>
+          </local>
+          <s3>
+            <private>private/videos/</private>
+            <public>public/videos/</public>
+          </s3>
+        </path>
+        <!-- maximum filesize -->      
+        <max_filesize>125829120</max_filesize> <!-- 120 MB (1024*1024*120) for each file -->                      
+      </videos>
     </upload>
     
     <!-- MEDIA OUTPUT PATHS -->
@@ -462,6 +498,7 @@
       <paths>
         <docbase>/website/uploads/documents/</docbase>
         <imgbase>/website/uploads/images/</imgbase>
+        <vidbase>/website/uploads/videos/</vidbase>
         <thumb>/website/uploads/images/%sthumb/</thumb>
         <icon32>/website/uploads/images/%sicon32/</icon32>
       </paths>
@@ -504,6 +541,8 @@
       <groups>9</groups>
       <resources>10</resources>
       <global>11</global>
+      <videos>12</videos>
+      <locations>13</locations>
     </root_level_types>
     
     <!-- ROOTLEVEL GROUPS -->
