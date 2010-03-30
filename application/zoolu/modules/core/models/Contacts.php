@@ -70,13 +70,14 @@ class Model_Contacts {
   
   /**
    * loadNavigation
+   * @param integer $intRootLevelId
    * @param integer $intItemId
    * @param boolean $blnOnlyUnits
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadNavigation($intItemId, $blnOnlyUnits = false){
-    $this->core->logger->debug('core->models->Contacts->loadNavigation('.$intItemId.')');	
+  public function loadNavigation($intRootLevelId, $intItemId, $blnOnlyUnits = false){
+    $this->core->logger->debug('core->models->Contacts->loadNavigation('.$intRootLevelId.','.$intItemId.')');	
   	
     if($blnOnlyUnits == false){
       $sqlStmt = $this->core->dbh->query("SELECT id, title, genericFormId, version, type
@@ -86,13 +87,14 @@ class Model_Contacts {
                                                 unitTitles.idUnits = units.id AND 
                                                 unitTitles.idLanguages = ?  
                                               INNER JOIN genericForms ON genericForms.id = units.idGenericForms
-                                              WHERE units.idParentUnit = ?
+                                              WHERE units.idRootLevels = ? AND units.idParentUnit = ?
                                               UNION
                                               SELECT contacts.id, CONCAT(contacts.fname, ' ', contacts.sname) AS title, genericForms.genericFormId, genericForms.version, 'contact'  AS type
-                                                FROM contacts  
+                                                FROM contacts
+                                              INNER JOIN units ON units.id = contacts.idUnits AND units.idRootLevels = ? 
                                               INNER JOIN genericForms ON genericForms.id = contacts.idGenericForms
                                               WHERE contacts.idUnits = ?) 
-                                        AS tbl", array($this->intLanguageId, $intItemId, $intItemId));  
+                                        AS tbl ORDER BY title", array($this->intLanguageId, $intRootLevelId, $intItemId, $intRootLevelId, $intItemId));  
     }else{
       $sqlStmt = $this->core->dbh->query("SELECT units.id, unitTitles.title, genericForms.genericFormId, genericForms.version, 'unit' AS type
                                                 FROM units
@@ -100,7 +102,7 @@ class Model_Contacts {
                                                 unitTitles.idUnits = units.id AND 
                                                 unitTitles.idLanguages = ?  
                                               INNER JOIN genericForms ON genericForms.id = units.idGenericForms
-                                              WHERE units.idParentUnit = ?", array($this->intLanguageId, $intItemId)); 
+                                              WHERE units.idRootLevels = ? AND units.idParentUnit = ? ORDER BY title", array($this->intLanguageId, $intRootLevelId, $intItemId)); 
     }
     
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);

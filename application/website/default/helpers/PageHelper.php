@@ -53,6 +53,11 @@ class PageHelper {
   protected $objPage;
 
   /**
+   * @var Zend_Translate
+   */
+  protected $objTranslate;
+  
+  /**
    * constructor
    * @author Thomas Schedler <tsh@massiveart.com>   
    */
@@ -217,6 +222,15 @@ class PageHelper {
    */
   public function setPage(Page $objPage){
     $this->objPage = $objPage;
+  }
+  
+  /**
+   * setTranslate    
+   * @param Zend_Translate $objTranslate   
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function setTranslate(Zend_Translate $objTranslate){
+    $this->objTranslate = $objTranslate;
   }
 }
 

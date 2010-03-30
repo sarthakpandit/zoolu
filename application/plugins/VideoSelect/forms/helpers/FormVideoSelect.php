@@ -25,9 +25,10 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
    * @param mixed $options
    * @param integer $intVideoTypeId
    * @param string $strVideoThumb
+   * @param string $strVideoTitle
    * @version 1.0
    */
-  public function formVideoSelect($name, $value = null, $attribs = null, $options = null, $intVideoTypeId, $strVideoUserId, $strVideoThumb){
+  public function formVideoSelect($name, $value = null, $attribs = null, $options = null, $intVideoTypeId, $strVideoUserId, $strVideoThumb, $strVideoTitle){
     $info = $this->_getInfo($name, $value, $attribs);
     extract($info); // name, id, value, attribs, options, listsep, disable
 
@@ -39,7 +40,8 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
 
     $xhtml = '
     <input type="hidden" value="'.$this->view->escape($value).'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
-    <input type="hidden" value="'.$strVideoThumb.'" id="'.$this->view->escape($id).'Thumb" name="'.$this->view->escape($name).'Thumb" '.$endTag;
+    <input type="hidden" value="'.$strVideoThumb.'" id="'.$this->view->escape($id).'Thumb" name="'.$this->view->escape($name).'Thumb" '.$endTag.'
+    <input type="hidden" value="'.$strVideoTitle.'" id="'.$this->view->escape($id).'Title" name="'.$this->view->escape($name).'Title" '.$endTag;
 
     // force $value to array so we can compare multiple values to multiple
     // options; also ensure it's a string for comparison purposes.

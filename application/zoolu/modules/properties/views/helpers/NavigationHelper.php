@@ -78,6 +78,10 @@ class NavigationHelper {
 				    $strJsClickFunc = 'myNavigation.selectContacts('.$row->id.'); ';
 				    $strRootLevelIconCss = 'usericon';
 				    break;
+				case $this->core->sysConfig->root_level_types->locations:
+            $strJsClickFunc = 'myNavigation.selectLocations('.$row->id.'); ';
+            $strRootLevelIconCss = 'locationicon';          
+            break;  
 				case $this->core->sysConfig->root_level_types->categories:
 				    $strJsClickFunc = 'myNavigation.selectCategories('.$row->id.', '.$this->core->sysConfig->category_types->default.'); ';
 				    $strRootLevelIconCss = 'categoryicon';					
@@ -89,7 +93,7 @@ class NavigationHelper {
         case $this->core->sysConfig->root_level_types->systeminternals:
             $strJsClickFunc = 'myNavigation.selectCategories('.$row->id.', '.$this->core->sysConfig->category_types->system.'); ';
             $strRootLevelIconCss = 'sysinternicon';          
-            break;				
+            break;			
     	}
     	
       $strOutput .= '<div class="portalcontainer">
@@ -170,6 +174,43 @@ class NavigationHelper {
               </div>';
             break;
           case 'contact':
+            $strOutput .= '
+              <div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.' hoveritem">
+                <div class="icon img_'.$objRow->type.'"></div>
+                <div id="divNavigationTitle_'.$objRow->type.$objRow->id.'" class="title" onclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+              </div>';
+            break;
+        }
+      }
+    }
+     
+    return $strOutput;  
+  }
+    
+  /**
+   * getLocationNavElements 
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  function getLocationNavElements($objRowset, $currLevel) {
+    $this->core->logger->debug('properties->views->helpers->NavigationHelper->getLocationNavElements()');
+    
+    $strOutput = '';
+    $strOutputStartpage = '';
+    
+    $counter = 1;
+    
+    if(count($objRowset) > 0){
+      foreach ($objRowset as $objRow){
+        switch($objRow->type){
+          case 'unit':
+            $strOutput .= '
+              <div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.' hoveritem">
+                <div id="divNavigationEdit_'.$objRow->id.'" class="icon img_'.$objRow->type.'" ondblclick="myNavigation.getEditForm('.$objRow->id.', \''.$objRow->type.'\', \''.$objRow->genericFormId.'\','.$objRow->version.'); return false;"></div>
+                <div id="divNavigationTitle_'.$objRow->type.$objRow->id.'" class="title" onclick="myNavigation.selectNavigationItem('.$currLevel.', \''.$objRow->type.'\', '.$objRow->id.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+              </div>';
+            break;
+          case 'location':
             $strOutput .= '
               <div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.' hoveritem">
                 <div class="icon img_'.$objRow->type.'"></div>

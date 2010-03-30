@@ -63,7 +63,7 @@ class Media_NavigationController extends AuthControllerAction {
     
     $this->view->assign('mediaTypes', $objMediaRootLevels);
     $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
-    $this->view->assign('fileDefaultDescription', 'Beschreibung hinzufügen...');
+    $this->view->assign('fileDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : translate
     $this->view->assign('currLevel', 1);
   }
   

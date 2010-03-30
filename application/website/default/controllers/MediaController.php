@@ -167,6 +167,43 @@ class MediaController extends Zend_Controller_Action {
   }
   
   /**
+   * videoAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function videoAction(){
+  $this->core->logger->debug('website->controllers->MediaController->imageAction()');
+    
+    $this->getModelFiles();
+    
+    $intMediaId = $this->_getParam('id', 0);
+    
+    if($intMediaId > 0){
+      $objFile = $this->objModelFiles->loadFileById($intMediaId);
+
+      if(count($objFile) > 0){
+        $objFileData = $objFile->current();
+        
+        $strFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->videos->path->local->private.$objFileData->path.$objFileData->filename;
+        
+        if(file_exists($strFilePath)){
+          if(isset($objFileData->mimeType) && $objFileData->mimeType != ''){
+            $this->objModelFiles->increaseDownloadCounter($objFileData->id);
+            header('Content-Type: '.$objFileData->mimeType);
+            readfile($strFilePath);   
+          }else{
+            // no mimetype
+          }             
+        }else{
+          // file doesn't exist         
+        }
+      }
+    }else{
+      // no file id in url  
+    }
+  }
+  
+  /**
    * downloadAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0

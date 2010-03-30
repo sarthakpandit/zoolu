@@ -111,6 +111,7 @@ return array(
     '//zoolu/js_incs/layout.js',
     '//zoolu/js_incs/navigation.js',
     '//zoolu/js_incs/navigation.properties.js',
+    '//zoolu/js_incs/list.js',
     '//zoolu/js_incs/form.js',
     '//zoolu/js_incs/form.properties.js',
     '//zoolu/js_incs/overlay.js'),

@@ -53,6 +53,11 @@ class NavigationHelper {
   protected $objNavigation;
 
   /**
+   * @var Zend_Translate
+   */
+  protected $objTranslate;
+  
+  /**
    * constructor
    * @author Thomas Schedler <tsh@massiveart.com>   
    */
@@ -184,6 +189,15 @@ class NavigationHelper {
    */
   public function setNavigation(Navigation $objNavigation){
     $this->objNavigation = $objNavigation;
+  }
+  
+  /**
+   * setTranslate    
+   * @param Zend_Translate $objTranslate   
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function setTranslate(Zend_Translate $objTranslate){
+    $this->objTranslate = $objTranslate;
   }
 }
 

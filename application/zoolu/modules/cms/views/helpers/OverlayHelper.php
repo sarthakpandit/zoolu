@@ -98,7 +98,7 @@ class OverlayHelper {
   }
 
   /**
-   * getNavigationElements
+   * getContactNavigationElements
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -255,10 +255,10 @@ class OverlayHelper {
      */
     $strOutputTop = '
             <div>
-              <div class="oldoctopleft"></div>
-              <div class="oldoctopitemicon"></div>
-              <div class="oldoctopitemtitle bold">Titel</div>
-              <div class="oldoctopright"></div>
+              <div class="olfiletopleft"></div>
+              <div class="olfiletopitemicon"></div>
+              <div class="olfiletopitemtitle bold">Titel</div>
+              <div class="olfiletopright"></div>
               <div class="clear"></div>
             </div>';
 
@@ -269,7 +269,7 @@ class OverlayHelper {
     $blnIsImageView = false;
     if(count($rowset) > 0){
       $strOutput .= '  
-            <div class="oldocitemcontainer">';
+            <div class="olfileitemcontainer">';
       foreach ($rowset as $row) {
       	$strHidden = '';
       	if(array_search($row->id, $arrFileIds) !== false){
@@ -283,22 +283,22 @@ class OverlayHelper {
             $strMediaSize = 'width="32"';
           }
         	$strOutput .= '
-              <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToThumbArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
-                <div class="oldocleft"></div>
+              <div class="olfileitem" id="olFileItem'.$row->id.'" onclick="myOverlay.addItemToThumbArea(\'olFileItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
+                <div class="olfileleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
-                <div class="oldocitemicon"><img '.$strMediaSize.' id="Doc'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->description.'"/></div>
-                <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
-                <div class="oldocright"></div>
+                <div class="olfileitemicon"><img '.$strMediaSize.' id="File'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->description.'"/></div>
+                <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+                <div class="olfileright"></div>
                 <div class="clear"></div>
               </div>';
         }else{
           $strOutput .= '
-              <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToListArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
-                <div class="oldocleft"></div>
+              <div class="olfileitem" id="olFileItem'.$row->id.'" onclick="myOverlay.addFileItemToListArea(\'olFileItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
+                <div class="olfileleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
-                <div class="oldocitemicon"><img width="32" height="32" id="Doc'.$row->id.'" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" alt="'.$row->description.'"/></div>
-                <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
-                <div class="oldocright"></div>
+                <div class="olfileitemicon"><img width="32" height="32" id="File'.$row->id.'" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" alt="'.$row->description.'"/></div>
+                <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+                <div class="olfileright"></div>
                 <div class="clear"></div>
               </div>';
         }
@@ -313,9 +313,9 @@ class OverlayHelper {
      */
     $strOutputBottom = '
             <div>
-              <div class="oldocbottomleft"></div>
-              <div class="oldocbottomcenter"></div>
-              <div class="oldocbottomright"></div>
+              <div class="olfilebottomleft"></div>
+              <div class="olfilebottomcenter"></div>
+              <div class="olfilebottomright"></div>
               <div class="clear"></div>
             </div>';
 
@@ -346,13 +346,13 @@ class OverlayHelper {
      */
     $strOutputTop = '
             <div>
-              <div class="oldoctopleft"></div>
-              <div class="oldoctopitemicon"></div>
-              <div class="oldoctopitemtitle bold">Titel</div>
-              <div class="oldoctopright"></div>
+              <div class="olcontacttopleft"></div>
+              <div class="olcontacttopitemicon"></div>
+              <div class="olcontacttopitemtitle bold">Titel</div>
+              <div class="olcontacttopright"></div>
               <div class="clear"></div>
             </div>
-            <div class="oldocitemcontainer">';
+            <div class="olcontactitemcontainer">';
 
     /**
      * output of list rows (elements)
@@ -365,17 +365,17 @@ class OverlayHelper {
       }
 
       $strOutput .= '
-          <div class="oldocitem" id="olDocItem'.$row->id.'" onclick="myOverlay.addItemToListArea(\'olDocItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
-            <div class="oldocleft"></div>
+          <div class="olcontactitem" id="olContactItem'.$row->id.'" onclick="myOverlay.addContactItemToListArea(\'olContactItem'.$row->id.'\', '.$row->id.'); return false;"'.$strHidden.'>
+            <div class="olcontactleft"></div>
             <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
-            <div class="oldocitemicon">';
+            <div class="olcontactitemicon">';
       if($row->filename != ''){
-        $strOutput .= '<img width="32" height="32" id="Doc'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->title.'" width="16" height="16"/>';
+        $strOutput .= '<img width="32" height="32" id="Contact'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->title.'" width="16" height="16"/>';
       }
 
       $strOutput .= '</div>
-            <div class="oldocitemtitle">'.$row->title.'</div>
-            <div class="oldocright"></div>
+            <div class="olcontactitemtitle">'.$row->title.'</div>
+            <div class="olcontactright"></div>
             <div class="clear"></div>
           </div>';
     }
@@ -386,9 +386,9 @@ class OverlayHelper {
               <div class="clear"></div>
             </div>
             <div>
-              <div class="oldocbottomleft"></div>
-              <div class="oldocbottomcenter"></div>
-              <div class="oldocbottomright"></div>
+              <div class="olcontactbottomleft"></div>
+              <div class="olcontactbottomcenter"></div>
+              <div class="olcontactbottomright"></div>
               <div class="clear"></div>
             </div>';
 

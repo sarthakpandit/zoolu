@@ -97,19 +97,19 @@ class PageHelper {
         }
       }else{
       	if($row->isImage){
-	      	$strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem_'.$row->id.'">
-						               <div class="oldocleft"></div>
-	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
-						               <div class="oldocitemicon"><img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
-						               <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+	      	$strOutput .= '<div class="fileitem" fileid="'.$row->id.'" id="'.$strFieldName.'_fileitem_'.$row->id.'">
+						               <div class="olfileleft"></div>
+	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_fileitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
+						               <div class="olfileitemicon"><img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="File'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
+						               <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
 						               <div class="clear"></div>
 						             </div>';
       	}else{
-      	  $strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem_'.$row->id.'">
-                           <div class="oldocleft"></div>
-      	                   <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
-                           <div class="oldocitemicon"><img width="32" height="32" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" id="Doc'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
-                           <div class="oldocitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
+      	  $strOutput .= '<div class="fileitem" fileid="'.$row->id.'" id="'.$strFieldName.'_fileitem_'.$row->id.'">
+                           <div class="olfileleft"></div>
+      	                   <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_fileitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
+                           <div class="olfileitemicon"><img width="32" height="32" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" id="File'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
+                           <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
                            <div class="clear"></div>
                          </div>';		
       	}
@@ -119,7 +119,7 @@ class PageHelper {
   }
   
   /**
-   * getFilesOutput 
+   * getContactOutput 
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
@@ -128,15 +128,15 @@ class PageHelper {
   
     $strOutput = '';
     foreach ($rowset as $row){ 
-      $strOutput .= '<div class="docitem" fileid="'.$row->id.'" id="'.$strFieldName.'_docitem'.$row->id.'">
-                       <div class="oldocleft"></div>
-                       <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_docitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
-                       <div class="oldocitemicon">';
+      $strOutput .= '<div class="contactitem" fileid="'.$row->id.'" id="'.$strFieldName.'_contactitem'.$row->id.'">
+                       <div class="olcontactleft"></div>
+                       <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_contactitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
+                       <div class="oldcontactitemicon">';
       if($row->filename != ''){
-        $strOutput .= '<img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="Doc'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
+        $strOutput .= '<img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="Contact'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
       }
       $strOutput .= '</div>
-                       <div class="oldocitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+                       <div class="olcontactitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                        <div class="clear"></div>
                      </div>';
     }    

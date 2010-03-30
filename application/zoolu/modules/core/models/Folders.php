@@ -1029,12 +1029,13 @@ class Model_Folders {
   /**
    * loadGlobalRootLevelChilds
    * @param integer $intRootLevelId
+   * @param integer $intRootLevelGroupId
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadGlobalRootLevelChilds($intRootLevelId){
-    $this->core->logger->debug('core->models->Folders->loadGlobalRootLevelChilds('.$intRootLevelId.')');
+  public function loadGlobalRootLevelChilds($intRootLevelId, $intRootLevelGroupId = 0){
+    $this->core->logger->debug('core->models->Folders->loadGlobalRootLevelChilds('.$intRootLevelId.', '.$intRootLevelGroupId.')');
 
     $objSelect = $this->getFolderTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -1045,12 +1046,17 @@ class Model_Folders {
                                           folderProperties.idLanguages = '.$this->intLanguageId, array('folderStatus' => 'idStatus'))
               ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND
                                       folderTitles.version = folders.version AND
-                                      folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'))
-              ->join('globals AS lP', 'lP.idParent = folders.id AND
-                                        lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idGlobal' => 'id', 'globalId', 'isStartGlobal'))
-              ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
-              ->join('globals', 'globals.globalId = globalLinks.globalId', array())
-              ->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
+                                      folderTitles.idLanguages = '.$this->intLanguageId, array('folderTitle' => 'title'));
+    if($intRootLevelGroupId == $this->core->sysConfig->root_level_groups->product){
+      $objSelect->join('globals AS lP', 'lP.idParent = folders.id AND
+                                         lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idGlobal' => 'id', 'globalId', 'isStartGlobal'))
+                ->join('globalLinks', 'globalLinks.idGlobals = lP.id', array())
+                ->join('globals', 'globals.globalId = globalLinks.globalId', array());
+    }else{
+      $objSelect->join('globals', 'globals.idParent = folders.id AND
+                                   globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idGlobal' => 'id', 'globalId', 'isStartGlobal'));
+    }
+    $objSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
                                            globalProperties.version = globals.version AND
                                            globalProperties.idLanguages = '.$this->intLanguageId, array('globalStatus' => 'idStatus'))
               ->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('globalTitle' => 'title'))

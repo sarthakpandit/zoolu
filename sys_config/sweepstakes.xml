@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configdata>
+  
+  <!--
+  ***********************************************************
+  * config for online evnironment                           *
+  ***********************************************************
+  -->
+  <production>
+    <sweepstakes>    
+      <sweepstake>
+        <id>1</id>
+        <key>evoflow_maldives</key>        
+        <title>Tetric EvoFlow, Maldives</title>
+        <mode>live</mode>
+        <!-- period -->
+        <period>
+            <start>2010-03-30 09:00:00</start>
+            <end>2010-06-30 23:59:59</end>
+        </period>
+        <appear>3</appear>
+        <!-- pathes / files -->
+        <path>/website/themes/ivoclarvivadent/includes/sweepstakes/evoflow_maldives/</path>
+        <files>
+            <sweepstake>sweepstake.php</sweepstake>
+            <form>form.php</form>
+        </files>
+        <!-- mail -->
+        <mail>
+            <from>info@ivoclarvivadent.com</from>
+            <to>cha@massiveart.com</to>
+            <subject>Tetric EvoFlow Sweepstake</subject>
+            <intro>This is just a Intro for the Mail to Ivoclar</intro>
+        </mail>
+        <!-- appearance config (portals, countries) -->
+        <portals>
+            <com>1</com>
+        </portals>                    
+        <countries>
+          <ax>
+              <code>AX</code>
+              <language>en</language>                
+          </ax>
+          <al>
+              <code>AL</code>
+              <language>en</language>                
+          </al>
+          <ad>
+              <code>AD</code>
+              <language>en</language>                
+          </ad>
+          <at>
+              <code>AT</code>
+              <language>de</language>                
+          </at>
+          <by>
+              <code>BY</code>
+              <language>en</language>                
+          </by>
+          <be>
+              <code>BE</code>
+              <language>en</language>                
+          </be>
+          <ba>
+              <code>BA</code>
+              <language>en</language>                
+          </ba>
+          <bg>
+              <code>BG</code>
+              <language>en</language>                
+          </bg>
+          <hr>
+              <code>HR</code>
+              <language>en</language>                
+          </hr>
+          <cz>
+              <code>CZ</code>
+              <language>en</language>                
+          </cz>          
+          <ee>
+              <code>EE</code>
+              <language>en</language>                
+          </ee>
+          <fo>
+              <code>FO</code>
+              <language>en</language>                
+          </fo>
+          
+          <fr>
+              <code>FR</code>
+              <language>en</language>                
+          </fr>
+          <de>
+              <code>DE</code>
+              <language>de</language>                
+          </de>
+          <gi>
+              <code>GI</code>
+              <language>en</language>                
+          </gi>
+          <gr>
+              <code>GR</code>
+              <language>en</language>                
+          </gr>
+          <gg>
+              <code>GG</code>
+              <language>en</language>                
+          </gg>
+          <va>
+              <code>VA</code>
+              <language>en</language>                
+          </va>
+          <hu>
+              <code>HU</code>
+              <language>en</language>                
+          </hu>
+          <is>
+              <code>IS</code>
+              <language>en</language>                
+          </is>
+          <ie>
+              <code>IE</code>
+              <language>en</language>                
+          </ie>
+          <im>
+              <code>IM</code>
+              <language>en</language>                
+          </im>
+          <je>
+              <code>JE</code>
+              <language>en</language>                
+          </je>
+          <lv>
+              <code>LV</code>
+              <language>en</language>                
+          </lv>
+          <li>
+              <code>LI</code>
+              <language>de</language>                
+          </li>
+          <lt>
+              <code>LT</code>
+              <language>en</language>                
+          </lt>
+          <lu>
+              <code>LU</code>
+              <language>en</language>                
+          </lu>
+          <mk>
+              <code>MK</code>
+              <language>en</language>                
+          </mk>
+          <mt>
+              <code>MT</code>
+              <language>en</language>                
+          </mt>
+          <md>
+              <code>MD</code>
+              <language>en</language>                
+          </md>
+          <mc>
+              <code>MC</code>
+              <language>en</language>                
+          </mc>
+          <me>
+              <code>ME</code>
+              <language>en</language>                
+          </me>
+          <nl>
+              <code>NL</code>
+              <language>en</language>                
+          </nl>          
+          <pl>
+              <code>PL</code>
+              <language>en</language>                
+          </pl>
+          <pt>
+              <code>PT</code>
+              <language>en</language>                
+          </pt>
+          <ro>
+              <code>RO</code>
+              <language>en</language>                
+          </ro>
+          <sm>
+              <code>SM</code>
+              <language>en</language>                
+          </sm>
+          <rs>
+              <code>RS</code>
+              <language>en</language>                
+          </rs>
+          <sk>
+              <code>SK</code>
+              <language>en</language>                
+          </sk>
+          <si>
+              <code>SI</code>
+              <language>en</language>                
+          </si>
+          <es>
+              <code>ES</code>
+              <language>en</language>                
+          </es>
+          <sj>
+              <code>SJ</code>
+              <language>en</language>                
+          </sj>          
+          <ch>
+              <code>CH</code>
+              <language>de</language>                
+          </ch>
+          <ua>
+              <code>UA</code>
+              <language>en</language>                
+          </ua>
+          <gb>
+              <code>GB</code>
+              <language>en</language>                
+          </gb>
+        </countries>
+      </sweepstake>
+      <sweepstake>
+        <id>2</id>
+        <key>evoflow_lisbon</key>        
+        <title>Tetric EvoFlow, Lisbon</title>
+        <mode>live</mode>
+        <!-- period -->
+        <period>
+            <start>2010-04-01 09:00:00</start>
+            <end>2010-06-30 23:59:59</end>
+        </period>
+        <appear>3</appear>
+        <!-- pathes / files -->
+        <path>/website/themes/ivoclarvivadent/includes/sweepstakes/evoflow_lisbon/</path>
+        <files>
+            <sweepstake>sweepstake.php</sweepstake>
+            <form>form.php</form>
+        </files>
+        <!-- mail -->
+        <mail>
+            <from>info@ivoclarvivadent.com</from>
+            <to>cha@massiveart.com</to>
+            <subject>Tetric EvoFlow Sweepstake</subject>
+            <intro>This is just a Intro for the Mail to Ivoclar</intro>
+        </mail>
+        <!-- appearance config (portals, countries) -->
+        <portals>
+            <com>1</com>
+        </portals>                    
+        <countries>
+          <fi>
+              <code>FI</code>                
+          </fi>
+          <se>
+              <code>SE</code>               
+          </se>
+          <no>
+              <code>NO</code>                
+          </no>
+          <dk>
+              <code>DK</code>                
+          </dk>
+        </countries>
+      </sweepstake>
+      <sweepstake>
+        <id>3</id>
+        <key>nceram_monza</key>        
+        <title>Tetric N-Ceram, F1 Monza</title>
+        <mode>live</mode>
+        <!-- period -->
+        <period>
+            <start>2010-04-01 09:00:00</start>
+            <end>2010-06-01 23:59:59</end>
+        </period>
+        <appear>3</appear>
+        <!-- pathes / files -->
+        <path>/website/themes/ivoclarvivadent/includes/sweepstakes/nceram_monza/</path>
+        <files>
+            <sweepstake>sweepstake.php</sweepstake>
+            <form>form.php</form>
+        </files>
+        <!-- mail -->
+        <mail>
+            <from>info@ivoclarvivadent.com</from>
+            <to>cha@massiveart.com</to>
+            <subject>Tetric EvoFlow Sweepstake</subject>
+            <intro>This is just a Intro for the Mail to Ivoclar</intro>
+        </mail>
+        <!-- appearance config (portals, countries) -->
+        <portals>
+            <com>1</com>
+        </portals>                    
+        <countries>
+          <ir>
+              <code>IR</code>
+              <language>en</language>                
+          </ir>
+          <ke>
+              <code>KE</code>
+              <language>en</language>                
+          </ke>
+          <ly>
+              <code>LY</code>
+              <language>en</language>                
+          </ly>
+          <za>
+              <code>ZA</code>
+              <language>en</language>                
+          </za>
+          <dz>
+              <code>DZ</code>
+              <language>fr</language>                
+          </dz>
+          <ma>
+              <code>MA</code>
+              <language>fr</language>                
+          </ma>
+          <tn>
+              <code>TN</code>
+              <language>fr</language>                
+          </tn>
+        </countries>
+      </sweepstake>
+    </sweepstakes>
+  </production>
+  
+  <!--
+  ***********************************************************
+  * config for developement evnironment                     *
+  ***********************************************************
+  -->
+  <staging extends="production">
+    
+  </staging>
+</configdata>
+

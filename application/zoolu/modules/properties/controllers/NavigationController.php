@@ -60,6 +60,11 @@ class Properties_NavigationController extends AuthControllerAction {
   protected $objModelContacts;
   
   /**
+   * @var Model_Locations
+   */
+  protected $objModelLocations;
+  
+  /**
    * @var Model_Folders
    */
   protected $objModelFolders;
@@ -117,6 +122,7 @@ class Properties_NavigationController extends AuthControllerAction {
     
     $objRequest = $this->getRequest();
     $intCurrLevel = $objRequest->getParam('currLevel');
+    $intRootLevelId = $objRequest->getParam('rootLevelId');
     
     if($intCurrLevel == 1){
       $intItemId = 0; 
@@ -128,10 +134,39 @@ class Properties_NavigationController extends AuthControllerAction {
      * get navigation
      */
     $this->getModelContacts();
-    $objContactNavElements = $this->objModelContacts->loadNavigation($intItemId);
+    $objContactNavElements = $this->objModelContacts->loadNavigation($intRootLevelId, $intItemId);
     
     $this->view->assign('elements', $objContactNavElements);
     $this->view->assign('currLevel', $intCurrLevel); 
+  }
+  
+  /**
+   * locationnavigationAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function locationnavigationAction(){
+    $this->core->logger->debug('properties->controllers->NavigationController->locationnavigationAction()');
+    
+    $objRequest = $this->getRequest();
+    $intCurrLevel = $objRequest->getParam('currLevel');
+    $intRootLevelId = $objRequest->getParam('rootLevelId');
+    
+    if($intCurrLevel == 1){
+      $intItemId = 0; 
+    }else{
+      $intItemId = $objRequest->getParam("itemId"); 
+    }
+    
+    /**
+     * get navigation
+     */
+    $this->getModelLocations();
+    $objLocationNavElements = $this->objModelLocations->loadNavigation($intRootLevelId, $intItemId, true);
+    
+    $this->view->assign('elements', $objLocationNavElements);
+    $this->view->assign('currLevel', $intCurrLevel);
+    $this->view->assign('itemId', $intItemId);  
   }
   
   /**
@@ -172,6 +207,25 @@ class Properties_NavigationController extends AuthControllerAction {
     }
     
     return $this->objModelContacts;
+  }
+  
+  /**
+   * getModelLocations
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  protected function getModelLocations(){
+    if (null === $this->objModelLocations) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it 
+       * from its modules path location.
+       */ 
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Locations.php';
+      $this->objModelLocations = new Model_Locations();
+      $this->objModelLocations->setLanguageId(1); // TODO : get language id
+    }
+    
+    return $this->objModelLocations;
   }
   
   /**

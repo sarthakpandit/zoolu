@@ -792,6 +792,15 @@ function get_video($intVideoWidth = 420, $intVideoHeight = 236, $blnShowVideoTit
 }
 
 /**
+ * get_videos
+ * @return string $strHtmlOutput
+ * @author Cornelius Hansjakob <cha@massiveart.com> 
+ */
+function get_videos(){
+  echo getPageHelperObject()->getVideos();
+}
+
+/**
  * get_documents_title
  * @param string $strElement
  * @param boolean $blnShowDefaultTitle
@@ -904,10 +913,16 @@ function get_internal_links($strContainerCss = 'internalLinks', $strItemCss = 'i
   if(count($objPage->getField('internal_links')->objItemInternalLinks) > 0){
     $strHtmlOutput .= '<div class="'.$strContainerCss.'">';
     foreach($objPage->getField('internal_links')->objItemInternalLinks as $objPageInternalLink){
+      if($objPage->ParentPage() instanceof Page && 
+         ($objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->product_tree->id || $objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->press_area->id)){
+        $strUrl = $objPage->ParentPage()->getFieldValue('url').$objPageInternalLink->url;  
+      }else{
+        $strUrl = '/'.strtolower($objPageInternalLink->languageCode).'/'.$objPageInternalLink->url;  
+      }
       $strHtmlOutput .= '<div class="'.$strItemCss.'">
               <div class="'.$strIconCss.'"></div>
               <div class="'.$strTitleCss.'">
-                <a href="/'.strtolower($objPageInternalLink->languageCode).'/'.$objPageInternalLink->url.'">'.$objPageInternalLink->title.'</a><br/>
+                <a href="'.$strUrl.'">'.$objPageInternalLink->title.'</a><br/>
               </div>
               <div class="clear"></div>
             </div>';
@@ -1310,6 +1325,9 @@ function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x
               $counter++;
             }
             
+            $strHtmlOutput .= '
+                  <div class="clear"></div>
+                </div>';            
             break;
 
           case $core->webConfig->viewtypes->col2_img->id:

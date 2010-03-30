@@ -75,10 +75,10 @@ Massiveart.Overlay = Class.create({
   },
   
   /**
-   * addItemToListArea
+   * addFileItemToListArea
    * @param string itemId, integer id
    */
-  addItemToListArea: function(itemId, id){
+  addFileItemToListArea: function(itemId, id){
         
     if($(this.areaId) && $(itemId)){
       
@@ -87,11 +87,11 @@ Massiveart.Overlay = Class.create({
       var iconRemoveId = fieldId+'_remove'+id;
       
       // create new media item container
-      var mediaItemContainer = '<div id="'+fieldId+'_docitem_'+id+'" fileid="'+id+'" class="docitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
+      var mediaItemContainer = '<div id="'+fieldId+'_fileitem_'+id+'" fileid="'+id+'" class="fileitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
       if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
       new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
       
-      if($('Doc'+id)) $('Doc'+id).removeAttribute('onclick');
+      if($('File'+id)) $('File'+id).removeAttribute('onclick');
       if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
            
       // insert file id to hidden field - only 1 insert is possible
@@ -99,16 +99,56 @@ Massiveart.Overlay = Class.create({
         $(fieldId).value = $(fieldId).value + '[' + id + ']';
       }
       // add the scriptaculous sortable funcionality to the parent container
-      myForm.initSortable(fieldId, this.areaId, 'docitem', 'div', 'fileid','vertical'); 
+      myForm.initSortable(fieldId, this.areaId, 'fileitem', 'div', 'fileid','vertical'); 
             
-      $(fieldId+'_docitem_'+id).appear({duration: 0.5});
+      $(fieldId+'_fileitem_'+id).appear({duration: 0.5});
       $(itemId).fade({duration: 0.5});
       
       // add remove method to remove icon
       if($(iconRemoveId)){
         $(iconRemoveId).show();
         $(iconRemoveId).onclick = function(){
-          myForm.removeItem(fieldId, fieldId+'_docitem_'+id, id);
+          myForm.removeItem(fieldId, fieldId+'_fileitem_'+id, id);
+        }
+      }
+    }    
+  },
+  
+  /**
+   * addContactItemToListArea
+   * @param string itemId, integer id
+   */
+  addContactItemToListArea: function(itemId, id){
+        
+    if($(this.areaId) && $(itemId)){
+      
+      // get the hidden field id
+      var fieldId = this.areaId.substring(this.areaId.indexOf('_')+1);
+      var iconRemoveId = fieldId+'_remove'+id;
+      
+      // create new media item container
+      var mediaItemContainer = '<div id="'+fieldId+'_contactitem_'+id+'" fileid="'+id+'" class="contactitem" style="display:none;">' + $(itemId).innerHTML + '</div>'; 
+      if($('divClear_'+fieldId)) $('divClear_'+fieldId).remove();
+      new Insertion.Bottom(this.areaId, mediaItemContainer + '<div id="divClear_'+fieldId+'" class="clear"></div>');
+      
+      if($('Contact'+id)) $('Contact'+id).removeAttribute('onclick');
+      if($('Remove'+id)) $('Remove'+id).writeAttribute('id', iconRemoveId);
+           
+      // insert file id to hidden field - only 1 insert is possible
+      if($(fieldId).value.indexOf('[' + id + ']') == -1){
+        $(fieldId).value = $(fieldId).value + '[' + id + ']';
+      }
+      // add the scriptaculous sortable funcionality to the parent container
+      myForm.initSortable(fieldId, this.areaId, 'contactitem', 'div', 'fileid','vertical'); 
+            
+      $(fieldId+'_contactitem_'+id).appear({duration: 0.5});
+      $(itemId).fade({duration: 0.5});
+      
+      // add remove method to remove icon
+      if($(iconRemoveId)){
+        $(iconRemoveId).show();
+        $(iconRemoveId).onclick = function(){
+          myForm.removeItem(fieldId, fieldId+'_contactitem_'+id, id);
         }
       }
     }    
@@ -226,12 +266,12 @@ Massiveart.Overlay = Class.create({
   },
 
   /**
-   * addProductToListArea
-   * @param integer idProduct
+   * addElementToListArea
+   * @param integer idElement
    * @param string productId
    */
-  addProductToListArea: function(id, productId){
-    this.addPageToListArea(id, productId);
+  addElementToListArea: function(id, globalId){
+    this.addPageToListArea(id, globalId);
   },
   
   /**

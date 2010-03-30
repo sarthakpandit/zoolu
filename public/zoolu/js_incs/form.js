@@ -92,6 +92,8 @@ Massiveart.Form = Class.create({
           this.loadFileFieldsContent('media');
           // load documents
           this.loadFileFieldsContent('document');
+          // load videos
+          this.loadFileFieldsContent('video');
           // load filter documents
           this.loadFileFilterFieldsContent('documentFilter');
           // load contacts
@@ -160,7 +162,7 @@ Massiveart.Form = Class.create({
     if(strType != ''){
     	
       var strViewType = 0;
-      if(strType == 'document'){
+      if(strType == 'document' || strType == 'video'){
         strViewType = 2; // viewtypes->list constant of config.xml
       }else{
         strViewType = 1; // viewtypes->thumb constant of config.xml
@@ -226,7 +228,7 @@ Massiveart.Form = Class.create({
    */
   loadFileFilterFieldContent: function(fileFieldId, type){
     var containerId = type + 'Container_' + fileFieldId;
-
+    
     if($(containerId)){
       var viewType = 0;
       if(type == 'documentFilter'){
@@ -338,6 +340,25 @@ Massiveart.Form = Class.create({
       });
     }    
   },
+  
+  /**
+   * getAddVideoOverlay
+   */
+  getAddVideoOverlay: function(areaId){    
+    $(this.updateOverlayContainer).innerHTML = '';
+    myCore.putCenter('overlayGenContentWrapper');
+    $('overlayGenContentWrapper').show();    
+    if($(areaId)){
+      new Ajax.Updater(this.updateOverlayContainer, '/zoolu/cms/overlay/video', { 
+        evalScripts: true,
+        onComplete: function(){
+          myCore.putOverlayCenter('overlayGenContentWrapper');
+          myOverlay.areaId = areaId;
+          myOverlay.updateViewTypeIcons();
+        } 
+      });
+    }    
+  },
 
   /**
    * getDocumentFolderChooserOverlay
@@ -368,17 +389,22 @@ Massiveart.Form = Class.create({
     myCore.putCenter('overlayGenContentWrapper');
     $('overlayGenContentWrapper').show();    
     if($(areaId)){
-      if(myNavigation.module == 5){ //products
-        ajaxRequestUrl = '/zoolu/products/overlay/producttree';
-        itemAction = 'myOverlay.addProductToListArea';
+      if(myNavigation.module == 5){ //global
+        ajaxRequestUrl = '/zoolu/global/overlay/elementtree';
+        itemAction = 'myOverlay.addElementToListArea';
       }else{
         ajaxRequestUrl = '/zoolu/cms/overlay/pagetree';
         itemAction = 'myOverlay.addPageToListArea';
       }
+      
+      var intRootLevelGroupId = $('rootLevelGroupId') ? $F('rootLevelGroupId') : 0;
 
       var fieldname = areaId.substring(areaId.indexOf('_')+1);
       new Ajax.Updater(this.updateOverlayContainer, ajaxRequestUrl, {
-        parameters: { portalId: myNavigation.rootLevelId,                      
+        parameters: { portalId: myNavigation.rootLevelId,
+                      rootLevelId: $F('rootLevelId'),
+                      rootLevelGroupId: intRootLevelGroupId,
+                      rootLevelGroupKey: ($('rootLevelGroupKey'+intRootLevelGroupId)) ? $F('rootLevelGroupKey'+intRootLevelGroupId) : '',
                       itemAction: itemAction,
                       itemIds: $(fieldname).value},
         evalScripts: true,
@@ -544,6 +570,8 @@ Massiveart.Form = Class.create({
         this.loadFileFieldsContent('media');
         // load documents
         this.loadFileFieldsContent('document');
+        // load videos
+        this.loadFileFieldsContent('video');
         // load filter documents
         this.loadFileFilterFieldsContent('documentFilter');
         // load contacts
@@ -597,6 +625,8 @@ Massiveart.Form = Class.create({
         this.loadFileFieldsContent('media');
         // load documents
         this.loadFileFieldsContent('document');
+        // load videos
+        this.loadFileFieldsContent('video');
         // load filter documents
         this.loadFileFilterFieldsContent('documentFilter');
         // load contacts
@@ -1061,7 +1091,7 @@ Massiveart.Form = Class.create({
 	  parameters: { 
 	    elementId: elementId,
 	    channelId: channelId,
-		channelUserId: channelUserId,
+	    channelUserId: channelUserId,
 	    value: $F(elementId)  
 	  },
 	  evalScripts: true,
@@ -1147,6 +1177,7 @@ Massiveart.Form = Class.create({
 
         $(elementId).value = videoId;
         $(elementId+'Thumb').value = $F('thumb_'+elementId+'_'+videoId);
+        $(elementId+'Title').value = $F('title_'+elementId+'_'+videoId);
         $(elementId+'TypeCur').value = $F(elementId+'TypeId');
         $(elementId+'UserCur').value = $F(elementId+'User');
 			  
@@ -1190,6 +1221,7 @@ Massiveart.Form = Class.create({
 		  if($(elementId)){
 			  $(elementId).value = '';
 			  $(elementId+'Thumb').value = '';
+			  $(elementId+'Title').value = '';
 			  $('div_selected'+elementId).update('');
 			  $(elementId+'SelectedService').update('');
 		  }

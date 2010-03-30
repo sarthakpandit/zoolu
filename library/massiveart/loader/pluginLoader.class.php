@@ -62,7 +62,7 @@ class PluginLoader extends Zend_Loader_PluginLoader{
 	                           'Media', 'MultiCheckboxTree', 'SelectTree', 'Tab',
 	                           'TabContainer', 'Tag', 'Template', 'Texteditor',
 	                           'TextDisplay', 'Url', 'InternalLinks', 'Collection', 
-                             'DocumentFilter');
+                             'DocumentFilter', 'Video');
 
 	/**
 	 * Returns the internal PluginLoader

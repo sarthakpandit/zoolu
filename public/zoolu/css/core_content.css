@@ -586,17 +586,69 @@ Document Chooser Element */
   padding:2px 0 10px 0;
 }
 
-.docitem {
+.docitem, .fileitem, .contactitem {
   margin:0 0 0 10px;
   border-bottom:1px solid #e4e4e4;
   cursor:move;
 }
 
-.documentFilter .docitem{
+.documentFilter .docitem,
+.documentFilter .fileitem,
+.documentFilter .contactitem {
   cursor:default;
 }
 
-.documentFilter .docitem .itemremovelist{
+.documentFilter .docitem .itemremovelist,
+.documentFilter .fileitem .itemremovelist,
+.documentFilter .contactitem .itemremovelist {
+  display:none;
+}
+
+/* ----------------
+Video Chooser Element */
+
+.vidwrapper {
+  width:100%; 
+}
+
+.vidwrapper div {
+   
+}
+
+.vidwrapper .top {
+  text-align:right;
+  background-color:#e4e4e4;
+  height:16px;
+  margin:2px 0 0 0;
+  padding:2px 0 0 0;
+  border:1px solid #e4e4e4;
+}
+
+.vidwrapper .top img {
+  border:0;
+  vertical-align:middle;
+  margin:0 5px 0 2px;
+  cursor:pointer;
+}
+
+.vidwrapper .video,
+.vidwrapper .videoFilter {
+  border:1px solid #ccc;
+  min-height:50px;
+  padding:2px 0 10px 0;
+}
+
+.viditem {
+  margin:0 0 0 10px;
+  border-bottom:1px solid #e4e4e4;
+  cursor:move;
+}
+
+.videoFilter .viditem{
+  cursor:default;
+}
+
+.videoFilter .viditem .itemremovelist{
   display:none;
 }
 
@@ -1261,6 +1313,8 @@ Overlay Inner */
   margin:40px 0 0 0;
 }
 
+/* --- overlay content media / images --- */
+
 .olmediacontainer {
   background-color:#e4e4e4;
   padding:20px 0 0 20px;
@@ -1289,21 +1343,23 @@ Overlay Inner */
 	cursor:pointer;
 }
 
-.oldoctopleft {
+/* --- overlay content files --- */
+
+.olfiletopleft {
   background:#e4e4e4 url(/zoolu/images/main/list_corner_left_top.png) no-repeat scroll 0 0;
   height:26px;
   width:11px;
   float:left;
 }
 
-.oldoctopright {
+.olfiletopright {
   background:#e4e4e4 url(/zoolu/images/main/list_corner_right_top.png) no-repeat scroll right 0;
 	height:26px;
 	width:11px;
 	float:left;
 }
 
-.oldoctopitemicon {
+.olfiletopitemicon {
   background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
 	height:26px;
 	padding:0 10px 0 0;
@@ -1312,7 +1368,7 @@ Overlay Inner */
 	float:left;
 }
 
-.oldoctopitemtitle {
+.olfiletopitemtitle {
   background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
   height:20px;
   padding:6px 10px 0 0;
@@ -1321,25 +1377,25 @@ Overlay Inner */
   width:339px;
 }
 
-.oldocitemcontainer {
+.olfileitemcontainer {
   min-height:148px; 
   background-color:#fff;
 }
 
-.oldocitem {
+.olfileitem {
   border-bottom:1px solid #e4e4e4;
   cursor:pointer
 }
 
-.oldocleft,
-.oldocright {
+.olfileleft,
+.olfileright {
   margin-top:1px;
   height:32px;
   width:11px;
   float:left;
 }
 
-.oldocitemicon {
+.olfileitemicon {
   margin-top:1px;
   height:32px;
   padding:0px 10px 0 0;
@@ -1348,7 +1404,7 @@ Overlay Inner */
   float:left;
 }
 
-.oldocitemtitle {
+.olfileitemtitle {
   margin-top:1px;
   height:23px;
   padding:9px 10px 0 0;
@@ -1359,21 +1415,114 @@ Overlay Inner */
   overflow:hidden;
 }
 
-.oldocbottomleft {
+.olfilebottomleft {
   background:#e4e4e4 url(/zoolu/images/main/list_corner_left_bottom.png) no-repeat scroll 0 bottom;
   height:26px;
   width:11px;
   float:left;
 }
 
-.oldocbottomright {
+.olfilebottomright {
   background:#e4e4e4 url(/zoolu/images/main/list_corner_right_bottom.png) no-repeat scroll right bottom;
   height:26px;
   width:11px;
   float:left;
 }
 
-.oldocbottomcenter {
+.olfilebottomcenter {
+  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 bottom;
+  height:26px;
+  width:391px;
+  float:left;
+}
+
+/* --- overlay content contacts --- */
+
+.olcontacttopleft {
+  background:#e4e4e4 url(/zoolu/images/main/list_corner_left_top.png) no-repeat scroll 0 0;
+  height:26px;
+  width:11px;
+  float:left;
+}
+
+.olcontacttopright {
+  background:#e4e4e4 url(/zoolu/images/main/list_corner_right_top.png) no-repeat scroll right 0;
+  height:26px;
+  width:11px;
+  float:left;
+}
+
+.olcontacttopitemicon {
+  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
+  height:26px;
+  padding:0 10px 0 0;
+  text-align:left;
+  width:32px;
+  float:left;
+}
+
+.olcontacttopitemtitle {
+  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
+  height:20px;
+  padding:6px 10px 0 0;
+  text-align:left;
+  float:left;
+  width:339px;
+}
+
+.olcontactitemcontainer {
+  min-height:148px; 
+  background-color:#fff;
+}
+
+.olcontactitem {
+  border-bottom:1px solid #e4e4e4;
+  cursor:pointer
+}
+
+.olcontactleft,
+.olcontactright {
+  margin-top:1px;
+  height:32px;
+  width:11px;
+  float:left;
+}
+
+.olcontactitemicon {
+  margin-top:1px;
+  height:32px;
+  padding:0px 10px 0 0;
+  text-align:left;
+  width:32px;
+  float:left;
+}
+
+.olcontactitemtitle {
+  margin-top:1px;
+  height:23px;
+  padding:9px 10px 0 0;
+  text-align:left;
+  float:left;
+  width:339px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.olcontactbottomleft {
+  background:#e4e4e4 url(/zoolu/images/main/list_corner_left_bottom.png) no-repeat scroll 0 bottom;
+  height:26px;
+  width:11px;
+  float:left;
+}
+
+.olcontactbottomright {
+  background:#e4e4e4 url(/zoolu/images/main/list_corner_right_bottom.png) no-repeat scroll right bottom;
+  height:26px;
+  width:11px;
+  float:left;
+}
+
+.olcontactbottomcenter {
   background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 bottom;
   height:26px;
   width:391px;

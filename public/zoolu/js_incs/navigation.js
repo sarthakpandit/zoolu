@@ -47,6 +47,7 @@ Massiveart.Navigation = Class.create({
     
     this.topNaviTitle = '';
     
+    this.currItemId = 0;
     this.itemId = '';
     
     this.folderId;
@@ -961,6 +962,8 @@ Massiveart.Navigation = Class.create({
          myForm.loadFileFieldsContent('media');
          // load documents
          myForm.loadFileFieldsContent('document');
+         // load videos
+         myForm.loadFileFieldsContent('video');
          // load filter documents
          myForm.loadFileFilterFieldsContent('documentFilter');
          // load contacts
@@ -1040,6 +1043,16 @@ Massiveart.Navigation = Class.create({
         }
       }
     }
+  },
+  
+  /**
+   * resetGenContainer
+   */
+  resetGenContainer: function(){
+    if($(this.genFormContainer)) $(this.genFormContainer).hide();
+    if($(this.genFormFunctions)) $(this.genFormFunctions).hide();
+    if($(this.genListContainer)) $(this.genListContainer).hide();
+    if($(this.genListFunctions)) $(this.genListFunctions).hide();
   },
   
   /**

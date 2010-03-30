@@ -987,7 +987,7 @@ class Page {
       $arrFilterOptions = array('CategoryId'  => $this->getField('global_entry_category')->getValue(),
                                 'LabelId'     => $this->getField('global_entry_label')->getValue());
                      
-      $objEntries = $this->getModelFolders()->loadWebsiteGlobalTree($objContainer->getContainerKey(), $arrFilterOptions, $this->intRootLevelGroupId);
+      $objEntries = $this->getModelFolders()->loadWebsiteGlobalTree($objContainer->getContainerKey(), $arrFilterOptions, $this->core->sysConfig->root_level_groups->product);
       
       $strBaseUrl = '';
       $intGlobaEntyPointId = $this->getField('global_entry_nav_point')->getValue();

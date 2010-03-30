@@ -94,7 +94,7 @@ class Model_Categories {
     $objSelect->join('categoryTitles', 'categoryTitles.idCategories = categories.id AND categoryTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->where('categories.idCategoryTypes = '.$intCategoryTypeId);
     $objSelect->where('categories.idParentCategory = '.$intItemId);
-    $objSelect->order(array('categories.lft'));
+    $objSelect->order(array('categoryTitles.title', 'categories.lft'));
     
     return $this->getCategoriesTable()->fetchAll($objSelect);
   }

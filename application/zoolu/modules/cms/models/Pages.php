@@ -1298,7 +1298,7 @@ class Model_Pages {
     $this->core->logger->debug('cms->models->Model_Pages->loadVideo('.$intElementId.')');
 
     $objSelect = $this->getPageVideosTable()->select();
-    $objSelect->from($this->objPageVideosTable, array('userId', 'videoId', 'idVideoTypes', 'thumb'));
+    $objSelect->from($this->objPageVideosTable, array('userId', 'videoId', 'idVideoTypes', 'thumb', 'title'));
     $objSelect->join('pages', 'pages.pageId = pageVideos.pageId AND pages.version = pageVideos.version', array());
     $objSelect->where('pages.id = ?', $intElementId)
               ->where('idLanguages = ?', $this->getLanguageId());
@@ -1313,12 +1313,13 @@ class Model_Pages {
    * @param  integer $intVideoTypeId
    * @param  string $strVideoUserId
    * @param  string $strVideoThumb
+   * @param  string $strVideoTitle
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function addVideo($intElementId, $mixedVideoId, $intVideoTypeId, $strVideoUserId, $strVideoThumb){
-    $this->core->logger->debug('cms->models->Model_Pages->addVideo('.$intElementId.','.$mixedVideoId.','.$intVideoTypeId.','.$strVideoUserId.','.$strVideoThumb.')');
+  public function addVideo($intElementId, $mixedVideoId, $intVideoTypeId, $strVideoUserId, $strVideoThumb, $strVideoTitle){
+    $this->core->logger->debug('cms->models->Model_Pages->addVideo('.$intElementId.','.$mixedVideoId.','.$intVideoTypeId.','.$strVideoUserId.','.$strVideoThumb.','.$strVideoTitle.')');
 
     $objPageData = $this->load($intElementId);
 
@@ -1340,6 +1341,7 @@ class Model_Pages {
                          'videoId'      => $mixedVideoId,
                          'idVideoTypes' => $intVideoTypeId,
                          'thumb'        => $strVideoThumb,
+                         'title'        => $strVideoTitle,
                          'creator'      => $intUserId);
         return $objSelect = $this->objPageVideosTable->insert($arrData);
       }
@@ -1379,7 +1381,7 @@ class Model_Pages {
    * @version 1.0
    */
   public function loadContacts($intElementId, $intFieldId){
-    $this->core->logger->debug('cms->models->Model_Pages->loadVideo('.$intElementId.','.$intFieldId.')');
+    $this->core->logger->debug('cms->models->Model_Pages->loadContacts('.$intElementId.','.$intFieldId.')');
 
     $objSelect = $this->getPageContactsTable()->select();
     $objSelect->from($this->objPageContactsTable, array('idContacts'));
@@ -1609,7 +1611,7 @@ class Model_Pages {
     if($intRootLevelId > 0 && $intRootLevelId != ''){
       $sqlStmt = $this->core->dbh->query('SELECT DISTINCT pages.id, pages.pageId, pages.version, pageProperties.created, pageProperties.published,
                                           genericForms.genericFormId, genericForms.version AS genericFormVersion, genericForms.idGenericFormTypes,
-                                          pageVideos.videoId, pageVideos.thumb, pageVideos.idVideoTypes,
+                                          pageVideos.videoId, pageVideos.thumb, pageVideos.title AS videoTitle, pageVideos.idVideoTypes,
                                           '.$strSqlCategoryTitle.' pageTitles.title
                                         FROM pages
                                         INNER JOIN pageProperties ON 

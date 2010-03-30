@@ -76,6 +76,10 @@ class NavigationHelper {
     		case $this->core->sysConfig->root_level_types->documents: 
           $strRootLevelIconCss = 'documenticon';
           break;
+          
+        case $this->core->sysConfig->root_level_types->videos: 
+          $strRootLevelIconCss = 'videoicon';
+          break;
     	}
     	
       /**

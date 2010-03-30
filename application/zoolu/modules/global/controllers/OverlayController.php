@@ -58,44 +58,46 @@ class Global_OverlayController extends AuthControllerAction {
   public function indexAction(){ }
 
   /**
-   * producttreeAction
+   * elementtreeAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function producttreeAction(){
-    $this->core->logger->debug('global->controllers->OverlayController->producttreeAction()');
+  public function elementtreeAction(){
+    $this->core->logger->debug('global->controllers->OverlayController->elementtreeAction()');
 
     $objRequest = $this->getRequest();
-    $intPortalId = $objRequest->getParam('portalId');
-    $strItemAction = $objRequest->getParam('itemAction', 'myOverlay.selectProduct');
+    $intRootLevelId = $objRequest->getParam('rootLevelId');
+    $intRootLevelGroupId = $objRequest->getParam('rootLevelGroupId');    
+    $strItemAction = $objRequest->getParam('itemAction');
 
-    $strProductIds = $objRequest->getParam('itemIds');
+    $strElementIds = $objRequest->getParam('itemIds');
 
-    $strTmpProductIds = trim($strProductIds, '[]');
-    $arrProductIds = split('\]\[', $strTmpProductIds);
+    $strTmpElementIds = trim($strElementIds, '[]');
+    $arrElementIds = split('\]\[', $strTmpElementIds);
 
 
-    $this->loadProductTreeForPortal($intPortalId);
+    $this->loadGlobalTreeForRootLevel($intRootLevelId, $intRootLevelGroupId);
     $this->view->assign('overlaytitle', 'Produkt wählen');
     $this->view->assign('itemAction', $strItemAction);
-    $this->view->assign('productIds', $arrProductIds);
+    $this->view->assign('elementIds', $arrElementIds);
   }
 
 
   /**
-   * loadProductTreeForPortal
-   * @param integer $intPortalId
+   * loadGlobalTreeForRootLevel
+   * @param integer $intRootLevelId
+   * @param integer $intRootLevelGroupId
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function loadProductTreeForPortal($intPortalId){
-    $this->core->logger->debug('global->controllers->OverlayController->loadProductTreeForPortal('.$intPortalId.')');
+  protected function loadGlobalTreeForRootLevel($intRootLevelId, $intRootLevelGroupId){
+    $this->core->logger->debug('global->controllers->OverlayController->loadGlobalTreeForRootLevel('.$intRootLevelId.', '.$intRootLevelGroupId.')');
 
     $this->getModelFolders();
-    $objProductTree = $this->objModelFolders->loadProductRootLevelChilds($intPortalId);
+    $objElementTree = $this->objModelFolders->loadGlobalRootLevelChilds($intRootLevelId, $intRootLevelGroupId);
 
-    $this->view->assign('elements', $objProductTree);
-    $this->view->assign('portalId', $intPortalId);
+    $this->view->assign('elements', $objElementTree);
+    $this->view->assign('rootLevelId', $intRootLevelId);
   }
 
   /**
