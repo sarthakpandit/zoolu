@@ -147,20 +147,20 @@ class Core {
     }else if(isset($this->objCoreSession->languageId)){
       $this->intLanguageId = $this->objCoreSession->languageId;
       $this->strLanguageCode = $this->objCoreSession->languageCode;
-    }else if(file_exists(GLOBAL_ROOT_PATH.'/library/IP2Location/IP-COUNTRY.BIN')){
+    /*}else if(file_exists(GLOBAL_ROOT_PATH.'/library/IP2Location/IP-COUNTRY.BIN')){
 
       require_once(GLOBAL_ROOT_PATH.'/library/IP2Location/IP2Location.inc.php');
       $ip = IP2Location_open(GLOBAL_ROOT_PATH.'/library/IP2Location/IP-COUNTRY.BIN', IP2LOCATION_STANDARD);
       $record = IP2Location_get_all($ip, $_SERVER['REMOTE_ADDR']);
 
-      if($record->country_short == 'DE' || $record->country_short == 'AT' || $record->country_short == 'CH' || $record->country_short == 'FL'){
+      if($record->country_short == 'DE' || $record->country_short == 'AT' || $record->country_short == 'CH' || $record->country_short == 'LI'){
         $this->intLanguageId = $this->sysConfig->languages->language->de->id;
         $this->strLanguageCode = $this->sysConfig->languages->language->de->code;
       }else{
         $this->intLanguageId = $this->sysConfig->languages->language->en->id;
         $this->strLanguageCode = $this->sysConfig->languages->language->en->code;
       }
-      IP2Location_close($ip);
+      IP2Location_close($ip);*/
     }else{
       $this->intLanguageId = $this->sysConfig->languages->default->id;
       $this->strLanguageCode = $this->sysConfig->languages->default->code;

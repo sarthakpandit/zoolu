@@ -179,8 +179,9 @@ class Model_Contacts {
         }
         
         //FIXME Subselect of `contact-DEFAULT_CONTACT-1-InstanceFiles` for contactPics should be changed!
-        $objSelect->from('contacts', array('id', 'title AS acTitle', 'CONCAT(fname, \' \', sname) AS title', 'position', 'phone', 'mobile', 'fax', 'email', 'website', '(SELECT files.filename FROM files INNER JOIN `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics ON files.id = contactPics.idFiles WHERE contactPics.idContacts = contacts.id LIMIT 1) AS filename'));
-        $objSelect->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'));   
+        $objSelect->from('contacts', array('id', 'title AS acTitle', 'CONCAT(fname, \' \', sname) AS title', 'position', 'phone', 'mobile', 'fax', 'email', 'website', 'street', 'city', 'state', 'zip', 'country', '(SELECT files.filename FROM files INNER JOIN `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics ON files.id = contactPics.idFiles WHERE contactPics.idContacts = contacts.id LIMIT 1) AS filename'));
+        $objSelect->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'));
+        $objSelect->joinLeft('categoryTitles', 'categoryTitles.idCategories = contacts.country AND categoryTitles.idLanguages = '.$this->intLanguageId, array('countryTitle' => 'title'));   
         $objSelect->where('contacts.id IN ('.trim($strIds, ',').')');      
         
         return $this->objContactsTable->fetchAll($objSelect);

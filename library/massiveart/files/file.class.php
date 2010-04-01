@@ -95,7 +95,8 @@ class File {
   protected $intId;
   protected $strFileId;
   protected $strUploadPath;
-  protected $setPublicFilePath;
+  protected $strPublicFilePath;
+  protected $strTmpFilePath;  
   protected $strExtension;
   protected $intVersion;
   protected $intUserId;
@@ -813,6 +814,27 @@ class File {
     }else{
       return $this->strPublicFilePath;  
     }
+  }
+  
+  /**
+   * setTmpFilePath
+   * @param string $strTmpFilePath
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function setTmpFilePath($strTmpFilePath){
+    $this->core->logger->debug('setTmpFilePath: '.$strTmpFilePath);
+    $this->strTmpFilePath = $strTmpFilePath;
+  }
+
+  /**
+   * getTmpFilePath
+   * @return string $strTmpFilePath
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getTmpFilePath(){
+    return $this->strTmpFilePath;
   }
 
   /**

@@ -65,6 +65,11 @@ class SweepstakeController extends Zend_Controller_Action {
   private $translate;
   
   /**
+   * @var Zend_Session_Namespace
+   */
+  public $objSweepstakeSession;
+  
+  /**
    * @var Zend_Config_Xml
    */
   protected $sweepstakeConfig;
@@ -75,12 +80,23 @@ class SweepstakeController extends Zend_Controller_Action {
   protected $strSweepstakeFile;
   protected $strFormFile;
   
+  protected $arrCurrSweepstake = array();
+  
+  protected $arrFormData = array();
+  protected $arrMailRecipients = array();
+  
+  private $arrFormFields = array();
+  
   /**
    * init index controller and get core obj
    */
   public function init(){
     $this->core = Zend_Registry::get('Core');
     $this->sweepstakeConfig = new Zend_Config_Xml(GLOBAL_ROOT_PATH.'/sys_config/sweepstakes.xml', APPLICATION_ENV);
+    /**
+     * initialize Zend_Session_Namespace
+     */
+    $this->objSweepstakeSession = new Zend_Session_Namespace('Sweepstake');
   }  
 
   /**
@@ -99,50 +115,65 @@ class SweepstakeController extends Zend_Controller_Action {
    */
   public function checkAction(){
     if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+      $blnShowSweepstake = true;
+      
+      $intRootLevelId = $this->getRequest()->getParam('rootLevelId');
+      $strIPAddress = $this->getRequest()->getParam('ipaddress');
+      $strLanguage = $this->getRequest()->getParam('language');
+      
       $arrSweepstakes = array();
       $arrSweepstakes = $this->sweepstakeConfig->sweepstakes->sweepstake->toArray();
       
-      $arrCurrSweepstake = array();
-      
       if(count($arrSweepstakes) > 0){
-        $strCountryShort = $this->getCountryShortByIP();
+        $strCountryShort = $this->getCountryShortByIP($strIPAddress);
+        $this->objSweepstakeSession->strCountryShort = $strCountryShort;
 
         foreach($arrSweepstakes as $arrSweepstake){        
           if(array_key_exists('countries', $arrSweepstake)){
             foreach($arrSweepstake['countries'] as $key => $arrCountry){
               if(strtoupper($arrSweepstake['countries'][$key]['code']) === strtoupper($strCountryShort)){                
-                $this->intSweepstakeId = $arrSweepstake['id']; 
-                if(array_key_exists('language', $arrSweepstake['countries'][$key])){
+                $this->intSweepstakeId = $arrSweepstake['id'];
+                // write id to session
+                $this->objSweepstakeSession->intSweepstakeId = $this->intSweepstakeId;  
+                if(array_key_exists('language', $arrSweepstake['countries'][$key])){                  
                   $this->strLanguageCode = $arrSweepstake['countries'][$key]['language'];  
                 }
-                $arrCurrSweepstake = $arrSweepstake;
-                unset($arrCurrSweepstake['countries']);                             
+                if($strLanguage != ''){
+                  $this->strLanguageCode = $strLanguage;   
+                }            
+                $this->arrCurrSweepstake = $arrSweepstake;
+                $this->objSweepstakeSession->arrCurrSweepstake = $this->arrCurrSweepstake;
+                $this->objSweepstakeSession->strLanguageCode = $this->strLanguageCode;                              
               }    
             }  
           }
         }
         
-        if($this->intSweepstakeId > 0 && count($arrCurrSweepstake) > 0){          
-          $this->strBasePath = $arrSweepstake['path'];
-          $this->strSweepstakeFile = $arrSweepstake['files']['sweepstake'];
-          $this->strFormFile = $arrSweepstake['files']['form']; 
+        if($this->intSweepstakeId > 0 && count($this->arrCurrSweepstake) > 0){          
+          $this->strBasePath = $this->arrCurrSweepstake['path'];
+          $this->strSweepstakeFile = $this->arrCurrSweepstake['files']['sweepstake'];
+          $this->strFormFile = $this->arrCurrSweepstake['files']['form'];
+          // write path and file to session
+          $this->objSweepstakeSession->strBasePath = $this->strBasePath;          
+          $this->objSweepstakeSession->strFormFile = $this->strFormFile;
           
           /**
            * check if portals exists and if the sweepstake should appear in the current portal
            */
-          if(array_key_exists('portals', $arrCurrSweepstake)){
+          if(array_key_exists('portals', $this->arrCurrSweepstake)){
             $arrPortals = array();
-            $arrPortals = $arrCurrSweepstake['portals'];
-            
-            // TODO : Portal validation  
+            $arrPortals = $this->arrCurrSweepstake['portals'];            
+            if(array_search($intRootLevelId, $arrPortals) === false){
+              $blnShowSweepstake = false;  
+            }
           }
           
           /**
            * check if period exists and if the sweepstake should appear
            */
-          if(array_key_exists('period', $arrCurrSweepstake)){
+          if(array_key_exists('period', $this->arrCurrSweepstake)){
             $arrPeriod = array();
-            $arrPeriod = $arrCurrSweepstake['period'];            
+            $arrPeriod = $this->arrCurrSweepstake['period'];            
             $intCurrTime = time();
             
             $intStart = 0;
@@ -151,26 +182,250 @@ class SweepstakeController extends Zend_Controller_Action {
             }
             $intEnd = 0;
             if(array_key_exists('end', $arrPeriod)){
-              $intEnd = strtotime($arrPeriod['start']);  
+              $intEnd = strtotime($arrPeriod['end']);  
             }
             
-            if((($intStart > 0 && $intEnd > 0) && ($intCurrTime >= $intStart && $intCurrTime <= $intEnd)) 
-                  || (($intStart > 0 && $intEnd == 0) && $intCurrTime >= $intStart) 
-                  || (($intEnd > 0 && $intStart == 0) && $intCurrTime <= $intEnd)) {
-              
+            if((($intStart > 0 && $intEnd > 0) && ($intCurrTime >= $intStart && $intCurrTime <= $intEnd)) || (($intStart > 0 && $intEnd == 0) && $intCurrTime >= $intStart) || (($intEnd > 0 && $intStart == 0) && $intCurrTime <= $intEnd)) {
+              // do nothing
             }else{
-              // don't show the sweepstake
+              $blnShowSweepstake = false;
             }
-          }else{
-            // no period - manual switching sweepstake online/offline
           }
+          
+          /**
+           * check if mode is live/test
+           */
+          if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
+            if(array_key_exists('mode', $this->arrCurrSweepstake)){
+              if($this->arrCurrSweepstake['mode'] == 'test'){
+                $blnShowSweepstake = false; 
+              } 
+            }
+          }
+          
+          /**
+           * set up translate obj for sweepstake
+           */
+          if(isset($this->strLanguageCode) && $this->strLanguageCode != ''){            
+            if(file_exists(GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo')){
+              $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo');
+            }
+            $this->view->assign('language', $this->strLanguageCode);
+            $this->view->assign('translate', $this->translate);  
+          }
+                    
+          $this->view->assign('basePath', $this->strBasePath);
+          $this->view->assign('file', $this->strSweepstakeFile);
+          //$this->view->assign('appearCounter', ((array_key_exists('appear_counter', $arrCurrSweepstake)) ? $arrCurrSweepstake['appear_counter'] : ''));
+        }else{
+          $blnShowSweepstake = false;
         }
-        
       }else{
-        // No sweepstake available
+        $blnShowSweepstake = false;
       }
     }
-    $this->_helper->viewRenderer->setNoRender();
+    
+    if(!$blnShowSweepstake){
+      $this->_helper->viewRenderer->setNoRender();  
+    }
+  }
+  
+  /**
+   * formAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function formAction(){
+    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {      
+            
+      $this->view->assign('basePath', $this->objSweepstakeSession->strBasePath);
+      $this->view->assign('form', $this->objSweepstakeSession->strFormFile);
+      /**
+       * set up translate obj for sweepstake
+       */
+      if(isset($this->objSweepstakeSession->strLanguageCode) && $this->objSweepstakeSession->strLanguageCode != ''){            
+        if(file_exists(GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->objSweepstakeSession->strLanguageCode.'.mo')){
+          $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->objSweepstakeSession->strLanguageCode.'.mo');
+          
+          $this->arrFormFields = array('salutation'         => $this->translate->_('Salutation'),
+                                       'title'              => $this->translate->_('Title'),
+                                       'fname'              => $this->translate->_('Firstname'),
+                                       'sname'              => $this->translate->_('Surname'),
+                                       'company'            => $this->translate->_('Company'),
+                                       'email'              => $this->translate->_('Email'),
+                                       'phone'              => $this->translate->_('Phone'),
+                                       'fax'                => $this->translate->_('Fax'),
+                                       'function'           => $this->translate->_('Function'),
+                                       'type'               => $this->translate->_('Type_of_company'),
+                                       'street'             => $this->translate->_('Street'),
+                                       'zip'                => $this->translate->_('ZipCode'),
+                                       'city'               => $this->translate->_('City'),
+                                       'state'              => $this->translate->_('State'),
+                                       'country'            => $this->translate->_('Country'),
+                                       'checkLegalnotes'    => $this->translate->_('Check_Legalnotes'));
+          
+          $this->objSweepstakeSession->arrFormFields = $this->arrFormFields;
+        }
+        $this->view->assign('language', $this->objSweepstakeSession->strLanguageCode);
+        $this->view->assign('translate', $this->translate);  
+      }
+    }  
+  }
+  
+  /**
+   * datareceiverAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function datareceiverAction(){
+    if($this->getRequest()->isPost()){
+      $this->arrFormData = $this->getRequest()->getPost();
+
+      if(count($this->arrFormData) > 0){
+        /**
+         * send mail
+         */
+        $this->sendMail();
+      }
+    }  
+  }
+  
+  /**
+   * sendMail
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  private function sendMail(){
+    $arrMail = array();
+    $arrFromMail = array();
+    $arrFromTo = array();
+    
+    /**
+     * standard mail sender and recipients
+     */
+    if(array_key_exists('mail', $this->objSweepstakeSession->arrCurrSweepstake)){      
+      $arrMail = $this->objSweepstakeSession->arrCurrSweepstake['mail'];
+      
+      $arrFromMail = ((array_key_exists('from', $arrMail)) ? $arrMail['from'] : array());
+      $arrFromTo = ((array_key_exists('from', $arrMail)) ? $arrMail['to'] : array());
+
+      $this->arrMailRecipients = array('Name'  => $arrFromTo['name'],
+                                       'Email' => $arrFromTo['email']);
+      
+      if(array_key_exists('mail', $this->objSweepstakeSession->arrCurrSweepstake['countries'][$this->objSweepstakeSession->strCountryShort])){
+        $arrMail = $this->objSweepstakeSession->arrCurrSweepstake['countries'][$this->objSweepstakeSession->strCountryShort]['mail'];
+        
+        $this->arrMailRecipients = array('Name'  => $arrMail['to']['name'],
+                                         'Email' => $arrMail['to']['email']);  
+      }
+    }
+    
+    $mail = new Zend_Mail();
+    
+    /**
+     * config for SMTP with auth
+     */
+    $config = array('auth'     => 'login',
+                    'username' => $this->core->webConfig->mail->params->username,
+                    'password' => $this->core->webConfig->mail->params->password);
+    
+    /**
+     * SMTP
+     */
+    $transport = new Zend_Mail_Transport_Smtp($this->core->webConfig->mail->params->host, $config);
+      
+    $strHtmlBody = '';     
+    if(count($this->arrFormData) > 0){
+      $this->arrFormFields = $this->objSweepstakeSession->arrFormFields;
+      
+      $strHtmlBody = '
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+        <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+          <title></title>
+          <style type="text/css">
+            body { margin:0; padding:0; color:#000; width:100%; height:100%; font-size:11px; font-family:Verdana, Arial, Sans-Serif; background-color:#ffffff; line-height:15px;}
+            input {font-size:11px; font-family:Verdana, Arial, Sans-Serif; }
+            span { line-height:14px; font-size:11px; }
+            img { padding:0; margin:0; border:0; }
+            .tdImg {width:123px; margin:0; padding:0; vertical-align:top; }
+            .divider { margin:0; padding:5px 0 15px 0; width:620px; }
+            h1 { color:#000; font-weight:bold; font-size:16px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            h2 { color:#000; font-weight:bold; font-size:14px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            h3 { color:#000; font-weight:bold; font-size:12px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            a { color:#3366cc; font-size:11px; text-decoration:none; margin:0; padding:0; }
+            a:hover { color:#000; font-size:11px; text-decoration:none; margin:0; padding:0; }
+            p { margin:0 0 10px 0; padding:0; }
+          </style>
+        </head>
+        <body>
+        <table cellpadding="0" cellspacing="0" style="width:650px; margin:auto;">
+           <tr>
+              <td style="padding:20px 15px 20px 15px;">
+                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                       <td>
+                        <h1>'.$arrMail['title'].'</h1>
+                        <p>'.$arrMail['intro'].'</p>';
+      foreach($this->arrFormData as $key => $value){
+        if($value != ''){         
+          $strHtmlBody .= '<strong>'.((array_key_exists($key, $this->arrPersonalFormFields)) ? $this->arrPersonalFormFields[$key] : ucfirst(utf8_decode($key))).':</strong> '.utf8_decode($value).'<br/>';  
+        }       
+      }   
+      $strHtmlBody .= '</td>
+                    </tr>
+                 </table>
+              </td>
+           </tr>
+        </table>
+        </body>
+        </html>';
+    }
+
+    /**
+     * set mail subject
+     */
+    $mail->setSubject($arrMail['subject']);
+    /**
+     * set html body
+     */
+    $mail->setBodyHtml($strHtmlBody);
+    /**
+     * set default FROM address
+     */
+    $mail->setFrom($arrFromMail['email'], $arrFromMail['name']);
+      
+    if(count($this->arrMailRecipients) > 0){
+      foreach($this->arrMailRecipients as $arrRecipient){
+        $mail->clearRecipients();
+        $mail->addTo($arrRecipient['Email'], $arrRecipient['Name']);
+        /**
+         * send mail if mail body is not empty
+         */
+        if($strHtmlBody != ''){
+          $mail->send($transport);
+          $this->sendConfirmationMail();
+        } 
+      } 
+    }
+  } 
+  
+  /**
+   * sessionAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function sessionAction(){
+    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+      $strValue = $this->getRequest()->getParam('value');
+      $strSessionName = $this->getRequest()->getParam('session');
+      $this->objSweepstakeSession->$strSessionName = $strValue;
+      echo 'true';
+    }else{
+      echo 'false';
+    }
+    $this->_helper->viewRenderer->setNoRender(); 
   }
   
   /**
@@ -189,6 +444,7 @@ class SweepstakeController extends Zend_Controller_Action {
         $ipAddress = $strIPAddress;
       }
       $countryShort = $ip->getCountryShort($ipAddress);
+      $this->core->logger->debug('IP2Location->getCountryShort: ip - '.$ipAddress.' / '.$countryShort);
       
       return $countryShort;
     }

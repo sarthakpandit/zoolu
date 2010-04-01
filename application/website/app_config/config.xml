@@ -13,13 +13,10 @@
         <!-- http://developer.yahoo.com/performance/rules.html#split -->
         <components>http://static.dev.zoolu.area51.at</components>
       </static>
-    </domains>
-    
+    </domains>    
 
+    <!-- Google Maps API-Key -->
     <gmaps>
-      <!-- Google Maps API-Key for sportservice.massiveart.at -->
-      <!--<key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xQIgr5p9E0wjO4Wkkntg6WrgV5YIxQO4FTS3kR7ciRUeYCHfSX9ddEOFg</key>-->
-      <!-- Google Maps API-Key for www.sportservice-v.at -->
       <key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xRX1jCuCB9C7WKVnBt8ZIH40aIQaRS9qo5Ey8l_2L9XVt4bQiHyWn2qmw</key>
     </gmaps>
 
@@ -134,17 +131,17 @@
     <!-- mailer -->
     <mail>
       <from>        
-        <name>Sportservice Vorarlberg</name>
-        <address>no-reply@sportservice-v.at</address>
+        <name></name>
+        <address></address>
       </from>
       <recipient>        
-        <name>Sportservice Vorarlberg</name>
-        <address>anmeldungen@sportservice-v.at</address>
+        <name></name>
+        <address></address>
       </recipient>
       <params>
-        <host>srv05.derprovider.at</host>
-        <username>mail@area51.at</username>
-        <password>zUHGhNh#</password>
+        <host>mailer.massiveart.at</host>
+        <username>zoolu@mailer.massiveart.at</username>
+        <password>w#BmeiLLzoolu</password>
       </params>
       <hiddenfields>
         <mail>_mail</mail>
@@ -219,11 +216,9 @@
   -->
   <staging extends="production">
    
-    <!-- Google Maps API-Key for http://cha.zoolu.area51.at / http://tsh.zoolu.area51.at -->
+    <!-- Google Maps API-Key -->
     <gmaps>
       <key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xT0I2mhHVaMXXFtj2QI29VyNFRr-BRTCJACUBszLTxMCJOKORZebHpy0w</key>
-      <!-- tsh: ABQIAAAAuHONMei_wmASLdi5Q2Db3xTXuXYb7-qpDt3x5Y4DV1tWZ8k3LRRwadol1pDJMCE4RJggwDwDVi7Qrw -->
-      <!-- cha: ABQIAAAAuHONMei_wmASLdi5Q2Db3xT0I2mhHVaMXXFtj2QI29VyNFRr-BRTCJACUBszLTxMCJOKORZebHpy0w -->
     </gmaps>
     
     <!-- mailer -->

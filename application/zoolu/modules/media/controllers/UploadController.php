@@ -209,6 +209,7 @@ class Media_UploadController extends AuthControllerAction  {
     $objImage->setNumberOfSegments($this->core->sysConfig->upload->images->segmenting->number_of_segments);
     $objImage->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->private);
     $objImage->setPublicFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->public);
+    $objImage->setTmpFilePath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->images->path->local->tmp);
     $objImage->setDefaultImageSizes($this->core->sysConfig->upload->images->default_sizes->default_size->toArray());
     $objImage->setLanguageId($this->intLanguageId);
     $objImage->add(self::UPLOAD_FIELD);

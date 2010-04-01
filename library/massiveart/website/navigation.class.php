@@ -355,13 +355,14 @@ class Navigation {
         
         $intParentId = $this->objPage->getFieldValue('entry_point');
         $arrFilterOptions = array('CategoryId'  => $this->objPage->getFieldValue('entry_category'),
-                                  'LabelId'     => $this->objPage->getFieldValue('entry_label'));
+                                  'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+                                  'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'));
                        
         $arrPageTypeRootLevelGroupIds = array($this->core->sysConfig->page_types->product_tree->id => $this->core->sysConfig->root_level_groups->product, $this->core->sysConfig->page_types->press_area->id => $this->core->sysConfig->root_level_groups->press);
         $objNavigationData = $this->getModelFolders()->loadWebsiteGlobalTree($intParentId, $arrFilterOptions, $arrPageTypeRootLevelGroupIds[$intPageTypeId]);
         
         if(count($objNavigationData) > 0){
-          
+          $intSortTypeId = $this->objPage->getFieldValue('entry_sorttype');
           $intTreeId = 0;
           
           foreach($objNavigationData as $objNavigationItem){
@@ -381,7 +382,11 @@ class Navigation {
               $objTree->setTypeId($objNavigationItem->idGlobalTypes);
               $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
               $objTree->setItemId($objNavigationItem->folderId);
-              $objTree->setOrder($objNavigationItem->folderOrder);
+              if($intSortTypeId == $this->core->sysConfig->sort->types->alpha->id){
+                $objTree->setOrder($objNavigationItem->folderTitle);
+              }else{
+                $objTree->setOrder($objNavigationItem->folderOrder);
+              }
               $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
                            
               $intTreeId = $objNavigationItem->idFolder;
@@ -398,7 +403,11 @@ class Navigation {
                 $objTree->setTypeId($objNavigationItem->idGlobalTypes);
                 $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
                 $objItem->setItemId($objNavigationItem->globalId);
-                $objItem->setOrder($objNavigationItem->globalOrder);
+                if($intSortTypeId == $this->core->sysConfig->sort->types->alpha->id){
+                  $objItem->setOrder($objNavigationItem->globalTitle);
+                }else{
+                  $objItem->setOrder($objNavigationItem->globalOrder);
+                }
                 $objTree->addItem($objItem, 'item_'.$objItem->getId());
               }
             }

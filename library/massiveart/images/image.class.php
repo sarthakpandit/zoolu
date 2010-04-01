@@ -128,6 +128,7 @@ class Image extends File {
           $objImageAdapter = $objImageManipulation->getAdapter();
           $objImageAdapter->setRawWidth($this->intXDim);
           $objImageAdapter->setRawHeight($this->intYDim);
+          $objImageAdapter->setRenderTmpDir($this->getTmpFilePath());
 
           /**
            * render default image sizes

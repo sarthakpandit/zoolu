@@ -1223,8 +1223,6 @@ class Model_Folders {
                                           globalProperties.showInNavigation = 1', array('globalStatus' => 'idStatus', 'idGlobalTypes'))              
               ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'genericFormVersion' => 'version'))
               ->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('globalTitle' => 'title'))
-              ->joinLeft('globalCategories', 'globalCategories.globalId = globals.globalId AND globalCategories.version = globals.version', array())
-              ->joinLeft('globalLabels', 'globalLabels.globalId = globals.globalId AND globalLabels.version = globals.version', array())
               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
               ->where('folders.idRootLevels = parent.idRootLevels')
               ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)')              
@@ -1235,11 +1233,13 @@ class Model_Folders {
               ->order('globals.id ASC');
               
     if($arrFilterOptions['CategoryId'] > 0 && $arrFilterOptions['CategoryId'] != ''){
-      $objSelect->where('globalCategories.category = ?', $arrFilterOptions['CategoryId']);      
+      $objSelect->join('globalCategories', 'globalCategories.globalId = globals.globalId AND globalCategories.version = globals.version AND globalCategories.idLanguages = globalProperties.idLanguages', array())
+                ->where('globalCategories.category = ?', $arrFilterOptions['CategoryId']);      
     }
 
     if($arrFilterOptions['LabelId'] > 0 && $arrFilterOptions['LabelId']  != ''){
-      $objSelect->where('globalLabels.label = ?', $arrFilterOptions['LabelId'] );
+      $objSelect->join('globalLabels', 'globalLabels.globalId = globals.globalId AND globalLabels.version = globals.version AND globalLabels.idLanguages = globalProperties.idLanguages', array())
+                ->where('globalLabels.label = ?', $arrFilterOptions['LabelId'] );
     }
     
     return $this->objFolderTable->fetchAll($objSelect);    

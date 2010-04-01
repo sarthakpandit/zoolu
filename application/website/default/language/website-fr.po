@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-01 14:38+0100\n"
+"POT-Creation-Date: 2010-04-01 14:12+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
+"Last-Translator: Cornelius Hansjakob <cha@massiveart.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: English\n"
+"X-Poedit-Language: French\n"
 "X-Poedit-Country: AUSTRIA\n"
 "X-Poedit-KeywordsList: _\n"
 "X-Poedit-Basepath: /Volumes/massive-brunello/websites/dev.zoolu.area51.at/\n"
@@ -18,23 +18,23 @@ msgstr ""
 
 #: application/website/default/controllers/SweepstakeController.php:250
 msgid "Salutation"
-msgstr "Salutation"
+msgstr "Civilité"
 
 #: application/website/default/controllers/SweepstakeController.php:251
 msgid "Title"
-msgstr "Title"
+msgstr "Titre"
 
 #: application/website/default/controllers/SweepstakeController.php:252
 msgid "Firstname"
-msgstr "First name"
+msgstr "Prénom"
 
 #: application/website/default/controllers/SweepstakeController.php:253
 msgid "Surname"
-msgstr "Last name"
+msgstr "Nom"
 
 #: application/website/default/controllers/SweepstakeController.php:254
 msgid "Company"
-msgstr "Company"
+msgstr "Société"
 
 #: application/website/default/controllers/SweepstakeController.php:255
 msgid "Email"
@@ -42,7 +42,7 @@ msgstr "E-mail"
 
 #: application/website/default/controllers/SweepstakeController.php:256
 msgid "Phone"
-msgstr "Phone"
+msgstr "Téléphone"
 
 #: application/website/default/controllers/SweepstakeController.php:257
 msgid "Fax"
@@ -50,56 +50,47 @@ msgstr "Fax"
 
 #: application/website/default/controllers/SweepstakeController.php:258
 msgid "Function"
-msgstr "Function"
+msgstr "Fonction"
 
 #: application/website/default/controllers/SweepstakeController.php:259
 msgid "Type_of_company"
-msgstr "Company type"
+msgstr "Type de Société"
 
 #: application/website/default/controllers/SweepstakeController.php:260
 msgid "Street"
-msgstr "Street"
+msgstr "Rue"
 
 #: application/website/default/controllers/SweepstakeController.php:261
 msgid "ZipCode"
-msgstr "ZIP"
+msgstr "CP"
 
 #: application/website/default/controllers/SweepstakeController.php:262
 msgid "City"
-msgstr "City"
+msgstr "Ville"
 
 #: application/website/default/controllers/SweepstakeController.php:263
 msgid "State"
-msgstr "State/Province"
+msgstr "État/province"
 
 #: application/website/default/controllers/SweepstakeController.php:264
 msgid "Country"
-msgstr "Country"
+msgstr "Pays"
 
 #: application/website/default/controllers/SweepstakeController.php:265
 msgid "Check_Legalnotes"
-msgstr "Legal notes"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:377
 msgid "Read_article_online"
-msgstr "Read article online"
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:562
-msgid "Press_Contact"
-msgstr "Press Contact"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/templates/template_press_overview.php:56
 msgid "Archive"
-msgstr "Archive"
+msgstr ""
 
-#: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:1
-msgid "nceram_monza_form_Headline"
-msgstr "Please register here to apply for the fantastic Formula 1 Weekend in Monza"
-
-#: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:2
-msgid "nceram_monza_form_IntroText"
-msgstr "The contact addresses are used to contact the winners."
-
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:7
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:52
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:83
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:8
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:53
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:84
@@ -107,180 +98,188 @@ msgstr "The contact addresses are used to contact the winners."
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:53
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:84
 msgid "Please_choose"
-msgstr "Please choose"
+msgstr "Merci de choisir"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:8
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:9
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:9
 msgid "Mr."
-msgstr "Mr."
+msgstr "M."
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:9
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:10
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:10
 msgid "Ms."
-msgstr "Ms."
+msgstr "Mme"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:53
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:54
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:54
 msgid "Dental_office"
-msgstr "Dental office"
+msgstr "Cabinet Dentaire"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:54
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:55
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:55
 msgid "Dental_office_laboratory"
-msgstr "Dental office/laboratory"
+msgstr "Laboratoire de Prothèse"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:55
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:56
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:56
 msgid "Laboratory"
-msgstr "Laboratory"
+msgstr "Laboratoire"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:56
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:57
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:57
 msgid "School"
-msgstr "School"
+msgstr "Ecole"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:57
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:58
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:58
 msgid "Student"
-msgstr "Student"
+msgstr "Etudiant"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:58
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:59
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:59
 msgid "Private_person"
-msgstr "Private person"
+msgstr "Privatperson"
 
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:92
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:93
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:93
 msgid "Fields_with_*_are_mandatory"
-msgstr "Fields with * are mandatory."
+msgstr "Les champs précédés d'un * sont obligatoires"
+
+#: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/form.php:97
+msgid "evoFlow_lisbon_form_LegalNotes"
+msgstr "Je déclare donner mon accord pour que les données personnelles renseignées ci-dessus soient stockées, traitées et utilisées par Ivoclar Vivadent AG et les sociétés du groupe Ivoclar Vivadent pour me communiquer des informations sur les produits, les services ou les activités du groupe Ivoclar Vivadent par écrit, par fax, par téléphone ou par e-mail. Je peux retirer mon consentement à tout moment et avec effet immédiat en envoyant un message électronique de notification à Ivoclar à l'adresse info@ivoclarvivadent.com."
+
+#: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:1
+msgid "nceram_monza_form_Headline"
+msgstr "Inscrivez-vous ici pour gagner un fantastique week-end Formule 1 à Monza"
+
+#: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:2
+msgid "nceram_monza_form_IntroText"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:98
 msgid "nceram_monza_form_LegalNotes"
-msgstr "I agree that the above personal data are stored, processed and used by Ivoclar Vivadent AG and the companies of the Ivoclar Vivadent Group to provide me with information about products, services, or activities of the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can revoke my consent completely or partially with immediate effect by sending a corresponding notification to info@ivoclarvivadent.com."
+msgstr "Je déclare donner mon accord pour que les données personnelles renseignées ci-dessus soient stockées, traitées et utilisées par Ivoclar Vivadent AG et les sociétés du groupe Ivoclar Vivadent pour me communiquer des informations sur les produits, les services ou les activités du groupe Ivoclar Vivadent par écrit, par fax, par téléphone ou par e-mail. Je peux retirer mon consentement à tout moment et avec effet immédiat en envoyant un message électronique de notification à Ivoclar à l'adresse info@ivoclarvivadent.com."
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:6
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:7
 msgid "Close"
-msgstr "Close"
+msgstr "Fermer la fenêtre"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:10
 msgid "nceram_monza_Headline"
-msgstr "Sweepstake Tetric N-Ceram"
+msgstr "Loterie Tetric N-Ceram"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:15
 msgid "nceram_monza_SkipIntro"
-msgstr "Skip video and go to sweepstake"
+msgstr "Passer la vidéo et aller à la loterie"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:22
 msgid "nceram_monza_Description"
-msgstr "Order our special offer and win <strong>\"Nightlife &amp; Lifestyle\" in Monza</strong>. The grand prize is a trip for 2 to the Grand Prix of Monza 2010."
+msgstr "Commandez en profitant de notre offre spéciale et gagnez un séjour <strong>«Nightlife &amp; Lifestyle» à Monza (Italie)</strong>. Le premier prix est un voyage pour 2 personnes au Grand Prix de Monza 2010."
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:24
 msgid "nceram_monza_2nd_Prize"
-msgstr "2<sup>nd</sup> prize:"
+msgstr "2<sup>ème</sup> prix:"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:24
 msgid "nceram_monza_1_FlatscreenTV"
-msgstr "1 Flatscreen Television"
+msgstr "1 téléviseur à écran plat"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:25
 msgid "nceram_monza_3rd_Prize"
-msgstr "3<sup>rd</sup> prize:"
+msgstr "3<sup>ème</sup> prix:"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:25
 msgid "nceram_monza_1_SonyCam"
-msgstr "1 Sony Digitalcamera"
+msgstr "1 appareil photo numérique Sony"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:26
 msgid "nceram_monza_And_many_more"
-msgstr "and many more...*"
+msgstr "et beaucoup d'autres lots à gagner...*"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:30
 msgid "nceram_monza_Tetric_Brochure"
-msgstr "Tetric N-Family Brochure"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:35
 msgid "nceram_monza_PromoPacks"
-msgstr "Yes, I want to order <input type=\"text\" value=\"\" id=\"tetricPromoMonza\" name=\"tetricPromoMonza\" size=\"2\" class=\"promo\"/> Tetric N-Ceram Intro Pack 4x3,5g and get 1 OptraDam, 1 OptraGate and  Tetric N-Flow 2g syringe free of charge. You will be contacted by our local agent."
+msgstr "Oui, je souhaite commander <input type=\"text\" value=\"\" id=\"tetricPromoMonza\" name=\"tetricPromoMonza\" size=\"2\" class=\"promo\"/> Intro Pack(s) Tetric N-Ceram 4 x 3,5 g et recevoir gratuitement 1 OptraDam, 1 OptraGate et une seringue Tetric N-Flow de 2 g. Notre représentant local prendra contact avec vous."
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:37
 msgid "next"
-msgstr "next"
+msgstr "page suivante"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:43
 msgid "nceram_monza_Question"
-msgstr "How many shades of Tetric N-Ceram are available?"
+msgstr "Combien existe-t-il de teintes de Tetric N-Ceram?"
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/sweepstake.php:70
 msgid "nceram_monza_FooterNote"
-msgstr "* Prizes cannot be redeemed for cash."
+msgstr "* Les prix ne peuvent être échangés contre de l'argent comptant."
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:1
 msgid "evoFlow_maldives_form_Headline"
-msgstr "Please register here to apply for a trip to the maldives."
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:2
 msgid "evoFlow_maldives_form_IntroText"
-msgstr "The contact addresses are used to contact the winners."
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/form.php:98
 msgid "evoFlow_maldives_form_LegalNotes"
-msgstr "I agree that the above personal data are stored, processed and used by Ivoclar Vivadent AG and the companies of the Ivoclar Vivadent Group to provide me with information about products, services, or activities of the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can revoke my consent completely or partially with immediate effect by sending a corresponding notification to info@ivoclarvivadent.com."
+msgstr "Je déclare donner mon accord pour que les données personnelles renseignées ci-dessus soient stockées, traitées et utilisées par Ivoclar Vivadent AG et les sociétés du groupe Ivoclar Vivadent pour me communiquer des informations sur les produits, les services ou les activités du groupe Ivoclar Vivadent par écrit, par fax, par téléphone ou par e-mail. Je peux retirer mon consentement à tout moment et avec effet immédiat en envoyant un message électronique de notification à Ivoclar à l'adresse info@ivoclarvivadent.com."
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:15
 msgid "evoFlow_maldives_Conditions"
-msgstr "<strong>Conditions:</strong> The winners will be notified in writing. Any recourse to courts of law is excluded. The competition is open to dentists in Europe only. Employees of Ivoclar Vivadent AG and the Ivoclar Vivadent Group of Companies are excluded from this competition. Prizes are not redeemable for cash. <strong>No purchase necessary.</strong> Closing date for participation is 30th June 2010."
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:18
 msgid "evoFlow_maldives_SkipIntro"
-msgstr "Skip video and go to raffle"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:25
 msgid "evoFlow_maldives_Raffle"
-msgstr "Raffle"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:26
 msgid "evoFlow_maldives_Description"
-msgstr "Enter the <strong>Tetric EvoFlow raffle</strong> and get the chance to win a trip to the <strong>Maldives</strong>."
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:28
 msgid "evoFlow_maldives_1-3_Prize"
-msgstr "1<sup>st</sup> to 3<sup>rd</sup> prize:"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:28
 msgid "evoFlow_maldives_One_Week_Maldives"
-msgstr "One-week trip to the Maldives for two"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:29
 msgid "evoFlow_maldives_4-10_Prize"
-msgstr "4<sup>th</sup> to 10<sup>th</sup> prize:"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:29
 msgid "evoFlow_maldives_Citytrip_Lisbon"
-msgstr "City trip to Lisbon for two (including three overnight stays)"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:30
 msgid "evoFlow_maldives_11-50_Prize"
-msgstr "11<sup>th</sup> to 50<sup>th</sup> prize:"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:30
 msgid "evoFlow_maldives_3_Towels"
-msgstr "Three towels of Tetric EvoFlow"
+msgstr ""
 
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:33
 msgid "evoFlow_maldives_Question"
-msgstr "How many shades of Tetric EvoFlow are available?"
-
-#~ msgid "evoFlow_lisbon_form_LegalNotes"
-#~ msgstr ""
-#~ "I agree that the above personal data are stored, processed and used by "
-#~ "Ivoclar Vivadent AG and the companies of the Ivoclar Vivadent Group to "
-#~ "provide me with information about products, services, or activities of "
-#~ "the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can "
-#~ "revoke my consent completely or partially with immediate effect by "
-#~ "sending a corresponding notification to info@ivoclarvivadent.com."
-#~ msgid "Comments"
-#~ msgstr "What can we do for you?"
-#~ msgid "Areacode_Prefix_Phone"
-#~ msgstr "Int. area code/code/phone no."
+msgstr ""
 

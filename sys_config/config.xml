@@ -228,10 +228,12 @@
         <!-- upload pathes -->
         <path>
           <local>
+            <tmp>tmp/images/</tmp>
             <private>uploads/images/</private>
             <public>public/website/uploads/images/</public>
           </local>
           <s3>
+            <tmp>tmp/images/</tmp>
             <private>private/images/</private>
             <public>public/images/</public>
           </s3>

@@ -48,6 +48,7 @@ class ImageAdapter_Imagick extends phMagick implements ImageAdapterInterface {
 
   protected $intRawWidth;
   protected $intRawHeight;
+  protected $strRenderTmpDir;
 
   /**
    * Constructor
@@ -67,8 +68,8 @@ class ImageAdapter_Imagick extends phMagick implements ImageAdapterInterface {
 
     if($this->intRawWidth == null || $this->intRawHeight == null){
       $arrDimention = $this->getDimentions();
-      $this->setRawHeight($arrDimention[0]);
-      $this->setRawWidth($arrDimention[1]);
+      $this->setRawWidth($arrDimention[0]);
+      $this->setRawHeight($arrDimention[1]);      
     }
 
     $dblXFact = $this->intRawWidth / $intWidth;
@@ -82,6 +83,43 @@ class ImageAdapter_Imagick extends phMagick implements ImageAdapterInterface {
     }
 
     $this->crop($intWidth, $intHeight);
+  }
+  
+  /**
+   * watermark
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function watermark($watermarkImage, $gravity, $transparency = 50){
+    
+    $arrImgDimention = $this->getDimentions();
+    
+    $watermark = new phMagick();
+    $watermark->setSource($watermarkImage);
+    
+    $arrWatermarkDimention = $watermark->getDimentions();
+        
+    $dblXFact = $arrImgDimention[0] / $arrWatermarkDimention[0]; // width
+    $dblYFact = $arrImgDimention[1] / $arrWatermarkDimention[1]; // height
+    
+    if($dblXFact < 1 || $dblYFact < 1){
+      $strDesintaion = $this->strRenderTmpDir.uniqid().'.'.pathinfo($watermarkImage, PATHINFO_EXTENSION);
+      $watermark->setDestination($strDesintaion);        
+      if($dblXFact < $dblYFact){
+        $intWidth = (int) ($arrImgDimention[0] * 0.9);
+        $watermark->resize($intWidth);
+      }else{
+        $intHeight = (int) ($arrImgDimention[1] * 0.9);
+        $watermark->resize('', $intHeight);
+      }
+      
+      $watermarkImage = $watermark->getDestination();
+    }
+    
+    parent::watermark($watermarkImage, $gravity, $transparency);
+    
+    //remove tmp file
+    if(isset($strDesintaion)) unlink($strDesintaion);
   }
 
   /**
@@ -129,6 +167,26 @@ class ImageAdapter_Imagick extends phMagick implements ImageAdapterInterface {
    */
   public function setRawHeight($intRawHeight){
     $this->intRawHeight = $intRawHeight;
+  }
+  
+  /**
+   * setRenderTmpDir
+   * @param string $strRenderTmpDir
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function setRenderTmpDir($strRenderTmpDir){
+    $this->strRenderTmpDir = $strRenderTmpDir;
+  }
+
+  /**
+   * getRenderTmpDir
+   * @return string $strRenderTmpDir
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getRenderTmpDir(){
+    return $this->strRenderTmpDir;
   }
 }
 

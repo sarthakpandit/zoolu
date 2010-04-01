@@ -216,6 +216,24 @@ class PageHelper {
   }
   
   /**
+   * getVideos
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getVideos(){
+    //TODO default product overview
+  }
+  
+  /**
+   * getPressContact
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getPressContact(){
+    //TODO default product overview
+  }
+  
+  /**
    * setPage    
    * @param Page $objPage   
    * @author Thomas Schedler <tsh@massiveart.com>
