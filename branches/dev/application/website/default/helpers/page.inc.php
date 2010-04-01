@@ -699,8 +699,9 @@ function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'div
         if($objFiles != '' && count($objFiles) > 0){
           $strHtmlOutput .= '<div class="documents">';
           foreach($objFiles as $objFile){
+            $strIcon = (strpos($objFile->mimeType, 'image') !== false) ? 'icon_img.gif' : 'icon_'.$objFile->extension.'.gif';
             $strHtmlOutput .= '<div class="item">
-                    <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
+                    <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/'.$strIcon.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
                     <div class="text">
                       <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.htmlentities((($objFile->title == '' && isset($objFile->alternativTitle)) ? $objFile->alternativTitle : $objFile->title), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
                     </div>
@@ -2088,6 +2089,10 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
     }
   }
   echo $strHtmlOutput;
+}
+
+function get_press_contact(){
+ echo getPageHelperObject()->getPressContact();
 }
 
 /**

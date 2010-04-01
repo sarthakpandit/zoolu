@@ -651,8 +651,9 @@ class Page {
              * override category and label filter with the parent page setting
              */
             if($this->objParentPage instanceof Page){
-              $objContainer->setContainerKey($this->objParentPage->getFieldValue('entry_category'));
-              $objContainer->setContainerLabel($this->objParentPage->getFieldValue('entry_label'));
+              if($this->objParentPage->getField('entry_category') !== null && (int) $this->objParentPage->getFieldValue('entry_category') > 0) $objContainer->setContainerKey($this->objParentPage->getFieldValue('entry_category'));
+              if($this->objParentPage->getField('entry_label') !== null && (int) $this->objParentPage->getFieldValue('entry_label') > 0) $objContainer->setContainerLabel($this->objParentPage->getFieldValue('entry_label'));
+              if($this->objParentPage->getField('entry_sorttype') !== null && (int) $this->objParentPage->getFieldValue('entry_sorttype') > 0) $objContainer->setContainerSortType($this->objParentPage->getFieldValue('entry_sorttype'));                            
             }
 
             $objEntries = $this->getOverviewPages($objContainer->getContainerKey(), $objContainer->getContainerLabel(), $objContainer->getEntryNumber(), $objContainer->getContainerSortType(), $objContainer->getContainerSortOrder(), $objContainer->getContainerDepth(), $arrPageIds, $blnOnlyPages);
@@ -704,7 +705,9 @@ class Page {
               array_push($arrGenFormPageIds, $value);
             }
           }
-          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
+          
+          $intImgFilterTag = ($this->objParentPage->getField('entry_pic_tag') !== null && (int) $this->objParentPage->getFieldValue('entry_pic_tag') > 0) ? $this->objParentPage->getFieldValue('entry_pic_tag') : 0;
+          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds, $intImgFilterTag);
 
           /**
            * overwrite page entries
@@ -721,7 +724,12 @@ class Page {
                   $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
                   $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
                   $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-
+                  
+                  if(isset($objPageRow->tagfilename) && $objPageRow->tagfilename !== null) $objPageEntry->filename =  $objPageRow->tagfilename;
+                  if(isset($objPageRow->tagfileversion) && $objPageRow->tagfileversion !== null) $objPageEntry->fileversion =  $objPageRow->tagfileversion;
+                  if(isset($objPageRow->tagfilepath) && $objPageRow->tagfilepath !== null) $objPageEntry->filepath =  $objPageRow->tagfilepath;
+                  if(isset($objPageRow->tagfiletitle) && $objPageRow->tagfiletitle !== null) $objPageEntry->filetitle =  $objPageRow->tagfiletitle;
+                  
                   $arrContainer[$arrPageEntries[$objPageRow->id]]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
                 }
               }
@@ -751,10 +759,10 @@ class Page {
   public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages = false){
     try{
       $this->getModel();
-      
+
       if($this->intNavParentId !== null && $this->intNavParentId > 0){
         $objPages = $this->objModel->loadItems((($this->ParentPage() instanceof Page) ? array('id' => $this->ParentPage()->getTypeId(), 'key' => $this->ParentPage()->getType()) : array('id' => $this->intTypeId, 'key' => $this->strType)), $this->intNavParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages);  
-      }else{
+      }else{     
         $objPages = $this->objModel->loadItems(array('id' => $this->intTypeId, 'key' => $this->strType), $this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages);
       }
       
@@ -1032,7 +1040,7 @@ class Page {
               }
             }
             
-            $objPageRowset = $this->getModelGlobals()->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
+            $objPageRowset = $this->getModelGlobals()->loadItemInstanceDataByIds($key, $arrGenFormPageIds, 0, '5');
 
             /**
              * overwrite page entries
