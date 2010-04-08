@@ -401,6 +401,7 @@ class Global_ElementController extends AuthControllerAction {
       $this->view->version = $this->objForm->Setup()->getFormVersion();
       $this->view->publisher = $this->objForm->Setup()->getPublisherName();
       $this->view->showinnavigation = $this->objForm->Setup()->getShowInNavigation();
+      $this->view->languagefallback = $this->objForm->Setup()->getLanguageFallbackId();
       $this->view->changeUser = $this->objForm->Setup()->getChangeUserName();
       $this->view->publishDate = $this->objForm->Setup()->getPublishDate('d. M. Y, H:i');
       $this->view->changeDate = $this->objForm->Setup()->getChangeDate('d. M. Y, H:i');
@@ -423,6 +424,8 @@ class Global_ElementController extends AuthControllerAction {
       if($this->objForm->Setup()->getField('url')) $this->view->globalurl = $this->objForm->Setup()->getField('url')->getValue();
 
       $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      
+      $this->view->languageFallbackOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages WHERE isFallback = 1 AND id != '. $this->objForm->Setup()->getLanguageId().' ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageFallbackId());
     }
   }
 
@@ -554,6 +557,7 @@ class Global_ElementController extends AuthControllerAction {
       $objGenericData->Setup()->setElementLinkId($this->objRequest->getParam("linkId", -1));
       $objGenericData->Setup()->setRootLevelId($this->objRequest->getParam("rootLevelId"));
       $objGenericData->Setup()->setRootLevelGroupId($this->objRequest->getParam("rootLevelGroupId"));
+      $objGenericData->Setup()->setParentId($this->objRequest->getParam("parentFolderId"));
       $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
       $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
       $objGenericData->Setup()->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
@@ -830,6 +834,7 @@ class Global_ElementController extends AuthControllerAction {
       $this->objForm->Setup()->setIsStartElement((($this->objRequest->getParam("isStartGlobal") != '') ? $this->objRequest->getParam("isStartGlobal") : 0));
       $this->objForm->Setup()->setPublishDate((($this->objRequest->getParam("publishDate") != '') ? $this->objRequest->getParam("publishDate") : date('Y-m-d H:i:s')));
       $this->objForm->Setup()->setShowInNavigation((($this->objRequest->getParam("showInNavigation") != '') ? $this->objRequest->getParam("showInNavigation") : 0));
+      $this->objForm->Setup()->setLanguageFallbackId((($this->objRequest->getParam("languageFallback") != '') ? $this->objRequest->getParam("languageFallback") : 0));
       $this->objForm->Setup()->setElementTypeId((($this->objRequest->getParam("elementTypeId") != '') ? $this->objRequest->getParam("elementTypeId") : $this->core->sysConfig->global_types->product->id));
       $this->objForm->Setup()->setParentTypeId((($this->objRequest->getParam("parentTypeId") != '') ? $this->objRequest->getParam("parentTypeId") : (($this->objRequest->getParam("parentFolderId") != '') ? $this->core->sysConfig->parent_types->folder : $this->core->sysConfig->parent_types->rootlevel)));
       $this->objForm->Setup()->setModelSubPath('global/models/');
@@ -871,6 +876,7 @@ class Global_ElementController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'isStartGlobal', array('value' => $this->objForm->Setup()->getIsStartElement(), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'publishDate', array('value' => $this->objForm->Setup()->getPublishDate('Y-m-d H:i:s'), 'decorators' => array('Hidden')));
       $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden')));
+      $this->objForm->addElement('hidden', 'languageFallback', array('value' => $this->objForm->Setup()->getLanguageFallbackId(), 'decorators' => array('Hidden')));      
       $this->objForm->addElement('hidden', 'parentTypeId', array('value' => $this->objForm->Setup()->getParentTypeId(), 'decorators' => array('Hidden')));
 
       /**

@@ -19,6 +19,31 @@
     <gmaps>
       <key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xRX1jCuCB9C7WKVnBt8ZIH40aIQaRS9qo5Ey8l_2L9XVt4bQiHyWn2qmw</key>
     </gmaps>
+    
+    <!-- mailer -->
+    <mail>
+      <from>        
+        <name>Ivoclar Vivadent AG</name>
+        <address>info@ivoclarvivadent.com</address>
+      </from>
+      <recipient>        
+        <name>Cornelius Hansjakob</name>
+        <address>cha@massiveart.com</address>
+      </recipient>
+      <params>
+        <host>mailer.massiveart.at</host>
+        <username>zoolu@mailer.massiveart.at</username>
+        <password>w#BmeiLLzoolu</password>
+      </params>
+      <actions>
+        <sendmail>
+          <client>true</client>
+          <confirmation>false</confirmation>
+        </sendmail>
+        <database>true</database>
+      </actions>
+      <database>pageRegistrations</database>
+    </mail>
 
     <!-- languages -->
     <languages>
@@ -128,28 +153,6 @@
       </language>      
     </languages>
     
-    <!-- mailer -->
-    <mail>
-      <from>        
-        <name></name>
-        <address></address>
-      </from>
-      <recipient>        
-        <name></name>
-        <address></address>
-      </recipient>
-      <params>
-        <host>mailer.massiveart.at</host>
-        <username>zoolu@mailer.massiveart.at</username>
-        <password>w#BmeiLLzoolu</password>
-      </params>
-      <hiddenfields>
-        <mail>_mail</mail>
-        <database>_database</database>
-        <dbtable>_dbtable</dbtable>
-      </hiddenfields>
-    </mail>
-    
     <!-- table: categories / idRootCategory=27, idCategoryTypes=2 -->
     <viewtypes>
       <col1>
@@ -206,6 +209,11 @@
         <id>52</id>
       </full> 
     </eventstatus>
+    
+    <!-- encrypt/decrypt -->
+    <crypt>
+      <key>y8d4dp2RBcFFS4YpRKtlDyaFjE2FEd3k</key>
+    </crypt>
 
   </production>
   

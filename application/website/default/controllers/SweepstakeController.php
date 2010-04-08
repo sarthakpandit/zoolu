@@ -120,6 +120,7 @@ class SweepstakeController extends Zend_Controller_Action {
       $intRootLevelId = $this->getRequest()->getParam('rootLevelId');
       $strIPAddress = $this->getRequest()->getParam('ipaddress');
       $strLanguage = $this->getRequest()->getParam('language');
+      $intSweepstakeCounter = $this->getRequest()->getParam('counter');
       
       $arrSweepstakes = array();
       $arrSweepstakes = $this->sweepstakeConfig->sweepstakes->sweepstake->toArray();
@@ -204,6 +205,15 @@ class SweepstakeController extends Zend_Controller_Action {
           }
           
           /**
+           * check appearance counter
+           */
+          if(array_key_exists('appear_counter', $this->arrCurrSweepstake)){
+            if($this->arrCurrSweepstake['appear_counter'] <= $intSweepstakeCounter){
+              $blnShowSweepstake = false; 
+            } 
+          }
+          
+          /**
            * set up translate obj for sweepstake
            */
           if(isset($this->strLanguageCode) && $this->strLanguageCode != ''){            
@@ -211,12 +221,12 @@ class SweepstakeController extends Zend_Controller_Action {
               $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo');
             }
             $this->view->assign('language', $this->strLanguageCode);
-            $this->view->assign('translate', $this->translate);  
+             $this->view->assign('translate', $this->translate);  
           }
                     
           $this->view->assign('basePath', $this->strBasePath);
           $this->view->assign('file', $this->strSweepstakeFile);
-          //$this->view->assign('appearCounter', ((array_key_exists('appear_counter', $arrCurrSweepstake)) ? $arrCurrSweepstake['appear_counter'] : ''));
+          $this->view->assign('hasAppearCounter', ((array_key_exists('appear_counter', $this->arrCurrSweepstake)) ? true : false));
         }else{
           $blnShowSweepstake = false;
         }
@@ -300,26 +310,6 @@ class SweepstakeController extends Zend_Controller_Action {
     $arrFromMail = array();
     $arrFromTo = array();
     
-    /**
-     * standard mail sender and recipients
-     */
-    if(array_key_exists('mail', $this->objSweepstakeSession->arrCurrSweepstake)){      
-      $arrMail = $this->objSweepstakeSession->arrCurrSweepstake['mail'];
-      
-      $arrFromMail = ((array_key_exists('from', $arrMail)) ? $arrMail['from'] : array());
-      $arrFromTo = ((array_key_exists('from', $arrMail)) ? $arrMail['to'] : array());
-
-      $this->arrMailRecipients = array('Name'  => $arrFromTo['name'],
-                                       'Email' => $arrFromTo['email']);
-      
-      if(array_key_exists('mail', $this->objSweepstakeSession->arrCurrSweepstake['countries'][$this->objSweepstakeSession->strCountryShort])){
-        $arrMail = $this->objSweepstakeSession->arrCurrSweepstake['countries'][$this->objSweepstakeSession->strCountryShort]['mail'];
-        
-        $this->arrMailRecipients = array('Name'  => $arrMail['to']['name'],
-                                         'Email' => $arrMail['to']['email']);  
-      }
-    }
-    
     $mail = new Zend_Mail();
     
     /**
@@ -333,6 +323,26 @@ class SweepstakeController extends Zend_Controller_Action {
      * SMTP
      */
     $transport = new Zend_Mail_Transport_Smtp($this->core->webConfig->mail->params->host, $config);
+    
+    /**
+     * standard mail sender and recipients
+     */
+    if(array_key_exists('mail', $this->objSweepstakeSession->arrCurrSweepstake)){      
+      $arrMail = $this->objSweepstakeSession->arrCurrSweepstake['mail'];
+      
+      $arrFromMail = ((array_key_exists('from', $arrMail)) ? $arrMail['from'] : array());
+      $arrFromTo = ((array_key_exists('from', $arrMail)) ? $arrMail['to'] : array());
+
+      $this->arrMailRecipients = array('Name'  => $arrFromTo['name'],
+                                       'Email' => $arrFromTo['email']);
+      
+      if(array_key_exists('mail', $this->objSweepstakeSession->arrCurrSweepstake['countries'][strtolower($this->objSweepstakeSession->strCountryShort)])){
+        $arrToMail = $this->objSweepstakeSession->arrCurrSweepstake['countries'][strtolower($this->objSweepstakeSession->strCountryShort)]['mail'];
+        
+        $this->arrMailRecipients = array('Name'  => $arrToMail['to']['name'],
+                                         'Email' => $arrToMail['to']['email']);  
+      }
+    }
       
     $strHtmlBody = '';     
     if(count($this->arrFormData) > 0){
@@ -345,40 +355,30 @@ class SweepstakeController extends Zend_Controller_Action {
           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
           <title></title>
           <style type="text/css">
-            body { margin:0; padding:0; color:#000; width:100%; height:100%; font-size:11px; font-family:Verdana, Arial, Sans-Serif; background-color:#ffffff; line-height:15px;}
-            input {font-size:11px; font-family:Verdana, Arial, Sans-Serif; }
-            span { line-height:14px; font-size:11px; }
-            img { padding:0; margin:0; border:0; }
-            .tdImg {width:123px; margin:0; padding:0; vertical-align:top; }
-            .divider { margin:0; padding:5px 0 15px 0; width:620px; }
-            h1 { color:#000; font-weight:bold; font-size:16px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-            h2 { color:#000; font-weight:bold; font-size:14px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-            h3 { color:#000; font-weight:bold; font-size:12px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-            a { color:#3366cc; font-size:11px; text-decoration:none; margin:0; padding:0; }
-            a:hover { color:#000; font-size:11px; text-decoration:none; margin:0; padding:0; }
-            p { margin:0 0 10px 0; padding:0; }
+            body { margin:0; padding:20px; color:#333333; width:100%; height:100%; font-size:12px; font-family:Arial, Sans-Serif; background-color:#ffffff; line-height:16px;}
+            h1 { color:#333333; font-weight:bold; font-size:16px; font-family:Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            h2 { color:#333333; font-weight:bold; font-size:14px; font-family:Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            h3 { color:#333333; font-weight:bold; font-size:12px; font-family:Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            a { color:#000; font-size:12px; text-decoration:underline; margin:0; padding:0; }
+            a:hover { color:#000; font-size:12px; text-decoration:none; margin:0; padding:0; }
+            p { margin:0 0 16px 0; padding:0;}
           </style>
         </head>
-        <body>
-        <table cellpadding="0" cellspacing="0" style="width:650px; margin:auto;">
-           <tr>
-              <td style="padding:20px 15px 20px 15px;">
-                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                       <td>
-                        <h1>'.$arrMail['title'].'</h1>
-                        <p>'.$arrMail['intro'].'</p>';
+        <body>        
+           <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                 <td>
+                  <h1>'.$arrMail['title'].'</h1>
+                  <p>'.$arrMail['intro'].'</p>';
       foreach($this->arrFormData as $key => $value){
         if($value != ''){         
-          $strHtmlBody .= '<strong>'.((array_key_exists($key, $this->arrPersonalFormFields)) ? $this->arrPersonalFormFields[$key] : ucfirst(utf8_decode($key))).':</strong> '.utf8_decode($value).'<br/>';  
-        }       
+          $strHtmlBody .= '<strong>'.((array_key_exists($key, $this->arrFormFields)) ? $this->arrFormFields[$key] : ucfirst(utf8_decode($key))).':</strong> '.utf8_decode($value).'<br/>';  
+        }          
       }   
-      $strHtmlBody .= '</td>
-                    </tr>
-                 </table>
-              </td>
-           </tr>
-        </table>
+      $strHtmlBody .= '
+                </td>
+              </tr>
+           </table>
         </body>
         </html>';
     }
@@ -397,16 +397,13 @@ class SweepstakeController extends Zend_Controller_Action {
     $mail->setFrom($arrFromMail['email'], $arrFromMail['name']);
       
     if(count($this->arrMailRecipients) > 0){
-      foreach($this->arrMailRecipients as $arrRecipient){
-        $mail->clearRecipients();
-        $mail->addTo($arrRecipient['Email'], $arrRecipient['Name']);
-        /**
-         * send mail if mail body is not empty
-         */
-        if($strHtmlBody != ''){
-          $mail->send($transport);
-          $this->sendConfirmationMail();
-        } 
+      $mail->clearRecipients();
+      $mail->addTo($this->arrMailRecipients['Email'], $this->arrMailRecipients['Name']);
+      /**
+       * send mail if mail body is not empty
+       */
+      if($strHtmlBody != ''){
+        $mail->send($transport);
       } 
     }
   } 

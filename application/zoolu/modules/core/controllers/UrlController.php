@@ -125,10 +125,10 @@ class Core_UrlController extends AuthControllerAction {
         $this->strModelSubPath = 'cms/models/';
         $this->intItemId = $this->getRequest()->getParam('id');
         break;
-      case $this->core->sysConfig->modules->products:
-        $this->strType = 'product';
-        $this->strModelSubPath = 'products/models/';
-        $this->intItemId = $this->getRequest()->getParam('linkId');
+      case $this->core->sysConfig->modules->global:
+        $this->strType = 'global';
+        $this->strModelSubPath = 'global/models/';
+        $this->intItemId = ($this->getRequest()->getParam('linkId') > 0 ? $this->getRequest()->getParam('linkId') : $this->getRequest()->getParam('id'));
         break;
     }
   }

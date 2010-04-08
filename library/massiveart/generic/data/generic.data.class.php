@@ -174,7 +174,7 @@ class GenericData {
        * check, if the new and the old form type are the same
        */
       if($intNewFormTypeId != $this->setup->getFormTypeId()){
-        throw new Exception('Not able to change template, because there are different form types!');
+        throw new Exception('Not able to change template, because there are different form types! '.$intNewFormTypeId.'-'.$this->setup->getFormTypeId());
       }
 
       /**

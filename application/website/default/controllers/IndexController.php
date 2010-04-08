@@ -174,15 +174,14 @@ class IndexController extends Zend_Controller_Action {
     /**
      * set up zoolu translate obj
      */
-    if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo')){
+    if(file_exists(GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo')){
        $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo');  
     }else{
-       $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->sysConfig->languages->default->code.'.mo');
+       $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->core->sysConfig->languages->default->code.'.mo');
     }
     
     $this->view->translate = $this->translate;
-    
-    
+        
     $this->getModelFolders();
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
 

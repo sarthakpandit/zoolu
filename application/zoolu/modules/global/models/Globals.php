@@ -107,7 +107,7 @@ class Model_Globals {
     $objSelect = $this->getGlobalTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'version', 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.idStatus', 'globalProperties.creator'));
+    $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'version', 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.idStatus', 'globalProperties.creator'));
     $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
     $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = globalProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
@@ -130,7 +130,7 @@ class Model_Globals {
     $objSelect = $this->getGlobalTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
+    $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
     $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
     $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = globalProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
@@ -156,7 +156,7 @@ class Model_Globals {
     $objSelect = $this->getGlobalTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('globals', array('globalProperties.idGenericForms', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation'));
+    $objSelect->from('globals', array('globalProperties.idGenericForms', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.idLanguageFallbacks'));
     $objSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId'));
     $objSelect->where('globals.id = ?', $intElementId);
@@ -180,7 +180,7 @@ class Model_Globals {
     $objSelect->setIntegrityCheck(false);
 
     if($intTypeId == $this->core->sysConfig->page_types->product_tree->id){
-      $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => 'lP.id', 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
+      $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => 'lP.id', 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
       $objSelect->join('globalLinks', 'globalLinks.globalId = globals.globalId', array());
       $objSelect->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array());              
       $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
@@ -196,7 +196,7 @@ class Model_Globals {
         $objSelect->where('lP.isStartGlobal = 1');
       }  
     }else{
-      $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => new Zend_Db_Expr('-1'), 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
+      $objSelect->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'linkId' => new Zend_Db_Expr('-1'), 'version', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idTemplates', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'));
       $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
       $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
       $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = globalProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
@@ -212,6 +212,43 @@ class Model_Globals {
     }
         
     return $this->getGlobalTable()->fetchAll($objSelect);   
+  }
+  
+  /**
+   * loadAllPublicGlobals
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadAllPublicGlobals(){
+    $this->core->logger->debug('cms->models->Model_Globals->loadAllPublicGlobals()');
+
+    $objSelect1 = $this->getGlobalUrlTable()->select()->distinct();
+    $objSelect1->setIntegrityCheck(false);
+    
+    $objSelect1->from($this->objGlobalUrlTable, array('globals.globalId', 'idLink' => 'lG.id', 'version', 'idLanguages'));
+    $objSelect1->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global, array());
+    $objSelect1->join('globalLinks', 'globalLinks.idGlobals = lG.id', array());
+    $objSelect1->join('globals', 'globals.id = (SELECT g.id FROM globals AS g WHERE g.globalId = globalLinks.globalId ORDER BY g.version DESC LIMIT 1)', array());
+    $objSelect1->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version', array());
+    $objSelect1->where('globalProperties.idStatus = ?', $this->core->sysConfig->status->live);
+    
+    
+    $objSelect2 = $this->getGlobalUrlTable()->select()->distinct();
+    $objSelect2->setIntegrityCheck(false);
+    
+    $objSelect2->from($this->objGlobalUrlTable, array('globals.globalId', 'idLink' => new Zend_Db_Expr('-1'), 'version', 'idLanguages'));
+    $objSelect2->join('globals', 'globals.globalId = urls.relationId AND globals.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global, array());
+    $objSelect2->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version', array());
+    $objSelect2->where('globalProperties.idStatus = ?', $this->core->sysConfig->status->live);
+    
+    $objSelect = $this->getGlobalTable()->select()
+                                         ->distinct()
+                                         ->union(array($objSelect1, $objSelect2));
+                                         
+    echo $objSelect;
+                  
+    return $this->objGlobalUrlTable->fetchAll($objSelect);
   }
 
   /**
@@ -255,19 +292,22 @@ class Model_Globals {
     $objSelect1 = $this->core->dbh->select();
     
     if((isset($this->core->sysConfig->$strType->product_tree) && $intTypeId == $this->core->sysConfig->$strType->product_tree->id) || (isset($this->core->sysConfig->$strType->product_overview) && $intTypeId == $this->core->sysConfig->$strType->product_overview->id)){
-      $objSelect1->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => 'lP.id', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
-               ->join('globalLinks', 'globalLinks.globalId = globals.globalId', array())
-               ->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array())
-               ->join('folders', 'folders.id = lP.idParent AND lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
-               ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
-               ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
-               ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
-               ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
-               ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
-               ->join('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
-               ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
-               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
-               ->where('folders.idRootLevels = parent.idRootLevels');
+      $objSelect1->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => 'lP.id', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
+                 ->join('globalLinks', 'globalLinks.globalId = globals.globalId', array())
+                 ->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array())
+                 ->join('folders', 'folders.id = lP.idParent AND lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
+                 ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
+                 ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
+                 ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
+                 ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+                 ->joinLeft(array('fallbackTitles' => 'globalTitles'), 'fallbackTitles.globalId = globals.globalId AND fallbackTitles.version = globals.version AND fallbackTitles.idLanguages = globalProperties.idLanguageFallbacks', array('fallbackTitle' => 'title'))
+                 ->joinLeft(array('fallbackProperties' => 'globalProperties'), 'fallbackProperties.globalId = globals.globalId AND fallbackProperties.version = globals.version AND fallbackProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->joinLeft(array('fallbackGenericForms' => 'genericForms'), 'fallbackGenericForms.id = fallbackProperties.idGenericForms', array('fallbackGenericFormId' => 'genericFormId', 'fallbackGenericFormVersion' => 'version', 'fallbackGenericFormTypeId' => 'idGenericFormTypes'))
+                 ->join('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
+                 ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
+                 ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
+                 ->where('folders.idRootLevels = parent.idRootLevels');
                  
       if($blnOnlyItems === true){
         $objSelect1->where('lP.isStartGlobal = 0');
@@ -286,29 +326,35 @@ class Model_Globals {
       
       
       $objSelect2 = $this->core->dbh->select();
-      $objSelect2->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => 'lP.id', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'lP.sortPosition', 'sortTimestamp' => 'lP.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
+      $objSelect2->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => 'lP.id', 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'lP.sortPosition', 'sortTimestamp' => 'lP.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
                  ->join('globalLinks', 'globalLinks.globalId = globals.globalId', array())
                  ->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array())
                  ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
                  ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
                  ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
                  ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+                 ->joinLeft(array('fallbackTitles' => 'globalTitles'), 'fallbackTitles.globalId = globals.globalId AND fallbackTitles.version = globals.version AND fallbackTitles.idLanguages = globalProperties.idLanguageFallbacks', array('fallbackTitle' => 'title'))
+                 ->joinLeft(array('fallbackProperties' => 'globalProperties'), 'fallbackProperties.globalId = globals.globalId AND fallbackProperties.version = globals.version AND fallbackProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->joinLeft(array('fallbackGenericForms' => 'genericForms'), 'fallbackGenericForms.id = fallbackProperties.idGenericForms', array('fallbackGenericFormId' => 'genericFormId', 'fallbackGenericFormVersion' => 'version', 'fallbackGenericFormTypeId' => 'idGenericFormTypes'))
                  ->join('urls', 'urls.relationId = lP.globalId AND urls.version = lP.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
                  ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
                  ->where('lP.idParent = ?', $intParentId)
                  ->where('lP.isStartGlobal = 0');
     }else{
-      $objSelect1->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => new Zend_Db_Expr('-1'), 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
-               ->join('folders', 'folders.id = globals.idParent AND globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
-               ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
-               ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
-               ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
-               ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
-               ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
-               ->join('urls', 'urls.relationId = globals.globalId AND urls.version = globals.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
-               ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
-               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
-               ->where('folders.idRootLevels = parent.idRootLevels');
+      $objSelect1->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => new Zend_Db_Expr('-1'), 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
+                 ->join('folders', 'folders.id = globals.idParent AND globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
+                 ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
+                 ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
+                 ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
+                 ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+                 ->joinLeft(array('fallbackTitles' => 'globalTitles'), 'fallbackTitles.globalId = globals.globalId AND fallbackTitles.version = globals.version AND fallbackTitles.idLanguages = globalProperties.idLanguageFallbacks', array('fallbackTitle' => 'title'))
+                 ->joinLeft(array('fallbackProperties' => 'globalProperties'), 'fallbackProperties.globalId = globals.globalId AND fallbackProperties.version = globals.version AND fallbackProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->joinLeft(array('fallbackGenericForms' => 'genericForms'), 'fallbackGenericForms.id = fallbackProperties.idGenericForms', array('fallbackGenericFormId' => 'genericFormId', 'fallbackGenericFormVersion' => 'version', 'fallbackGenericFormTypeId' => 'idGenericFormTypes'))
+                 ->join('urls', 'urls.relationId = globals.globalId AND urls.version = globals.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
+                 ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
+                 ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
+                 ->where('folders.idRootLevels = parent.idRootLevels');
                  
       if($blnOnlyItems === true){
         $objSelect1->where('globals.isStartGlobal = 0');
@@ -326,11 +372,14 @@ class Model_Globals {
       }
             
       $objSelect2 = $this->core->dbh->select();
-      $objSelect2->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => new Zend_Db_Expr('-1'), 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'globals.sortPosition', 'sortTimestamp' => 'globals.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
+      $objSelect2->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => new Zend_Db_Expr('-1'), 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'globals.sortPosition', 'sortTimestamp' => 'globals.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
                  ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
                  ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
                  ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
                  ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+                 ->joinLeft(array('fallbackTitles' => 'globalTitles'), 'fallbackTitles.globalId = globals.globalId AND fallbackTitles.version = globals.version AND fallbackTitles.idLanguages = globalProperties.idLanguageFallbacks', array('fallbackTitle' => 'title'))
+                 ->joinLeft(array('fallbackProperties' => 'globalProperties'), 'fallbackProperties.globalId = globals.globalId AND fallbackProperties.version = globals.version AND fallbackProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->joinLeft(array('fallbackGenericForms' => 'genericForms'), 'fallbackGenericForms.id = fallbackProperties.idGenericForms', array('fallbackGenericFormId' => 'genericFormId', 'fallbackGenericFormVersion' => 'version', 'fallbackGenericFormTypeId' => 'idGenericFormTypes'))
                  ->join('urls', 'urls.relationId = globals.globalId AND urls.version = globals.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.idParent IS NULL AND urls.isMain = 1', array('url'))
                  ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
                  ->where('globals.idParent = ?', $intParentId)
@@ -486,7 +535,7 @@ class Model_Globals {
     $objSelect = $this->getGlobalTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('globals', array('id', 'globalId', 'version', 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.idStatus', 'globalProperties.creator'));
+    $objSelect->from('globals', array('id', 'globalId', 'version', 'isStartGlobal', 'idParent', 'idParentTypes', 'globalProperties.idGlobalTypes', 'globalProperties.showInNavigation', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.idStatus', 'globalProperties.creator'));
     $objSelect->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'));
     $objSelect->where('globalTitles.title LIKE ?', '%'.$strSearchValue.'%')
@@ -557,19 +606,20 @@ class Model_Globals {
     /**
      * insert language specific properties
      */
-    $arrProperties = array('globalId'         => $objGlobal->globalId,
-                           'version'          => $objGlobal->version,
-                           'idLanguages'      => $this->intLanguageId,
-                           'idGenericForms'   => $objGenericSetup->getGenFormId(),
-                           'idTemplates'      => $objGenericSetup->getTemplateId(),
-                           'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
-                           'showInNavigation' => $objGenericSetup->getShowInNavigation(),
-                           'idUsers'          => $intUserId,
-                           'creator'          => $objGenericSetup->getCreatorId(),
-                           'publisher'        => $intUserId,
-                           'created'          => date('Y-m-d H:i:s'),
-                           'published'        => $objGenericSetup->getPublishDate(),
-                           'idStatus'         => $objGenericSetup->getStatusId());
+    $arrProperties = array('globalId'             => $objGlobal->globalId,
+                           'version'              => $objGlobal->version,
+                           'idLanguages'          => $this->intLanguageId,
+                           'idLanguageFallbacks'  => $objGenericSetup->getLanguageFallbackId(),
+                           'idGenericForms'       => $objGenericSetup->getGenFormId(),
+                           'idTemplates'          => $objGenericSetup->getTemplateId(),
+                           'idGlobalTypes'        => $objGenericSetup->getElementTypeId(),
+                           'showInNavigation'     => $objGenericSetup->getShowInNavigation(),
+                           'idUsers'              => $intUserId,
+                           'creator'              => $objGenericSetup->getCreatorId(),
+                           'publisher'            => $intUserId,
+                           'created'              => date('Y-m-d H:i:s'),
+                           'published'            => $objGenericSetup->getPublishDate(),
+                           'idStatus'             => $objGenericSetup->getStatusId());
     $this->getGlobalPropertyTable()->insert($arrProperties);
     
     /**
@@ -578,19 +628,26 @@ class Model_Globals {
     $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
     foreach($arrZooluLanguages as $arrZooluLanguage){
       if($arrZooluLanguage['id'] != $this->intLanguageId){
-        $arrProperties = array('globalId'         => $objGlobal->globalId,
-                               'version'          => $objGlobal->version,
-                               'idLanguages'      => $arrZooluLanguage['id'],
-                               'idGenericForms'   => $objGenericSetup->getGenFormId(),
-                               'idTemplates'      => $objGenericSetup->getTemplateId(),
-                               'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
-                               'showInNavigation' => $objGenericSetup->getShowInNavigation(),
-                               'idUsers'          => $intUserId,
-                               'creator'          => $objGenericSetup->getCreatorId(),
-                               'publisher'        => $intUserId,
-                               'created'          => date('Y-m-d H:i:s'),
-                               'idStatus'         => $this->core->sysConfig->status->test);
-        $this->getGlobalPropertyTable()->insert($arrProperties);
+        $objPropertyItem = $this->getGlobalPropertyTable()->fetchRow(
+           $this->getGlobalPropertyTable()->select()
+                                          ->where('globalId = ?', $objGlobal->globalId)
+                                          ->where('version = ?', $objGlobal->version)
+                                          ->where('idLanguages = ?', $arrZooluLanguage['id']));
+        if(count($objPropertyItem) == 0){
+          $arrProperties = array('globalId'         => $objGlobal->globalId,
+                                 'version'          => $objGlobal->version,
+                                 'idLanguages'      => $arrZooluLanguage['id'],
+                                 'idGenericForms'   => $objGenericSetup->getGenFormId(),
+                                 'idTemplates'      => $objGenericSetup->getTemplateId(),
+                                 'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
+                                 'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                                 'idUsers'          => $intUserId,
+                                 'creator'          => $objGenericSetup->getCreatorId(),
+                                 'publisher'        => $intUserId,
+                                 'created'          => date('Y-m-d H:i:s'),
+                                 'idStatus'         => $this->core->sysConfig->status->test);
+          $this->getGlobalPropertyTable()->insert($arrProperties);
+          }
       }
     }
 
@@ -679,33 +736,35 @@ class Model_Globals {
      * update language specific global properties
      */
     $strWhere .= $this->getGlobalTable()->getAdapter()->quoteInto(' AND idLanguages = ?', $this->intLanguageId);
-    $intNumOfEffectedRows = $this->getGlobalPropertyTable()->update(array('idGenericForms'    => $objGenericSetup->getGenFormId(),
-                                                                          'idTemplates'       => $objGenericSetup->getTemplateId(),
-                                                                          'idGlobalTypes'     => $objGenericSetup->getElementTypeId(),
-                                                                          'showInNavigation'  => $objGenericSetup->getShowInNavigation(),
-                                                                          'idUsers'           => $intUserId,
-                                                                          'creator'           => $objGenericSetup->getCreatorId(),
-                                                                          'idStatus'          => $objGenericSetup->getStatusId(),
-                                                                          'published'         => $objGenericSetup->getPublishDate(),
-                                                                          'changed'           => date('Y-m-d H:i:s')), $strWhere);
+    $intNumOfEffectedRows = $this->getGlobalPropertyTable()->update(array('idGenericForms'      => $objGenericSetup->getGenFormId(),
+                                                                          'idTemplates'         => $objGenericSetup->getTemplateId(),
+                                                                          'idGlobalTypes'       => $objGenericSetup->getElementTypeId(),
+                                                                          'showInNavigation'    => $objGenericSetup->getShowInNavigation(),
+                                                                          'idLanguageFallbacks' => $objGenericSetup->getLanguageFallbackId(),  
+                                                                          'idUsers'             => $intUserId,
+                                                                          'creator'             => $objGenericSetup->getCreatorId(),
+                                                                          'idStatus'            => $objGenericSetup->getStatusId(),
+                                                                          'published'           => $objGenericSetup->getPublishDate(),
+                                                                          'changed'             => date('Y-m-d H:i:s')), $strWhere);
     
     /**
      * insert language specific global properties
      */
     if($intNumOfEffectedRows == 0){      
-      $arrProperties = array('globalId'         => $objGlobal->globalId,
-                             'version'          => $objGlobal->version,
-                             'idLanguages'      => $this->intLanguageId,
-                             'idGenericForms'   => $objGenericSetup->getGenFormId(),
-                             'idTemplates'      => $objGenericSetup->getTemplateId(),
-                             'idGlobalTypes'    => $objGenericSetup->getElementTypeId(),
-                             'showInNavigation' => $objGenericSetup->getShowInNavigation(),
-                             'idUsers'          => $intUserId,
-                             'creator'          => $objGenericSetup->getCreatorId(),
-                             'publisher'        => $intUserId,
-                             'created'          => date('Y-m-d H:i:s'),
-                             'published'        => $objGenericSetup->getPublishDate(),
-                             'idStatus'         => $objGenericSetup->getStatusId());
+      $arrProperties = array('globalId'             => $objGlobal->globalId,
+                             'version'              => $objGlobal->version,
+                             'idLanguages'          => $this->intLanguageId,
+                             'idLanguageFallbacks'  => $objGenericSetup->getLanguageFallbackId(),
+                             'idGenericForms'       => $objGenericSetup->getGenFormId(),
+                             'idTemplates'          => $objGenericSetup->getTemplateId(),
+                             'idGlobalTypes'        => $objGenericSetup->getElementTypeId(),
+                             'showInNavigation'     => $objGenericSetup->getShowInNavigation(),
+                             'idUsers'              => $intUserId,
+                             'creator'              => $objGenericSetup->getCreatorId(),
+                             'publisher'            => $intUserId,
+                             'created'              => date('Y-m-d H:i:s'),
+                             'published'            => $objGenericSetup->getPublishDate(),
+                             'idStatus'             => $objGenericSetup->getStatusId());
       $this->getGlobalPropertyTable()->insert($arrProperties);
     }
 

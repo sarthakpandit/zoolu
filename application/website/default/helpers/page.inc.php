@@ -166,12 +166,16 @@ function get_zoolu_header(){
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_elementId(){
+function get_elementId($blnReturn = false){
   $strHtmlOutput = '';
   if(getPageObject()->getElementId() != ''){
     $strHtmlOutput = getPageObject()->getElementId();
   }
-  echo $strHtmlOutput;
+  if($blnReturn){
+    return $strHtmlOutput; 
+  }else{
+    echo $strHtmlOutput;  
+  }
 }
 
 /**
@@ -988,26 +992,35 @@ function get_text_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox 
         if(!isset($objDisplayOption->size) || $objDisplayOption->size == null) $objDisplayOption->size = $strImageFolder;
         
         $strImageAddonClasses = '';
+        $strImageModAddonClasses = '';
+        $strImageContainerAddonClasses = '';
         switch($objDisplayOption->position){
           case Image::POSITION_RIGHT_MIDDLE:
-            $strImageAddonClasses = ' mLeft10 right';
+            $strImageContainerAddonClasses = ' mLeft10 mBottom10 right';
+            break;
+          case Image::POSITION_CENTER_BOTTOM:
+          case Image::POSITION_CENTER_TOP:
+            $strImageAddonClasses = ' mRight10 mBottom10';
+            $strImageModAddonClasses = ' mBottom10';
             break;
           case Image::POSITION_LEFT_MIDDLE:
           default:
-            $strImageAddonClasses = ' mRight10 left';
+            $strImageContainerAddonClasses = ' mRight10 mBottom10 left';
             break;
         }
         
         $strHtmlOutputImage = '';
         if($objFiles != '' && count($objFiles) > 0){
-          $strHtmlOutputImage .= '<div class="'.$strImageContainerClass.$strImageAddonClasses.'">';
+          $strHtmlOutputImage .= '<div class="'.$strImageContainerClass.$strImageContainerAddonClasses.'">';
+          $intImgCounter = 0;
           foreach($objFiles as $objFile){
+            $intImgCounter++;
             if($blnZoom && $strImageFolderZoom != ''){
               $strHtmlOutputImage .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolderZoom.'/'.$objFile->filename.'?v='.$objFile->version.'"';
               if($blnUseLightbox) $strHtmlOutputImage .= ' rel="lightbox[textblocks]"';
               $strHtmlOutputImage .= '>';
             }
-            $strHtmlOutputImage .= '<img class="img'.$objDisplayOption->size.'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objFile->path.$objDisplayOption->size.'/'.$objFile->filename.'?v='.$objFile->version.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+            $strHtmlOutputImage .= '<img class="img'.$objDisplayOption->size.($intImgCounter % 4 == 0 ? $strImageModAddonClasses : $strImageAddonClasses).'" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objFile->path.$objDisplayOption->size.'/'.$objFile->filename.'?v='.$objFile->version.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
             if($blnZoom && $strImageFolderZoom != '') $strHtmlOutputImage .= '</a>';
           }
           $strHtmlOutputImage .= '</div>';
@@ -2091,81 +2104,38 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
   echo $strHtmlOutput;
 }
 
+/**
+ * get_press_contact
+ * @author Thomas Schedler <tsh@massiveart.com>
+ */
 function get_press_contact(){
  echo getPageHelperObject()->getPressContact();
 }
 
 /**
- * get_sub_navigation_by_level
- * @author Thomas Schedler <tsh@massiveart.com>
+ * get_contact
+ * @author Cornelius Hansjakob <cha@massiveart.com>
  */
-function get_sub_navigation_by_level($intLevel){
-  $strOutput = '';
-  
-  $objNavigation = getNavigationObject();
-  $objCore = Zend_Registry::get('Core');
-
-  /**
-   * check if MainNavigation is realy loaded
-   */
-  //if(count($objNavigation->MainNavigation()) == 0){
-    //$objNavigation->loadNavigationByDisplayOption($objCore->sysConfig->navigation_options->left, 99);
-    $objNavigation->loadNavigation(99);
-  //}
-  
-  if(count($objNavigation->MainNavigation()) > 0){
-    foreach($objNavigation->MainNavigation() as $objNavi){
-      $strOutput .= sub_navigation_level_list($objNavi, $intLevel, 2);  
-    }   
-  }
-  
-  if($strOutput != ''){
-    $strOutput = '
-          <select onchange="if(this.value != \'\') location.href=this.value;">
-            <option value="">Jahr</option>
-            '.$strOutput.'
-          </select>';
-  }
-  
-  echo $strOutput;
+function get_contact($strTitle = ''){
+ echo getPageHelperObject()->getContact($strTitle);
 }
 
 /**
- * sub_navigation_level_list
+ * get_press_pics
  * @author Thomas Schedler <tsh@massiveart.com>
  */
-function sub_navigation_level_list($objNavi, $intLevel, $intActualLevel){
-  
-  $objCore = Zend_Registry::get('Core');
-  $objNavigation = getNavigationObject();
-  $arrFolderIds = $objNavigation->getParentFolderIds();
-  $arrParentFolderIds = $objNavigation->getGlobalParentFolderIds();
-  
-  if($objNavi instanceof NavigationTree && in_array($objNavi->getItemId(), $arrFolderIds)){
-    if($intLevel == $intActualLevel){
-      
-      $strPageId = '';  
-      if(is_object($objNavigation->Page())){
-        $strPageId = $objNavigation->Page()->getPageId();
-      }
-              
-      $strSubNavigation = '';      
-      foreach($objNavi as $objSubNavi){
-        $strSelected = ($strPageId == $objSubNavi->getItemId() || in_array($objSubNavi->getItemId(), $arrFolderIds) || in_array($objSubNavi->getItemId(), $arrParentFolderIds)) ? ' selected="selected"' : '';
-        $strSubNavigation .= '
-          <option value="'.$objSubNavi->getUrl().'" '.$strSelected.'>'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $objCore->sysConfig->encoding->default).'</option>';
-      }
-      return $strSubNavigation;
-    }else{
-      $intActualLevel++;
-      foreach($objNavi as $objSubNavi){
-        if($objSubNavi instanceof NavigationTree && in_array($objSubNavi->getItemId(), $arrFolderIds)){
-          return sub_navigation_level_list($objSubNavi, $intLevel, $intActualLevel);
-        }
-      }
-    }
-  }
+function get_press_pics(){
+ echo getPageHelperObject()->getPressPics();
 }
+
+/**
+ * get_external_links
+ * @author Thomas Schedler <tsh@massiveart.com>
+ */
+function get_external_links(){
+ echo getPageHelperObject()->getExternalLinks();
+}
+
 
 /**
  * get_links_title
@@ -2246,6 +2216,24 @@ function get_date_published(){
  */
 function get_iframe($strQueryString = ''){
   echo getPageHelperObject()->getIframe($strQueryString);
+}
+
+/**
+ * get_form
+ * @return string $strHtmlOutput
+ * @author Cornelius Hansjakob <cha@massiveart.com> 
+ */
+function get_form($strFormId, $intRootLevelId, $intPageId){
+  echo getPageHelperObject()->getForm($strFormId, $intRootLevelId, $intPageId);
+}
+
+/**
+ * get_form_success
+ * @return string $strHtmlOutput
+ * @author Cornelius Hansjakob <cha@massiveart.com> 
+ */
+function get_form_success(){
+  echo getPageHelperObject()->getFormSuccess();
 }
 
 /**

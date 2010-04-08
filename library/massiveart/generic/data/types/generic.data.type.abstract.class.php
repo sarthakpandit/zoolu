@@ -207,16 +207,21 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           if($strField == 'title'){
             $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
             foreach($arrZooluLanguages as $arrZooluLanguage){
-              echo $arrZooluLanguage['id'];
               if($arrZooluLanguage['id'] != $this->setup->getLanguageId()){
-                $arrCoreData = array($strType.'Id' => $strTypeId,
-                                   'version'     => $intTypeVersion,
-                                   'idLanguages' => $arrZooluLanguage['id'],
-                                   'title'       => $objField->getValue(),
-                                   'idUsers'     => $intUserId,
-                                   'creator'     => $intUserId,
-                                   'created'     => date('Y-m-d H:i:s'));
-                $objGenTable->insert($arrCoreData);
+                $objGenItem = $objGenTable->fetchRow($objGenTable->select()
+                                                                 ->where($strType.'Id = ?',$strTypeId)
+                                                                 ->where('version = ?', $intTypeVersion)
+                                                                 ->where('idLanguages = ?', $arrZooluLanguage['id']));
+                if(count($objGenItem) == 0){
+                  $arrCoreData = array($strType.'Id' => $strTypeId,
+                                     'version'      => $intTypeVersion,
+                                     'idLanguages'  => $arrZooluLanguage['id'],
+                                     'title'        => $objField->getValue(),
+                                     'idUsers'      => $intUserId,
+                                     'creator'      => $intUserId,
+                                     'created'      => date('Y-m-d H:i:s'));
+                  $objGenTable->insert($arrCoreData);
+                }
               }
             }
           }
@@ -1271,6 +1276,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       $objDoc->addField(Zend_Search_Lucene_Field::keyword('languageId', $this->setup->getLanguageId()));     
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('date', $this->setup->getPublishDate('d.m.Y')));
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('rootLevelId', $this->setup->getRootLevelId()));
+      $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('elementTypeId', $this->setup->getElementTypeId()));
 
       /**
        * index fields

@@ -308,19 +308,26 @@ class Model_Pages {
     $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
     foreach($arrZooluLanguages as $arrZooluLanguage){
       if($arrZooluLanguage['id'] != $this->intLanguageId){
-        $arrProperties = array('pageId'           => $objPage->pageId,
-                               'version'          => $objPage->version,
-                               'idLanguages'      => $arrZooluLanguage['id'],
-                               'idGenericForms'   => $objGenericSetup->getGenFormId(),
-                               'idTemplates'      => $objGenericSetup->getTemplateId(),
-                               'idPageTypes'      => $objGenericSetup->getElementTypeId(),
-                               'showInNavigation' => $objGenericSetup->getShowInNavigation(),
-                               'idUsers'          => $intUserId,
-                               'creator'          => $objGenericSetup->getCreatorId(),
-                               'publisher'        => $intUserId,
-                               'created'          => date('Y-m-d H:i:s'),
-                               'idStatus'         => $this->core->sysConfig->status->test);
-        $this->getPagePropertyTable()->insert($arrProperties);
+        $objPropertyItem = $this->getPagePropertyTable()->fetchRow(
+           $this->getPagePropertyTable()->select()
+                                        ->where('pageId = ?', $objPage->pageId)
+                                        ->where('version = ?', $objPage->version)
+                                        ->where('idLanguages = ?', $arrZooluLanguage['id']));
+        if(count($objPropertyItem) == 0){
+          $arrProperties = array('pageId'           => $objPage->pageId,
+                                 'version'          => $objPage->version,
+                                 'idLanguages'      => $arrZooluLanguage['id'],
+                                 'idGenericForms'   => $objGenericSetup->getGenFormId(),
+                                 'idTemplates'      => $objGenericSetup->getTemplateId(),
+                                 'idPageTypes'      => $objGenericSetup->getElementTypeId(),
+                                 'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                                 'idUsers'          => $intUserId,
+                                 'creator'          => $objGenericSetup->getCreatorId(),
+                                 'publisher'        => $intUserId,
+                                 'created'          => date('Y-m-d H:i:s'),
+                                 'idStatus'         => $this->core->sysConfig->status->test);
+          $this->getPagePropertyTable()->insert($arrProperties);
+        }
       }
     }
     

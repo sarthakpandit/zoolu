@@ -267,6 +267,47 @@ class MediaController extends Zend_Controller_Action {
   }
   
   /**
+   * formAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function formAction(){
+    $this->core->logger->debug('website->controllers->MediaController->formAction()');
+    
+    $strMedia = ((isset($_GET['file'])) ? $_GET['file'] : '');
+    
+    if($strMedia != ''){
+      $strFileBasePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->forms->path->local->private;
+      $strFilePath = $strFileBasePath.$strMedia;
+      
+      if(file_exists($strFilePath)){        
+        
+        // fix for IE catching or PHP bug issue
+        header("Pragma: public");
+        header("Expires: 0"); // set expiration time
+        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        // browser must download file from server instead of cache
+    
+        // force download dialog
+        header("Content-Type: application/force-download");
+        header("Content-Type: application/octet-stream");
+        header("Content-Type: application/download");
+    
+        // Passenden Dateinamen im Download-Requester vorgeben,
+        header("Content-Disposition: attachment; filename=\"".$strMedia."\"");
+        
+        header("Content-Transfer-Encoding: binary");        
+    
+        // Datei ausgeben.
+        readfile($strFilePath);
+              
+      }else{
+        // file doesn't exist       
+      }
+    }
+  }
+  
+  /**
    * getModelFiles
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0

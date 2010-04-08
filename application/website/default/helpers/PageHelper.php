@@ -221,7 +221,34 @@ class PageHelper {
    * @return string
    */
   public function getVideos(){
-    //TODO default product overview
+    //TODO default videos
+  }
+  
+  /**
+   * getIframe
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getIframe(){
+    //TODO iframe output
+  }
+  
+  /**
+   * getForm
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getForm(){
+    // TODO form output
+  }
+  
+  /**
+   * getFormSuccess
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getFormSuccess(){
+    // TODO form success message output
   }
   
   /**
@@ -233,6 +260,56 @@ class PageHelper {
     //TODO default product overview
   }
   
+  /**
+   * getContact
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getContact($strTitle = ''){
+    //TODO default product overview
+  }
+  
+  /**
+   * getPressPics
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getPressPics(){
+    //TODO default product overview
+  }
+  
+  /**
+   * getExternalLinks
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getExternalLinks(){
+    $strReturn = '';
+    
+    $objMyMultiRegion = $this->objPage->getRegion(50); //50 is the default external linkk region
+  
+    if($objMyMultiRegion instanceof GenericElementRegion){
+      $strReturn .= '<div class="links">';
+      
+      if($this->objPage->getField('title_externe_links') && $this->objPage->getFieldValue('title_externe_links') != ''){
+        $strReturn .= '<h2>'.htmlentities($this->objPage->getFieldValue('title_externe_links'), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</h2>';
+      }
+      
+      foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+        $strTitle = htmlentities($objMyMultiRegion->getField('link_title')->getInstanceValue($intRegionInstanceId), ENT_COMPAT, $this->core->sysConfig->encoding->default);
+        $strUrl = $objMyMultiRegion->getField('link_url')->getInstanceValue($intRegionInstanceId);
+        if(filter_var($strUrl, FILTER_VALIDATE_URL)){
+          $strReturn .= '<div class="item"><a href="'.$strUrl.'">'.$strTitle.'</a></div>';
+        }else if(filter_var('http://'.$strUrl, FILTER_VALIDATE_URL)){
+          $strReturn .= '<div class="item"><a href="http://'.$strUrl.'">'.$strTitle.'</a></div>';
+        }
+      }
+      $strReturn .= '</div>';
+    }
+    
+    return $strReturn;
+  }
+    
   /**
    * setPage    
    * @param Page $objPage   

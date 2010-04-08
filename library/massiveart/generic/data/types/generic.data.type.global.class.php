@@ -166,24 +166,9 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
           }
         }
       }
-
-      //global index
-      /*
-      if($this->setup->getElementTypeId() != $this->core->sysConfig->global_types->link->id && $this->setup->getStatusId() == $this->core->sysConfig->status->live){
-        if(substr(PHP_OS, 0, 3) === 'WIN') {
-          $this->core->logger->warning('slow global index on windows based OS!');
-          $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId);
-        }else{
-          $strIndexGlobalFilePath = GLOBAL_ROOT_PATH.'cli/IndexGlobal.php';
-          //run global index in background
-          exec("php $strIndexGlobalFilePath --globalId='".$objGlobal->globalId."' --version=".$objGlobal->version." --languageId=".$this->setup->getLanguageId()." > /dev/null &#038;");
-        }
-      }else{
-        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId);
-      }*/
-
+      
       //cache expiring
-      /*
+      //TODO:FIXME
       if($this->Setup()->getField('url')){
         $strUrl = $this->Setup()->getField('url')->getValue();
 
@@ -193,7 +178,7 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
         );
 
         $arrBackendOptions = array(
-          'cache_dir' => GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->globals // Directory where to put the cache files
+          'cache_dir' => GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->pages // Directory where to put the cache files
         );
 
         // getting a Zend_Cache_Core object
@@ -207,7 +192,22 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
         $objCache->remove($strCacheId);
 
         $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartGlobal', 'GlobalType'.$this->core->sysConfig->global_types->overview->id));
-      }*/
+      }
+
+      //global index      
+      if($this->setup->getStatusId() == $this->core->sysConfig->status->live){
+        if(substr(PHP_OS, 0, 3) === 'WIN') {
+          $this->core->logger->warning('Now indexing implemented at the moment!');
+          //TODO:FIXME $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId);
+        }else{
+          $strIndexGlobalFilePath = GLOBAL_ROOT_PATH.'cli/IndexGlobal.php';
+          //run global index in background
+          exec("php $strIndexGlobalFilePath --globalId='".$objGlobal->globalId."' --linkId='".$this->setup->getElementLinkId()."' --version=".$objGlobal->version." --languageId=".$this->setup->getLanguageId()." > /dev/null &#038;");
+        }
+      }else{
+        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId);
+      }
+      
       return $this->setup->getElementId();
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

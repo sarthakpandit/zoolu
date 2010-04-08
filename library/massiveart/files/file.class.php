@@ -576,7 +576,7 @@ class File {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  protected function checkUploadPath(){
+  public function checkUploadPath(){
     $this->core->logger->debug('massiveart.files.File->checkUploadPath('.$this->getUploadPath().')');
 
     if (!is_dir($this->getUploadPath())) {
@@ -593,7 +593,7 @@ class File {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  protected function checkPublicFilePath($strPathAddon = ''){
+  public function checkPublicFilePath($strPathAddon = ''){
     $this->core->logger->debug('massiveart.documents.Document->checkPublicFilePath('.$this->getPublicFilePath().')');
 
     if (!is_dir($this->getPublicFilePath().$strPathAddon)){
