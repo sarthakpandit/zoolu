@@ -847,7 +847,8 @@ Function Widget */
   text-align:right;
 }
 
-.widgetcontentmain .navigationoptios{
+.widgetcontentmain .navigationoptios, 
+.widgetcontentmain .fallbackoptions {
   padding:5px 0 0 0; 
 }
 

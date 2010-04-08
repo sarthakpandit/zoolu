@@ -48,16 +48,35 @@ class DatareceiverController extends Zend_Controller_Action {
   private $core;
   
   /**
+   * @var HtmlTranslate
+   */
+  private $translate;
+  
+  /**
    * @var Model_GenericData
    */
   protected $objModelGenericData;
   
   protected $arrFormData = array();
+  protected $arrFileData = array();
   protected $arrMailRecipients = array();
+  
+  protected $strRedirectUrl;
+  
+  protected $strSenderName;
+  protected $strSenderMail;
+  protected $strReceiverName;
+  protected $strReceiverMail;
+  protected $strMailSubject = '';
+  
+  protected $strUploadPath;
+  protected $strAttachmentFile = '';
   
   protected $strUserFName;
   protected $strUserSName;
   protected $strUserMail;
+  
+  private $arrFormFields = array();
   
   /**
    * init index controller and get core obj
@@ -74,25 +93,100 @@ class DatareceiverController extends Zend_Controller_Action {
   public function indexAction(){
   	$this->core->logger->debug('website->controllers->DatareceiverController->indexAction()');
   	
-  	if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
-	  	$this->arrMailRecipients[] = array('Name'  => $this->core->webConfig->mail->recipient->name,
-                                         'Email' => $this->core->webConfig->mail->recipient->address);
+  	if($this->getRequest()->isPost()) {
+	  	$this->arrMailRecipients = array('Name'  => $this->core->webConfig->mail->recipient->name,
+                                       'Email' => $this->core->webConfig->mail->recipient->address);
   		
   		$this->arrFormData = $this->getRequest()->getPost();
+  		if(isset($_FILES)){
+  		  $this->arrFileData = $_FILES;  
+  		}
+  		
+  		/**
+       * set up zoolu translate obj
+       */
+      if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/website-'.$this->core->strLanguageCode.'.mo')){
+         $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->core->strLanguageCode.'.mo');  
+      }else{
+         $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->core->sysConfig->languages->default->code.'.mo');
+      }
 	  	
 	  	if(count($this->arrFormData) > 0){
+	  	  
+	  	  $this->arrFormFields = array('salutation'         => $this->translate->_('Salutation'),
+                                     'title'              => $this->translate->_('Title'),
+                                     'fname'              => $this->translate->_('Fname'),
+                                     'sname'              => $this->translate->_('Sname'),
+                                     'company'            => $this->translate->_('Company'),
+                                     'email'              => $this->translate->_('Email'),
+                                     'phone'              => $this->translate->_('Phone'),
+                                     'fax'                => $this->translate->_('Fax'),
+                                     'function'           => $this->translate->_('Function'),
+                                     'type'               => $this->translate->_('Type'),
+                                     'street'             => $this->translate->_('Street'),
+                                     'zip'                => $this->translate->_('Zip'),
+                                     'city'               => $this->translate->_('City'),
+                                     'state'              => $this->translate->_('State'),
+                                     'country'            => $this->translate->_('Country'),
+	  	                               'message'            => $this->translate->_('Message'),
+	  	                               'attachment'         => $this->translate->_('Attachment'),
+                                     'checkLegalnotes'    => $this->translate->_('Check_Legalnotes'));
+	  	  
 	  	  /**
-	  	   * send mail
-	  	   */
-	  		if(array_key_exists($this->core->webConfig->mail->hiddenfields->mail, $this->arrFormData) && $this->arrFormData[$this->core->webConfig->mail->hiddenfields->mail] == 'true'){
-	  	    $this->sendMail();	
-	  	  }
+         * set sender name and e-mail
+         */
+        if(array_key_exists('sender_name', $this->arrFormData) && array_key_exists('sender_mail', $this->arrFormData)){
+          $this->strSenderName = Crypt::decrypt($this->core, $this->core->webConfig->crypt->key, $this->arrFormData['sender_name']);
+          $this->strSenderMail = Crypt::decrypt($this->core, $this->core->webConfig->crypt->key, $this->arrFormData['sender_mail']);
+          unset($this->arrFormData['sender_name']);
+          unset($this->arrFormData['sender_mail']); 
+        }
+        
+        /**
+         * set receiver name and e-mail
+         */
+        if(array_key_exists('receiver_name', $this->arrFormData) && array_key_exists('receiver_mail', $this->arrFormData)){
+          $this->strReceiverName = Crypt::decrypt($this->core, $this->core->webConfig->crypt->key, $this->arrFormData['receiver_name']);
+          $this->strReceiverMail = Crypt::decrypt($this->core, $this->core->webConfig->crypt->key, $this->arrFormData['receiver_mail']);
+          
+          $this->arrMailRecipients = array('Name'  => $this->strReceiverName,
+                                           'Email' => $this->strReceiverMail);
+          
+          unset($this->arrFormData['receiver_name']);
+          unset($this->arrFormData['receiver_mail']);   
+        }
+        
+	  	  /**
+         * set e-mail subject
+         */
+        if(array_key_exists('subject', $this->arrFormData)){
+          $this->strMailSubject = $this->arrFormData['subject'];
+          unset($this->arrFormData['subject']); 
+        }
+        
+        /**
+         * set redirect url
+         */
+	  	  if(array_key_exists('redirectUrl', $this->arrFormData)){
+          $this->strRedirectUrl = $this->arrFormData['redirectUrl'];
+          unset($this->arrFormData['redirectUrl']); 
+        }
+        
+	  	  /**
+         * send mail
+         */
+        if($this->core->webConfig->mail->actions->sendmail->client == 'true'){          
+          $this->sendMail();  
+        }
+	  	  
 	  	  /**
          * save to database
          */
-        if(array_key_exists($this->core->webConfig->mail->hiddenfields->database, $this->arrFormData) && $this->arrFormData[$this->core->webConfig->mail->hiddenfields->database] == 'true'){
-          $this->insertDatabase();  
+        if($this->core->webConfig->mail->actions->database == 'true'){
+          $this->insertDatabase();
         }
+	  	  
+	  	  $this->_redirect($this->strRedirectUrl.'?send=true');
 	  	}
   	}
   }
@@ -123,61 +217,80 @@ class DatareceiverController extends Zend_Controller_Action {
 	   
 	  if(count($this->arrFormData) > 0){
 	    $strHtmlBody = '
-		    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
-				<html>
-				<head>
-				  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-				  <title></title>
-				  <style type="text/css">
-				    body { margin:0; padding:0; color:#000; width:100%; height:100%; font-size:11px; font-family:Verdana, Arial, Sans-Serif; background-color:#ffffff; line-height:15px;}
-				    input {font-size:11px; font-family:Verdana, Arial, Sans-Serif; }
-				    span { line-height:14px; font-size:11px; }
-				    img { padding:0; margin:0; border:0; }
-				    .tdImg {width:123px; margin:0; padding:0; vertical-align:top; }
-				    .divider { margin:0; padding:5px 0 15px 0; width:620px; }
-				    h1 { color:#000; font-weight:bold; font-size:16px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-				    h2 { color:#000; font-weight:bold; font-size:14px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-				    h3 { color:#000; font-weight:bold; font-size:12px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-				    a { color:#3366cc; font-size:11px; text-decoration:none; margin:0; padding:0; }
-				    a:hover { color:#000; font-size:11px; text-decoration:none; margin:0; padding:0; }
-				    p { margin:0 0 10px 0; padding:0; }
-				  </style>
-				</head>
-				<body>
-				<table cellpadding="0" cellspacing="0" style="width:650px; margin:auto;">
-				   <tr>
-				      <td style="padding:20px 15px 20px 15px;">
-				         <table border="0" cellpadding="0" cellspacing="0" width="100%">
-				            <tr>
-				               <td>';
-	    // TODO : generic inclusion (now: quick and dirty solution for sportservice)
+  		  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+  			<html>
+  				<head>
+  				  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  				  <title></title>
+  				  <style type="text/css">
+  				    body { margin:0; padding:20px; color:#333333; width:100%; height:100%; font-size:12px; font-family: Arial, Sans-Serif; background-color:#ffffff; line-height:16px;}
+  				    span { line-height:15px; font-size:12px; }
+  				    h1 { color:#333333; font-weight:bold; font-size:16px; font-family: Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+  				    h2 { color:#333333; font-weight:bold; font-size:14px; font-family: Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+  				    h3 { color:#333333; font-weight:bold; font-size:12px; font-family: Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+  				    a { color:#000000; font-size:12px; text-decoration:underline; margin:0; padding:0; }
+  				    a:hover { color:#000000; font-size:12px; text-decoration:underline; margin:0; padding:0; }
+  				    p { margin:0 0 10px 0; padding:0; }
+  				  </style>
+  				</head>
+  				<body>
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+              <tr>
+                 <td>';
       foreach($this->arrFormData as $key => $value){
-     	  if($value != ''){
-	     	  if($key == 'title'){
-	          $strHtmlBody .= '<h1>'.utf8_decode($value).'</h1>';  
-	        }
-	        else if($key == 'idPage' || $key == $this->core->webConfig->mail->hiddenfields->mail || $key == $this->core->webConfig->mail->hiddenfields->database || $key == $this->core->webConfig->mail->hiddenfields->dbtable){
-	          // do nothing
-	        }else{
-	          $strHtmlBody .= '<strong>'.ucfirst(utf8_decode($key)).':</strong> '.utf8_decode($value).'<br/>'; 
-	        }	
-     	  }      	
+        if($value != ''){
+       	  if($key == 'idRootLevels' || $key == 'idPage'){
+       	    // do nothing  
+       	  }else if($key == 'country'){
+            $objSelect = $this->getModelGenericData()->getGenericTable('categories')->select();
+            $objSelect->setIntegrityCheck(false);
+            $objSelect->from('categories', array('id')); 
+            $objSelect->join('categoryTitles', 'categoryTitles.idCategories = categories.id AND categoryTitles.idLanguages = '.$this->core->intLanguageId, array('title'));
+            $objSelect->where('categories.id = ?', $value);            
+            $objResult = $this->getModelGenericData()->getGenericTable('categories')->fetchAll($objSelect);            
+            $objData = $objResult->current();
+            
+            $strHtmlBody .= '
+                  <strong>'.$this->arrFormFields[$key].':</strong> '.utf8_decode($objData->title).'<br/>'; 
+          
+       	  }else{
+            $strHtmlBody .= '
+                  <strong>'.$this->arrFormFields[$key].':</strong> '.utf8_decode($value).'<br/>'; 
+          }	
+        }      	
       }	
-    	    
-	    $strHtmlBody .= '</td>
-				            </tr>
-				         </table>
-				      </td>
-				   </tr>
-				</table>
-				</body>
-				</html>';
+    
+      $strHtmlBody .= '
+                </td>
+              </tr>
+           </table>
+  				</body>
+  			</html>';
 	  }
+	  
+	  /**
+	   * Adding Attachment to Mail
+	   */
+    if(count($this->arrFileData) > 0){
+      foreach($this->arrFileData as $arrFile){        
+        if($arrFile['name'] != ''){
+          // upload file
+          $strFile = $this->upload($arrFile); 
+  
+          // add file to mail
+          $objFile = $mail->createAttachment(file_get_contents($strFile));
+          $objFile->type        = $arrFile['type'];
+          $objFile->disposition = Zend_Mime::DISPOSITION_ATTACHMENT;
+          $objFile->encoding    = Zend_Mime::ENCODING_BASE64;         
+          $objFile->filename    = $arrFile['name'];
+        }            
+      }
+    }
 	    
     /**
      * set mail subject
      */
-    $mail->setSubject('Anmeldung - '.utf8_decode($this->arrFormData['title']));
+    $mail->setSubject($this->strMailSubject);
     /**
      * set html body
      */
@@ -185,34 +298,36 @@ class DatareceiverController extends Zend_Controller_Action {
     /**
      * set default FROM address
      */
-    $mail->setFrom($this->core->webConfig->mail->from->address, $this->core->webConfig->mail->from->name);
+    $mail->setFrom($this->strSenderMail, $this->strSenderName);
 		
     /**
      * set TO address
      */
-    if(array_key_exists('mail', $this->arrFormData)){
-      $this->strUserFName = $this->arrFormData['fname'];
-      $this->strUserSName = $this->arrFormData['sname'];
-      $this->strUserMail = $this->arrFormData['mail'];
+    if(array_key_exists('email', $this->arrFormData)){
+      if(array_key_exists('fname', $this->arrFormData)) $this->strUserFName = $this->arrFormData['fname'];
+      if(array_key_exists('sname', $this->arrFormData)) $this->strUserSName = $this->arrFormData['sname'];
+      $this->strUserMail = $this->arrFormData['email'];
     }
     
     if(count($this->arrMailRecipients) > 0){
-      foreach($this->arrMailRecipients as $arrRecipient){
-      	$mail->clearRecipients();
-      	$mail->addTo($arrRecipient['Email'], $arrRecipient['Name']);
-		    /**
-		     * send mail if mail body is not empty
-		     */
-		    if($strHtmlBody != ''){
-		      $mail->send($transport);
-		      $this->sendConfirmationMail();
-		    }	
+      //foreach($this->arrMailRecipients as $arrRecipient){
+    	$mail->clearRecipients();
+    	$mail->addTo($this->arrMailRecipients['Email'], $this->arrMailRecipients['Name']);
+	    /**
+	     * send mail if mail body is not empty
+	     */
+	    if($strHtmlBody != ''){
+	      $mail->send($transport);		      		      
+	    }	
+      //}
+      if($this->core->webConfig->mail->actions->sendmail->confirmation == 'true'){
+        $this->sendConfirmationMail();  
       }	
     }
   }
   
   /**
-   * sendSuccesMail
+   * sendConfirmationMail
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
@@ -243,17 +358,13 @@ class DatareceiverController extends Zend_Controller_Action {
           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
           <title></title>
           <style type="text/css">
-            body { margin:0; padding:0; color:#000; width:100%; height:100%; font-size:11px; font-family:Verdana, Arial, Sans-Serif; background-color:#ffffff; line-height:15px;}
-            input {font-size:11px; font-family:Verdana, Arial, Sans-Serif; }
-            span { line-height:14px; font-size:11px; }
-            img { padding:0; margin:0; border:0; }
-            .tdImg {width:123px; margin:0; padding:0; vertical-align:top; }
-            .divider { margin:0; padding:5px 0 15px 0; width:620px; }
-            h1 { color:#000; font-weight:bold; font-size:16px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-            h2 { color:#000; font-weight:bold; font-size:14px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-            h3 { color:#000; font-weight:bold; font-size:12px; font-family:Verdana, Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
-            a { color:#3366cc; font-size:11px; text-decoration:none; margin:0; padding:0; }
-            a:hover { color:#000; font-size:11px; text-decoration:none; margin:0; padding:0; }
+            body { margin:0; padding:20px; color:#333333; width:100%; height:100%; font-size:12px; font-family: Arial, Sans-Serif; background-color:#ffffff; line-height:16px;}
+            span { line-height:15px; font-size:12px; }
+            h1 { color:#333333; font-weight:bold; font-size:16px; font-family: Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            h2 { color:#333333; font-weight:bold; font-size:14px; font-family: Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            h3 { color:#333333; font-weight:bold; font-size:12px; font-family: Arial, Sans-Serif; padding:0; margin: 20px 0 15px 0; }
+            a { color:#000000; font-size:12px; text-decoration:underline; margin:0; padding:0; }
+            a:hover { color:#000000; font-size:12px; text-decoration:underline; margin:0; padding:0; }
             p { margin:0 0 10px 0; padding:0; }
           </style>
         </head>
@@ -264,17 +375,7 @@ class DatareceiverController extends Zend_Controller_Action {
                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                        <td>
-                         <h2>Sehr geehrte(r) '.$this->strUserFName.' '.$this->strUserSName.'</h2>
-                         Vielen Dank f�r Ihre Anmeldung. Diese ist bei uns eingelangt und wir haben
-                         Ihren Namen auf die Teilnehmerliste gesetzt. Bei R�ckfragen oder etwaigen �nderungen
-                         wird sich der/die zust�ndige Mitarbeiter/in in den n�chsten Tagen mit Ihnen in
-                         Verbindung setzen.<br/>
-                         Ansonsten stehen wir Ihnen auch gerne telefonisch unter 05572/24465-400 f�r
-                         weitere Ausk�nfte zur Verf�gung.<br/><br/>
-                         Mit freundlichen Gr��en<br/>
-                         Ihr Sportservice-Team<br/><br/><br/>
-                         <strong>Sportservice Vorarlberg</strong>, H�chsterstra�e 82, 6850 Dornbirn<br/>
-                         <a href="http://www.sportservice-v.at">www.sportservice-v.at</a>, <a href="mailto:info@sportservice-v.at">info@sportservice-v.at</a>, +43 (0)5572 / 244 65 - 400
+                         <h2>Sehr geehrte(r) '.$this->strUserFName.' '.$this->strUserSName.'</h2>                         
                        </td>
                     </tr>
                  </table>
@@ -288,7 +389,7 @@ class DatareceiverController extends Zend_Controller_Action {
     /**
      * set mail subject
      */
-    $mail->setSubject('Anmeldung - '.utf8_decode($this->arrFormData['title']));
+    $mail->setSubject($this->strMailSubject);
     /**
      * set html body
      */
@@ -296,7 +397,7 @@ class DatareceiverController extends Zend_Controller_Action {
     /**
      * set default FROM address
      */
-    $mail->setFrom($this->core->webConfig->mail->from->address, $this->core->webConfig->mail->from->name);
+    $mail->setFrom($this->strSenderMail, $this->strSenderName);
       
     if($this->strUserMail != ''){
       $mail->clearRecipients();
@@ -319,23 +420,58 @@ class DatareceiverController extends Zend_Controller_Action {
     $this->core->logger->debug('website->controllers->DatareceiverController->insertDatabase()');
 
     if(count($this->arrFormData) > 0){
-      if(array_key_exists($this->core->webConfig->mail->hiddenfields->dbtable, $this->arrFormData)){
-        $this->core->logger->debug('dbtable: '.$this->arrFormData[$this->core->webConfig->mail->hiddenfields->dbtable]);
+      if(isset($this->core->webConfig->mail->database) && $this->core->webConfig->mail->database != ''){        
       	
-      	$objGenTable = $this->getModelGenericData()->getGenericTable($this->arrFormData[$this->core->webConfig->mail->hiddenfields->dbtable]);
+      	$objGenTable = $this->getModelGenericData()->getGenericTable($this->core->webConfig->mail->database);
       	
       	$arrTableData = array();
 	      foreach($this->arrFormData as $key => $value){
 	        if($value != ''){
-	          if($key == $this->core->webConfig->mail->hiddenfields->mail || $key == $this->core->webConfig->mail->hiddenfields->database || $key == $this->core->webConfig->mail->hiddenfields->dbtable){
-	            // do nothing
+	          if($value == 'on'){
+	            $arrTableData[$key] = 1;  
 	          }else{
-	            $arrTableData[$key] = $value; 
-	          } 
+	            $arrTableData[$key] = $value;  
+	          }
 	        }       
 	      }
-	      $this->core->logger->debug($arrTableData);	      
+	      if($this->strAttachmentFile != ''){
+	        $arrTableData['attachment'] = $this->strAttachmentFile;   
+	      }    
 	      $objGenTable->insert($arrTableData);
+      }
+    }
+  }
+  
+  /**
+   * upload
+   * @return string
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  private function upload($_FILEDATA){
+    if ($_FILEDATA['error'] > 0) {
+      $this->core->logger->err('website->controllers->DatareceiverController->upload(): '.$_FILEDATA['error']);
+    }else{ 
+      $objFile = new File();
+      $objFile->setLanguageId($this->core->intLanguageId);
+      $objFile->setUploadPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->forms->path->local->private);
+      $this->strUploadPath = GLOBAL_ROOT_PATH.$this->core->sysConfig->upload->forms->path->local->private;
+      $objFile->checkUploadPath(); 
+      
+      $arrFileInfo = array();
+      $arrFileInfo = pathinfo($this->strUploadPath.$_FILEDATA['name']);
+      $strFileName = $arrFileInfo['filename'];
+      $strExtension = $arrFileInfo['extension'];
+
+      $strFileName = $objFile->makeFileIdConform($strFileName);
+      $strFile = $strFileName.'_'.uniqid().'.'.$strExtension;
+      
+      if(file_exists($this->strUploadPath.$strFile)) {
+        $this->core->logger->err('website->controllers->DatareceiverController->upload(): '.$strFile.' already exists.');
+      }else{
+        move_uploaded_file($_FILEDATA['tmp_name'], $this->strUploadPath.$strFile);
+        $this->strAttachmentFile = $strFile;         
+        return $this->strUploadPath.$strFile;
       }
     }
   }

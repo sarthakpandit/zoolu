@@ -1305,6 +1305,19 @@ Massiveart.Form = Class.create({
   },
   
   /**
+   * toggleLanguageFallbackOptions
+   */
+  toggleLanguageFallbackOptions: function(){
+    if($('divLanguageFallbackOptions') && $('languagefallback') && $('languagefallback').checked){
+      Effect.SlideDown('divLanguageFallbackOptions', {duration: 0.5});
+      $('languageFallback').value = $F('languagefallbackoption');
+    }else{
+      Effect.SlideUp('divLanguageFallbackOptions', {duration: 0.5});
+      $('languageFallback').value = 0;
+    }
+  },
+  
+  /**
    * toggleTemplateChooser
    */
   toggleTemplateChooser: function(){

@@ -197,6 +197,11 @@ class Page {
   protected $intParentTypeId;
   protected $intNavParentId;
   protected $intNavParentTypeId;
+  
+  protected $arrContainer = array();
+  protected $arrGenForms = array();
+  protected $arrFallbackGenForms = array();
+  protected $arrPageEntries = array();
 
   /**
    * Constructor
@@ -262,54 +267,59 @@ class Page {
         $this->objGenericData->Setup()->setModelSubPath($this->getModelSubPath());
 
         $this->objGenericData->loadData();
-
-        /**
-         * page type based fallbacks
-         */
-        if(isset($objPage->idPageTypes)){
-          switch($objPage->idPageTypes){
-            case $this->core->sysConfig->page_types->external->id:
-              if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
-                header('Location: '.$this->getFieldValue('external'));
-              }else if(filter_var('http://'.$this->getFieldValue('external'), FILTER_VALIDATE_URL)){
-                header('Location: http://'.$this->getFieldValue('external'));
-              }else{
-                header('Location: http://'.$_SERVER['HTTP_HOST']);
-              }
-              exit();
-            case $this->core->sysConfig->page_types->link->id:
-              header('Location: http://'.$_SERVER['HTTP_HOST'].$this->getField('internal_link')->strLinkedPageUrl);
-              exit();
-            case $this->core->sysConfig->page_types->product_tree->id:
-            case $this->core->sysConfig->page_types->press_area->id:
-              if($blnLoadGlobalTreeStartPage == true){
-                $this->objParentPage = clone $this;
-                            
-                $this->setType('global');
-                $this->setModelSubPath('global/models/');
-                $this->setParentId($this->getFieldValue('entry_point'));
-                $this->setNavParentId($this->getFieldValue('entry_point'));
-                $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
-                
-                $this->objModel = null;            
-                $this->loadPage(true);  
-              }           
-              break;
-          }
-        }
         
-        if($this->objBaseUrl instanceof Zend_Db_Table_Row_Abstract){
-          $this->objParentPage = new Page();
-          $this->objParentPage->setRootLevelId($this->intRootLevelId);
-          $this->objParentPage->setRootLevelTitle($this->strRootLevelTitle);
-          $this->objParentPage->setPageId($this->objBaseUrl->relationId);
-          $this->objParentPage->setPageVersion($this->objBaseUrl->version);
-          $this->objParentPage->setLanguageId($this->objBaseUrl->idLanguages);
-          $this->objParentPage->setType('page');
-          $this->objParentPage->setModelSubPath('cms/models/');
-          $this->objParentPage->loadPage(false, false);  
-
-          $this->objParentPage->setChildPage($this);
+        if($this->objGenericData->Setup()->getLanguageFallbackId() > 0 && $this->objGenericData->Setup()->getLanguageFallbackId() != $this->getLanguageId()){
+          $this->setLanguageId($this->objGenericData->Setup()->getLanguageFallbackId());
+          $this->loadPage();
+        }else{  
+          /**
+           * page type based fallbacks
+           */
+          if(isset($objPage->idPageTypes)){
+            switch($objPage->idPageTypes){
+              case $this->core->sysConfig->page_types->external->id:
+                if(filter_var($this->getFieldValue('external'), FILTER_VALIDATE_URL)){
+                  header('Location: '.$this->getFieldValue('external'));
+                }else if(filter_var('http://'.$this->getFieldValue('external'), FILTER_VALIDATE_URL)){
+                  header('Location: http://'.$this->getFieldValue('external'));
+                }else{
+                  header('Location: http://'.$_SERVER['HTTP_HOST']);
+                }
+                exit();
+              case $this->core->sysConfig->page_types->link->id:
+                header('Location: http://'.$_SERVER['HTTP_HOST'].$this->getField('internal_link')->strLinkedPageUrl);
+                exit();
+              case $this->core->sysConfig->page_types->product_tree->id:
+              case $this->core->sysConfig->page_types->press_area->id:
+                if($blnLoadGlobalTreeStartPage == true){
+                  $this->objParentPage = clone $this;
+                              
+                  $this->setType('global');
+                  $this->setModelSubPath('global/models/');
+                  $this->setParentId($this->getFieldValue('entry_point'));
+                  $this->setNavParentId($this->getFieldValue('entry_point'));
+                  $this->setParentTypeId($this->core->sysConfig->parent_types->folder);
+                  
+                  $this->objModel = null;            
+                  $this->loadPage(true);  
+                }           
+                break;
+            }
+          }
+          
+          if($this->objBaseUrl instanceof Zend_Db_Table_Row_Abstract){
+            $this->objParentPage = new Page();
+            $this->objParentPage->setRootLevelId($this->intRootLevelId);
+            $this->objParentPage->setRootLevelTitle($this->strRootLevelTitle);
+            $this->objParentPage->setPageId($this->objBaseUrl->relationId);
+            $this->objParentPage->setPageVersion($this->objBaseUrl->version);
+            $this->objParentPage->setLanguageId($this->objBaseUrl->idLanguages);
+            $this->objParentPage->setType('page');
+            $this->objParentPage->setModelSubPath('cms/models/');
+            $this->objParentPage->loadPage(false, false);  
+  
+            $this->objParentPage->setChildPage($this);
+          }
         }
        
       }else{
@@ -355,6 +365,22 @@ class Page {
     try{
       if($this->objGenericData instanceof GenericData){
         $this->objGenericData->indexData(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $this->strPageId);
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * indexGlobal
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function indexGlobal(){
+    $this->core->logger->debug('massiveart->website->page->indexGlobal()');
+    try{
+      if($this->objGenericData instanceof GenericData){
+        $this->objGenericData->indexData(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $this->strPageId);
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -624,10 +650,13 @@ class Page {
    */
   public function getOverviewContainer($blnOnlyPages = false){
     try{
-      $arrContainer = array();
-      $arrGenForms = array();
-      $arrPageEntries = array();
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrFallbackGenForms = array();
+      $this->arrPageEntries = array();
+      
       $arrPageIds = array();
+            
       $counter = 0;
 
       $objMyMultiRegion = $this->getRegion(15); //15 is the default overview block region
@@ -663,25 +692,35 @@ class Page {
                 if(isset($objEntryData->idPageTypes) &&  $objEntryData->idPageTypes == $this->core->sysConfig->page_types->link->id){
                   $objEntry->setEntryId($objEntryData->plId);
                   $objEntry->title = $objEntryData->title;
-                  $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->plUrl;  
+                  $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->plUrl;
                   
-                  $arrGenForms[$objEntryData->plGenericFormId.'-'.$objEntryData->plVersion][] = $objEntryData->plId;
-                  $arrPageEntries[$objEntryData->plId] = $counter;
+                  if(isset($objEntryData->idLanguageFallbacks) && $objEntryData->idLanguageFallbacks > 0){
+                    if(isset($objEntryData->fallbackTitle) && $objEntryData->fallbackTitle != '')  $objEntry->title = $objEntryData->fallbackTitle;  
+                  }
+                  
+                  $this->arrGenForms[$objEntryData->plGenericFormId.'-'.$objEntryData->plVersion][] = $objEntryData->plId;
+                  $this->arrPageEntries[$objEntryData->plId] = $counter;
 
                   $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->plId);
                 }else{
                   $objEntry->setEntryId($objEntryData->id);
                   $objEntry->title = $objEntryData->title;
-                  
+                                    
                   if($this->objParentPage instanceof Page && 
                      ($this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->product_tree->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->press_area->id)){
                     $objEntry->url = $this->objParentPage->getFieldValue('url').$objEntryData->url;  
                   }else{
                     $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
-                  }                  
+                  }   
 
-                  $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->id;
-                  $arrPageEntries[$objEntryData->id] = $counter;
+                  if(isset($objEntryData->idLanguageFallbacks) && $objEntryData->idLanguageFallbacks > 0){
+                    $this->arrFallbackGenForms[$objEntryData->fallbackGenericFormId.'-'.$objEntryData->fallbackGenericFormVersion][$objEntryData->idLanguageFallbacks][] = $objEntryData->id;
+                    if(isset($objEntryData->fallbackTitle) && $objEntryData->fallbackTitle != '')  $objEntry->title = $objEntryData->fallbackTitle;
+                  }else{
+                    $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->id;  
+                  }
+                  
+                  $this->arrPageEntries[$objEntryData->id] = $counter;
 
                   $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
                 }
@@ -689,56 +728,26 @@ class Page {
               }
             }
           }
-          $arrContainer[$counter] = $objContainer;
+          $this->arrContainer[$counter] = $objContainer;
           $counter++;
         }
       }
-
+      
       /**
        * get data of instance tables
        */
-      if(count($arrGenForms) > 0){
-        foreach($arrGenForms as $key => $arrPageIds){
-          $arrGenFormPageIds = array();
-          if(count($arrPageIds) > 0){
-            foreach($arrPageIds as $value){
-              array_push($arrGenFormPageIds, $value);
-            }
-          }
-          
-          $intImgFilterTag = ($this->objParentPage->getField('entry_pic_tag') !== null && (int) $this->objParentPage->getFieldValue('entry_pic_tag') > 0) ? $this->objParentPage->getFieldValue('entry_pic_tag') : 0;
-          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds, $intImgFilterTag);
-
-          /**
-           * overwrite page entries
-           */
-          if(isset($objPageRowset) && count($objPageRowset) > 0){
-            foreach($objPageRowset as $objPageRow){
-              if(array_key_exists($objPageRow->id, $arrPageEntries)){
-                if(array_key_exists($arrPageEntries[$objPageRow->id], $arrContainer)){
-                  $objPageEntry = $arrContainer[$arrPageEntries[$objPageRow->id]]->getPageEntry('entry_'.$objPageRow->id);
-                  $objPageEntry->datetime = (isset($objPageRow->datetime)) ? strtotime($objPageRow->datetime) : '';
-                  $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
-                  $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
-                  $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
-                  $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
-                  $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
-                  $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-                  
-                  if(isset($objPageRow->tagfilename) && $objPageRow->tagfilename !== null) $objPageEntry->filename =  $objPageRow->tagfilename;
-                  if(isset($objPageRow->tagfileversion) && $objPageRow->tagfileversion !== null) $objPageEntry->fileversion =  $objPageRow->tagfileversion;
-                  if(isset($objPageRow->tagfilepath) && $objPageRow->tagfilepath !== null) $objPageEntry->filepath =  $objPageRow->tagfilepath;
-                  if(isset($objPageRow->tagfiletitle) && $objPageRow->tagfiletitle !== null) $objPageEntry->filetitle =  $objPageRow->tagfiletitle;
-                  
-                  $arrContainer[$arrPageEntries[$objPageRow->id]]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
-                }
-              }
-            }
-          }
-        }
+      if(count($this->arrGenForms) > 0){
+        $this->loadInstanceData();
+      }      
+      
+      /**
+       * get fallback data of instance tables
+       */
+      if(count($this->arrFallbackGenForms) > 0){
+        $this->loadFallbackInstanceData();        
       }
 
-      return $arrContainer;
+      return $this->arrContainer;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -780,7 +789,10 @@ class Page {
    */
   public function getCollectionContainer(){
     try{
-      $arrGenForms = array();
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrPageEntries = array();
+      $counter = 0;
 
       $objContainer = new PageContainer();
       $objContainer->setContainerTitle($this->getFieldValue('collection_title'));
@@ -794,41 +806,19 @@ class Page {
           $objEntry->title = $objEntryData->title;
           $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
 
-          $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;
+          $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;
 
           $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
+          $this->arrPageEntries[$objEntryData->idPage] = $counter;
         }
+        
+        $this->arrContainer[$counter] = &$objContainer;
 
         /**
          * get data of instance tables
          */
-        if(count($arrGenForms) > 0){
-          foreach($arrGenForms as $key => $arrPageIds){
-            $arrGenFormPageIds = array();
-            if(count($arrPageIds) > 0){
-              foreach($arrPageIds as $value){
-                array_push($arrGenFormPageIds, $value);
-              }
-            }
-            $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
-
-            /**
-             * overwrite page entries
-             */
-            if(isset($objPageRowset) && count($objPageRowset) > 0){
-              foreach($objPageRowset as $objPageRow){
-                $objPageEntry = $objContainer->getPageEntry('entry_'.$objPageRow->id);
-                $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
-                $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
-                $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
-                $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
-                $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
-                $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-
-                $objContainer->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
-              }
-            }
-          }
+        if(count($this->arrGenForms) > 0){
+          $this->loadInstanceData();
         }
       }
 
@@ -846,9 +836,9 @@ class Page {
    */
   public function getPagesContainer(){
     try{
-      $arrContainer = array();
-      $arrGenForms = array();
-      $arrPageEntries = array();
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrPageEntries = array();
       $counter = 0;
 
       $objMyMultiRegion = $this->getRegion(17);
@@ -883,11 +873,11 @@ class Page {
                 $objEntry->created = $objEntryData->pageCreated;
                 $objEntry->published = $objEntryData->pagePublished;
 
-                $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
-                if(isset($arrPageEntries[$objEntryData->idPage])){
-                  $arrPageEntries[$objEntryData->idPage] = (is_array($arrPageEntries[$objEntryData->idPage])) ? array_push($arrPageEntries[$objEntryData->idPage], $counter) : array($arrPageEntries[$objEntryData->idPage], $counter);
+                $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
+                if(isset($this->arrPageEntries[$objEntryData->idPage])){
+                  $this->arrPageEntries[$objEntryData->idPage] = (is_array($this->arrPageEntries[$objEntryData->idPage])) ? array_push($this->arrPageEntries[$objEntryData->idPage], $counter) : array($this->arrPageEntries[$objEntryData->idPage], $counter);
                 }else{
-                  $arrPageEntries[$objEntryData->idPage] = $counter;
+                  $this->arrPageEntries[$objEntryData->idPage] = $counter;
                 }
 
                 $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->idPage);
@@ -909,11 +899,11 @@ class Page {
                 $objEntry->created = $objEntryData->pageCreated;
                 $objEntry->rootTitle = $objEntryData->rootTitle;
 
-                $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
-                if(isset($arrPageEntries[$objEntryData->idPage])){
-                  $arrPageEntries[$objEntryData->idPage] = (is_array($arrPageEntries[$objEntryData->idPage])) ? array_push($arrPageEntries[$objEntryData->idPage], $counter) : array($arrPageEntries[$objEntryData->idPage], $counter);
+                $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
+                if(isset($this->arrPageEntries[$objEntryData->idPage])){
+                  $this->arrPageEntries[$objEntryData->idPage] = (is_array($this->arrPageEntries[$objEntryData->idPage])) ? array_push($this->arrPageEntries[$objEntryData->idPage], $counter) : array($this->arrPageEntries[$objEntryData->idPage], $counter);
                 }else{
-                  $arrPageEntries[$objEntryData->idPage] = $counter;
+                  $this->arrPageEntries[$objEntryData->idPage] = $counter;
                 }
 
                 $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->idPage);
@@ -921,7 +911,7 @@ class Page {
             }
           }
 
-          $arrContainer[$counter] = $objContainer;
+          $this->arrContainer[$counter] = $objContainer;
           $counter++;
         }
       }
@@ -929,49 +919,11 @@ class Page {
       /**
        * get data of instance tables
        */
-      if(count($arrGenForms) > 0){
-        foreach($arrGenForms as $key => $arrPageIds){
-          $arrGenFormPageIds = array();
-          if(count($arrPageIds) > 0){
-            foreach($arrPageIds as $value){
-              array_push($arrGenFormPageIds, $value);
-            }
-          }
-
-          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
-
-          /**
-           * overwrite page entries
-           */
-          if(isset($objPageRowset) && count($objPageRowset) > 0){
-            foreach($objPageRowset as $objPageRow){
-              if(array_key_exists($objPageRow->id, $arrPageEntries)){
-                if(is_array($arrPageEntries[$objPageRow->id])){
-                  $arrPageEntryContainers = $arrPageEntries[$objPageRow->id];
-                }else{
-                  $arrPageEntryContainers = array($arrPageEntries[$objPageRow->id]);
-                }
-
-                foreach($arrPageEntryContainers as $intContainerId){
-                  if(array_key_exists($intContainerId, $arrContainer)){
-                    $objPageEntry = $arrContainer[$intContainerId]->getPageEntry('entry_'.$objPageRow->id);
-                    $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
-                    $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
-                    $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
-                    $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
-                    $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
-                    $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-
-                    $arrContainer[$intContainerId]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
-                  }
-                }
-              }
-            }
-          }
-        }
+      if(count($this->arrGenForms) > 0){
+        $this->loadInstanceData();
       }
 
-      return $arrContainer;
+      return $this->arrContainer;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -985,8 +937,11 @@ class Page {
    */
   public function getGlobalContainer(){
     try{
-      $arrGenForms = array();
-
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrPageEntries = array();
+      $counter = 0;
+      
       $objContainer = new PageContainer();
       $objContainer->setContainerKey($this->getField('global_entry_point')->getValue());
       $objContainer->setContainerTitle($this->getField('global_entry_title')->getValue());
@@ -1023,42 +978,21 @@ class Page {
             $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
           }
 
-          $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;
+          $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;
 
           $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
+          $this->arrPageEntries[$objEntryData->id] = $counter;
         }
+        
+        $this->arrContainer[$counter] = &$objContainer;
 
         /**
          * get data of instance tables
          */
-        if(count($arrGenForms) > 0){
-          foreach($arrGenForms as $key => $arrPageIds){
-            $arrGenFormPageIds = array();
-            if(count($arrPageIds) > 0){
-              foreach($arrPageIds as $value){
-                array_push($arrGenFormPageIds, $value);
-              }
-            }
-            
-            $objPageRowset = $this->getModelGlobals()->loadItemInstanceDataByIds($key, $arrGenFormPageIds, 0, '5');
-
-            /**
-             * overwrite page entries
-             */
-            if(isset($objPageRowset) && count($objPageRowset) > 0){
-              foreach($objPageRowset as $objPageRow){
-                $objPageEntry = $objContainer->getPageEntry('entry_'.$objPageRow->id);
-                $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
-                $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
-                $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
-                $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
-                $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
-                $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-                
-                $objContainer->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
-              }
-            }
-          }
+        if(count($this->arrGenForms) > 0){
+          $this->objModel = $this->getModelGlobals();
+          $this->loadInstanceData();
+          $this->getModel(true);
         }
       }
 
@@ -1076,7 +1010,10 @@ class Page {
    */
   public function getSubPageContainer(){
     try{
-      $arrGenForms = array();
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrPageEntries = array();
+      $counter = 0;
 
       $objContainer = new PageContainer();
       $objContainer->setContainerKey($this->getParentId());
@@ -1091,42 +1028,19 @@ class Page {
           $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
           $objEntry->showInNavigation = $objEntryData->showInNavigation;
           
-          $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
+          $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
 
           $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->idPage);
+          $this->arrPageEntries[$objEntryData->idPage] = $counter;
         }
+        
+        $this->arrContainer[$counter] = &$objContainer;
 
         /**
          * get data of instance tables
          */
-        if(count($arrGenForms) > 0){
-          foreach($arrGenForms as $key => $arrPageIds){
-            $arrGenFormPageIds = array();
-            if(count($arrPageIds) > 0){
-              foreach($arrPageIds as $value){
-                array_push($arrGenFormPageIds, $value);
-              }
-            }
-            
-            $objPageRowset = $this->getModel()->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
-
-            /**
-             * overwrite page entries
-             */
-            if(isset($objPageRowset) && count($objPageRowset) > 0){
-              foreach($objPageRowset as $objPageRow){
-                $objPageEntry = $objContainer->getPageEntry('entry_'.$objPageRow->id);
-                $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
-                $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
-                $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
-                $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
-                $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
-                $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-                
-                $objContainer->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
-              }
-            }
-          }
+        if(count($this->arrGenForms) > 0){
+          $this->loadInstanceData();
         }
       }
 
@@ -1135,7 +1049,7 @@ class Page {
       $this->core->logger->err($exc);
     }
   }
-
+  
   /**
    * getFolderChildPages
    * @param integer $intFolderId
@@ -1203,9 +1117,9 @@ class Page {
    */
   public function getEventsContainer($intQuarter = 0, $intYear = 0){
     try{
-      $arrContainer = array();
-      $arrGenForms = array();
-      $arrPageEntries = array();
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrPageEntries = array();
       $arrPageIds = array();
       $counter = 0;
 
@@ -1220,53 +1134,23 @@ class Page {
           $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
           $objEntry->datetime = $objEntryData->datetime;
 
-          $arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->id;
-          $arrPageEntries[$objEntryData->id] = $counter;
+          $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->id;
+          $this->arrPageEntries[$objEntryData->id] = $counter;
 
           $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
         }
-        $arrContainer[$counter] = $objContainer;
+        $this->arrContainer[$counter] = $objContainer;
         $counter++;
       }
 
       /**
        * get data of instance tables
        */
-      if(count($arrGenForms) > 0){
-        foreach($arrGenForms as $key => $arrPageIds){
-          $arrGenFormPageIds = array();
-          if(count($arrPageIds) > 0){
-            foreach($arrPageIds as $value){
-              array_push($arrGenFormPageIds, $value);
-            }
-          }
-          $objPageRowset = $this->objModel->loadItemInstanceDataByIds($key, $arrGenFormPageIds);
-
-          /**
-           * overwrite page entries
-           */
-          if(isset($objPageRowset) && count($objPageRowset) > 0){
-            foreach($objPageRowset as $objPageRow){
-              if(array_key_exists($objPageRow->id, $arrPageEntries)){
-                if(array_key_exists($arrPageEntries[$objPageRow->id], $arrContainer)){
-                  $objPageEntry = $arrContainer[$arrPageEntries[$objPageRow->id]]->getPageEntry('entry_'.$objPageRow->id);
-                  $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
-                  $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
-                  $objPageEntry->event_status = (isset($objPageRow->event_status)) ? $objPageRow->event_status : '';
-                  $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
-                  $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
-                  $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
-                  $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-
-                  $arrContainer[$arrPageEntries[$objPageRow->id]]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
-                }
-              }
-            }
-          }
-        }
+      if(count($this->arrGenForms) > 0){
+        $this->loadInstanceData();
       }
 
-      return $arrContainer;
+      return $this->arrContainer;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -1302,6 +1186,98 @@ class Page {
       $this->core->logger->err($exc);
     }
   }
+  
+
+  /**
+   * loadInstanceData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  private function loadInstanceData(){
+    foreach($this->arrGenForms as $key => $arrPageIds){
+      $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
+      $this->loadInstanceDataNow($key, $arrGenFormPageIds);      
+    }
+  }
+    
+  /**
+   * loadFallbackInstanceData
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  private function loadFallbackInstanceData(){
+    foreach($this->arrFallbackGenForms as $key => $arrLanguageIds){
+      foreach($arrLanguageIds as $intLanguageId => $arrPageIds){
+        $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
+        
+        $this->objModel->setLanguageId($intLanguageId);
+        $this->loadInstanceDataNow($key, $arrGenFormPageIds);
+        $this->objModel->setLanguageId($this->intLanguageId);        
+      }
+    }
+  }
+  
+  /**
+   * getGenFormPageIds
+   * @param array $arrPageIds
+   * @return array
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  private static function getGenFormPageIds($arrPageIds){
+    $arrGenFormPageIds = array();
+    if(count($arrPageIds) > 0){
+      foreach($arrPageIds as $value){
+        array_push($arrGenFormPageIds, $value);
+      }
+    }
+    return $arrGenFormPageIds;
+  }
+  
+  /**
+   * loadInstanceDataNow
+   * @param string $strKey
+   * @param array $arrGenFormPageIds
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  private function loadInstanceDataNow($strKey, $arrGenFormPageIds){
+    
+    $intImgFilterTag = ($this->objParentPage instanceof Page && $this->objParentPage->getField('entry_pic_tag') !== null && (int) $this->objParentPage->getFieldValue('entry_pic_tag') > 0) ? $this->objParentPage->getFieldValue('entry_pic_tag') : 0;
+    $objPageRowset = $this->objModel->loadItemInstanceDataByIds($strKey, $arrGenFormPageIds, $intImgFilterTag);
+
+    /**
+     * overwrite page entries
+     */
+    if(isset($objPageRowset) && count($objPageRowset) > 0){
+      foreach($objPageRowset as $objPageRow){
+        if(array_key_exists($objPageRow->id, $this->arrPageEntries)){
+          if(is_array($this->arrPageEntries[$objPageRow->id])){
+            $arrPageEntryContainers = $this->arrPageEntries[$objPageRow->id];
+          }else{
+            $arrPageEntryContainers = array($this->arrPageEntries[$objPageRow->id]);
+          }
+          
+          foreach($arrPageEntryContainers as $intContainerId){
+            if(array_key_exists($intContainerId, $this->arrContainer)){
+              $objPageEntry = $this->arrContainer[$intContainerId]->getPageEntry('entry_'.$objPageRow->id);
+              $objPageEntry->datetime = (isset($objPageRow->datetime)) ? strtotime($objPageRow->datetime) : '';
+              $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
+              $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
+              $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
+              $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
+              $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
+              $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
+              
+              if(isset($objPageRow->tagfilename) && $objPageRow->tagfilename !== null) $objPageEntry->filename =  $objPageRow->tagfilename;
+              if(isset($objPageRow->tagfileversion) && $objPageRow->tagfileversion !== null) $objPageEntry->fileversion =  $objPageRow->tagfileversion;
+              if(isset($objPageRow->tagfilepath) && $objPageRow->tagfilepath !== null) $objPageEntry->filepath =  $objPageRow->tagfilepath;
+              if(isset($objPageRow->tagfiletitle) && $objPageRow->tagfiletitle !== null) $objPageEntry->filetitle =  $objPageRow->tagfiletitle;
+              
+              $this->arrContainer[$intContainerId]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
+            }
+          }
+        }
+      }
+    }
+  }
 
   /**
    * getModel
@@ -1309,8 +1285,8 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  protected function getModel(){
-  	if($this->objModel === null) {
+  protected function getModel($blnReset = false){
+  	if($this->objModel === null || $blnReset === true) {
       /**
        * autoload only handles "library" compoennts.
        * Since this is an application model, we need to require it
@@ -1927,7 +1903,7 @@ class Page {
       $this->objChangeDate = $Date;
     }else{
       $arrTmpTimeStamp = explode(' ', $Date);
-      if(count($arrTmpTimeStamp) > 0){
+      if(count($arrTmpTimeStamp) > 1){
         $arrTmpTime = explode(':', $arrTmpTimeStamp[1]);
         $arrTmpDate = explode('-', $arrTmpTimeStamp[0]);
         if(count($arrTmpDate) == 3){
@@ -1967,7 +1943,7 @@ class Page {
       $this->objCreateDate = $Date;
     }else{
       $arrTmpTimeStamp = explode(' ', $Date);
-      if(count($arrTmpTimeStamp) > 0){
+      if(count($arrTmpTimeStamp) > 1){
         $arrTmpTime = explode(':', $arrTmpTimeStamp[1]);
         $arrTmpDate = explode('-', $arrTmpTimeStamp[0]);
         if(count($arrTmpDate) == 3){

@@ -6,7 +6,7 @@
   * config for online evnironment                           *
   ***********************************************************
   -->
-  <production>
+  <production>    
     <sweepstakes>    
       <sweepstake>
         <id>1</id>
@@ -28,7 +28,7 @@
         <!-- mail -->
         <mail>
           <from>
-            <name>Ivoclar Vivadent</name>
+            <name>Ivoclar Vivadent AG</name>
             <email>info@ivoclarvivadent.com</email>
           </from>
           <to>
@@ -220,13 +220,7 @@
           </sj>
           <ch>
             <code>CH</code>
-            <language>de</language>
-            <mail>
-              <to>
-                <name>Conny CH</name>
-                <email>cha@massiveart.com</email>
-              </to>
-            </mail>                
+            <language>de</language>                           
           </ch>
           <ua>
             <code>UA</code>

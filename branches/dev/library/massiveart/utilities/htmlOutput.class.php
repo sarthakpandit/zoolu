@@ -80,8 +80,8 @@ class HtmlOutput {
     }
 
     return $strHtmlOutput;
-	}
-
+	}	
+  
   /**
    * getFormattedByteSize
    * @param integer $size

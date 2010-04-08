@@ -179,8 +179,17 @@ class NavigationHelper {
     }
   
     return $strBreadcrumb;  
-  }
+  }  
 
+  /**
+   * getSubNavigationByLevel
+   * @param integer $intLevel
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getSubNavigationByLevel($intLevel){
+    //TODO default product overview
+  }
   
   /**
    * setNavigation    

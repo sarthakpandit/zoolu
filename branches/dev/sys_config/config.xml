@@ -27,7 +27,7 @@
     <language>de</language>
     <location>de_AT</location>
     <timezone>Europe/Vienna</timezone>
-    
+        
     <!-- Standard web-server user & group -->
     <server>
       <executing>
@@ -61,6 +61,7 @@
       <session>tmp/sessions/</session>
       <search_index>
         <page>tmp/search_index/pages</page>
+        <global>tmp/search_index/globals</global>
       </search_index>      
       <zoolu_modules>application/zoolu/modules/</zoolu_modules>      
     </path>
@@ -347,11 +348,7 @@
               <action>
                 <method>resize</method>
                 <params>677</params>
-              </action>
-              <action>
-                <method>watermark</method>
-                <params>/var/data/tmp/watermark-933x.png,Center,5</params>
-              </action>
+              </action>              
             </actions>            
             <display>
               <single_edit>true</single_edit>              
@@ -363,11 +360,7 @@
               <action>
                 <method>resize</method>
                 <params>331</params>
-              </action> 
-              <action>
-                <method>watermark</method>
-                <params>/var/data/tmp/watermark-933x.png,Center,5</params>
-              </action>             
+              </action>    
             </actions>
             <display>
               <single_edit>true</single_edit>
@@ -493,6 +486,17 @@
         <!-- maximum filesize -->      
         <max_filesize>125829120</max_filesize> <!-- 120 MB (1024*1024*120) for each file -->                      
       </videos>
+      
+      <!-- UPLOADED DATA OF FORMS -->
+      <forms>
+        <!-- upload pathes -->
+        <path>
+          <local>
+            <private>uploads/forms/</private>
+          </local>
+        </path>
+      </forms>
+      
     </upload>
     
     <!-- MEDIA OUTPUT PATHS -->

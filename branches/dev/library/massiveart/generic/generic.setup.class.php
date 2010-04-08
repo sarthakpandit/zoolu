@@ -66,6 +66,7 @@ class GenericSetup {
 	protected $blnRegionCollapsable = true;
 
 	protected $intLanguageId;
+	protected $intLanguageFallbackId;	
 	protected $intElementId;
 	protected $intElementLinkId;
 
@@ -781,6 +782,7 @@ class GenericSetup {
 				$this->setPublishDate($objCurrElement->published);
 			}
 			$this->setShowInNavigation($objCurrElement->showInNavigation);
+			$this->setLanguageFallbackId((isset($objCurrElement->idLanguageFallbacks) ? $objCurrElement->idLanguageFallbacks : 0));
 			$this->setFormVersion($objCurrElement->version);
 			$this->setStatusId($objCurrElement->idStatus);
 		}
@@ -1101,6 +1103,22 @@ class GenericSetup {
 	public function getLanguageId(){
 		return $this->intLanguageId;
 	}
+	
+  /**
+   * setLanguageFallbackId
+   * @param integer $intLanguageFallbackId
+   */
+  public function setLanguageFallbackId($intLanguageFallbackId){
+    $this->intLanguageFallbackId = $intLanguageFallbackId;
+  }
+
+  /**
+   * getLanguageFallbackId
+   * @param integer $intLanguageFallbackId
+   */
+  public function getLanguageFallbackId(){
+    return $this->intLanguageFallbackId;
+  }
 
   /**
    * setFormLanguageId

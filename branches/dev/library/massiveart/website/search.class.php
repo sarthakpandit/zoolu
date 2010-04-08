@@ -1,38 +1,8 @@
 <?php
-/**
- * ZOOLU - Content Management System
- * Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
- *
- * LICENSE
- *
- * This file is part of ZOOLU.
- *
- * ZOOLU is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * ZOOLU is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with ZOOLU. If not, see http://www.gnu.org/licenses/gpl-3.0.html.
- *
- * For further information visit our website www.getzoolu.org 
- * or contact us at zoolu@getzoolu.org
- *
- * @category   ZOOLU
- * @package    library.massiveart.website
- * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
- * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
- * @version    $Id: version.php
- */
 
 /**
  * Search
- * 
+ *
  *
  * Version history (please keep backward compatible):
  * 1.0, 2009-02-09: Thomas Schedler
@@ -44,13 +14,166 @@
  */
 
 class Search {
-  
+
+  /**
+   * @var Core
+   */
+  protected $core;
+
   const FIELD_TYPE_NONE = 1;
   const FIELD_TYPE_KEYWORD = 2;
   const FIELD_TYPE_UNINDEXED = 3;
   const FIELD_TYPE_BINARY = 4;
   const FIELD_TYPE_TEXT = 5;
   const FIELD_TYPE_UNSTORED = 6;
+
+  /**
+   * @var string
+   */
+  protected $strSearchValue;
+
+  /**
+   * @var integer
+   */
+  protected $intLimitSearch;
+
+  /**
+   * @var integer
+   */
+  protected $intLimitLiveSearch;
+
+  /**
+   * Constructor
+   */
+  public function __construct(){
+    $this->core = Zend_Registry::get('Core');
+  }
+
+  /**
+   * search
+   * @return object $objHits
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function search(){
+    $this->core->logger->debug('massiveart->website->search->search()');
+
+    if($this->strSearchValue != '' && count(scandir(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page)) > 2){
+      if($this->intLimitSearch > 0 && $this->intLimitSearch != ''){
+        Zend_Search_Lucene::setResultSetLimit($this->intLimitSearch);
+      }
+      $objIndex = Zend_Search_Lucene::open(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page);
+      $strQuery = '';
+      if(strlen($this->strSearchValue) < 3){
+        $strQuery = $this->strSearchValue;
+      }else{
+        $strQuery = $this->strSearchValue.'*';
+      }
+      $objHits = $objIndex->find($strQuery);
+    }
+    return $objHits;
+  }
+
+  /**
+   * livesearch
+   * @return object $objHits
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function livesearch(){
+    $this->core->logger->debug('massiveart->website->search->livesearch()');
+
+    if(count(scandir(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page)) > 2){
+      $objHits = $this->findByPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page);
+    }
     
+    if(count(scandir(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global)) > 2){
+      $objGlobalHits = $this->findByPath(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global);
+      $objHits = array_merge($objHits, $objGlobalHits);
+      array_multisort($objHits);
+    }    
+    
+    return $objHits;
+  }
+  
+  /**
+   * findByPath
+   * @param string $strIndexPath
+   * @return Zend_Search_Lucene_Search_QueryHit
+   */
+  private function findByPath($strIndexPath){
+    if($this->intLimitLiveSearch > 0 && $this->intLimitLiveSearch != ''){
+      Zend_Search_Lucene::setResultSetLimit($this->intLimitLiveSearch);
+    }
+    $objIndex = Zend_Search_Lucene::open($strIndexPath);
+    $strQuery = '';
+    if(strlen($this->strSearchValue) < 3){
+      $strQuery = $this->strSearchValue;
+    }else{
+      $arrSearchValue = split(' ',  $this->strSearchValue);
+      foreach($arrSearchValue as $strSearchValue){
+        if(strlen($strSearchValue) < 3 || preg_match('/([^A-za-z0-9\s-_])/', $strSearchValue)){
+          $strQuery .= 'title:'.$strSearchValue.' OR articletitle:'.$strSearchValue.' OR';
+        }else{
+          $strQuery .= 'title:'.$strSearchValue.'* OR articletitle:'.$strSearchValue.'* OR';
+        }
+      }
+      $strQuery = trim($strQuery, ' OR');
+    }
+    
+    $strQuery = '(languageId:'.$this->core->intLanguageId.') AND ('.$strQuery.')';
+    $this->core->logger->debug($strQuery);
+    $objQuery = Zend_Search_Lucene_Search_QueryParser::parse($strQuery, $this->core->sysConfig->encoding->default);
+    
+    return $objIndex->find($objQuery);
+  }
+
+  /**
+   * setSearchValue
+   * @param string $strSearchValue
+   */
+  public function setSearchValue($strSearchValue){
+    $this->strSearchValue = $strSearchValue;
+  }
+
+  /**
+   * getSearchValue
+   * @return string $strSearchValue
+   */
+  public function getSearchValue(){
+    return $this->strSearchValue;
+  }
+
+  /**
+   * setLimitSearch
+   * @param integer $intLimitSearch
+   */
+  public function setLimitSearch($intLimitSearch){
+    $this->intLimitSearch = $intLimitSearch;
+  }
+
+  /**
+   * getLimitSearch
+   * @return integer $intLimitSearch
+   */
+  public function getLimitSearch(){
+    return $this->intLimitSearch;
+  }
+
+  /**
+   * setLimitLiveSearch
+   * @param integer $intLimitLiveSearch
+   */
+  public function setLimitLiveSearch($intLimitLiveSearch){
+    $this->intLimitLiveSearch = $intLimitLiveSearch;
+  }
+
+  /**
+   * getLimitLiveSearch
+   * @return integer $intLimitLiveSearch
+   */
+  public function getLimitLiveSearch(){
+    return $this->intLimitLiveSearch;
+  }
 }
 ?>

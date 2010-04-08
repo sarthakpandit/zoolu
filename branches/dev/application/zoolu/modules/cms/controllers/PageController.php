@@ -515,6 +515,7 @@ class Cms_PageController extends AuthControllerAction {
       $objGenericData->Setup()->setFormVersion($this->objRequest->getParam("formVersion"));
       $objGenericData->Setup()->setFormTypeId($this->objRequest->getParam("formTypeId"));
       $objGenericData->Setup()->setTemplateId($this->objRequest->getParam("templateId"));
+      $objGenericData->Setup()->setElementId($this->objRequest->getParam("id"));
       $objGenericData->Setup()->setRootLevelId($this->objRequest->getParam("rootLevelId"));
       $objGenericData->Setup()->setRootLevelGroupId($this->objRequest->getParam("rootLevelGroupId"));
       $objGenericData->Setup()->setParentId((($this->objRequest->getParam("parentFolderId") != '') ? $this->objRequest->getParam("parentFolderId") : null));

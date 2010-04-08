@@ -54,7 +54,12 @@ class Index {
    * @var Model_Pages
    */
   private $objModelPages;
-    
+
+  /**
+   * @var Model_Globals
+   */
+  private $objModelGlobals;
+  
   /**
    * Constructor
    */
@@ -63,7 +68,7 @@ class Index {
   }
   
   /**
-   * getModelPages
+   * indexPage
    * @param string $strPageId
    * @param integer $intPageVersion
    * @param integer $intLanguageId
@@ -89,6 +94,34 @@ class Index {
   }
   
   /**
+   * indexGlobal
+   * @param string $strGlobalId
+   * @param integer $intGlobalLinkId
+   * @param integer $intGlobalVersion
+   * @param integer $intLanguageId
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function indexGlobal($strGlobalId, $intGlobalLinkId, $intGlobalVersion, $intLanguageId){
+    try{
+      $objPage = new Page();
+      $objPage->setPageId($strGlobalId);
+      $objPage->setPageVersion($intGlobalVersion);
+      $objPage->setLanguageId($intLanguageId);
+      $objPage->setElementLinkId($intGlobalLinkId);
+      $objPage->setType('global');
+      $objPage->setModelSubPath('global/models/');
+      
+      $objPage->loadPage();  
+      
+      $objPage->indexGlobal();
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
    * indexAllPublicPages
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -101,6 +134,25 @@ class Index {
       $objPagesData = $this->objModelPages->loadAllPublicPages();
       foreach($objPagesData as $objPageData){
         $this->indexPage($objPageData->pageId, $objPageData->version, $objPageData->idLanguages);
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * indexAllPublicGlobals
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function indexAllPublicGlobals(){
+    try{
+      $this->getModelGlobals();
+      
+      $objGlobalsData = $this->objModelGlobals->loadAllPublicGlobals();
+      foreach($objGlobalsData as $objGlobalData){
+        $this->indexGlobal($objGlobalData->globalId, $objGlobalData->idLink, $objGlobalData->version, $objGlobalData->idLanguages);
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -125,6 +177,26 @@ class Index {
     }
 
     return $this->objModelPages;
+  }
+  
+  /**
+   * getModelGlobals
+   * @return Model_Globals
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelGlobals(){
+    if (null === $this->objModelGlobals) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'global/models/Globals.php';
+      $this->objModelGlobals = new Model_Globals();
+    }
+
+    return $this->objModelGlobals;
   }
 }
 

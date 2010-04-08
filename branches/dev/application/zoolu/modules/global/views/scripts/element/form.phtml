@@ -42,6 +42,19 @@
               <td><label for="showinnavigation">in Navigation anzeigen</label></td>
             </tr>
             <tr>
+              <td class="tdNormal"><input type="checkbox" name="languagefallback" id="languagefallback"<?php ($this->languagefallback > 0) ? print(' checked="checked"') : ''; ?> onclick="myForm.toggleLanguageFallbackOptions();"/></td>
+              <td>
+                <label for="languagefallback">Sprach-Fallback aktivieren</label>
+                <div id="divLanguageFallbackOptions"<?php echo ($this->languagefallback == 0) ? ' style="display:none;"' : ''; ?>>
+                  <div class="fallbackoptions">
+                    <select name="languagefallbackoption" id="languagefallbackoption" onchange="$('languageFallback').value = this.value;">
+                      <?php echo $this->languageFallbackOptions; ?>
+                    </select>
+                  </div>
+                </div>                
+              </td>
+            </tr>
+            <tr>
               <td class="tdNormal">Ver&ouml;ffentlicht:</td>
               <td>
                 <div class="publishdate" id="divPublishDate"><?php echo $this->publishDate; ?></div>
