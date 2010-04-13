@@ -42,6 +42,8 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'DocumentValidator'         => '/library/massiveart/validators/document.validator.class.php',
     'NestedSet'                 => '/library/massiveart/trees/nested.set.class.php',
     'Page'                      => '/library/massiveart/website/page.class.php',
+    'PageContainer'             => '/library/massiveart/website/page/container.class.php',
+    'PageEntry'                 => '/library/massiveart/website/page/entry.class.php',
     'Navigation'                => '/library/massiveart/website/navigation.class.php',
     'NavigationTree'            => '/library/massiveart/website/navigation/tree.class.php',
     'Search'                    => '/library/massiveart/website/search.class.php',

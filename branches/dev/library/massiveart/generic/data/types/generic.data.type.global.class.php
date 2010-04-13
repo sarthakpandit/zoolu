@@ -191,21 +191,21 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
 
         $objCache->remove($strCacheId);
 
-        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartGlobal', 'GlobalType'.$this->core->sysConfig->global_types->overview->id));
+        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartGlobal', 'GlobalType'.$this->core->sysConfig->global_types->product_overview->id));
       }
 
       //global index      
       if($this->setup->getStatusId() == $this->core->sysConfig->status->live){
         if(substr(PHP_OS, 0, 3) === 'WIN') {
           $this->core->logger->warning('Now indexing implemented at the moment!');
-          //TODO:FIXME $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId);
+          //TODO:FIXME $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId.'_'.$this->setup->getLanguageId());
         }else{
           $strIndexGlobalFilePath = GLOBAL_ROOT_PATH.'cli/IndexGlobal.php';
           //run global index in background
-          exec("php $strIndexGlobalFilePath --globalId='".$objGlobal->globalId."' --linkId='".$this->setup->getElementLinkId()."' --version=".$objGlobal->version." --languageId=".$this->setup->getLanguageId()." > /dev/null &#038;");
+          exec("php $strIndexGlobalFilePath --globalId='".$objGlobal->globalId."' --linkId='".$this->setup->getElementLinkId()."' --version=".$objGlobal->version." --languageId=".$this->setup->getLanguageId()." --rootLevelId=".$this->setup->getRootLevelId()." > /dev/null &#038;");
         }
       }else{
-        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId);
+        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId.'_'.$this->setup->getLanguageId().'_r*');
       }
       
       return $this->setup->getElementId();

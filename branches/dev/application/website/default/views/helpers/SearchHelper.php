@@ -27,6 +27,87 @@ class SearchHelper {
   }
 
   /**
+   * getSearchList
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getSearchList($objHits, $strSearchValue, $translate){
+    $this->core->logger->debug('website->views->helpers->SearchHelper->getSearchList()');
+    
+    $strHtmlOutput = '';
+  
+    $strHtmlSearchHeader = '
+      <div class="header">
+        <p>'.sprintf($translate->_('Search_Result_Text', false), count($objHits), ((count($objHits) == 1) ? $translate->_('Searchresult') : $translate->_('Searchresults')), $strSearchValue).'</p>
+      </div>';
+    
+    $strHtmlOutput .= '<div class="searchResultContainer">'.$strHtmlSearchHeader;
+    
+    if(count($objHits) > 0){
+      foreach($objHits as $objHit){
+        $objDoc = $objHit->getDocument();
+        $arrDocFields = $objDoc->getFieldNames();
+
+        $strHtmlOutput .= '<div class="item">';
+        
+        if(array_search('url', $arrDocFields) && array_search('title', $arrDocFields)){
+          $strTitle = '';
+          if(array_search('articletitle', $arrDocFields) && $objHit->articletitle != ''){
+            $strTitle = htmlentities($objHit->articletitle, ENT_COMPAT, $this->core->sysConfig->encoding->default);
+          }else{
+            $strTitle = htmlentities($objHit->title, ENT_COMPAT, $this->core->sysConfig->encoding->default);
+          }
+          
+          $strUrl = $objHit->url;
+          $arrUrls = array($objHit->url);
+          if(array_search('parentPages', $arrDocFields)){
+            $arrParentPages = unserialize($objHit->parentPages);
+            $arrUrls = array();
+            $blnFirst = true;
+            foreach($arrParentPages as $objEntry){
+              $arrUrls[$objEntry->getEntryId()] = $objEntry->url.substr($objHit->url, strpos($objHit->url, '/', 1) + 1);
+              if($blnFirst == true || ($objEntry->entry_category == 0 && $objEntry->entry_label == 0)){
+                $strUrl = $arrUrls[$objEntry->getEntryId()];
+                $blnFirst = false;
+              }
+            }
+          }
+          
+          $arrPics = array();
+          if(array_search('pic_shortdescription', $arrDocFields)){
+            $arrPics = unserialize($objHit->pic_shortdescription);
+            
+          }elseif(array_search('mainpics', $arrDocFields)){
+            $arrPics = unserialize($objHit->mainpics);
+          }
+          
+          $strIcon = '';
+          if(count($arrPics) > 0){
+            $arrPic = current($arrPics);
+            $strIcon = '<div class="img"><img class="img47x47" src="'.$this->core->sysConfig->media->paths->imgbase.$arrPic['path'].'47x47/'.$arrPic['filename'].'?v='.$arrPic['version'].'"/></div>';
+            //$strIcon = '<div class="img"><img class="img117x88" src="'.$this->core->sysConfig->media->paths->imgbase.$arrPic['path'].'117x88/'.$arrPic['filename'].'?v='.$arrPic['version'].'"/></div>';
+          }
+          $strHtmlOutput .= $strIcon;
+          $strHtmlOutput .= '<div class="title"><a href="'.$strUrl.'">'.$strTitle.'</a></div>';
+          if(array_search('shortdescription', $arrDocFields) && $objHit->shortdescription != ''){
+            $this->core->logger->debug($objHit->shortdescription);
+            $strHtmlOutput .= '<div class="description">'.strip_tags($objHit->shortdescription, '<p>').'</div>';  
+          }
+          foreach($arrUrls as $strUrL){
+            $strHtmlOutput .= '<div class="url"><a href="http://'.$_SERVER['HTTP_HOST'].$strUrL.'">http://'.$_SERVER['HTTP_HOST'].$strUrL.'</a></div>';  
+          }
+          $strHtmlOutput .= '<div class="clear"></div>';
+        }
+        $strHtmlOutput .= '</div>';
+      }
+    }
+    $strHtmlOutput .= '
+            <div class="clear"></div>
+          </div>';  
+    echo $strHtmlOutput;
+  }
+  
+  /**
    * getLiveSearchList
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
@@ -43,13 +124,35 @@ class SearchHelper {
         $arrDocFields = $objDoc->getFieldNames();
         
         if(array_search('url', $arrDocFields) && array_search('title', $arrDocFields)){
-          $strTitle = '';
-          if(array_search('articletitle', $arrDocFields) && $objHit->articletitle != ''){
-            $strTitle = htmlentities($objHit->articletitle, ENT_COMPAT, $this->core->sysConfig->encoding->default);
-          }else{
-            $strTitle = htmlentities($objHit->title, ENT_COMPAT, $this->core->sysConfig->encoding->default);
+          $strTitle = htmlentities($objHit->title, ENT_COMPAT, $this->core->sysConfig->encoding->default);
+                    
+          $strUrl = $objHit->url;
+          if(array_search('parentPages', $arrDocFields)){
+            $arrParentPages = unserialize($objHit->parentPages);
+            $blnFirst = true;
+            foreach($arrParentPages as $objEntry){
+              if($blnFirst == true || ($objEntry->entry_category == 0 && $objEntry->entry_label == 0)){
+                $strUrl = $objEntry->url.substr($objHit->url, strpos($objHit->url, '/', 1) + 1);
+                $blnFirst = false;
+              }
+            }
           }
-          $strHtmlOutput .= '<li><a href="'.$objHit->url.'">'.$strTitle.'</a></li>';
+          
+          $arrPics = array();
+          if(array_search('pic_shortdescription', $arrDocFields)){
+            $arrPics = unserialize($objHit->pic_shortdescription);
+            
+          }elseif(array_search('mainpics', $arrDocFields)){
+            $arrPics = unserialize($objHit->mainpics);
+          }
+          
+          $strIcon = '';
+          if(count($arrPics) > 0){
+            $arrPic = current($arrPics);
+            $strIcon = '<img src="'.sprintf($this->core->sysConfig->media->paths->icon32, $arrPic['path']).$arrPic['filename'].'?v='.$arrPic['version'].'"/>';
+          }
+          
+          $strHtmlOutput .= '<li><a href="'.$strUrl.'"><table cellpadding="0" cellspacing="0"><tr><td class="icon">'.$strIcon.'</td><td class="info"><a href="'.$strUrl.'">'.$strTitle.'</a></td></tr></table></a></li>';
         }
       }
       $strHtmlOutput .= '</ul>';

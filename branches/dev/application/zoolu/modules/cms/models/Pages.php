@@ -936,6 +936,39 @@ class Model_Pages {
       return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
     }
   }
+  
+  /**
+   * loadItemInstanceGlobalFilterDataByIds
+   * @param string $strGenForm
+   * @param array $arrPageIds
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadItemInstanceGlobalFilterDataByIds($strGenForm, $arrPageIds){
+    $this->core->logger->debug('cms->models->Model_Pages->loadItemInstanceGlobalFilterDataByIds('.$strGenForm.', '.$arrPageIds.')');
+    
+    $strSqlInstanceFields = ' `page-'.$strGenForm.'-Instances`.entry_point,
+                              `page-'.$strGenForm.'-Instances`.entry_category,
+                              `page-'.$strGenForm.'-Instances`.entry_label';
+     
+    $strSqlWherePageIds = '';
+    if(count($arrPageIds) > 0){
+      $strSqlWherePageIds = ' WHERE pages.id IN ('.implode(',',$arrPageIds).')';
+    }
+    
+    $sqlStmt = $this->core->dbh->query('SELECT pages.id,
+                                            '.$strSqlInstanceFields.'
+                                          FROM pages
+                                            INNER JOIN `page-'.$strGenForm.'-Instances` ON
+                                              `page-'.$strGenForm.'-Instances`.pageId = pages.pageId AND
+                                              `page-'.$strGenForm.'-Instances`.version = pages.version AND
+                                              `page-'.$strGenForm.'-Instances`.idLanguages = ?                                         
+                                            '.$strSqlWherePageIds, array($this->intLanguageId));
+
+    return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+  }
+  
 
   /**
    * loadPageInstanceDataById
@@ -1281,16 +1314,17 @@ class Model_Pages {
   public function loadAllPublicPages(){
     $this->core->logger->debug('cms->models->Model_Pages->loadAllPublicPages()');
 
-    $objSelect = $this->getPageUrlTable()->select();
+    $objSelect = $this->getPageUrlTable()->select()->distinct();
     $objSelect->setIntegrityCheck(false);
 
     $objSelect->from($this->objPageUrlTable, array('pages.pageId', 'version', 'idLanguages'));
-    $objSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page, array());
-    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version', array());
+    $objSelect->join('pages', 'pages.pageId = urls.relationId AND pages.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page, array('idParent'));
+    $objSelect->join('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = urls.idLanguages', array());
+    $objSelect->joinleft('folders', 'pages.idParent = folders.id AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idRootLevels'));
     $objSelect->where('pageProperties.idStatus = ?', $this->core->sysConfig->status->live)
               ->where('pageProperties.idPageTypes != ?', $this->core->sysConfig->page_types->link->id)
               ->where('pageProperties.idPageTypes != ?', $this->core->sysConfig->page_types->external->id);
-              
+       
     return $this->objPageUrlTable->fetchAll($objSelect);
   }
 
@@ -1653,6 +1687,32 @@ class Model_Pages {
 
       return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
     }
+  }
+  
+  /**
+   * loadGlobalParentPages
+   * @param integer $intGlobalType
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
+   */
+  public function loadGlobalParentPages($intGlobalType){
+    $this->core->logger->debug('cms->models->Model_Pages->loadGlobalParentPages('.$intGlobalType.')');
+
+    $objSelect = $this->getPageTable()->select();
+    $objSelect->setIntegrityCheck(false);
+
+    $objSelect->from('pages', array('id', 'pageId', 'version', 'idParent', 'pageProperties.created', 'pageProperties.changed', 'pageProperties.published'))
+              ->join('globalTypePageTypes', 'globalTypePageTypes.idGlobalTypes = '.$this->core->dbh->quote($intGlobalType, Zend_Db::INT_TYPE), array())
+              ->join('pageProperties', 'globalTypePageTypes.idPageTypes = pageProperties.idPageTypes AND pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+              ->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
+              ->join('genericForms', 'genericForms.id = pageProperties.idGenericForms', array('genericFormId', 'version AS genericFormVersion', 'idGenericFormTypes'))
+              ->join('urls', 'urls.relationId = pages.pageId AND urls.version = pages.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND urls.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).' AND urls.isMain = 1 AND urls.idParent IS NULL', array('url'))
+              ->joinleft('folders', 'pages.idParent = folders.id AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idRootLevels'))
+              ->join('languages', 'languages.id = urls.idLanguages', array('languageCode'))
+              ->where('pageProperties.idStatus = ?', $this->core->sysConfig->status->live)
+              ->where('pageProperties.published <= \''.date('Y-m-d H:i:s').'\'');
+                
+    return $this->objPageTable->fetchAll($objSelect);
   }
   
   /**

@@ -135,6 +135,10 @@
           <default>DEFAULT_EVENT</default>
           <overview>DEFAULT_EVENT_OVERVIEW</overview>
         </events>
+        <product>
+          <default>DEFAULT_PRODUCT</default>          
+          <overview>DEFAULT_PRODUCT_OVERVIEW</overview>
+        </product>
         <press>
           <default>DEFAULT_PRESS</default>          
           <overview>DEFAULT_PRESS_OVERVIEW</overview>

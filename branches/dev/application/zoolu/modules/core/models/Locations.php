@@ -127,6 +127,37 @@ class Model_Locations {
   }
   
   /**
+   * loadLocationsByCountry
+   * @param integer $intUnitId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadLocationsByCountry($strCountry, $intUnitId = 0, $intTypeId = 0){
+    $this->core->logger->debug('core->models->Locations->loadLocationsByCountry('.$strCountry.', '.$intUnitId.', '.$intTypeId.')'); 
+    
+    $objSelect = $this->getLocationsTable()->select();   
+    $objSelect->setIntegrityCheck(false);
+    
+    /**
+     * SELECT * FROM locations 
+     * WHERE locations.country = ? AND 
+     *  locations.idUnits = ? AND 
+     *  locations.type = ?
+     */ 
+    $objSelect->from('locations');
+    $objSelect->where('locations.country = (SELECT categoryCodes.idCategories FROM categoryCodes WHERE categoryCodes.code = \''.$strCountry.'\' AND categoryCodes.idLanguages = '.$this->intLanguageId.')');
+    if($intUnitId > 0){
+      $objSelect->where('locations.idUnits = ?', $intUnitId); 
+    }
+    if($intTypeId > 0){
+      $objSelect->where('locations.type = ?', $intTypeId); 
+    }
+    $objSelect->order('locations.name ASC');
+        
+    return $this->getLocationsTable()->fetchAll($objSelect);
+  }
+  
+  /**
    * loadLocation 
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>

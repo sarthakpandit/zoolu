@@ -85,6 +85,15 @@ function get_side_navigation(){
 }
 
 /**
+ * get_fotter_navigation
+ * @author Thomas Schedler <tsh@massiveart.com>
+ * @version 1.0
+ */
+function get_fotter_navigation(){
+  echo getNavigationHelperObject()->getFotterNavigation();
+}
+
+/**
  * get_main_navigation_title
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0

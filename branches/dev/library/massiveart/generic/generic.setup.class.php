@@ -225,7 +225,12 @@ class GenericSetup {
   const FIELD_TYPE_SPECIALFIELD_ID = 4;
   const FIELD_TYPE_ZF_ID = 5;
   const FIELD_TYPE_FILE_FILTER_ID = 6;
-
+  
+  /*
+   * FieldTypes
+   */
+  const FIELD_TYPE_ID_TAG = 16;
+  
 	/**
 	 * @var Core
 	 */

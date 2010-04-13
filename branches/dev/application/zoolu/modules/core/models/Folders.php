@@ -1081,98 +1081,72 @@ class Model_Folders {
    * @version 1.0
    */
   public function loadWebsiteRootLevelChilds($intRootLevelId, $intDepth = 1, $intDisplayOptionId = 1){
-    $this->core->logger->debug('core->models->Folders->loadRootLevelChilds('.$intRootLevelId.','.$intDepth.')');
+    $this->core->logger->debug('core->models->Folders->loadWebsiteRootLevelChilds('.$intRootLevelId.','.$intDepth.','.$intDisplayOptionId.')');
 
     $strFolderFilter = '';
     $strPageFilter = '';
     if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
-      $strFolderFilter = 'AND folderProperties.idStatus = '.$this->core->sysConfig->status->live;
-      $strPageFilter = 'AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strFolderFilter = ' AND folderProperties.idStatus = '.$this->core->sysConfig->status->live;
+      $strPageFilter = ' AND pageProperties.idStatus = '.$this->core->sysConfig->status->live;
     }
-
-    $sqlStmt = $this->core->dbh->query('SELECT folders.id AS idFolder, folders.folderId, folderTitles.title AS folderTitle, folders.depth, folders.sortPosition as folderOrder,
-                                            IF(folders.idParentFolder = 0, pages.idParent, folders.idParentFolder) AS parentId,
-                                            pages.id AS idPage, pages.pageId, pages.isStartPage, pages.sortPosition as pageOrder,
-                                            IF(pageProperties.idPageTypes = ?, lUrls.url, urls.url) as url,
-                                            IF(pageProperties.idPageTypes = ?, plExternals.external, pageExternals.external) as external,
-                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title,
-                                            pageProperties.idPageTypes, (SELECT languageCode FROM languages WHERE id = ?) AS languageCode, rootLevels.idRootLevelGroups
-                                        FROM folders
-                                          INNER JOIN folderProperties ON 
-                                            folderProperties.folderId = folders.folderId AND 
-                                            folderProperties.version = folders.version AND 
-                                            folderProperties.idLanguages = ?
-                                          INNER JOIN rootLevels ON
-                                            folders.idRootLevels = rootLevels.id
-                                          INNER JOIN folderTitles ON
-                                            folderTitles.folderId = folders.folderId AND
-																			      folderTitles.version = folders.version AND
-																			      folderTitles.idLanguages = ?
-																			    LEFT JOIN pages ON
-																			      pages.idParent = folders.id AND
-																			      pages.idParentTypes = ?
-																			    LEFT JOIN pageProperties ON 
-																			      pageProperties.pageId = pages.pageId AND 
-																			      pageProperties.version = pages.version AND 
-																			      pageProperties.idLanguages = ?
-																			      '.$strPageFilter.'
-																			    LEFT JOIN pageTitles ON
-																			      pageTitles.pageId = pages.pageId AND
-																			      pageTitles.version = pages.version AND
-																			      pageTitles.idLanguages = ?
-																				  LEFT JOIN urls ON
-																				    urls.relationId = pages.pageId AND
-																				    urls.version = pages.version AND
-                                            urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND
-																				    urls.idLanguages = ? AND
-																				    urls.isMain = 1
-																				  LEFT JOIN pageExternals ON
-																				    pageExternals.pageId = pages.pageId AND
-																				    pageExternals.version = pages.version AND
-																				    pageExternals.idLanguages = ?
-																				  LEFT JOIN pageLinks ON
-																				    pageLinks.idPages = pages.id
-																			    LEFT JOIN pages AS pl ON
-																			      pl.id = (SELECT p.id FROM pages AS p WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)
-																			    LEFT JOIN pageTitles AS plTitle ON
-																			      plTitle.pageId = pl.pageId AND
-																			      plTitle.version = pl.version AND
-																			      plTitle.idLanguages = ?
-																			    LEFT JOIN urls AS lUrls ON
-																			      lUrls.relationId = pl.pageId AND
-																			      lUrls.version = pl.version AND
-                                            lUrls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND
-																			      lUrls.idLanguages = ? AND
-																			      lUrls.isMain = 1
-																				  LEFT JOIN pageExternals AS plExternals ON
-																				    plExternals.pageId = pl.pageId AND
-																				    plExternals.version = pl.version AND
-																				    plExternals.idLanguages = ?
-                                        WHERE folders.idRootLevels = ? AND
-                                          folders.depth <= ? AND
-                                          ((folderProperties.showInNavigation = ? AND folders.depth = 0) OR (folderProperties.showInNavigation = 1 AND folders.depth > 0)) AND
-                                          ((pageProperties.showInNavigation = ? AND folders.depth = 0) OR (pageProperties.showInNavigation = 1 AND folders.depth > 0))
-                                          '.$strFolderFilter.'
-                                        ORDER BY folders.lft, pages.isStartPage DESC, pages.sortPosition ASC, pages.sortTimestamp DESC, pages.id ASC', array($this->core->sysConfig->page_types->link->id,
-                                                                                                                                                             $this->core->sysConfig->page_types->link->id,
-                                                                                                                                                             $this->core->sysConfig->page_types->link->id,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->core->sysConfig->parent_types->folder,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $this->intLanguageId,
-                                                                                                                                                             $intRootLevelId,
-                                                                                                                                                             $intDepth,
-                                                                                                                                                             $intDisplayOptionId,
-                                                                                                                                                             $intDisplayOptionId));
     
-    return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+    $objSelect1 = $this->getFolderTable()->select();
+    $objSelect1->setIntegrityCheck(false);
+    
+    $objSelect1->from('folders', array('idFolder' => 'id', 'folderId', 'folderTitle' => 'folderTitles.title', 'depth', 'folderOrder' => 'sortPosition', 'parentId' => new Zend_Db_Expr('IF(folders.idParentFolder = 0, pages.idParent, folders.idParentFolder)'),
+                                       'idPage' => 'pages.id', 'pages.pageId', 'pages.isStartPage', 'pageOrder' => 'pages.sortPosition', 'url' => new Zend_Db_Expr('IF(pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->link->id.', plUrls.url, urls.url)'), 'external' => new Zend_Db_Expr('IF(pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->link->id.', plExternals.external, pageExternals.external)'), 'title' => new Zend_Db_Expr('IF(pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->link->id.', plTitle.title, pageTitles.title)'),
+                                       'pageProperties.idPageTypes', 'languages.languageCode', 'rootLevels.idRootLevelGroups', 'folders.lft', 'folders.sortPosition', 'folders.sortTimestamp'))
+               ->join('folderProperties', 'folderProperties.folderId = folders.folderId AND folderProperties.version = folders.version AND folderProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).$strFolderFilter, array())
+               ->join('rootLevels', 'folders.idRootLevels = rootLevels.id', array())
+               ->join('folderTitles', 'folderTitles.folderId = folders.folderId AND folderTitles.version = folders.version AND folderTitles.idLanguages = folderProperties.idLanguages', array())
+               ->joinLeft('languages', 'languages.id = folderProperties.idLanguages', array())
+               ->joinLeft('pages', 'pages.idParent = folders.id AND pages.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
+               ->joinLeft('pageProperties', 'pageProperties.pageId = pages.pageId AND  pageProperties.version = pages.version AND pageProperties.idLanguages = folderProperties.idLanguages'.$strPageFilter, array())
+               ->joinLeft('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = pageProperties.idLanguages', array())
+               ->joinLeft('urls', 'urls.relationId = pages.pageId AND urls.version = pages.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND urls.idLanguages = pageProperties.idLanguages AND urls.isMain = 1', array())
+               ->joinLeft('pageExternals', 'pageExternals.pageId = pages.pageId AND pageExternals.version = pages.version AND pageExternals.idLanguages = pageProperties.idLanguages', array())
+               ->joinLeft('pageLinks', 'pageLinks.idPages = pages.id', array())
+               ->joinLeft(array('pl' => 'pages'), 'pl.id = (SELECT p.id FROM pages AS p WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)', array())
+               ->joinLeft(array('plProperties' => 'pageProperties'), 'plProperties.pageId = pl.pageId AND  plProperties.version = pl.version AND plProperties.idLanguages = folderProperties.idLanguages'.$strPageFilter, array())
+               ->joinLeft(array('plTitle' => 'pageTitles'), 'plTitle.pageId = pl.pageId AND plTitle.version = pl.version AND plTitle.idLanguages = plProperties.idLanguages', array())
+               ->joinLeft(array('plUrls' => 'urls'), 'plUrls.relationId = pl.pageId AND plUrls.version = pl.version AND plUrls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND plUrls.idLanguages = plProperties.idLanguages AND plUrls.isMain = 1', array())
+               ->joinLeft(array('plExternals' => 'pageExternals'), 'plExternals.pageId = pl.pageId AND plExternals.version = pl.version AND plExternals.idLanguages = plProperties.idLanguages', array())
+               ->where('folders.idRootLevels = ?', $intRootLevelId)
+               ->where('folders.depth <= ?', $intDepth)
+               ->where('((folderProperties.showInNavigation = ? AND folders.depth = 0) OR (folderProperties.showInNavigation = 1 AND folders.depth > 0))', $intDisplayOptionId)
+               ->where('((pageProperties.showInNavigation = ? AND folders.depth = 0) OR (pageProperties.showInNavigation = 1 AND folders.depth > 0))', $intDisplayOptionId);
+             
+    $objSelect2 = $this->getRootLevelTable()->select();
+    $objSelect2->setIntegrityCheck(false);
+    
+    $objSelect2->from('pages', array('idFolder' => new Zend_Db_Expr('-1'), 'folderId' => new Zend_Db_Expr('""'), 'folderTitle' => new Zend_Db_Expr('""'), 'depth'  => new Zend_Db_Expr('0'), 'folderOrder' => new Zend_Db_Expr('-1'), 'parentId' => 'pages.idParent',
+                                     'idPage' => 'pages.id', 'pages.pageId', 'pages.isStartPage', 'pageOrder' => 'pages.sortPosition', 'url' => new Zend_Db_Expr('IF(pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->link->id.', plUrls.url, urls.url)'), 'external' => new Zend_Db_Expr('IF(pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->link->id.', plExternals.external, pageExternals.external)'), 'title' => new Zend_Db_Expr('IF(pageProperties.idPageTypes = '.$this->core->sysConfig->page_types->link->id.', plTitle.title, pageTitles.title)'),
+                                     'pageProperties.idPageTypes', 'languages.languageCode', 'rootLevels.idRootLevelGroups', 'lft' => new Zend_Db_Expr('0'), 'pages.sortPosition', 'pages.sortTimestamp'))
+               ->join('rootLevels', 'pages.idParent = rootLevels.id', array())
+               ->join('pageProperties', 'pageProperties.pageId = pages.pageId AND  pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE).$strPageFilter, array())
+               ->join('pageTitles', 'pageTitles.pageId = pages.pageId AND pageTitles.version = pages.version AND pageTitles.idLanguages = pageProperties.idLanguages', array())
+               ->joinLeft('languages', 'languages.id = pageProperties.idLanguages', array())
+               ->joinLeft('urls', 'urls.relationId = pages.pageId AND urls.version = pages.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND urls.idLanguages = pageProperties.idLanguages AND urls.isMain = 1', array())
+               ->joinLeft('pageExternals', 'pageExternals.pageId = pages.pageId AND pageExternals.version = pages.version AND pageExternals.idLanguages = pageProperties.idLanguages', array())
+               ->joinLeft('pageLinks', 'pageLinks.idPages = pages.id', array())
+               ->joinLeft(array('pl' => 'pages'), 'pl.id = (SELECT p.id FROM pages AS p WHERE pageLinks.idPages = pages.id AND pageLinks.pageId = p.pageId ORDER BY p.version DESC LIMIT 1)', array())
+               ->joinLeft(array('plProperties' => 'pageProperties'), 'plProperties.pageId = pl.pageId AND  plProperties.version = pl.version AND plProperties.idLanguages = pageProperties.idLanguages'.$strPageFilter, array())
+               ->joinLeft(array('plTitle' => 'pageTitles'), 'plTitle.pageId = pl.pageId AND plTitle.version = pl.version AND plTitle.idLanguages = plProperties.idLanguages', array())
+               ->joinLeft(array('plUrls' => 'urls'), 'plUrls.relationId = pl.pageId AND plUrls.version = pl.version AND plUrls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND plUrls.idLanguages = plProperties.idLanguages AND plUrls.isMain = 1', array())
+               ->joinLeft(array('plExternals' => 'pageExternals'), 'plExternals.pageId = pl.pageId AND plExternals.version = pl.version AND plExternals.idLanguages = plProperties.idLanguages', array())
+               ->where('pages.idParent = ?', $intRootLevelId)
+               ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel)
+               ->where('pageProperties.showInNavigation = ?', $intDisplayOptionId);             
+    
+    $objSelect = $this->getRootLevelTable()->select()
+                                 ->distinct()
+                                 ->union(array($objSelect1, $objSelect2))
+                                 ->order('lft')
+                                 ->order('isStartPage DESC')
+                                 ->order('sortPosition ASC')
+                                 ->order('sortTimestamp DESC');
+                                                                  
+    return $this->getRootLevelTable()->fetchAll($objSelect);    
   }
   
   /**

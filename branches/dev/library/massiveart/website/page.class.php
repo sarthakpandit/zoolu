@@ -43,9 +43,6 @@
  * @subpackage Page
  */
 
-require_once(dirname(__FILE__).'/page/container.class.php');
-require_once(dirname(__FILE__).'/page/entry.class.php');
-
 class Page {
 
   /**
@@ -54,10 +51,15 @@ class Page {
   protected $core;
 
   /**
+   * @var Model_Pages|Model_Global
+   */
+  private $objModel;
+
+  /**
    * @var Model_Pages 
    */
-  private $objModel; // or Model_Global
-
+  private $objModelPages;
+  
   /**
    * @var Model_Global
    */
@@ -72,6 +74,11 @@ class Page {
    * @var Model_Contacts
    */
   private $objModelContacts;
+  
+  /**
+   * @var Model_Locations 
+   */
+  private $objModelLocations;
 
   /**
    * @var Model_Categories
@@ -380,10 +387,118 @@ class Page {
     $this->core->logger->debug('massiveart->website->page->indexGlobal()');
     try{
       if($this->objGenericData instanceof GenericData){
-        $this->objGenericData->indexData(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $this->strPageId);
+        
+        $objGlobalPageParents = $this->getModelPages()->loadGlobalParentPages($this->intTypeId);
+        
+        if(count($objGlobalPageParents) > 0){
+          $this->arrContainer = array();
+          $this->arrGenForms = array();
+          $this->arrPageEntries = array();
+                          
+          foreach($objGlobalPageParents as $objGlobalPageParent){
+            $objEntry = new PageEntry();
+            
+            $objEntry->setEntryId($objGlobalPageParent->id);
+            $objEntry->title = $objGlobalPageParent->title;
+            $objEntry->pageId = $objGlobalPageParent->pageId;
+            $objEntry->rootLevelId = ((int) $objGlobalPageParent->idRootLevels > 0) ? $objGlobalPageParent->idRootLevels : $objGlobalPageParent->idParent;
+            $objEntry->url = '/'.strtolower($objGlobalPageParent->languageCode).'/'.$objGlobalPageParent->url;
+            $objEntry->created = $objGlobalPageParent->created;
+            $objEntry->published = $objGlobalPageParent->published;
+            
+            $this->arrGenForms[$objGlobalPageParent->genericFormId.'-'.$objGlobalPageParent->genericFormVersion][] = $objGlobalPageParent->id;
+            
+            if(!array_key_exists($objEntry->rootLevelId, $this->arrContainer)){
+              $this->arrContainer[$objEntry->rootLevelId] = new PageContainer();
+            }
+            
+            $this->arrContainer[$objEntry->rootLevelId]->addPageEntry($objEntry, 'entry_'.$objGlobalPageParent->id);
+            
+            $this->arrPageEntries[$objGlobalPageParent->id] = $objEntry->rootLevelId;
+          }
+                    
+          foreach($this->arrGenForms as $key => $arrPageIds){
+            $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
+            $this->loadInstanceGlobalFilterData($key, $arrGenFormPageIds);      
+          }
+          
+          $arrParentFolderIds = array();
+          $objGlobaParentFolders = $this->getModelGlobals()->loadParentFolders(($this->intElementLinkId > 0 ? $this->intElementLinkId : $this->intElementId));
+          if(count($objGlobaParentFolders) > 0){
+            foreach($objGlobaParentFolders as $objGlobaParentFolder){
+              $arrParentFolderIds[] = $objGlobaParentFolder->id;
+            }
+          }
+
+          $arrGlobaCategoryies = is_array($this->getFieldValue('category')) ? $this->getFieldValue('category') : array($this->getFieldValue('category'));
+          $arrGlobaLabels = is_array($this->getFieldValue('label')) ? $this->getFieldValue('label') : array($this->getFieldValue('label'));
+
+          foreach($this->arrContainer as $objContainer){
+            foreach($objContainer->getEntries() as $objEntry){
+              if(array_search($objEntry->entry_point, $arrParentFolderIds) === false){
+                $objContainer->removePageEntry('entry_'.$objEntry->getEntryId());
+              }
+  
+              if((int) $objEntry->entry_category > 0){
+                if(array_search($objEntry->entry_category, $arrGlobaCategoryies) === false){
+                  $objContainer->removePageEntry('entry_'.$objEntry->getEntryId());
+                }
+              }
+              
+              if((int) $objEntry->entry_label > 0){
+                if(array_search($objEntry->entry_label, $arrGlobaLabels) === false){
+                  $objContainer->removePageEntry('entry_'.$objEntry->getEntryId());
+                }
+              }
+            }
+          }
+          
+          if(count($objContainer->getEntries()) > 0){
+            $this->objGenericData->indexData(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $this->strPageId, $this->arrContainer);    
+          }
+        }        
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * loadInstanceGlobalFilterData
+   * @param string $strKey
+   * @param array $arrGenFormPageIds
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  private function loadInstanceGlobalFilterData($strKey, $arrGenFormPageIds){
+    
+    $objPageRowset = $this->getModelPages()->loadItemInstanceGlobalFilterDataByIds($strKey, $arrGenFormPageIds);
+        
+    /**
+     * overwrite page entries
+     */
+    if(isset($objPageRowset) && count($objPageRowset) > 0){
+      foreach($objPageRowset as $objPageRow){
+        if(array_key_exists($objPageRow->id, $this->arrPageEntries)){
+          if(is_array($this->arrPageEntries[$objPageRow->id])){
+            $arrPageEntryContainers = $this->arrPageEntries[$objPageRow->id];
+          }else{
+            $arrPageEntryContainers = array($this->arrPageEntries[$objPageRow->id]);
+          }
+          
+          foreach($arrPageEntryContainers as $intContainerId){            
+            if(array_key_exists($intContainerId, $this->arrContainer)){
+              $objPageEntry = $this->arrContainer[$intContainerId]->getPageEntry('entry_'.$objPageRow->id);
+              
+              $objPageEntry->entry_point = $objPageRow->entry_point;
+              $objPageEntry->entry_category = $objPageRow->entry_category;
+              $objPageEntry->entry_label = $objPageRow->entry_label;
+              
+              $this->arrContainer[$intContainerId]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -991,7 +1106,7 @@ class Page {
          */
         if(count($this->arrGenForms) > 0){
           $this->objModel = $this->getModelGlobals();
-          $this->loadInstanceData();
+          $this->loadInstanceData('174,5');
           $this->getModel(true);
         }
       }
@@ -1109,6 +1224,26 @@ class Page {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * getLocationsByCountry
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getLocationsByCountry($strCountry){
+    try{
+      $this->getModelLocations();  
+      
+      $intUnitId = $this->objGenericData->Setup()->getField('entry_location')->getValue();
+      $intTypeId = $this->objGenericData->Setup()->getField('entry_type')->getValue();
+      
+      $objLocations = $this->objModelLocations->loadLocationsByCountry($strCountry, $intUnitId, $intTypeId);
+      
+      return $objLocations;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
 
   /**
    * getEventsContainer
@@ -1192,10 +1327,10 @@ class Page {
    * loadInstanceData
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadInstanceData(){
+  private function loadInstanceData($strImgFieldIds = '5,55'){
     foreach($this->arrGenForms as $key => $arrPageIds){
       $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
-      $this->loadInstanceDataNow($key, $arrGenFormPageIds);      
+      $this->loadInstanceDataNow($key, $arrGenFormPageIds, $strImgFieldIds);      
     }
   }
     
@@ -1238,10 +1373,10 @@ class Page {
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadInstanceDataNow($strKey, $arrGenFormPageIds){
+  private function loadInstanceDataNow($strKey, $arrGenFormPageIds, $strImgFieldIds = '5,55'){
     
     $intImgFilterTag = ($this->objParentPage instanceof Page && $this->objParentPage->getField('entry_pic_tag') !== null && (int) $this->objParentPage->getFieldValue('entry_pic_tag') > 0) ? $this->objParentPage->getFieldValue('entry_pic_tag') : 0;
-    $objPageRowset = $this->objModel->loadItemInstanceDataByIds($strKey, $arrGenFormPageIds, $intImgFilterTag);
+    $objPageRowset = $this->objModel->loadItemInstanceDataByIds($strKey, $arrGenFormPageIds, $intImgFilterTag, $strImgFieldIds);
 
     /**
      * overwrite page entries
@@ -1261,6 +1396,7 @@ class Page {
               $objPageEntry->datetime = (isset($objPageRow->datetime)) ? strtotime($objPageRow->datetime) : '';
               $objPageEntry->shortdescription = (isset($objPageRow->shortdescription)) ? $objPageRow->shortdescription : '';
               $objPageEntry->description = (isset($objPageRow->description)) ? $objPageRow->description : '';
+              $objPageEntry->slogan = (isset($objPageRow->slogan)) ? $objPageRow->slogan : '';              
               $objPageEntry->filename = (isset($objPageRow->filename)) ? $objPageRow->filename : '';
               $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
               $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
@@ -1303,6 +1439,27 @@ class Page {
       }
     }
     return $this->objModel;    
+  }
+  
+  /**
+   * getModelPages
+   * @return Model_Pages
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelPages(){
+    if (null === $this->objModelPages) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
+      $this->objModelPages = new Model_Pages();
+      $this->objModelPages->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelPages;
   }
   
   /**
@@ -1366,6 +1523,27 @@ class Page {
     }
 
     return $this->objModelContacts;
+  }
+  
+  /**
+   * getModelLocations
+   * @return Model_Locations
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelLocations(){
+    if (null === $this->objModelLocations) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Locations.php';
+      $this->objModelLocations = new Model_Locations();
+      $this->objModelLocations->setLanguageId($this->intLanguageId);
+    }
+
+    return $this->objModelLocations;
   }
 
   /**

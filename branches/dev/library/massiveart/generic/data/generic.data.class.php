@@ -135,13 +135,20 @@ class GenericData {
    * indexData
    * @param string $strIndexPath
    * @param string $strKey
+   * @param array $arrParentPageContainer
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function indexData($strIndexPath, $strKey){
+  public function indexData($strIndexPath, $strKey, $arrParentPageContainer = array()){
     $this->core->logger->debug('massiveart->generic->data->GenericData->indexData('.$strIndexPath.', '.$strKey.')');
     if($this->objDataType instanceof GenericDataTypeAbstract){
-      $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId());
+      if(count($arrParentPageContainer) > 0){
+        foreach($arrParentPageContainer as $intRootLevelId => $objParentPageContainer){
+          $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId().'_r'.$intRootLevelId, $objParentPageContainer);
+        }
+      }else{
+        $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId());  
+      }
     }
   }
 

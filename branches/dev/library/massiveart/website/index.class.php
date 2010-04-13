@@ -72,16 +72,19 @@ class Index {
    * @param string $strPageId
    * @param integer $intPageVersion
    * @param integer $intLanguageId
+   * @param integer $intRootLevelId
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function indexPage($strPageId, $intPageVersion, $intLanguageId){
+  public function indexPage($strPageId, $intPageVersion, $intLanguageId, $intRootLevelId){
     try{
+      $this->core->logger->debug('massiveart->website->index->indexPage('.$strPageId.', '.$intPageVersion.', '.$intLanguageId.', '.$intRootLevelId.')');
       $objPage = new Page();
       $objPage->setPageId($strPageId);
       $objPage->setPageVersion($intPageVersion);
       $objPage->setLanguageId($intLanguageId);
+      $objPage->setRootLevelId($intRootLevelId);
       $objPage->setType('page');
       $objPage->setModelSubPath('cms/models/');
       
@@ -99,23 +102,27 @@ class Index {
    * @param integer $intGlobalLinkId
    * @param integer $intGlobalVersion
    * @param integer $intLanguageId
+   * @param integer $intRootLevelId
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function indexGlobal($strGlobalId, $intGlobalLinkId, $intGlobalVersion, $intLanguageId){
+  public function indexGlobal($strGlobalId, $intGlobalLinkId, $intGlobalVersion, $intLanguageId, $intRootLevelId){
     try{
+      $this->core->logger->debug('massiveart->website->index->indexGlobal('.$strGlobalId.', '.$intGlobalLinkId.', '.$intGlobalVersion.', '.$intLanguageId.', '.$intRootLevelId.')');
       $objPage = new Page();
       $objPage->setPageId($strGlobalId);
       $objPage->setPageVersion($intGlobalVersion);
       $objPage->setLanguageId($intLanguageId);
       $objPage->setElementLinkId($intGlobalLinkId);
+      $objPage->setRootLevelId($intRootLevelId);
       $objPage->setType('global');
       $objPage->setModelSubPath('global/models/');
       
-      $objPage->loadPage();  
+      $objPage->loadPage();
       
-      $objPage->indexGlobal();
+      $objPage->indexGlobal();      
+      unset($objPage);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -133,7 +140,7 @@ class Index {
       
       $objPagesData = $this->objModelPages->loadAllPublicPages();
       foreach($objPagesData as $objPageData){
-        $this->indexPage($objPageData->pageId, $objPageData->version, $objPageData->idLanguages);
+        $this->indexPage($objPageData->pageId, $objPageData->version, $objPageData->idLanguages, ((int) $objPageData->idRootLevels > 0) ? $objPageData->idRootLevels : $objPageData->idParent);
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -152,7 +159,7 @@ class Index {
       
       $objGlobalsData = $this->objModelGlobals->loadAllPublicGlobals();
       foreach($objGlobalsData as $objGlobalData){
-        $this->indexGlobal($objGlobalData->globalId, $objGlobalData->idLink, $objGlobalData->version, $objGlobalData->idLanguages);
+        $this->indexGlobal($objGlobalData->globalId, $objGlobalData->idLink, $objGlobalData->version, $objGlobalData->idLanguages, ((int) $objGlobalData->idRootLevels > 0) ? $objGlobalData->idRootLevels : $objGlobalData->idParent);
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

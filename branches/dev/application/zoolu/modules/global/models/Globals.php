@@ -227,7 +227,8 @@ class Model_Globals {
     $objSelect1->setIntegrityCheck(false);
     
     $objSelect1->from($this->objGlobalUrlTable, array('globals.globalId', 'idLink' => 'lG.id', 'version', 'idLanguages'));
-    $objSelect1->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global, array());
+    $objSelect1->join(array('lG' => 'globals'), 'lG.globalId = urls.relationId AND lG.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global, array('idParent'));
+    $objSelect1->joinleft('folders', 'lG.idParent = folders.id AND lG.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idRootLevels'));
     $objSelect1->join('globalLinks', 'globalLinks.idGlobals = lG.id', array());
     $objSelect1->join('globals', 'globals.id = (SELECT g.id FROM globals AS g WHERE g.globalId = globalLinks.globalId ORDER BY g.version DESC LIMIT 1)', array());
     $objSelect1->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version', array());
@@ -238,16 +239,15 @@ class Model_Globals {
     $objSelect2->setIntegrityCheck(false);
     
     $objSelect2->from($this->objGlobalUrlTable, array('globals.globalId', 'idLink' => new Zend_Db_Expr('-1'), 'version', 'idLanguages'));
-    $objSelect2->join('globals', 'globals.globalId = urls.relationId AND globals.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global, array());
+    $objSelect2->join('globals', 'globals.globalId = urls.relationId AND globals.version = urls.version AND urls.idUrlTypes = '.$this->core->sysConfig->url_types->global, array('idParent'));
+    $objSelect2->joinleft('folders', 'globals.idParent = folders.id AND globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array('idRootLevels'));
     $objSelect2->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version', array());
     $objSelect2->where('globalProperties.idStatus = ?', $this->core->sysConfig->status->live);
     
     $objSelect = $this->getGlobalTable()->select()
                                          ->distinct()
                                          ->union(array($objSelect1, $objSelect2));
-                                         
-    echo $objSelect;
-                  
+    $this->core->logger->debug($objSelect);
     return $this->objGlobalUrlTable->fetchAll($objSelect);
   }
 
@@ -465,7 +465,11 @@ class Model_Globals {
       if(strpos($strGenForm, $this->core->sysConfig->form->ids->press->default) !== false){
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,
-                                  globalDatetimes.datetime,';
+                                  `globalDatetimes`.datetime,';
+      }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->product->default) !== false){
+        $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
+                                  `global-'.$strGenForm.'-Instances`.description,
+                                  `global-'.$strGenForm.'-Instances`.slogan,';
       }else{
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,';
@@ -860,8 +864,12 @@ class Model_Globals {
   public function loadParentFolders($intElementId){
     $this->core->logger->debug('global->models->Model_Globals->loadParentFolders('.$intElementId.')');
 
-    $sqlStmt = $this->core->dbh->query('SELECT folders.id, folders.isUrlFolder, folderTitles.title
+    $sqlStmt = $this->core->dbh->query('SELECT folders.id, folderProperties.isUrlFolder, folderTitles.title
                                           FROM folders
+                                            INNER JOIN folderProperties ON
+                                              folderProperties.folderId = folders.folderId AND
+                                              folderProperties.version = folders.version AND
+                                              folderProperties.idLanguages = ?
                                             INNER JOIN folderTitles ON
                                               folderTitles.folderId = folders.folderId AND
                                               folderTitles.version = folders.version AND
@@ -874,7 +882,7 @@ class Model_Globals {
                                            WHERE folders.lft <= parent.lft AND
                                                  folders.rgt >= parent.rgt AND
                                                  folders.idRootLevels = parent.idRootLevels
-                                             ORDER BY folders.rgt', array($this->intLanguageId, $intElementId, $this->core->sysConfig->parent_types->folder));
+                                             ORDER BY folders.rgt', array($this->intLanguageId, $this->intLanguageId, $intElementId, $this->core->sysConfig->parent_types->folder));
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
 

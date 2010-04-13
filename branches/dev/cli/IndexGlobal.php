@@ -42,13 +42,14 @@ try{
           'linkId|gl=i'    => 'Global Link Id',
           'version|v=i'     => 'Global Version',
           'languageId|l=i'  => 'Language Id',
+          'rootLevelId|r=i' => 'RootLevelId Id'
       )
   );
   
-  if(isset($objConsoleOpts->globalId) && isset($objConsoleOpts->linkId) && isset($objConsoleOpts->version) && isset($objConsoleOpts->languageId)){
+  if(isset($objConsoleOpts->globalId) && isset($objConsoleOpts->linkId) && isset($objConsoleOpts->version) && isset($objConsoleOpts->languageId) && isset($objConsoleOpts->rootLevelId)){
     $objIndex = new Index();
     $core->logger->debug('index global now ...');
-    $objIndex->indexGlobal($objConsoleOpts->globalId, $objConsoleOpts->linkId, $objConsoleOpts->version, $objConsoleOpts->languageId);
+    $objIndex->indexGlobal($objConsoleOpts->globalId, $objConsoleOpts->linkId, $objConsoleOpts->version, $objConsoleOpts->languageId, $objConsoleOpts->rootLevelId);
     $core->logger->debug('... finished!');
   }
     
