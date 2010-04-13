@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-08 12:07+0100\n"
+"POT-Creation-Date: 2010-04-13 11:48+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Cornelius Hansjakob <cha@massiveart.com>\n"
+"Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,6 +15,19 @@ msgstr ""
 "X-Poedit-Basepath: /Volumes/massive-brunello/websites/dev.zoolu.area51.at/\n"
 "X-Poedit-SearchPath-0: application/website\n"
 "X-Poedit-SearchPath-1: public/website\n"
+
+#: application/website/default/views/helpers/SearchHelper.php:41
+#, php-format
+msgid "Search_Result_Text"
+msgstr "<strong>%s</strong> %s for <strong>\"%s\"</strong>"
+
+#: application/website/default/views/helpers/SearchHelper.php:41
+msgid "Searchresult"
+msgstr "Search Result"
+
+#: application/website/default/views/helpers/SearchHelper.php:41
+msgid "Searchresults"
+msgstr "Search Results"
 
 #: application/website/default/language/addon-language-keys.php:38
 #: application/website/default/controllers/SweepstakeController.php:260
@@ -133,17 +146,23 @@ msgstr "ZIP"
 msgid "Check_Legalnotes"
 msgstr "Legal notes"
 
+#: public/website/themes/ivoclarvivadent/search.php:66
+msgid "Search"
+msgstr "Search"
+
 #: public/website/themes/ivoclarvivadent/helpers/NavigationHelper.php:315
 msgid "Year"
 msgstr "Year"
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:377
-msgid "Read_article_online"
-msgstr "Read article online"
+msgid "More"
+msgstr "More"
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:587
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:596
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:609
+#: public/website/themes/ivoclarvivadent/templates/template_location.php:29
+#: public/website/themes/ivoclarvivadent/templates/template_location.php:36
 msgid "Please_choose"
 msgstr "Please choose"
 
@@ -352,6 +371,12 @@ msgstr "Three towels of Tetric EvoFlow"
 msgid "evoFlow_maldives_Question"
 msgstr "How many shades of Tetric EvoFlow are available?"
 
+#: application/website/default/views/scripts/search/livesearch.phtml:6
+msgid "Advanced_Search"
+msgstr "Advanced Search"
+
+#~ msgid "Read_article_online"
+#~ msgstr "Read article online"
 #~ msgid "Attachmet"
 #~ msgstr "Anhang/Beilage"
 #~ msgid "evoFlow_lisbon_form_LegalNotes"

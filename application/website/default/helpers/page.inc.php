@@ -211,7 +211,7 @@ function get_title($strTag = '', $blnTitleFallback = true){
  */
 function get_description($strContainerClass = 'divDescription', $blnContainer = true){
   $strHtmlOutput = '';
-  if(getPageObject()->getFieldValue('description') != ''){
+  if(strip_tags(getPageObject()->getFieldValue('description')) != ''){
     if($blnContainer) $strHtmlOutput .= '<div class="'.$strContainerClass.'">';
     $strHtmlOutput .= getPageObject()->getFieldValue('description');
     if($blnContainer) $strHtmlOutput .= '</div>';
@@ -338,7 +338,14 @@ function get_image_main($strImageFolder = '420x', $blnZoom = false, $blnUseLight
     $strJsImages = '';
     $intCounter = 0;
     $intTotla = count($objFiles);
+    
+    $arrFiles = array();
     foreach($objFiles as $objFile){
+      $arrFiles[] = $objFile;
+    }    
+    shuffle($arrFiles);   
+    
+    foreach($arrFiles as $objFile){
       $intCounter++;
       if($intCounter == 1){
         if($blnZoom && $intTotla == 1){
@@ -349,7 +356,7 @@ function get_image_main($strImageFolder = '420x', $blnZoom = false, $blnUseLight
           $strHtmlOutput .= '>';
         }
 
-        $strHtmlOutput .= '<img id="mainImages" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolder.'/'.$objFile->filename.'?v='.$objFile->version.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
+        $strHtmlOutput .= '<img id="faderImage" src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolder.'/'.$objFile->filename.'?v='.$objFile->version.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/>';
         if($intTotla > 1) $strJsImages .= '"'.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolder.'/'.$objFile->filename.'?v='.$objFile->version.'", ';
 
         if($blnZoom && $intTotla == 1){
@@ -367,7 +374,7 @@ function get_image_main($strImageFolder = '420x', $blnZoom = false, $blnUseLight
                        <script type="text/javascript">//<![CDATA[
                          var myMainImages = ['.trim($strJsImages, ', ').'];
                          Event.observe(window, "load", function() {
-                           new Widget.Fader("mainImages", myMainImages);
+                           new Widget.Fader("faderImage", myMainImages, {autoSize: true, attributes: {style: \'width:48.333em;\'}, id: "faderImage"});
                          });
                        //]]>
                        </script>';
@@ -546,7 +553,7 @@ function get_image_slogan_main($strImageFolder = '', $blnZoom = true, $blnUseLig
                          });
                        //]]>
                        </script>';
-    }else{
+    }else if(isset($strSlogan)){
       $strHtmlOutput = $strSlogan;
     }
   }
@@ -2136,6 +2143,13 @@ function get_external_links(){
  echo getPageHelperObject()->getExternalLinks();
 }
 
+/**
+ * get_location_contacts
+ * @author Cornelius Hansjakob <cha@massiveart.com>
+ */
+function get_location_contacts($strCountry = ''){
+ echo getPageHelperObject()->getLocationContacts($strCountry);
+}
 
 /**
  * get_links_title

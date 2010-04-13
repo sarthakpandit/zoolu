@@ -74,6 +74,8 @@ class IndexController extends Zend_Controller_Action {
 
   private $blnCachingStart = false;
 
+  private $blnSearch = false;
+   
   /**
    * @var integer
    */
@@ -185,6 +187,14 @@ class IndexController extends Zend_Controller_Action {
     $this->getModelFolders();
     $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
 
+    /**
+     * check if "q" param is in the url for the search
+     */
+    if(strpos($strUrl, '?q=') !== false){
+      $this->blnSearch = true;
+      $strUrl = '';
+    }
+    
     $arrFrontendOptions = array(
       'lifetime' => 604800, // cache lifetime (in seconds), if set to null, the cache is valid forever.
       'automatic_serialization' => true
@@ -236,7 +246,7 @@ class IndexController extends Zend_Controller_Action {
         $objUrlData = $objUrl->url->current();
 
         $this->core->logger->debug('Cache: '.$this->core->sysConfig->cache->page);
-        if($this->core->sysConfig->cache->page == 'true' && !isset($_SESSION['sesTestMode'])){
+        if($this->core->sysConfig->cache->page == 'true' && !isset($_SESSION['sesTestMode']) && $this->blnSearch == false){
           $this->core->logger->debug('Start caching...');
           $this->objCache->start($strCacheId);
           $this->blnCachingStart = true;
@@ -295,18 +305,8 @@ class IndexController extends Zend_Controller_Action {
           $objNavigation->setPage($this->objPage->ParentPage());
         }else{
           $objNavigation->setPage($this->objPage); 
-        }   
-
-        /**
-         * get page template filename
-         */
-        $this->view->template = $this->objPage->getTemplateFile();
-
-        $this->view->intRootLevelId = $this->objPage->getRootLevelId();
-        //$this->view->strRootLevelUrl = $this->core->sysConfig->url->base;
-        $this->view->publisher = $this->objPage->getPublisherName();
-        $this->view->publishdate = $this->objPage->getPublishDate();
-
+        }  
+        
         if(file_exists(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/helpers/PageHelper.php')){
           require_once(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/helpers/PageHelper.php');
           $strPageHelper = ucfirst($objTheme->path).'_PageHelper';
@@ -320,11 +320,27 @@ class IndexController extends Zend_Controller_Action {
         $objPageHelper->setTranslate($this->translate);
         Zend_Registry::set('PageHelper', $objPageHelper);
         
-        Zend_Registry::set('Page', $this->objPage); //FIXME need of registration navigation object??      
-      
-        $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
-        $this->renderScript('master.php');
+        Zend_Registry::set('Page', $this->objPage); //FIXME need of registration navigation object??  
 
+        /**
+         * forward to SearchController
+         */
+        if($this->blnSearch == true){
+          $this->_forward('index', 'Search', null, array('rootLevelId' => $this->objPage->getRootLevelId(), 'theme' => $objTheme->path));
+        }else{
+          /**
+           * get page template filename
+           */
+          $this->view->template = $this->objPage->getTemplateFile();
+  
+          $this->view->rootLevelId = $this->objPage->getRootLevelId();
+          //$this->view->strRootLevelUrl = $this->core->sysConfig->url->base;
+          $this->view->publisher = $this->objPage->getPublisherName();
+          $this->view->publishdate = $this->objPage->getPublishDate();
+        
+          $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+          $this->renderScript('master.php');
+        }
       }else{
       	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
         $this->renderScript('error-404.php');

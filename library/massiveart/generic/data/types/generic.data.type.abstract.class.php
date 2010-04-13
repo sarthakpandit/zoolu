@@ -72,6 +72,11 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    * @var Model_GenericData
    */
   protected $objModelGenericData;
+  
+  /**
+   * @var Model_Files
+   */
+  protected $objModelFiles;
 
   protected $blnHasLoadedFileData = false;
   protected $blnHasLoadedMultiFieldData = false;
@@ -1253,10 +1258,11 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    * addToIndex
    * @param string $strIndexPath
    * @param string $strKey
+   * @param PageContainer $objParentPageContainer
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  final protected function addToIndex($strIndexPath, $strKey){
+  final protected function addToIndex($strIndexPath, $strKey, $objParentPageContainer = null){
     try{
       $this->core->logger->debug('massiveart->generic->data->types->GenericDataTypeAbstract->addToIndex('.$strIndexPath.', '.$strKey.')');
       
@@ -1269,37 +1275,50 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       }
 
       Zend_Search_Lucene_Analysis_Analyzer::setDefault(new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num_CaseInsensitive());
-
+      
       $objDoc = new Zend_Search_Lucene_Document();      
 
       $objDoc->addField(Zend_Search_Lucene_Field::keyword('key', $strKey)); 
       $objDoc->addField(Zend_Search_Lucene_Field::keyword('languageId', $this->setup->getLanguageId()));     
+      $objDoc->addField(Zend_Search_Lucene_Field::keyword('rootLevelId', $this->setup->getRootLevelId()));
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('date', $this->setup->getPublishDate('d.m.Y')));
-      $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('rootLevelId', $this->setup->getRootLevelId()));
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('elementTypeId', $this->setup->getElementTypeId()));
+      
+      if($objParentPageContainer !== null && $objParentPageContainer instanceof PageContainer){
+        if(count($objParentPageContainer->getEntries()) > 0){
+          $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('parentPages', serialize($objParentPageContainer->getEntries())));
+          $objDoc->addField(Zend_Search_Lucene_Field::keyword('rootLevelId', current($objParentPageContainer->getEntries())->rootLevelId));
+        }
+      }
 
       /**
        * index fields
        */
       foreach($this->setup->FieldNames() as $strField => $intFieldType){
         $objField = $this->setup->getField($strField);
-        if(is_object($objField) && $objField->idSearchFieldTypes != Search::FIELD_TYPE_NONE){
-
+        if(is_object($objField) && $objField->idSearchFieldTypes != Search::FIELD_TYPE_NONE){          
           $strValue = '';
           $strValueIds = '';
-          if(!is_object($objField->getValue()) && $objField->sqlSelect != ''){
+          if($objField->typeId == GenericSetup::FIELD_TYPE_ID_TAG){
+            $mixedValue = $objField->getValue();
+            if(is_object($mixedValue) || is_array($mixedValue)){
+              foreach($mixedValue as $objTag){
+                $strValue .= $objTag->title.', ';
+                $strValueIds .= '['.$objTag->id.']';        
+              }
+              $strValue = rtrim($strValue, ', ');
+            }     
+          }elseif(!is_object($objField->getValue()) && $objField->sqlSelect != ''){
             $sqlSelect = $objField->sqlSelect;
             
             $arrIds = array();
-            
+                          
             if(is_array($objField->getValue())){
               $arrIds = $objField->getValue();
             }else if($objField->getValue() != ''){
               $arrIds = array($objField->getValue());
             }
-            
-            $this->core->logger->debug(var_export($arrIds, true));
-            
+                        
             if(is_array($arrIds)){
               if(count($arrIds) > 0){
                 $strReplaceWhere = '';
@@ -1310,7 +1329,6 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 
                 $objReplacer = new Replacer();
                 $sqlSelect = $objReplacer->sqlReplacer($sqlSelect, $this->setup->getLanguageId(), $this->setup->getRootLevelId(),' AND tbl.id IN ('.$strReplaceWhere.')');
-                $this->core->logger->debug($sqlSelect);
                 $objCategoriesData = $this->core->dbh->query($sqlSelect)->fetchAll(Zend_Db::FETCH_OBJ);
 
                 if(count($objCategoriesData) > 0){
@@ -1325,11 +1343,26 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           }else{
             $strValue = $objField->getValue();
           }
-          
+                    
           if(is_string($strValue) && $strValue != ''){
+
+            if($intFieldType == GenericSetup::FILE_FIELD){
+              $objFiles = $this->getModelFiles()->loadFilesById($strValue);
+              $arrValues = array();
+              if(count($objFiles) > 0){
+                foreach($objFiles as $objFile){
+                  $arrValues[] = array('path' => $objFile->path, 'filename' => $objFile->filename, 'version' => $objFile->version);
+                }
+              }
+              $strValueIds = $strValue;
+              $strValue = serialize($arrValues);
+            }
+          
             if($strValueIds != ''){
               $objDoc->addField(Zend_Search_Lucene_Field::unIndexed($strField.'Ids', $strValueIds, $this->core->sysConfig->encoding->default));
             }
+            
+            $this->core->logger->debug($strField.': '.$strValue);
             switch ($objField->idSearchFieldTypes){
               case Search::FIELD_TYPE_KEYWORD:
                 $objDoc->addField(Zend_Search_Lucene_Field::keyword($strField, $strValue, $this->core->sysConfig->encoding->default));
@@ -1353,7 +1386,8 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       
       // Add document to the index.
       $this->objIndex->addDocument($objDoc);
-
+      unset($objDoc);
+      
       $this->objIndex->optimize();
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -1364,27 +1398,17 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    * updateIndex
    * @param string $strIndexPath
    * @param string $strKey
+   * @param PageContainer $objParentPageContainer
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  final public function updateIndex($strIndexPath, $strKey){
+  final public function updateIndex($strIndexPath, $strKey, $objParentPageContainer = null){
     try{
       if(count(scandir($strIndexPath)) > 2){
-        $this->objIndex = Zend_Search_Lucene::open($strIndexPath);
-
-        $objTerm = new Zend_Search_Lucene_Index_Term($strKey, 'key');
-        $objQuery = new Zend_Search_Lucene_Search_Query_Term($objTerm);
-
-        $objHits = $this->objIndex->find($objQuery);
-
-        foreach($objHits as $objHit){
-          $this->objIndex->delete($objHit->id);
-        }
-
-        $this->objIndex->commit();
+        $this->removeFromIndex($strIndexPath, $strKey);
       }
-
-      $this->addToIndex($strIndexPath, $strKey);
+            
+      $this->addToIndex($strIndexPath, $strKey, $objParentPageContainer);
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -1439,6 +1463,26 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
     }
 
     return $this->objModelGenericData;
+  }
+  
+  /**
+   * getModelFiles
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelFiles(){
+    if (null === $this->objModelFiles) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
+      $this->objModelFiles = new Model_Files();
+      $this->objModelFiles->setLanguageId($this->setup->getLanguageId());
+    }
+
+    return $this->objModelFiles;
   }
 
   /**

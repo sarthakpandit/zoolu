@@ -165,14 +165,14 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
       if($this->setup->getElementTypeId() != $this->core->sysConfig->page_types->link->id && $this->setup->getStatusId() == $this->core->sysConfig->status->live){
         if(substr(PHP_OS, 0, 3) === 'WIN') {
           $this->core->logger->warning('slow page index on windows based OS!');
-          $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $objPage->pageId);
+          $this->updateIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $objPage->pageId.'_'.$this->setup->getLanguageId());
         }else{
           $strIndexPageFilePath = GLOBAL_ROOT_PATH.'cli/IndexPage.php';
           //run page index in background
-          exec("php $strIndexPageFilePath --pageId='".$objPage->pageId."' --version=".$objPage->version." --languageId=".$this->setup->getLanguageId()." > /dev/null &#038;");
+          exec("php $strIndexPageFilePath --pageId='".$objPage->pageId."' --version=".$objPage->version." --languageId=".$this->setup->getLanguageId()." --rootLevelId=".$this->setup->getRootLevelId()." > /dev/null &#038;");
         }
       }else{
-        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $objPage->pageId);
+        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->page, $objPage->pageId.'_'.$this->setup->getLanguageId());
       }
 
       //cache expiring

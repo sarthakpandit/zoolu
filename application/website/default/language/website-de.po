@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-08 12:08+0100\n"
+"POT-Creation-Date: 2010-04-13 11:48+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Cornelius Hansjakob <cha@massiveart.com>\n"
+"Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,6 +15,19 @@ msgstr ""
 "X-Poedit-Basepath: /Volumes/massive-brunello/websites/dev.zoolu.area51.at/\n"
 "X-Poedit-SearchPath-0: application/website\n"
 "X-Poedit-SearchPath-1: public/website\n"
+
+#: application/website/default/views/helpers/SearchHelper.php:41
+#, php-format
+msgid "Search_Result_Text"
+msgstr "<strong>%s</strong> %s für <strong>\"%s\"</strong>"
+
+#: application/website/default/views/helpers/SearchHelper.php:41
+msgid "Searchresult"
+msgstr "Suchergebnis"
+
+#: application/website/default/views/helpers/SearchHelper.php:41
+msgid "Searchresults"
+msgstr "Suchergebnisse"
 
 #: application/website/default/language/addon-language-keys.php:38
 #: application/website/default/controllers/SweepstakeController.php:260
@@ -133,17 +146,23 @@ msgstr "PLZ"
 msgid "Check_Legalnotes"
 msgstr "Rechtliche Hinweise"
 
+#: public/website/themes/ivoclarvivadent/search.php:66
+msgid "Search"
+msgstr "Suche"
+
 #: public/website/themes/ivoclarvivadent/helpers/NavigationHelper.php:315
 msgid "Year"
 msgstr "Jahr"
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:377
-msgid "Read_article_online"
-msgstr "Artikel online lesen"
+msgid "More"
+msgstr "Mehr"
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:587
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:596
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:609
+#: public/website/themes/ivoclarvivadent/templates/template_location.php:29
+#: public/website/themes/ivoclarvivadent/templates/template_location.php:36
 msgid "Please_choose"
 msgstr "Bitte wählen"
 
@@ -193,7 +212,7 @@ msgstr "Ich bin damit einverstanden, dass meine oben eingegebenen Daten von der 
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:696
 msgid "Press_Contact"
-msgstr "Pressekontakt"
+msgstr "Medienkontakt"
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:731
 msgid "Contact"
@@ -205,7 +224,7 @@ msgstr "Kompetenz in Füllungsmaterialien"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:32
 msgid "Competence_in_Composites_Info"
-msgstr "Im engen Zusammenspiel für eine effiziente Füllungstherapie: Ästhetische Füllungsmaterialien, Haftvermittler, Lichtgeräte sowie patientenfreundliche Hilfsmittel"
+msgstr "Effiziente Füllungstherapie: Ästhetische Füllungsmaterialien, Haftvermittler, Lichtgeräte sowie patientenfreundliche Hilfsmittel im engen Zusammenspiel"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:36
 msgid "Competence_in_All-Ceramics"
@@ -215,15 +234,17 @@ msgstr ""
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:37
 msgid "Competence_in_All-Ceramics_Info"
-msgstr "Hochästhetische Brücken, Kronen und Veneers aus unserer Vollkeramik – aus der modernen Zahnmedizin nicht mehr wegzudenken"
+msgstr "Hochästhetische vollkeramische Brücken, Kronen und Veneers - aus der modernen Zahnmedizin nicht mehr wegzudenken"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:41
 msgid "Competence_in_Implant_Esthetics"
-msgstr "Kompetenz in der ästhetischen Implantatprothetik"
+msgstr ""
+"Kompetenz in der\n"
+"ästhetischen Implantatprothetik"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:42
 msgid "Competence_in_Implant_Esthetics_Info"
-msgstr "Gute Vorbereitung, gute Ausführung: Die Basis für implantatgetragene Restaurationen hoher ästhetischer und funktionaler Ansprüche"
+msgstr "Gut vorbereitet, gut ausgeführt: Die Basis für implantatgetragene Restaurationen hoher Ansprüche"
 
 #: public/website/themes/ivoclarvivadent/templates/template_press_overview.php:56
 msgid "Archive"
@@ -354,6 +375,12 @@ msgstr "Drei Badetücher von Tetric EvoFlow"
 msgid "evoFlow_maldives_Question"
 msgstr "In wie vielen Farben gibt es Tetric EvoFlow?"
 
+#: application/website/default/views/scripts/search/livesearch.phtml:6
+msgid "Advanced_Search"
+msgstr "Detaillierte Suche"
+
+#~ msgid "Read_article_online"
+#~ msgstr "Artikel online lesen"
 #~ msgid "Comments"
 #~ msgstr "Bemerkungen"
 #~ msgid "Areacode_Prefix_Phone"

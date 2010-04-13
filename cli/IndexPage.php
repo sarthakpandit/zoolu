@@ -41,13 +41,14 @@ try{
           'pageId|p=s'      => 'Page Id',
           'version|v=i'     => 'Page Version',
           'languageId|l=i'  => 'Language Id',
+          'rootLevelId|r=i' => 'RootLevelId Id'
       )
   );
   
-  if(isset($objConsoleOpts->pageId) && isset($objConsoleOpts->version) && isset($objConsoleOpts->languageId)){
+  if(isset($objConsoleOpts->pageId) && isset($objConsoleOpts->version) && isset($objConsoleOpts->languageId) && isset($objConsoleOpts->rootLevelId)){
     $objIndex = new Index();
     $core->logger->debug('index page now ...');
-    $objIndex->indexPage($objConsoleOpts->pageId, $objConsoleOpts->version, $objConsoleOpts->languageId);
+    $objIndex->indexPage($objConsoleOpts->pageId, $objConsoleOpts->version, $objConsoleOpts->languageId, $objConsoleOpts->rootLevelId);
     $core->logger->debug('... finished!');
   }
     

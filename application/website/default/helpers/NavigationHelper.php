@@ -144,6 +144,15 @@ class NavigationHelper {
   }
   
   /**
+   * getFotterNavigation
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getFotterNavigation(){
+    //TODO default side navigation
+  }
+  
+  /**
    * getBreadcrumb
    * @author Thomas Schedler <tsh@massiveart.com>
    * @return string

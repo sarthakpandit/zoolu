@@ -270,6 +270,15 @@ class PageHelper {
   }
   
   /**
+   * getLocationContacts
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getLocationContacts($strContinent = '', $strCountry = ''){
+    //TODO default product overview
+  }
+  
+  /**
    * getPressPics
    * @author Thomas Schedler <tsh@massiveart.com>
    * @return string

@@ -70,6 +70,17 @@ class PageContainer {
   public function addPageEntry(PageEntry $objItem, $strName = null){
     $this->arrEntries[$strName] = $objItem;
   }
+  
+  /**
+   * removePageEntry
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function removePageEntry($strName){
+    if(array_key_exists($strName, $this->arrEntries)){
+      unset($this->arrEntries[$strName]);
+    }
+  }
 
   /**
    * getPageEntry
