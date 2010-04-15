@@ -990,7 +990,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 
         $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array('idRelation', 'value'));
         $objSelect->join('fields', 'fields.id = `'.$objGenTable->info(Zend_Db_Table_Abstract::NAME).'`.idFields', array('name'));
-        $objSelect->where('pageId = ?', $arrTypeProperties['Id']);
+        $objSelect->where($strType.'Id = ?', $arrTypeProperties['Id']);
         $objSelect->where('version = ?', $arrTypeProperties['Version']);
         $objSelect->where('idLanguages = ?', $this->Setup()->getLanguageId());
 
@@ -1287,7 +1287,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       if($objParentPageContainer !== null && $objParentPageContainer instanceof PageContainer){
         if(count($objParentPageContainer->getEntries()) > 0){
           $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('parentPages', serialize($objParentPageContainer->getEntries())));
-          $objDoc->addField(Zend_Search_Lucene_Field::keyword('rootLevelId', current($objParentPageContainer->getEntries())->rootLevelId));
+          $objDoc->addField(Zend_Search_Lucene_Field::keyword('rootLevelId', end($objParentPageContainer->getEntries())->rootLevelId));
         }
       }
 

@@ -202,6 +202,31 @@ function get_title($strTag = '', $blnTitleFallback = true){
 }
 
 /**
+ * get_parent_title
+ * @param string $strTag
+ * @param boolean $blnTitleFallback
+ * @return string $strHtmlOutput
+ * @author Cornelius Hansjakob <cha@massiveart.com>
+ * @version 1.0
+ */
+function get_parent_title($strTag = '', $blnTitleFallback = true){
+  $strHtmlOutput = '';
+  if(getPageObject()->ParentPage() instanceof Page){
+    if(getPageObject()->ParentPage()->getFieldValue('articletitle') != ''){
+      if($strTag != '') $strHtmlOutput .= '<'.$strTag.'>';
+      $strHtmlOutput .= htmlentities(getPageObject()->ParentPage()->getFieldValue('articletitle'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
+      if($strTag != '') $strHtmlOutput .= '</'.$strTag.'>';
+    }
+    else if(getPageObject()->ParentPage()->getFieldValue('title') != '' && $blnTitleFallback){
+      if($strTag != '') $strHtmlOutput .= '<'.$strTag.'>';
+      $strHtmlOutput .= htmlentities(getPageObject()->ParentPage()->getFieldValue('title'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
+      if($strTag != '') $strHtmlOutput .= '</'.$strTag.'>';
+    }
+    echo $strHtmlOutput;
+  }
+}
+
+/**
  * get_description
  * @param string $strContainerClass
  * @param boolean $blnContainer
@@ -926,7 +951,7 @@ function get_internal_links($strContainerCss = 'internalLinks', $strItemCss = 'i
     $strHtmlOutput .= '<div class="'.$strContainerCss.'">';
     foreach($objPage->getField('internal_links')->objItemInternalLinks as $objPageInternalLink){
       if($objPage->ParentPage() instanceof Page && 
-         ($objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->product_tree->id || $objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->press_area->id)){
+         ($objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->product_tree->id || $objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->press_area->id || $objPage->ParentPage()->getTypeId() == $this->core->sysConfig->page_types->courses->id)){
         $strUrl = $objPage->ParentPage()->getFieldValue('url').$objPageInternalLink->url;  
       }else{
         $strUrl = '/'.strtolower($objPageInternalLink->languageCode).'/'.$objPageInternalLink->url;  
@@ -1454,6 +1479,33 @@ function get_product_overview(){
  */
 function get_product_carousel(){
   echo getPageHelperObject()->getProductCarousel();
+}
+
+/**
+ * get_course_overview
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_course_overview(){
+  echo getPageHelperObject()->getCourseOverview();
+}
+
+/**
+ * get_course_detail
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_course_detail(){
+  echo getPageHelperObject()->getCourseDetail();
+}
+
+/**
+ * get_similar_courses
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_similar_courses(){
+  echo getPageHelperObject()->getSimilarCourses();
 }
 
 /**
@@ -1986,58 +2038,6 @@ function get_event_address($strHeadline = ''){
 }
 
 /**
- * get_speakers
- * @return string $strHtmlOutput
- * @author Cornelius Hansjakob <cha@massiveart.com>
- * @version 1.0
- */
-function get_speakers($strThumbImageFolder = '80x80', $strZoomImageFolder = '420x', $strContainerClass = 'divPresenters'){
-  $core = getCoreObject();
-  $objPage = getPageObject();
-  $objPageContacts = $objPage->getContactsValues('speakers');
-
-  $strHtmlOutput = '';
-
-  if(count($objPageContacts) > 0){
-    $strHtmlOutput .= '
-              <div class="'.$strContainerClass.'">
-                <h3>Vortragende</h3>';
-
-    foreach($objPageContacts as $objContact){
-      $strHtmlOutput .= '
-                <div class="divPresenterBlock">';
-      if($objContact->filename != ''){
-        $strHtmlOutput .= '
-                  <div class="divPresenterImage">
-                    <a title="'.$objContact->title.'" href="'.$core->sysConfig->media->paths->imgbase.$objContact->filepath.$strZoomImageFolder.'/'.$objContact->filename.'?v='.$objContact->fileversion.'" rel="lightbox[speakers]">
-                      <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objContact->filepath.$strThumbImageFolder.'/'.$objContact->filename.'?v='.$objContact->fileversion.'" alt="'.$objContact->title.'" title="'.$objContact->title.'"/>
-                    </a>
-                  </div>';
-      }
-      $strHtmlOutput .= '
-                  <div class="divPresenterText">
-                    <h2 class="padding10">'.(($objContact->acTitle != '') ? $objContact->acTitle.' ' : '').$objContact->title.'</h2>
-                    <div class="divPresenterDescription">';
-      if($objContact->website != ''){
-        $strHtmlOutput .= '<div><a href="'.((strpos($objContact->website, 'http://') > -1) ? $objContact->website : 'http://'.$objContact->website).'" target="_blank">'.$objContact->website.'</a></div>';
-      }
-      if($objContact->email != ''){
-        $strHtmlOutput .= '<div><a href="mailto:'.$objContact->email.'">E-Mail senden</a></div>';
-      }
-      $strHtmlOutput .= '
-                    </div>
-                  </div>
-                  <div class="clear"></div>
-                </div>';
-    }
-    $strHtmlOutput .= '
-                <div class="clear"></div>
-              </div>';
-  }
-  echo $strHtmlOutput;
-}
-
-/**
  * get_contact
  * @return string $strHtmlOutput
  * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -2125,6 +2125,14 @@ function get_press_contact(){
  */
 function get_contact($strTitle = ''){
  echo getPageHelperObject()->getContact($strTitle);
+}
+
+/**
+ * get_speakers
+ * @author Thomas Schedler <tsh@massiveart.com>
+ */
+function get_speakers($strTitle = ''){
+ echo getPageHelperObject()->getSpeakers($strTitle);
 }
 
 /**

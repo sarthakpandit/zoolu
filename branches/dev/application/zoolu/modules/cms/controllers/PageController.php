@@ -516,6 +516,8 @@ class Cms_PageController extends AuthControllerAction {
       $objGenericData->Setup()->setFormTypeId($this->objRequest->getParam("formTypeId"));
       $objGenericData->Setup()->setTemplateId($this->objRequest->getParam("templateId"));
       $objGenericData->Setup()->setElementId($this->objRequest->getParam("id"));
+      $objGenericData->Setup()->setElementTypeId($this->objRequest->getParam("pageTypeId"));
+      $objGenericData->Setup()->setParentTypeId($this->objRequest->getParam("parentTypeId"));      
       $objGenericData->Setup()->setRootLevelId($this->objRequest->getParam("rootLevelId"));
       $objGenericData->Setup()->setRootLevelGroupId($this->objRequest->getParam("rootLevelGroupId"));
       $objGenericData->Setup()->setParentId((($this->objRequest->getParam("parentFolderId") != '') ? $this->objRequest->getParam("parentFolderId") : null));
@@ -650,10 +652,14 @@ class Cms_PageController extends AuthControllerAction {
             $this->objRequest->setParam('formId', '');
             $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->press_area->default_templateId);
             break;
+          case $this->core->sysConfig->page_types->courses->id :
+            $this->objRequest->setParam('formId', '');
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->courses->default_templateId);
+            break;
           case $this->core->sysConfig->page_types->iframe->id :
             $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->iframe->default_formId);
             $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->iframe->default_templateId);
-            break;
+            break;          
         }
       }
 

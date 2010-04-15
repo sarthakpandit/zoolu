@@ -186,7 +186,8 @@ class DatareceiverController extends Zend_Controller_Action {
           $this->insertDatabase();
         }
 	  	  
-	  	  $this->_redirect($this->strRedirectUrl.'?send=true');
+        $strUrl = (strpos($this->strRedirectUrl,'?') !== false) ? $this->strRedirectUrl.'&send=true' : $this->strRedirectUrl.'?send=true';
+	  	  $this->_redirect($strUrl);
 	  	}
   	}
   }

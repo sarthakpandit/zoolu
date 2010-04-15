@@ -555,6 +555,8 @@ class Global_ElementController extends AuthControllerAction {
       $objGenericData->Setup()->setTemplateId($this->objRequest->getParam("templateId"));
       $objGenericData->Setup()->setElementId($this->objRequest->getParam("id"));
       $objGenericData->Setup()->setElementLinkId($this->objRequest->getParam("linkId", -1));
+      $objGenericData->Setup()->setElementTypeId($this->objRequest->getParam("elementTypeId"));
+      $objGenericData->Setup()->setParentTypeId($this->objRequest->getParam("parentTypeId"));    
       $objGenericData->Setup()->setRootLevelId($this->objRequest->getParam("rootLevelId"));
       $objGenericData->Setup()->setRootLevelGroupId($this->objRequest->getParam("rootLevelGroupId"));
       $objGenericData->Setup()->setParentId($this->objRequest->getParam("parentFolderId"));

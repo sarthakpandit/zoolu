@@ -169,7 +169,7 @@ class Model_Templates {
    * @version 1.0
    */
   public function loadActiveTemplates($blnIsStartElement = false, $intElementTypeId, $intParentTypeId, $intFormTypeId){
-    $this->core->logger->debug('core->models->Model_Templates->loadTemplates()');
+    $this->core->logger->debug('core->models->Model_Templates->loadActiveTemplates('.var_export($blnIsStartElement, true).', '.$intElementTypeId.', '.$intParentTypeId.', '.$intFormTypeId.')');
 
     $objSelect = $this->getTemplateTable()->select();
     $objSelect->setIntegrityCheck(false);
@@ -207,8 +207,10 @@ class Model_Templates {
             break;
           case $this->core->sysConfig->page_types->press_area->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->press_area);
-            break; 
-            
+            break;
+          case $this->core->sysConfig->page_types->courses->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->courses);
+            break;
         }
         break;
       case $this->core->sysConfig->form->types->global:

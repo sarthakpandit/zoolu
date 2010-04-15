@@ -201,6 +201,16 @@ class NavigationHelper {
   }
   
   /**
+   * getSubNavigationSelectByLevel
+   * @param integer $intLevel
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getSubNavigationSelectByLevel($intLevel){
+    //TODO default product overview
+  }
+  
+  /**
    * setNavigation    
    * @param Navigation $objNavigation   
    * @author Thomas Schedler <tsh@massiveart.com>

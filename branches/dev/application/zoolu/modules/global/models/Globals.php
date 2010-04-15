@@ -461,15 +461,50 @@ class Model_Globals {
     // FIXME : !!! CHANGE INSTANCE FIELDS DEFINTION
     // FIXME : !!! iFl.idFields IN (5,55) -> define
     if($strGenForm != '' && $strGenForm != '-' && strpos($strGenForm, $this->core->sysConfig->global_types->product_link->default_formId) === false){
+      
+      $strSqlAddon = '';
       $strSqlInstanceFields = '';
       if(strpos($strGenForm, $this->core->sysConfig->form->ids->press->default) !== false){
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,
                                   `globalDatetimes`.datetime,';
-      }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->product->default) !== false){
+      }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->product->default) !== false){      
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,
                                   `global-'.$strGenForm.'-Instances`.slogan,';
+      }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->course->default) !== false){
+        $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
+                                  `global-'.$strGenForm.'-Instances`.description,
+                                  `global-'.$strGenForm.'-Region56-Instances`.sortPosition AS courseId,
+                                  `global-'.$strGenForm.'-Region56-Instances`.event_title AS courseTitle,
+                                  `global-'.$strGenForm.'-Region56-Instances`.start_datetime,
+                                  locations.name AS location,
+                                  CONCAT(contacts.fname, \' \', contacts.sname) AS speaker,
+                                  contacts.id AS speakerId,
+                                  categoryTitles.title AS category,
+                                  categoryTitles.idCategories AS categoryId,'; 
+        $strSqlAddon .= ' 
+                                          LEFT JOIN `global-'.$strGenForm.'-Region56-Instances` ON
+                                            `global-'.$strGenForm.'-Region56-Instances`.globalId = globals.globalId AND
+                                            `global-'.$strGenForm.'-Region56-Instances`.version = globals.version AND
+                                            `global-'.$strGenForm.'-Region56-Instances`.idLanguages = '.$this->intLanguageId.'
+                                          LEFT JOIN locations ON
+                                            locations.id = `global-'.$strGenForm.'-Region56-Instances`.location
+                                          LEFT JOIN `global-'.$strGenForm.'-Region56-InstanceMultiFields` ON
+                                            `global-'.$strGenForm.'-Region56-InstanceMultiFields`.globalId = globals.globalId AND
+                                            `global-'.$strGenForm.'-Region56-InstanceMultiFields`.version = globals.version AND
+                                            `global-'.$strGenForm.'-Region56-InstanceMultiFields`.idLanguages = '.$this->intLanguageId.' AND
+                                            `global-'.$strGenForm.'-Region56-InstanceMultiFields`.idRegionInstances = `global-'.$strGenForm.'-Region56-Instances`.id AND
+                                            `global-'.$strGenForm.'-Region56-InstanceMultiFields`.idFields = 176
+                                          LEFT JOIN contacts ON
+                                            contacts.id = `global-'.$strGenForm.'-Region56-InstanceMultiFields`.idRelation
+                                          LEFT JOIN globalCategories ON
+                                            globalCategories.globalId = globals.globalId AND
+                                            globalCategories.version = globals.version AND
+                                            globalCategories.idLanguages = '.$this->intLanguageId.'
+                                          LEFT JOIN categoryTitles ON
+                                            categoryTitles.idCategories = globalCategories.category AND
+                                            globalCategories.idLanguages = '.$this->intLanguageId;
       }else{
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,';
@@ -480,10 +515,9 @@ class Model_Globals {
         $strSqlWhereGlobalIds = ' WHERE globals.id IN ('.implode(',',$arrGlobalIds).')';
       }
       
-      $strSqlAddon = '';
       if($intImgFilterTag > 0){
         $strSqlInstanceFields .= ' tagFile.filename AS tagfilename, tagFile.version AS tagfileversion, tagFile.path AS tagfilepath, tagFileTitles.title AS tagfiletitle,';
-        $strSqlAddon = ' 
+        $strSqlAddon .= ' 
                                           LEFT JOIN `global-'.$strGenForm.'-InstanceFiles` AS iTagFiles ON
                                             iTagFiles.id = (SELECT iTagFl.id FROM `global-'.$strGenForm.'-InstanceFiles` AS iTagFl
                                                          INNER JOIN tagFiles ON tagFiles.fileId = iTagFl.idFiles AND tagFiles.idTags = '.$intImgFilterTag.'
@@ -521,7 +555,7 @@ class Model_Globals {
                                             fileTitles.idFiles = files.id AND
                                             fileTitles.idLanguages = ?
                                           '.$strSqlWhereGlobalIds, array($this->intLanguageId, $this->intLanguageId, $this->intLanguageId, $this->intLanguageId));
-     
+           
       return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
     }
   }

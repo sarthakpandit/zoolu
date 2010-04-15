@@ -358,4 +358,12 @@ function get_sub_navigation_by_level($intLevel){
   echo getNavigationHelperObject()->getSubNavigationByLevel($intLevel);
 }
 
+/**
+ * get_sub_navigation_select_by_level
+ * @author Thomas Schedler <tsh@massiveart.com>
+ */
+function get_sub_navigation_select_by_level($intLevel){
+  echo getNavigationHelperObject()->getSubNavigationSelectByLevel($intLevel);
+}
+
 ?>
