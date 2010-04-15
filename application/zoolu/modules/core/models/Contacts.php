@@ -179,7 +179,10 @@ class Model_Contacts {
         }
         
         //FIXME Subselect of `contact-DEFAULT_CONTACT-1-InstanceFiles` for contactPics should be changed!
-        $objSelect->from('contacts', array('id', 'title AS acTitle', 'CONCAT(fname, \' \', sname) AS title', 'position', 'phone', 'mobile', 'fax', 'email', 'website', 'street', 'city', 'state', 'zip', 'country', '(SELECT files.filename FROM files INNER JOIN `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics ON files.id = contactPics.idFiles WHERE contactPics.idContacts = contacts.id LIMIT 1) AS filename'));
+        $objSelect->from('contacts', array('id', 'title AS acTitle', 'CONCAT(fname, \' \', sname) AS title', 'position', 'phone', 'mobile', 'fax', 'email', 'website', 'street', 'city', 'state', 'zip', 'country'));
+        $objSelect->joinLeft(array('pics' => 'files'), 'pics.id = (SELECT contactPics.idFiles FROM `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics WHERE contactPics.idContacts = contacts.id AND contactPics.idFields = 84 LIMIT 1)', array('filename',  'filepath' => 'path', 'fileversion' => 'version'));
+        $objSelect->joinLeft(array('docs' => 'files'), 'docs.id = (SELECT contactDocs.idFiles FROM `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactDocs WHERE contactDocs.idContacts = contacts.id AND contactDocs.idFields = 175 LIMIT 1)', array('docid' => 'id', 'docfilename' => 'filename', 'docfilepath' => 'path', 'docfileversion' => 'version'));
+        $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = docs.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('doctitle' => 'title'));
         $objSelect->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'));
         $objSelect->joinLeft('categoryTitles', 'categoryTitles.idCategories = contacts.country AND categoryTitles.idLanguages = '.$this->intLanguageId, array('countryTitle' => 'title'));   
         $objSelect->where('contacts.id IN ('.trim($strIds, ',').')');      

@@ -209,7 +209,8 @@ class Page {
   protected $arrGenForms = array();
   protected $arrFallbackGenForms = array();
   protected $arrPageEntries = array();
-
+  protected $arrInstanceDataAddon = array();
+  
   /**
    * Constructor
    */
@@ -298,6 +299,7 @@ class Page {
                 exit();
               case $this->core->sysConfig->page_types->product_tree->id:
               case $this->core->sysConfig->page_types->press_area->id:
+              case $this->core->sysConfig->page_types->courses->id:
                 if($blnLoadGlobalTreeStartPage == true){
                   $this->objParentPage = clone $this;
                               
@@ -792,7 +794,7 @@ class Page {
             $objContainer->setContainerDepth($objMyMultiRegion->getField('entry_depth')->getInstanceValue($intRegionInstanceId));
                         
             /**
-             * override category and label filter with the parent page setting
+             * override category and label filter with the parent page settings
              */
             if($this->objParentPage instanceof Page){
               if($this->objParentPage->getField('entry_category') !== null && (int) $this->objParentPage->getFieldValue('entry_category') > 0) $objContainer->setContainerKey($this->objParentPage->getFieldValue('entry_category'));
@@ -822,7 +824,7 @@ class Page {
                   $objEntry->title = $objEntryData->title;
                                     
                   if($this->objParentPage instanceof Page && 
-                     ($this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->product_tree->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->press_area->id)){
+                     ($this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->product_tree->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->press_area->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->courses->id)){
                     $objEntry->url = $this->objParentPage->getFieldValue('url').$objEntryData->url;  
                   }else{
                     $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
@@ -863,6 +865,39 @@ class Page {
       }
 
       return $this->arrContainer;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * getCourseOverviewContainer
+   * @return PageContainer
+   * @author Thomas Sschedler<cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getCourseOverviewContainer(){
+    try{
+            
+      $this->getOverviewContainer(true);      
+      $objContainer = new PageContainer();      
+      if(count($this->arrContainer) > 0){
+        foreach($this->arrContainer as $objTmpContainer){
+          foreach($objTmpContainer->getEntries() as $objTmpEntry){
+            if($objTmpEntry->courses !== null){
+              foreach($objTmpEntry->courses->arr as $objCourse){
+                $objEntry = clone $objTmpEntry;
+                unset($objEntry->courses);
+                $objEntry->course = $objCourse;
+                $objContainer->addPageEntry($objEntry, date('Ymd', $objCourse->start_datetime).sprintf('%07d', $objTmpEntry->getEntryId()).sprintf('%03d', $objCourse->id));                
+              }
+            }
+          }
+        }
+      }      
+      $objContainer->sortEntries();
+            
+      return $objContainer;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -1226,6 +1261,23 @@ class Page {
   }
   
   /**
+   * getLocationById
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getLocationById($intLocationId){
+    try{
+      $this->getModelLocations();  
+            
+      $objLocation = $this->objModelLocations->loadLocation($intLocationId);
+      
+      return $objLocation;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
    * getLocationsByCountry
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
@@ -1322,7 +1374,6 @@ class Page {
     }
   }
   
-
   /**
    * loadInstanceData
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -1349,7 +1400,7 @@ class Page {
       }
     }
   }
-  
+    
   /**
    * getGenFormPageIds
    * @param array $arrPageIds
@@ -1407,6 +1458,28 @@ class Page {
               if(isset($objPageRow->tagfilepath) && $objPageRow->tagfilepath !== null) $objPageEntry->filepath =  $objPageRow->tagfilepath;
               if(isset($objPageRow->tagfiletitle) && $objPageRow->tagfiletitle !== null) $objPageEntry->filetitle =  $objPageRow->tagfiletitle;
               
+              if(isset($objPageRow->courseId) && $objPageRow->courseId !== null && date('Ymd', strtotime($objPageRow->start_datetime)) >= date('Ymd')){
+                if($objPageEntry->courses ===  null){
+                  $objPageEntry->courses = new stdClass();
+                  $objPageEntry->courses->arr = array();
+                }
+                
+                if(!array_key_exists($objPageRow->courseId, $objPageEntry->courses->arr)){
+                  $objCourse = new stdClass();
+                  $objCourse->id = $objPageRow->courseId;
+                  $objCourse->title = $objPageRow->courseTitle;
+                  $objCourse->start_datetime = strtotime($objPageRow->start_datetime);
+                  $objCourse->location = $objPageRow->location;
+                  $objCourse->speakers = array($objPageRow->speakerId => $objPageRow->speaker);
+                  $objCourse->categories = array($objPageRow->categoryId => $objPageRow->category);
+                  
+                  $objPageEntry->courses->arr[$objPageRow->courseId] =  $objCourse;
+                }else{
+                  $objPageEntry->courses->arr[$objPageRow->courseId]->speakers[$objPageRow->speakerId] = $objPageRow->speaker;
+                  $objPageEntry->courses->arr[$objPageRow->courseId]->categories[$objPageRow->categoryId] = $objPageRow->category;
+                }
+              }
+              
               $this->arrContainer[$intContainerId]->addPageEntry($objPageEntry, 'entry_'.$objPageRow->id);
             }
           }
@@ -1414,7 +1487,7 @@ class Page {
       }
     }
   }
-
+  
   /**
    * getModel
    * @return Model_Pages

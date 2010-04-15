@@ -1112,9 +1112,14 @@ class Model_Folders {
                ->joinLeft(array('plUrls' => 'urls'), 'plUrls.relationId = pl.pageId AND plUrls.version = pl.version AND plUrls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND plUrls.idLanguages = plProperties.idLanguages AND plUrls.isMain = 1', array())
                ->joinLeft(array('plExternals' => 'pageExternals'), 'plExternals.pageId = pl.pageId AND plExternals.version = pl.version AND plExternals.idLanguages = plProperties.idLanguages', array())
                ->where('folders.idRootLevels = ?', $intRootLevelId)
-               ->where('folders.depth <= ?', $intDepth)
-               ->where('((folderProperties.showInNavigation = ? AND folders.depth = 0) OR (folderProperties.showInNavigation = 1 AND folders.depth > 0))', $intDisplayOptionId)
-               ->where('((pageProperties.showInNavigation = ? AND folders.depth = 0) OR (pageProperties.showInNavigation = 1 AND folders.depth > 0))', $intDisplayOptionId);
+               ->where('folders.depth <= ?', $intDepth);
+    if($intDisplayOptionId > 0){          
+      $objSelect1->where('((folderProperties.showInNavigation = ? AND folders.depth = 0) OR (folderProperties.showInNavigation = 1 AND folders.depth > 0))', $intDisplayOptionId)
+                 ->where('((pageProperties.showInNavigation = ? AND folders.depth = 0) OR (pageProperties.showInNavigation = 1 AND folders.depth > 0))', $intDisplayOptionId);
+    }else{
+      $objSelect1->where('folderProperties.showInNavigation > 0')
+                 ->where('pageProperties.showInNavigation > 0');
+    }
              
     $objSelect2 = $this->getRootLevelTable()->select();
     $objSelect2->setIntegrityCheck(false);
@@ -1135,8 +1140,12 @@ class Model_Folders {
                ->joinLeft(array('plUrls' => 'urls'), 'plUrls.relationId = pl.pageId AND plUrls.version = pl.version AND plUrls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND plUrls.idLanguages = plProperties.idLanguages AND plUrls.isMain = 1', array())
                ->joinLeft(array('plExternals' => 'pageExternals'), 'plExternals.pageId = pl.pageId AND plExternals.version = pl.version AND plExternals.idLanguages = plProperties.idLanguages', array())
                ->where('pages.idParent = ?', $intRootLevelId)
-               ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel)
-               ->where('pageProperties.showInNavigation = ?', $intDisplayOptionId);             
+               ->where('pages.idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel);
+    if($intDisplayOptionId > 0){          
+      $objSelect2->where('pageProperties.showInNavigation = ?', $intDisplayOptionId);
+    }else{
+      $objSelect2->where('pageProperties.showInNavigation > 0');
+    }             
     
     $objSelect = $this->getRootLevelTable()->select()
                                  ->distinct()
@@ -1215,7 +1224,7 @@ class Model_Folders {
       $objSelect->join('globalLabels', 'globalLabels.globalId = globals.globalId AND globalLabels.version = globals.version AND globalLabels.idLanguages = globalProperties.idLanguages', array())
                 ->where('globalLabels.label = ?', $arrFilterOptions['LabelId'] );
     }
-    
+       
     return $this->objFolderTable->fetchAll($objSelect);    
   }
 

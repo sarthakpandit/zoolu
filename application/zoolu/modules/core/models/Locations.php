@@ -176,6 +176,7 @@ class Model_Locations {
      * WHERE locations.id = ?   
      */
     $objSelect->from('locations');
+    $objSelect->joinLeft('categoryTitles', 'categoryTitles.idCategories = locations.country AND categoryTitles.idLanguages = '.$this->intLanguageId, array('countryTitle' => 'title'));
     $objSelect->where('locations.id = ?', $intElementId);
         
     return $this->getLocationsTable()->fetchAll($objSelect);    

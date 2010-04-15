@@ -189,6 +189,33 @@ class PageHelper {
   }
   
   /**
+   * getCourseOverview
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getCourseOverview(){
+    //TODO default product overview
+  }
+  
+  /**
+   * getCourseDetail
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getCourseDetail(){
+    //TODO default product overview
+  }
+  
+  /**
+   * getSimilarCourses
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getSimilarCourses(){
+    //TODO default product overview
+  }  
+    
+  /**
    * getSubPagesOverview
    * @author Thomas Schedler <tsh@massiveart.com>
    * @return string
@@ -266,6 +293,15 @@ class PageHelper {
    * @return string
    */
   public function getContact($strTitle = ''){
+    //TODO default product overview
+  }
+  
+  /**
+   * getSpeakers
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getSpeakers($strTitle = ''){
     //TODO default product overview
   }
   

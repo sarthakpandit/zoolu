@@ -81,6 +81,15 @@ class PageContainer {
       unset($this->arrEntries[$strName]);
     }
   }
+  
+  /**
+   * sortEntries
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function sortEntries(){
+    ksort($this->arrEntries);
+  }
 
   /**
    * getPageEntry

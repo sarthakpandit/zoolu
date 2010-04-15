@@ -556,26 +556,30 @@ Massiveart.Form = Class.create({
         rootLevelGroupId: intRootLevelGroupId,
         rootLevelGroupKey: ($('rootLevelGroupKey'+intRootLevelGroupId)) ? $F('rootLevelGroupKey'+intRootLevelGroupId) : '',
         parentFolderId: $F('parentFolderId'),
-        elementType: $F('elementType')                   
+        elementType: $F('elementType'), 
+        elementTypeId:($('elementTypeId') ? $F('elementTypeId') : null),
+        pageTypeId:($('pageTypeId') ? $F('pageTypeId') : null),
+        parentTypeId: $F('parentTypeId')               
       },
       evalScripts: true,
       onComplete: function() {    
-        
-        if($F('rootLevelId') != '' && $F('rootLevelId') > 0){
-          myNavigation.updateNavigationLevel();
-        }                    
-        //saved
-        this.getFormSaveSucces();
-        // load medias
-        this.loadFileFieldsContent('media');
-        // load documents
-        this.loadFileFieldsContent('document');
-        // load videos
-        this.loadFileFieldsContent('video');
-        // load filter documents
-        this.loadFileFilterFieldsContent('documentFilter');
-        // load contacts
-        this.loadContactFieldsContent();
+        if(Number($F('id')) > 0){
+          if($F('rootLevelId') != '' && $F('rootLevelId') > 0){
+            myNavigation.updateNavigationLevel();
+          }                    
+          //saved
+          this.getFormSaveSucces();
+          // load medias
+          this.loadFileFieldsContent('media');
+          // load documents
+          this.loadFileFieldsContent('document');
+          // load videos
+          this.loadFileFieldsContent('video');
+          // load filter documents
+          this.loadFileFilterFieldsContent('documentFilter');
+          // load contacts
+          this.loadContactFieldsContent();
+        }
         
         myCore.removeBusyClass(myNavigation.genFormContainer);
         this.cancleFormSaveLoader();

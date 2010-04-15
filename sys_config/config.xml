@@ -632,6 +632,11 @@
         <default_formId>DEFAULT_IFRAME</default_formId>
         <default_templateId>23</default_templateId>
       </iframe>
+      <courses>
+        <id>10</id>
+        <default_formId>DEFAULT_COURSES</default_formId>        
+        <default_templateId>29</default_templateId>
+      </courses>
     </page_types>
     
     <!-- GLOBAL TYPES -->
@@ -715,6 +720,7 @@
       <press_area>13</press_area>
       <course>14</course>
       <course_overview>15</course_overview>
+      <courses>16</courses>
     </types>
 
     <!-- URL TYPES -->

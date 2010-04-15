@@ -222,7 +222,7 @@ class GenericData {
          */
         $this->compareGenericFieldValues($objNewGenericSetup);
 
-        $objNewDataType->save();
+        if($this->setup->getElementId() > 0) $objNewDataType->save();
 
         $this->setup = $objNewGenericSetup;
       }else{
@@ -231,7 +231,7 @@ class GenericData {
         $this->setup->resetGenericStructure();
         $this->setup->loadGenericFormStructure();
         $this->objDataType->load();
-        $this->objDataType->save();
+        if($this->setup->getElementId() > 0) $this->objDataType->save();
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
