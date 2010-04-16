@@ -66,7 +66,8 @@ class GenericSetup {
 	protected $blnRegionCollapsable = true;
 
 	protected $intLanguageId;
-	protected $intLanguageFallbackId;	
+	protected $intLanguageFallbackId;
+	protected $intDestinationId;	
 	protected $intElementId;
 	protected $intElementLinkId;
 
@@ -788,6 +789,7 @@ class GenericSetup {
 			}
 			$this->setShowInNavigation($objCurrElement->showInNavigation);
 			$this->setLanguageFallbackId((isset($objCurrElement->idLanguageFallbacks) ? $objCurrElement->idLanguageFallbacks : 0));
+			$this->setDestinationId((isset($objCurrElement->idDestination) ? $objCurrElement->idDestination : 0));
 			$this->setFormVersion($objCurrElement->version);
 			$this->setStatusId($objCurrElement->idStatus);
 		}
@@ -1123,6 +1125,22 @@ class GenericSetup {
    */
   public function getLanguageFallbackId(){
     return $this->intLanguageFallbackId;
+  }
+  
+  /**
+   * setDestinationId
+   * @param integer $intDestinationId
+   */
+  public function setDestinationId($intDestinationId){
+    $this->intDestinationId = $intDestinationId;
+  }
+
+  /**
+   * getDestinationId
+   * @param integer $intDestinationId
+   */
+  public function getDestinationId(){
+    return $this->intDestinationId;
   }
 
   /**

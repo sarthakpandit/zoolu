@@ -228,7 +228,7 @@ msgstr "I agree that the above personal data are stored, processed and used by I
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:825
 msgid "Press_Contact"
-msgstr "Press Contact"
+msgstr "Media Contact"
 
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:860
 msgid "Contact"

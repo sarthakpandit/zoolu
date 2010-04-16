@@ -14,11 +14,6 @@
         <components>http://static.dev.zoolu.area51.at</components>
       </static>
     </domains>    
-
-    <!-- Google Maps API-Key -->
-    <gmaps>
-      <key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xRX1jCuCB9C7WKVnBt8ZIH40aIQaRS9qo5Ey8l_2L9XVt4bQiHyWn2qmw</key>
-    </gmaps>
     
     <!-- mailer -->
     <mail>
@@ -31,9 +26,9 @@
         <address>cha@massiveart.com</address>
       </recipient>
       <params>
-        <host>mailer.massiveart.at</host>
-        <username>zoolu@mailer.massiveart.at</username>
-        <password>w#BmeiLLzoolu</password>
+        <host>mailer</host>
+        <username>zoolu@mailer</username>
+        <password>mailer</password>
       </params>
       <actions>
         <sendmail>
@@ -223,12 +218,7 @@
   ***********************************************************
   -->
   <staging extends="production">
-   
-    <!-- Google Maps API-Key -->
-    <gmaps>
-      <key>ABQIAAAAuHONMei_wmASLdi5Q2Db3xT0I2mhHVaMXXFtj2QI29VyNFRr-BRTCJACUBszLTxMCJOKORZebHpy0w</key>
-    </gmaps>
-    
+      
     <!-- mailer -->
     <mail>
       <recipient>        

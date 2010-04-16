@@ -88,15 +88,17 @@ class SearchHelper {
             //$strIcon = '<div class="img"><img class="img117x88" src="'.$this->core->sysConfig->media->paths->imgbase.$arrPic['path'].'117x88/'.$arrPic['filename'].'?v='.$arrPic['version'].'"/></div>';
           }
           $strHtmlOutput .= $strIcon;
-          $strHtmlOutput .= '<div class="title"><a href="'.$strUrl.'">'.$strTitle.'</a></div>';
+          $strHtmlOutput .= '<div class="info">
+                              <div class="title"><a href="'.$strUrl.'">'.$strTitle.'</a></div>';
           if(array_search('shortdescription', $arrDocFields) && $objHit->shortdescription != ''){
             $this->core->logger->debug($objHit->shortdescription);
             $strHtmlOutput .= '<div class="description">'.strip_tags($objHit->shortdescription, '<p>').'</div>';  
           }
-          foreach($arrUrls as $strUrL){
-            $strHtmlOutput .= '<div class="url"><a href="http://'.$_SERVER['HTTP_HOST'].$strUrL.'">http://'.$_SERVER['HTTP_HOST'].$strUrL.'</a></div>';  
-          }
-          $strHtmlOutput .= '<div class="clear"></div>';
+          //foreach($arrUrls as $strUrl){
+            $strHtmlOutput .= '<div class="url"><a href="http://'.$_SERVER['HTTP_HOST'].$strUrl.'">http://'.$_SERVER['HTTP_HOST'].$strUrl.'</a></div>';  
+          //}
+          $strHtmlOutput .= '</div>
+                          <div class="clear"></div>';
         }
         $strHtmlOutput .= '</div>';
       }

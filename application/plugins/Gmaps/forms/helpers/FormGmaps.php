@@ -69,15 +69,8 @@ class Plugin_FormHelper_FormGmaps extends Zend_View_Helper_FormElement {
     $strOutput = '
     <script type="text/javascript">			
 	    function initialize() {
-	      if (GBrowserIsCompatible()) {
-	        var map = new GMap2(document.getElementById("map_canvas"));
-	        map.addControl(new GSmallMapControl());
-          map.addControl(new GMapTypeControl());
-          map.addControl(new GScaleControl());
-          map.enableDoubleClickZoom();
-          map.enableContinuousZoom();
-          map.enableScrollWheelZoom();
-      ';
+        if(GBrowserIsCompatible()) {
+          var map = new GMap2($("map_canvas"));';
 
     // Display Standard Marker to Bregenz AT if lat/lng is empty
     if(isset($value['latitude']) && isset($value['longitude'])) {
@@ -99,13 +92,31 @@ class Plugin_FormHelper_FormGmaps extends Zend_View_Helper_FormElement {
     }
     
     $strOutput .= '
+          var customUI = map.getDefaultUI();
+          customUI.controls.scalecontrol = true;
+          customUI.controls.largemapcontrol3d = true;
+          customUI.controls.smallzoomcontrol3d = false;
+          customUI.controls.maptypecontrol = true;        
+          customUI.controls.menumaptypecontrol = false;
+          customUI.maptypes.normal = true;
+          customUI.maptypes.satellite = true;
+          customUI.maptypes.hybrid = true;
+          customUI.maptypes.physical = false;
+          customUI.zoom.doubleclick = true; 
+          customUI.zoom.scrollwheel = false;
+          map.setUI(customUI);  
+    
           var marker = new GMarker(center, {draggable: true});
-	        GEvent.addListener(marker, "drag", function() {
-	          var pos = marker.getLatLng();
-	          document.getElementById("'.$this->view->escape($id).'Latitude").value = pos.lat();
-	          document.getElementById("'.$this->view->escape($id).'Longitude").value = pos.lng();
-	        });
-	        map.addOverlay(marker);
+          GEvent.addListener(marker, "drag", function() {
+            var pos = marker.getLatLng();
+            $("'.$this->view->escape($id).'Latitude").value = pos.lat();
+            $("'.$this->view->escape($id).'Longitude").value = pos.lng();
+          });
+          map.addOverlay(marker);
+          
+          var bounds = new GLatLngBounds();
+          bounds.extend(center);
+          map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds)-1);
 	      }
 	    }
 	    initialize();

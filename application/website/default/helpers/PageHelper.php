@@ -169,6 +169,15 @@ class PageHelper {
   public function getCategoryIcons(){
     //TODO default category icons
   }
+  
+  /**
+   * getOverview
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getOverview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x', $strImageFolderList = '40x40'){
+    //TODO default product overview
+  }
     
   /**
    * getProductOverview

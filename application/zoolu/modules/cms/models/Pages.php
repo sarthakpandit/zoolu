@@ -172,7 +172,7 @@ class Model_Pages {
     $objSelect = $this->getPageTable()->select();
     $objSelect->setIntegrityCheck(false);
 
-    $objSelect->from('pages', array('id', 'pageId', 'relationId' => 'pageId', 'version', 'pageProperties.idPageTypes', 'isStartPage', 'pageProperties.showInNavigation', 'idParent', 'idParentTypes', 'pageProperties.published', 'pageProperties.changed', 'pageProperties.idStatus', 'pageProperties.creator'));
+    $objSelect->from('pages', array('id', 'pageId', 'relationId' => 'pageId', 'version', 'pageProperties.idPageTypes', 'isStartPage', 'pageProperties.showInNavigation', 'pageProperties.idDestination', 'idParent', 'idParentTypes', 'pageProperties.published', 'pageProperties.changed', 'pageProperties.idStatus', 'pageProperties.creator'));
     $objSelect->joinLeft('pageProperties', 'pageProperties.pageId = pages.pageId AND pageProperties.version = pages.version AND pageProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array());
     $objSelect->joinLeft(array('ub' => 'users'), 'ub.id = pageProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'));
     $objSelect->joinLeft(array('uc' => 'users'), 'uc.id = pageProperties.idUsers', array('changeUser' => 'CONCAT(uc.fname, \' \', uc.sname)'));
@@ -294,6 +294,7 @@ class Model_Pages {
                            'idTemplates'      => $objGenericSetup->getTemplateId(),
                            'idPageTypes'      => $objGenericSetup->getElementTypeId(),
                            'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                           'idDestination'    => $objGenericSetup->getDestinationId(),
                            'idUsers'          => $intUserId,
                            'creator'          => $objGenericSetup->getCreatorId(),
                            'publisher'        => $intUserId,
@@ -359,6 +360,7 @@ class Model_Pages {
                                                                         'idTemplates'      => $objGenericSetup->getTemplateId(),
                                                                         'idPageTypes'      => $objGenericSetup->getElementTypeId(),
                                                                         'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                                                                        'idDestination'    => $objGenericSetup->getDestinationId(),
                                                                         'idUsers'          => $intUserId,
                                                                         'creator'          => $objGenericSetup->getCreatorId(),
                                                                         'idStatus'         => $objGenericSetup->getStatusId(),
@@ -376,6 +378,7 @@ class Model_Pages {
                              'idTemplates'      => $objGenericSetup->getTemplateId(),
                              'idPageTypes'      => $objGenericSetup->getElementTypeId(),
                              'showInNavigation' => $objGenericSetup->getShowInNavigation(),
+                             'idDestination'    => $objGenericSetup->getDestinationId(),
                              'idUsers'          => $intUserId,
                              'creator'          => $objGenericSetup->getCreatorId(),
                              'publisher'        => $intUserId,
@@ -635,11 +638,12 @@ class Model_Pages {
    * @param integer $intEntryDepthId
    * @param array $arrPageIds
    * @param boolean $blnOnlyItems load only items, no start items
+   * @param boolean $blnOnlyShowInNavigation load only items with property "showInNavigation"
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadItems($mixedType, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array(), $blnOnlyItems = false){
+  public function loadItems($mixedType, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrPageIds = array(), $blnOnlyItems = false, $blnOnlyShowInNavigation = false){
     $this->core->logger->debug('cms->models->Model_Pages->loadItems('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrPageIds.')');
 
     if(!is_array($mixedType)){
@@ -722,11 +726,11 @@ class Model_Pages {
     }
 
     $sqlStmt = $this->core->dbh->query('SELECT DISTINCT id, plId, genericFormId, version, plGenericFormId, plVersion,
-                                          url, plUrl, title, languageCode, idPageTypes, sortPosition, sortTimestamp, created, changed, published
+                                          url, plUrl, title, languageCode, idPageTypes, idDestination, sortPosition, sortTimestamp, created, changed, published
                                         FROM
                                           (SELECT pages.id, pl.id AS plId, genericForms.genericFormId, genericForms.version,
-                                            plGenForm.genericFormId AS plGenericFormId, plGenForm.version AS plVersion, urls.url, lUrls.url AS plUrl,
-                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes,
+                                            plGenForm.genericFormId AS plGenericFormId, plGenForm.version AS plVersion, urls.url, lUrls.url AS plUrl, 
+                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes, pageProperties.idDestination,
                                             pageProperties.created, pageProperties.changed, pageProperties.published, folders.sortPosition, folders.sortTimestamp
                                           FROM folders, pages
                                             INNER JOIN pageProperties ON 
@@ -796,7 +800,7 @@ class Model_Pages {
                                           UNION
                                           SELECT pages.id, pl.id AS plId, genericForms.genericFormId, genericForms.version,
                                             plGenForm.genericFormId AS plGenericFormId, plGenForm.version AS plVersion, urls.url, lUrls.url AS plUrl,
-                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes,
+                                            IF(pageProperties.idPageTypes = ?, plTitle.title, pageTitles.title) as title, languageCode, pageProperties.idPageTypes, pageProperties.idDestination,
                                             pageProperties.created, pageProperties.changed, pageProperties.published, pages.sortPosition, pages.sortTimestamp                                            
                                           FROM pages
                                             INNER JOIN pageProperties ON 

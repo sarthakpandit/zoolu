@@ -765,7 +765,7 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function getOverviewContainer($blnOnlyPages = false){
+  public function getOverviewContainer($blnOnlyPages = false, $blnOnlyShowInNavigation = false){
     try{
       $this->arrContainer = array();
       $this->arrGenForms = array();
@@ -802,10 +802,11 @@ class Page {
               if($this->objParentPage->getField('entry_sorttype') !== null && (int) $this->objParentPage->getFieldValue('entry_sorttype') > 0) $objContainer->setContainerSortType($this->objParentPage->getFieldValue('entry_sorttype'));                            
             }
 
-            $objEntries = $this->getOverviewPages($objContainer->getContainerKey(), $objContainer->getContainerLabel(), $objContainer->getEntryNumber(), $objContainer->getContainerSortType(), $objContainer->getContainerSortOrder(), $objContainer->getContainerDepth(), $arrPageIds, $blnOnlyPages);
+            $objEntries = $this->getOverviewPages($objContainer->getContainerKey(), $objContainer->getContainerLabel(), $objContainer->getEntryNumber(), $objContainer->getContainerSortType(), $objContainer->getContainerSortOrder(), $objContainer->getContainerDepth(), $arrPageIds, $blnOnlyPages, $blnOnlyShowInNavigation);
             if(count($objEntries) > 0){
               foreach($objEntries as $objEntryData){
                 $objEntry = new PageEntry();
+                $objEntry->destinationId = (isset($objEntryData->idDestination)) ? $objEntryData->idDestination : 0;
                 if(isset($objEntryData->idPageTypes) &&  $objEntryData->idPageTypes == $this->core->sysConfig->page_types->link->id){
                   $objEntry->setEntryId($objEntryData->plId);
                   $objEntry->title = $objEntryData->title;
@@ -912,17 +913,18 @@ class Page {
    * @param integer $intEntryDepth
    * @param array $arrPageIds
    * @param boolean $blnOnlyPages load only pages (items), no start elements
+   * @param boolean $blnOnlyShowInNavigation load only pages (items) with property "showInNavigation"
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages = false){
+  public function getOverviewPages($intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages = false, $blnOnlyShowInNavigation = false){
     try{
       $this->getModel();
 
       if($this->intNavParentId !== null && $this->intNavParentId > 0){
-        $objPages = $this->objModel->loadItems((($this->ParentPage() instanceof Page) ? array('id' => $this->ParentPage()->getTypeId(), 'key' => $this->ParentPage()->getType()) : array('id' => $this->intTypeId, 'key' => $this->strType)), $this->intNavParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages);  
+        $objPages = $this->objModel->loadItems((($this->ParentPage() instanceof Page) ? array('id' => $this->ParentPage()->getTypeId(), 'key' => $this->ParentPage()->getType()) : array('id' => $this->intTypeId, 'key' => $this->strType)), $this->intNavParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages, $blnOnlyShowInNavigation);  
       }else{     
-        $objPages = $this->objModel->loadItems(array('id' => $this->intTypeId, 'key' => $this->strType), $this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages);
+        $objPages = $this->objModel->loadItems(array('id' => $this->intTypeId, 'key' => $this->strType), $this->intParentId, $intCategoryId, $intLabelId, $intEntryNumber, $intSortType, $intSortOrder, $intEntryDepth, $arrPageIds, $blnOnlyPages, $blnOnlyShowInNavigation);
       }
       
       return $objPages;
@@ -1022,6 +1024,7 @@ class Page {
                 $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
                 $objEntry->created = $objEntryData->pageCreated;
                 $objEntry->published = $objEntryData->pagePublished;
+                $objEntry->destinationId = $objEntryData->idDestination;
 
                 $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
                 if(isset($this->arrPageEntries[$objEntryData->idPage])){
@@ -1048,6 +1051,7 @@ class Page {
                 $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;
                 $objEntry->created = $objEntryData->pageCreated;
                 $objEntry->rootTitle = $objEntryData->rootTitle;
+                $objEntry->destinationId = $objEntryData->idDestination;
 
                 $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
                 if(isset($this->arrPageEntries[$objEntryData->idPage])){
@@ -1089,6 +1093,7 @@ class Page {
     try{
       $this->arrContainer = array();
       $this->arrGenForms = array();
+      $this->arrFallbackGenForms = array();
       $this->arrPageEntries = array();
       $counter = 0;
       
@@ -1128,7 +1133,12 @@ class Page {
             $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
           }
 
-          $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;
+          if(isset($objEntryData->idLanguageFallbacks) && $objEntryData->idLanguageFallbacks > 0){
+            $this->arrFallbackGenForms[$objEntryData->fallbackGenericFormId.'-'.$objEntryData->fallbackGenericFormVersion][$objEntryData->idLanguageFallbacks][] = $objEntryData->id;
+            if(isset($objEntryData->fallbackTitle) && $objEntryData->fallbackTitle != '')  $objEntry->title = $objEntryData->fallbackTitle;
+          }else{
+            $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;  
+          }          
 
           $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
           $this->arrPageEntries[$objEntryData->id] = $counter;
@@ -1136,16 +1146,27 @@ class Page {
         
         $this->arrContainer[$counter] = &$objContainer;
 
+        
+        $this->objModel = $this->getModelGlobals();
+        
         /**
          * get data of instance tables
          */
         if(count($this->arrGenForms) > 0){
-          $this->objModel = $this->getModelGlobals();
           $this->loadInstanceData('174,5');
-          $this->getModel(true);
-        }
+        }      
+        
+        /**
+         * get fallback data of instance tables
+         */
+        if(count($this->arrFallbackGenForms) > 0){
+          $this->loadFallbackInstanceData('174,5');        
+        } 
+        
+        $this->getModel(true);
       }
-
+      
+      $objContainer->shuffleEntries();
       return $objContainer;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -1389,13 +1410,13 @@ class Page {
    * loadFallbackInstanceData
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadFallbackInstanceData(){
+  private function loadFallbackInstanceData($strImgFieldIds = '5,55'){
     foreach($this->arrFallbackGenForms as $key => $arrLanguageIds){
       foreach($arrLanguageIds as $intLanguageId => $arrPageIds){
         $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
         
         $this->objModel->setLanguageId($intLanguageId);
-        $this->loadInstanceDataNow($key, $arrGenFormPageIds);
+        $this->loadInstanceDataNow($key, $arrGenFormPageIds, $strImgFieldIds);
         $this->objModel->setLanguageId($this->intLanguageId);        
       }
     }

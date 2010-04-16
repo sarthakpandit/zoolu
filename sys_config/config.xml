@@ -57,6 +57,7 @@
         <min>tmp/cache/min/</min>
         <pages>tmp/cache/pages/</pages>
         <tables>tmp/cache/tables/</tables>
+        <tmp>tmp/cache/tmp/</tmp>
       </cache>
       <session>tmp/sessions/</session>
       <search_index>
@@ -823,9 +824,14 @@
       </youtube>
     </video_channels>
     
+    <!--  GOOGLE API KEY -->
+    <gmaps>
+      <key>ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhQmqHOv4hHfeHLLyu9InsOmU-0cgBT4KqMM2cPsdTCJQ7kV-aHp-LMEbA</key>
+    </gmaps>
+        
     <!-- Plugins / Fields Javascript -->
     <pluginsJs>
-      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
+      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhQmqHOv4hHfeHLLyu9InsOmU-0cgBT4KqMM2cPsdTCJQ7kV-aHp-LMEbA</gmaps>
     </pluginsJs>
   </production>
 
@@ -841,6 +847,16 @@
       <priority>7</priority>     
       <firebug>true</firebug>
     </logger>
+    
+     <!--  GOOGLE API KEY -->
+    <gmaps>
+      <key>ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</key>
+    </gmaps>
+     
+    <!-- Plugins / Fields Javascript -->
+    <pluginsJs>
+      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</gmaps>
+    </pluginsJs>
     
     <!-- CACHE -->
     <cache>

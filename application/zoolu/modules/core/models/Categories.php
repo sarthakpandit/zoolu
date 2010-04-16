@@ -127,6 +127,29 @@ class Model_Categories {
   }
   
   /**
+   * loadCategoryTree 
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @param integer $intElementId
+   * @version 1.0
+   */
+  public function loadCategoryTree($intElementId){
+    $this->core->logger->debug('core->models->Folders->loadCategory('.$intElementId.')');
+    
+    $objSelect = $this->getCategoriesTable()->select();   
+    $objSelect->setIntegrityCheck(false);
+    
+    $objSelect->from('categories');
+    $objSelect->join(array('rootCat' => 'categories'), 'rootCat.id = '.$intElementId, array());
+    $objSelect->join('categoryTitles', 'categoryTitles.idCategories = categories.id AND categoryTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objSelect->joinLeft('categoryCodes', 'categoryCodes.idCategories = categories.id AND categoryCodes.idLanguages = '.$this->intLanguageId, array('code'));
+    $objSelect->where('categories.idRootCategory = rootCat.idRootCategory');
+    $objSelect->where('categories.lft BETWEEN (rootCat.lft + 1) AND rootCat.rgt');
+        
+    return $this->getCategoriesTable()->fetchAll($objSelect);    
+  }
+  
+  /**
    * loadCategoriesMatchCode
    * @param integer|string $mixedIds
    * @param boolean $retAsArray = false 

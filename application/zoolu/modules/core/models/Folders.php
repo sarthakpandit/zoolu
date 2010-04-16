@@ -803,7 +803,7 @@ class Model_Folders {
   	$sqlStmt = $this->core->dbh->query('SELECT DISTINCT folders.id AS idFolder, folderProperties.idStatus AS folderStatus, folders.depth,
                                               pages.id AS idPage, pageTitles.title AS title, genericForms.genericFormId, genericForms.version, pageProperties.showInNavigation,
                                               pageProperties.idStatus AS pageStatus, urls.url, languageCode, pageProperties.idPageTypes, pageProperties.created AS pageCreated,
-                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished,
+                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished, pageProperties.idDestination, 
                                               CONCAT(users.fname, \' \', users.sname) AS creator
                                           FROM folders
                                             INNER JOIN folderProperties ON 
@@ -831,7 +831,8 @@ class Model_Folders {
                                               urls.relationId = pages.pageId AND
                                               urls.version = pages.version AND
                                               urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND
-                                              urls.idLanguages = ?
+                                              urls.idLanguages = ? AND
+                                              urls.isMain = 1
                                             LEFT JOIN users ON
                                               users.id = pageProperties.creator
                                             LEFT JOIN languages  ON
@@ -849,7 +850,6 @@ class Model_Folders {
   	                                                             $this->intLanguageId,
   	                                                             $this->intLanguageId,
   	                                                             $intFolderId));
-
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
   
@@ -867,7 +867,7 @@ class Model_Folders {
   public function loadOverallFolderChildPages($intCategoryId = 0, $intLabelId = 0, $intLimitNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0){
     $this->core->logger->debug('core->models->Folders->loadOverallFolderChildPages('.$intCategoryId.','.$intLabelId.','.$intLimitNumber.','.$intSortTypeId.','.$intSortOrderId.')');
 
-  $strSortOrder = '';
+    $strSortOrder = '';
     if($intSortOrderId > 0 && $intSortOrderId != ''){
       switch($intSortOrderId){
         case $this->core->sysConfig->sort->orders->asc->id:
@@ -936,7 +936,7 @@ class Model_Folders {
     $sqlStmt = $this->core->dbh->query('SELECT DISTINCT folders.id AS idFolder, folderProperties.idStatus AS folderStatus, folders.depth,
                                               pages.id AS idPage, pageTitles.title AS title, genericForms.genericFormId, genericForms.version,
                                               pageProperties.idStatus AS pageStatus, urls.url, languageCode, pageProperties.idPageTypes, pageProperties.created AS pageCreated,
-                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished, rootLevelTitles.title AS rootTitle,
+                                              pageProperties.changed AS pageChanged, pageProperties.published AS pagePublished, rootLevelTitles.title AS rootTitle, pageProperties.idDestination,
                                               CONCAT(users.fname, \' \', users.sname) AS creator
                                           FROM folders
                                             INNER JOIN folderProperties ON 
@@ -964,7 +964,8 @@ class Model_Folders {
                                               urls.relationId = pages.pageId AND
                                               urls.version = pages.version AND
                                               urls.idUrlTypes = '.$this->core->sysConfig->url_types->page.' AND
-                                              urls.idLanguages = ?
+                                              urls.idLanguages = ? AND
+                                              urls.isMain = 1
                                             INNER JOIN rootLevelTitles ON
                                               rootLevelTitles.idRootLevels = folders.idRootLevels AND
                                               rootLevelTitles.idLanguages = ?
@@ -1203,9 +1204,12 @@ class Model_Folders {
     $objSelect->join('globalProperties', 'globalProperties.globalId = globals.globalId AND 
                                           globalProperties.version = globals.version AND
                                           globalProperties.idLanguages = '.$this->intLanguageId.' AND
-                                          globalProperties.showInNavigation = 1', array('globalStatus' => 'idStatus', 'idGlobalTypes'))              
+                                          globalProperties.showInNavigation = 1', array('globalStatus' => 'idStatus', 'idGlobalTypes', 'idLanguageFallbacks'))              
               ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'genericFormVersion' => 'version'))
               ->joinLeft('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->intLanguageId, array('globalTitle' => 'title'))
+              ->joinLeft(array('fallbackTitles' => 'globalTitles'), 'fallbackTitles.globalId = globals.globalId AND fallbackTitles.version = globals.version AND fallbackTitles.idLanguages = globalProperties.idLanguageFallbacks', array('fallbackTitle' => 'title'))
+              ->joinLeft(array('fallbackProperties' => 'globalProperties'), 'fallbackProperties.globalId = globals.globalId AND fallbackProperties.version = globals.version AND fallbackProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+              ->joinLeft(array('fallbackGenericForms' => 'genericForms'), 'fallbackGenericForms.id = fallbackProperties.idGenericForms', array('fallbackGenericFormId' => 'genericFormId', 'fallbackGenericFormVersion' => 'version', 'fallbackGenericFormTypeId' => 'idGenericFormTypes'))
               ->where('folders.lft BETWEEN parent.lft AND parent.rgt')
               ->where('folders.idRootLevels = parent.idRootLevels')
               ->where('globals.id = (SELECT p.id FROM globals p WHERE p.globalId = globals.globalId ORDER BY p.version DESC LIMIT 1)')              
@@ -1214,6 +1218,7 @@ class Model_Folders {
               ->order('globals.sortPosition ASC')
               ->order('globals.sortTimestamp DESC')
               ->order('globals.id ASC');
+              
               
     if($arrFilterOptions['CategoryId'] > 0 && $arrFilterOptions['CategoryId'] != ''){
       $objSelect->join('globalCategories', 'globalCategories.globalId = globals.globalId AND globalCategories.version = globals.version AND globalCategories.idLanguages = globalProperties.idLanguages', array())
