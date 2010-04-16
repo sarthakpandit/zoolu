@@ -263,11 +263,12 @@ class Model_Globals {
    * @param integer $intEntryDepthId
    * @param array $arrGlobalIds
    * @param boolean $blnOnlyItems load only items, no start items
+   * @param boolean $blnOnlyShowInNavigation load only items with property "showInNavigation"
    * @return Zend_Db_Table_Rowset_Abstract
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadItems($mixedType, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrGlobalIds = array(), $blnOnlyItems = false){
+  public function loadItems($mixedType, $intParentId, $intCategoryId = 0, $intLabelId = 0, $intEntryNumber = 0, $intSortTypeId = 0, $intSortOrderId = 0, $intEntryDepthId = 0, $arrGlobalIds = array(), $blnOnlyItems = false, $blnOnlyShowInNavigation = false){
     $this->core->logger->debug('cms->models->Model_Globals->loadItems('.$intParentId.','.$intCategoryId.','.$intLabelId.','.$intEntryNumber.','.$intSortTypeId.','.$intSortOrderId.','.$intEntryDepthId.','.$arrGlobalIds.')');
 
     if(!is_array($mixedType)){
@@ -297,7 +298,7 @@ class Model_Globals {
                  ->join(array('lP' => 'globals'), 'lP.id = globalLinks.idGlobals', array())
                  ->join('folders', 'folders.id = lP.idParent AND lP.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
                  ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
-                 ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
                  ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
                  ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
                  ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
@@ -311,6 +312,10 @@ class Model_Globals {
                  
       if($blnOnlyItems === true){
         $objSelect1->where('lP.isStartGlobal = 0');
+      }
+      
+      if($blnOnlyShowInNavigation === true){
+        $objSelect1->where('globalProperties.showInNavigation = 1');
       }
       
       switch($intEntryDepthId){
@@ -344,7 +349,7 @@ class Model_Globals {
       $objSelect1->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => new Zend_Db_Expr('-1'), 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
                  ->join('folders', 'folders.id = globals.idParent AND globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
                  ->join('folders AS parent', 'parent.id = '.$intParentId, array())        
-                 ->joinLeft('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
+                 ->join('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array())
                  ->join('genericForms', 'genericForms.id = globalProperties.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'))
                  ->joinLeft(array('ub' => 'users'), 'ub.id = globalProperties.publisher', array('publisher' => 'CONCAT(ub.fname, \' \', ub.sname)'))
                  ->join('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalTitles.idLanguages = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('title'))
@@ -358,6 +363,10 @@ class Model_Globals {
                  
       if($blnOnlyItems === true){
         $objSelect1->where('globals.isStartGlobal = 0');
+      }
+      
+      if($blnOnlyShowInNavigation === true){
+        $objSelect1->where('globalProperties.showInNavigation = 1');
       }
       
       switch($intEntryDepthId){

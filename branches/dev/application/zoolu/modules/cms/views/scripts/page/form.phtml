@@ -53,6 +53,19 @@
               </td>
             </tr>
             <tr>
+              <td class="tdNormal"><input type="checkbox" name="shownonlyfordestination" id="shownonlyfordestination"<?php ($this->destinationId > 0) ? print(' checked="checked"') : ''; ?> onclick="myForm.toggleDestinationOptions();"/></td>
+              <td>
+                <label for="shownonlyfordestination">nur für Region anzeigen</label>
+                <div id="divShownOnlyForDestinationOptions"<?php echo ($this->destinationId == 0) ? ' style="display:none;"' : ''; ?>>
+                  <div class="navigationoptios">
+                    <select name="shownonlyfordestinationoption" id="shownonlyfordestinationoption" onchange="$('destinationId').value = this.value;">
+                      <?php echo $this->destinationOptions; ?>
+                    </select>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
               <td class="tdNormal">Ver&ouml;ffentlicht:</td>
               <td>
                 <div class="publishdate" id="divPublishDate"><?php echo $this->publishDate; ?></div>

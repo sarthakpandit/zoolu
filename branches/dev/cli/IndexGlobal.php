@@ -39,7 +39,7 @@ try{
   $objConsoleOpts = new Zend_Console_Getopt(
       array(
           'globalId|g=s'    => 'Global Id',
-          'linkId|gl=i'    => 'Global Link Id',
+          'linkId|gl=s'     => 'Global Link Id',
           'version|v=i'     => 'Global Version',
           'languageId|l=i'  => 'Language Id',
           'rootLevelId|r=i' => 'RootLevelId Id'

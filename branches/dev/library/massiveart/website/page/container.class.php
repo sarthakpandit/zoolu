@@ -92,6 +92,15 @@ class PageContainer {
   }
 
   /**
+   * shuffleEntries
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function shuffleEntries(){
+    shuffle($this->arrEntries);
+  }
+  
+  /**
    * getPageEntry
    * @return PageEntry
    * @author Cornelius Hansjakob <cha@massiveart.com>

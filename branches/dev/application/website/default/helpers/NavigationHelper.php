@@ -51,12 +51,12 @@ class NavigationHelper {
    * @var Navigation
    */
   protected $objNavigation;
-
+  
   /**
    * @var Zend_Translate
    */
   protected $objTranslate;
-  
+    
   /**
    * constructor
    * @author Thomas Schedler <tsh@massiveart.com>   

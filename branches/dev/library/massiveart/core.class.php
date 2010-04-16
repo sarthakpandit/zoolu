@@ -78,6 +78,11 @@ class Core {
   public $objCoreSession;
   
   /**
+   * @var Zend_Cache_Core
+   */
+  private $objTmpCache;
+  
+  /**
    * @var integer
    */
   public $intLanguageId;
@@ -286,11 +291,44 @@ class Core {
         header ('Location: http://'.$this->sysConfig->hostname);
         die();
       }
-
     }
   }
 
   private function __clone(){}
+  
+  /**
+   * TmpCache
+   * @return Zend_Cache_Core
+   */
+  public function TmpCache(){
+    if($this->objTmpCache === null){
+      $this->initTmpCache();
+    }
+    return $this->objTmpCache;
+  }
+  
+  /**
+   * initTmpCache
+   * @return void
+   */
+  private function initTmpCache(){
+    /**
+     * set up the cache
+     */
+    $arrFrontendOptions = array(
+      'automatic_serialization' => true,
+      'lifetime' => 604860,
+    );
+
+    $arrBackendOptions  = array(
+      'cache_dir' => GLOBAL_ROOT_PATH.$this->sysConfig->path->cache->tmp
+    );
+
+    $this->objTmpCache = Zend_Cache::factory('Core',
+                                             'File',
+                                             $arrFrontendOptions,
+                                             $arrBackendOptions);  
+  }
 
   /**
    * getInstance

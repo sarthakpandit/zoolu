@@ -1263,204 +1263,7 @@ function get_ad_blocks($strImageFolder = '', $blnZoom = true, $blnUseLightbox = 
  * @version 1.0
  */
 function get_overview($strImageFolderCol1 = '80x80', $strImageFolderCol2 = '180x', $strImageFolderList = '40x40'){
-  $core = getCoreObject();
-  $objPage = getPageObject();
-
-  $arrOverview = $objPage->getOverviewContainer();
-
-  $strHtmlOutput = '';
-  if(count($arrOverview) > 0){
-    foreach($arrOverview as $key => $objPageContainer){
-      if(count($objPageContainer) > 0){
-        if($objPageContainer->getContainerTitle() != ''){
-          $strHtmlOutput .= '
-              <h3>'.htmlentities($objPageContainer->getContainerTitle(), ENT_COMPAT, $core->sysConfig->encoding->default).'</h3>';
-        }
-
-        $arrPageEntries = $objPageContainer->getEntries();
-
-        switch($objPageContainer->getEntryViewType()){
-          case $core->webConfig->viewtypes->col1->id:
-            foreach($arrPageEntries as $objPageEntry){
-              $strDescription = '';
-              if($objPageEntry->shortdescription != ''){
-                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
-              }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 300){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
-                }else{
-                  $strDescription = strip_tags($objPageEntry->description);
-                }
-              }
-
-              $strHtmlOutput .= '
-                <div class="item mBottom10">
-                  <div class="text">
-                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
-              if($strDescription != ''){
-                $strHtmlOutput .= '<p>'.$strDescription.'</p>';
-              }                    
-              $strHtmlOutput .= '
-                  </div>
-                  <div class="clear"></div>
-                </div>';
-            }
-            break;
-
-          case $core->webConfig->viewtypes->col1_img->id:
-            foreach($arrPageEntries as $objPageEntry){
-              $strDescription = '';
-              if($objPageEntry->shortdescription != ''){
-                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
-              }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 300){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
-                }else{
-                  $strDescription = strip_tags($objPageEntry->description);
-                }
-              }
-              
-              $strHtmlOutput .= '
-                <div class="item mBottom10">
-                  <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objPageEntry->filepath.$strImageFolderCol1.'/'.$objPageEntry->filename.'?v='.$objPageEntry->fileversion.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
-                  <div class="text">
-                    <h3><a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a></h3>';
-              if($strDescription != ''){
-                $strHtmlOutput .= '<p>'.$strDescription.'</p>';
-              }                    
-              $strHtmlOutput .= '
-                  </div>
-                  <div class="clear"></div>
-                </div>';
-            }
-            break;
-
-          case $core->webConfig->viewtypes->col2->id:
-
-            $strHtmlOutput .= '
-                <div class="col2">';
-
-            $counter = 0;
-            foreach($arrPageEntries as $objPageEntry){
-              $strDescription = '';
-              if($objPageEntry->shortdescription != ''){
-                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
-              }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 300){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
-                }else{
-                  $strDescription = strip_tags($objPageEntry->description);
-                }
-              }
-              
-              $strHtmlOutput .= '
-                <div class="item mBottom10'.(($counter % 2 == 0) ? ' mRight10' : '').'">
-                  <div class="text long">
-                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
-              if($strDescription != ''){
-                $strHtmlOutput .= '<p>'.$strDescription.'</p>';
-              }                    
-              $strHtmlOutput .= '
-                  </div>
-                  <div class="clear"></div>
-                </div>';
-              if($counter % 2 == 1){
-                $strHtmlOutput .= '
-                  <div class="clear"></div>';
-              }
-              $counter++;
-            }
-            
-            $strHtmlOutput .= '
-                  <div class="clear"></div>
-                </div>';            
-            break;
-
-          case $core->webConfig->viewtypes->col2_img->id:
-            $strHtmlOutput .= '
-                <div class="col2">';
-
-            $counter = 0;
-            foreach($arrPageEntries as $objPageEntry){
-              $strDescription = '';
-              if($objPageEntry->shortdescription != ''){
-                $strDescription = htmlentities($objPageEntry->shortdescription, ENT_COMPAT, $core->sysConfig->encoding->default);
-              }else if($objPageEntry->description != ''){
-                if(strlen($objPageEntry->description) > 300){
-                  $strDescription = strip_tags(substr($objPageEntry->description, 0, strpos($objPageEntry->description, ' ', 300))).' ...';
-                }else{
-                  $strDescription = strip_tags($objPageEntry->description);
-                }
-              }
-              
-              $strHtmlOutput .= '
-                <div class="item mBottom10'.(($counter % 2 == 0) ? ' mRight10' : '').'">
-                  <img src="'.$core->webConfig->domains->static->components.$core->sysConfig->media->paths->imgbase.$objPageEntry->filepath.$strImageFolderCol1.'/'.$objPageEntry->filename.'?v='.$objPageEntry->fileversion.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/>
-                  <div class="text">
-                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>';
-              if($strDescription != ''){
-                $strHtmlOutput .= '<p>'.$strDescription.'</p>';
-              }                    
-              $strHtmlOutput .= '
-                  </div>
-                  <div class="clear"></div>
-                </div>';
-              if($counter % 2 == 1){
-                $strHtmlOutput .= '
-                  <div class="clear"></div>';
-              }
-              $counter++;
-            }
-
-            $strHtmlOutput .= '
-                  <div class="clear"></div>
-                </div>';
-            break;
-
-          case $core->webConfig->viewtypes->list->id:
-
-            $strHtmlOutput .= '
-                <div class="list">';
-            foreach($arrPageEntries as $objPageEntry){
-              $strHtmlOutput .= '
-                  <div class="item">                    
-                    <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
-                  </div>';
-            }
-            $strHtmlOutput .= '
-                </div>';
-            break;
-
-          case $core->webConfig->viewtypes->list_img->id:
-
-            $strHtmlOutput .= '
-                <div class="list">';
-            foreach($arrPageEntries as $objPageEntry){
-              $strHtmlOutput .= '
-                  <div class="item">';
-              if($objPageEntry->filename != ''){
-                $strHtmlOutput .= '
-                    <div class="left">
-                      <a href="'.$objPageEntry->url.'"><img src="'.$core->sysConfig->media->paths->imgbase.$objPageEntry->filepath.$strImageFolderList.'/'.$objPageEntry->filename.'?v='.$objPageEntry->fileversion.'" alt="'.$objPageEntry->filetitle.'" title="'.$objPageEntry->filetitle.'"/></a>
-                    </div>';
-              }
-              $strHtmlOutput .= '
-                    <div class="text">
-                      <a href="'.$objPageEntry->url.'">'.htmlentities($objPageEntry->title, ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
-                    </div>
-                    <div class="clear"></div>
-                  </div>';
-            }
-
-            $strHtmlOutput .= '
-                  <div class="clear"></div>
-                </div>';
-            break;
-        }
-      }
-    }
-  }
-  echo $strHtmlOutput;
+  echo getPageHelperObject()->getOverview($strImageFolderCol1, $strImageFolderCol2, $strImageFolderList);
 }
 
 /**
@@ -2109,6 +1912,26 @@ function get_contacts($strThumbImageFolder = '40x40', $strContainerClass = 'divC
     }
   }
   echo $strHtmlOutput;
+}
+
+/**
+ * get_googlemapLatitude
+ * @return string $strHtmlOutput
+ * @author Michael Trawetzky <mtr@massiveart.com>
+ * @version 1.0
+ */
+function get_googlemapLatitude(){
+  echo getPageObject()->getFieldValue('gmaps')->latitude;
+}
+
+/**
+ * get_googlemapLongitude
+ * @return string $strHtmlOutput
+ * @author Michael Trawetzky <mtr@massiveart.com>
+ * @version 1.0
+ */
+function get_googlemapLongitude(){
+  echo getPageObject()->getFieldValue('gmaps')->longitude;
 }
 
 /**
