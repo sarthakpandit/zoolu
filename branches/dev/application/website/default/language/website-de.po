@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-15 14:25+0100\n"
+"POT-Creation-Date: 2010-04-16 16:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -150,87 +150,87 @@ msgstr "Rechtliche Hinweise"
 msgid "Search"
 msgstr "Suche"
 
-#: public/website/themes/ivoclarvivadent/helpers/NavigationHelper.php:396
+#: public/website/themes/ivoclarvivadent/helpers/NavigationHelper.php:399
 msgid "Year"
 msgstr "Jahr"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:314
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:715
 msgid "More_information"
 msgstr "Mehr Information"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:350
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:752
 msgid "Date_and_Location"
 msgstr "Datum und Ort"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:356
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:758
 msgid "Fees"
 msgstr "Gebühren"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:359
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:761
 msgid "Language"
 msgstr "Sprache"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:506
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:910
 msgid "More"
 msgstr "Mehr"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:716
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:725
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:738
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1120
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1129
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1142
 #: public/website/themes/ivoclarvivadent/templates/template_location.php:29
 #: public/website/themes/ivoclarvivadent/templates/template_location.php:36
 msgid "Please_choose"
 msgstr "Bitte wählen"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:717
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1121
 msgid "Mr."
 msgstr "Herr"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:718
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1122
 msgid "Ms."
 msgstr "Frau"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:726
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1130
 msgid "Dental_office"
 msgstr "Praxis"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:727
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1131
 msgid "Dental_office_laboratory"
 msgstr "Praxis/Labor"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:728
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1132
 msgid "Laboratory"
 msgstr "Labor"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:729
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1133
 msgid "School"
 msgstr "Schule"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:730
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1134
 msgid "Student"
 msgstr "Student"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:731
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1135
 msgid "Private_person"
 msgstr "Privatperson"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:774
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1178
 msgid "Fields_with_*_are_mandatory"
 msgstr "Felder mit * müssen ausgefüllt werden."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:779
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1183
 msgid "Send"
 msgstr "Senden"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:785
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1189
 msgid "LegalNotes"
 msgstr "Ich bin damit einverstanden, dass meine oben eingegebenen Daten von der Ivoclar Vivadent AG und den Gesellschaften der Ivoclar Vivadent Gruppe gespeichert, verarbeitet und genutzt werden, um mich mit Informationen über Produkte, Dienstleistungen oder Aktivitäten der Ivoclar Vivadent Gruppe schriftlich, per Telefax, telefonisch oder per E-mail zu versorgen. Meine Einwilligung kann ich jederzeit ganz oder teilweise mit Wirkung für die Zukunft durch eine Mitteilung an info@ivoclarvivadent.com widerrufen."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:825
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1229
 msgid "Press_Contact"
 msgstr "Medienkontakt"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:860
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1264
 msgid "Contact"
 msgstr "Kontakt"
 
@@ -238,7 +238,7 @@ msgstr "Kontakt"
 msgid "Apply"
 msgstr "Bewerben"
 
-#: public/website/themes/ivoclarvivadent/templates/template_course.php:63
+#: public/website/themes/ivoclarvivadent/templates/template_course.php:65
 msgid "Book_now"
 msgstr "Jetzt Anmelden"
 

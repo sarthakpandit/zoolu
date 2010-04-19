@@ -26,8 +26,8 @@
         <address>cha@massiveart.com</address>
       </recipient>
       <params>
-        <host>mailer</host>
-        <username>zoolu@mailer</username>
+        <host>mailer.at</host>
+        <username>zoolu@mailer.at</username>
         <password>mailer</password>
       </params>
       <actions>

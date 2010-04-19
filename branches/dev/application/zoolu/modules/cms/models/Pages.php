@@ -147,6 +147,7 @@ class Model_Pages {
 
   		$strWhere = $objPagePluginTable->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
   		$strWhere .= 'AND '.$objPagePluginTable->getAdapter()->quoteInto('version = ?', $objPage->version);
+  		$strWhere .= 'AND '.$objPagePluginTable->getAdapter()->quoteInto('idLanguages = ?', $this->intLanguageId);
   		$objPagePluginTable->delete($strWhere);
 
   		$intUserId = Zend_Auth::getInstance()->getIdentity()->id;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-15 14:24+0100\n"
+"POT-Creation-Date: 2010-04-16 16:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -150,87 +150,87 @@ msgstr "Legal notes"
 msgid "Search"
 msgstr "Search"
 
-#: public/website/themes/ivoclarvivadent/helpers/NavigationHelper.php:396
+#: public/website/themes/ivoclarvivadent/helpers/NavigationHelper.php:399
 msgid "Year"
 msgstr "Year"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:314
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:715
 msgid "More_information"
 msgstr "More information"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:350
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:752
 msgid "Date_and_Location"
 msgstr "Date and Location"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:356
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:758
 msgid "Fees"
 msgstr "Fees"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:359
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:761
 msgid "Language"
 msgstr "Language"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:506
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:910
 msgid "More"
 msgstr "More"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:716
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:725
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:738
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1120
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1129
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1142
 #: public/website/themes/ivoclarvivadent/templates/template_location.php:29
 #: public/website/themes/ivoclarvivadent/templates/template_location.php:36
 msgid "Please_choose"
 msgstr "Please choose"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:717
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1121
 msgid "Mr."
 msgstr "Mr."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:718
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1122
 msgid "Ms."
 msgstr "Ms."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:726
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1130
 msgid "Dental_office"
 msgstr "Dental office"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:727
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1131
 msgid "Dental_office_laboratory"
 msgstr "Dental office/laboratory"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:728
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1132
 msgid "Laboratory"
 msgstr "Laboratory"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:729
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1133
 msgid "School"
 msgstr "School"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:730
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1134
 msgid "Student"
 msgstr "Student"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:731
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1135
 msgid "Private_person"
 msgstr "Private person"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:774
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1178
 msgid "Fields_with_*_are_mandatory"
 msgstr "Fields with * are mandatory."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:779
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1183
 msgid "Send"
 msgstr "Send"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:785
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1189
 msgid "LegalNotes"
 msgstr "I agree that the above personal data are stored, processed and used by Ivoclar Vivadent AG and the companies of the Ivoclar Vivadent Group to provide me with information about products, services, or activities of the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can revoke my consent completely or partially with immediate effect by sending a corresponding notification to info@ivoclarvivadent.com."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:825
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1229
 msgid "Press_Contact"
 msgstr "Media Contact"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:860
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1264
 msgid "Contact"
 msgstr "Contact"
 
@@ -238,7 +238,7 @@ msgstr "Contact"
 msgid "Apply"
 msgstr "Apply"
 
-#: public/website/themes/ivoclarvivadent/templates/template_course.php:63
+#: public/website/themes/ivoclarvivadent/templates/template_course.php:65
 msgid "Book_now"
 msgstr "Book now"
 
@@ -248,7 +248,7 @@ msgstr "Competence in Composites"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:32
 msgid "Competence_in_Composites_Info"
-msgstr "Ästhetische Füllungsmaterialien, effiziente Haftvermittler, leistungsstarke Lichtgeräte sowie patientenfreundliche Hilfsmittel im Zusammenspiel für eine reibungslose Füllungstherapie."
+msgstr "Efficient restorative therapy: Esthetic restorative materials, bonding agents, curing lights and auxiliaries in close interplay."
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:36
 msgid "Competence_in_All-Ceramics"
@@ -256,7 +256,7 @@ msgstr "Competence in All-Ceramics"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:37
 msgid "Competence_in_All-Ceramics_Info"
-msgstr "Die hochästhetischen Brücken, Kronen und Veneers aus unserer Vollkeramik sind aus der modernen Zahnmedizin nicht mehr wegzudenken."
+msgstr "Highly esthetic all-ceramic bridges, crowns and veneers - modern dentistry cannot be imagined without them."
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:41
 msgid "Competence_in_Implant_Esthetics"
@@ -264,7 +264,7 @@ msgstr "Competence in Implant Esthetics"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:42
 msgid "Competence_in_Implant_Esthetics_Info"
-msgstr "Gute Vorbereitung und eine ebensolche Ausführung: Das ist die Basis für implantatgetragene Restaurationen, die hohe ästhetische und funktionale Ansprüche erfüllen."
+msgstr "Well prepared, well performed: The basis for exacting implant-retained restorations."
 
 #: public/website/themes/ivoclarvivadent/templates/template_press_overview.php:56
 msgid "Archive"
