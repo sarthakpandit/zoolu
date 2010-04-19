@@ -117,6 +117,19 @@ class Page {
   public function ParentPage(){
     return $this->objParentPage;
   }
+    
+  /**
+   * @var Page
+   */
+  protected $objFallbackPage;
+  
+  /**
+   * property of the parent page
+   * @return Page $objFallbackPage
+   */
+  public function FallbackPage(){
+    return $this->objFallbackPage;
+  }
   
   /**
    * @var Page
@@ -277,6 +290,7 @@ class Page {
         $this->objGenericData->loadData();
         
         if($this->objGenericData->Setup()->getLanguageFallbackId() > 0 && $this->objGenericData->Setup()->getLanguageFallbackId() != $this->getLanguageId()){
+          $this->objFallbackPage = clone $this;
           $this->setLanguageId($this->objGenericData->Setup()->getLanguageFallbackId());
           $this->loadPage();
         }else{  

@@ -461,9 +461,9 @@ function get_image_gallery($intLimitNumber = 0, $strImageGalleryFolder = '', $bl
           <div id="div_image_gallery" style="display:none;">';
       }
       if($counter % $intColNumber == 3) {
-      	$strHtmlOutput .= '<div class="'.$strThumbContainerClass.' mBottom10">';
+        $strHtmlOutput .= '<div class="'.$strThumbContainerClass.' mBottom10">';
       }else{
-      	$strHtmlOutput .= '<div class="'.$strThumbContainerClass.' mBottom10 mRight10">';
+        $strHtmlOutput .= '<div class="'.$strThumbContainerClass.' mBottom10 mRight10">';
       }
       if($blnZoom){
         $strHtmlOutput .= '<a title="'.(($objFile->description != '') ? $objFile->description : $objFile->title).'" href="'.$core->sysConfig->media->paths->imgbase.$objFile->path.$strImageFolderZoom.'/'.$objFile->filename.'?v='.$objFile->version.'"';
@@ -662,7 +662,7 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
               $strHtmlOutputContent .= '<div class="item">
                       <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/icon_document.gif" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
                       <div class="text">
-                        <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.$objFile->title.'</a>
+                        <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" onclick="pageTracker._trackPageview(\'/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'\');" target="_blank">'.$objFile->title.'</a>
                       </div>
                       <div class="clear"></div>
                     </div>';
@@ -739,7 +739,7 @@ function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'div
             $strHtmlOutput .= '<div class="item">
                     <div class="icon"><img src="'.$core->webConfig->domains->static->components.'/website/themes/default/images/icons/'.$strIcon.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
                     <div class="text">
-                      <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.htmlentities((($objFile->title == '' && isset($objFile->alternativTitle)) ? $objFile->alternativTitle : $objFile->title), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
+                      <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" onclick="pageTracker._trackPageview(\'/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'\');" target="_blank">'.htmlentities((($objFile->title == '' && isset($objFile->alternativTitle)) ? $objFile->alternativTitle : $objFile->title), ENT_COMPAT, $core->sysConfig->encoding->default).'</a>
                     </div>
                     <div class="clear"></div>
                   </div>';
@@ -883,7 +883,7 @@ function get_documents($strContainerCss = 'documents', $strItemCss = 'item', $st
       $strHtmlOutput .= '<div class="'.$strItemCss.'">
               <div class="'.$strIconCss.'"><img src="/website/themes/default/images/icons/'.$strIcon.'" alt="'.$objFile->title.'" title="'.$objFile->title.'"/></div>
               <div class="'.$strTitleCss.'">
-                <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" target="_blank">'.$objFile->title.'</a>                
+                <a href="/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'" onclick="pageTracker._trackPageview(\'/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)).'\');" target="_blank">'.$objFile->title.'</a>                
               </div>
               <div class="clear"></div>
             </div>';
@@ -920,7 +920,7 @@ function has_documents(){
  * @version 1.0
  */
 function get_internal_links_title($strElement = 'h3'){
-  $objPage = getPageObject();
+  $objPage = (getPageObject()->FallbackPage() instanceof Page) ? getPageObject()->FallbackPage() : getPageObject();
 
   $strInternalLinksTitle = htmlentities($objPage->getFieldValue('internal_links_title'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default);
   if($strInternalLinksTitle != ''){
@@ -942,8 +942,7 @@ function get_internal_links_title($strElement = 'h3'){
  */
 function get_internal_links($strContainerCss = 'internalLinks', $strItemCss = 'item', $strIconCss = 'icon', $strTitleCss = 'text'){
   $core = getCoreObject();
-  $objPage = getPageObject();
-
+  $objPage = (getPageObject()->FallbackPage() instanceof Page) ? getPageObject()->FallbackPage() : getPageObject();
 
   $strHtmlOutput = '';
 
@@ -978,7 +977,7 @@ function get_internal_links($strContainerCss = 'internalLinks', $strItemCss = 'i
  * @version 1.0
  */
 function has_internal_links(){
-  $objPage = getPageObject();
+  $objPage = (getPageObject()->FallbackPage() instanceof Page) ? getPageObject()->FallbackPage() : getPageObject();
   $objFiles = $objPage->getFieldValue('internal_links');
 
   if($objFiles != '' && count($objFiles) > 0){
