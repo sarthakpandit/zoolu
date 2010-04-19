@@ -2082,6 +2082,24 @@ function get_form_success(){
 }
 
 /**
+ * get_bottom_content
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_bottom_content(){
+  echo getPageHelperObject()->BottomContent();
+}
+
+/**
+ * get_dom_loaded_js
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_dom_loaded_js(){
+  echo getPageHelperObject()->DomLoadedJs();
+}
+
+/**
  * get_categories
  * @param string $strElement
  * @param boolean $blnLinked

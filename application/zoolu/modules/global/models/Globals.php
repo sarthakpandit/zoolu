@@ -314,10 +314,6 @@ class Model_Globals {
         $objSelect1->where('lP.isStartGlobal = 0');
       }
       
-      if($blnOnlyShowInNavigation === true){
-        $objSelect1->where('globalProperties.showInNavigation = 1');
-      }
-      
       switch($intEntryDepthId){
         case $this->core->sysConfig->filter->depth->all:
           $objSelect1->where('folders.depth > parent.depth');
@@ -345,6 +341,11 @@ class Model_Globals {
                  ->joinLeft('languages', 'languages.id = '.$this->core->dbh->quote($this->intLanguageId, Zend_Db::INT_TYPE), array('languageCode'))
                  ->where('lP.idParent = ?', $intParentId)
                  ->where('lP.isStartGlobal = 0');
+      
+      if($blnOnlyShowInNavigation === true){
+        $objSelect1->where('globalProperties.showInNavigation = 1');
+        $objSelect2->where('globalProperties.showInNavigation = 1');
+      }
     }else{
       $objSelect1->from('globals', array('id', 'globalId', 'relationId' => 'globalId', 'plId' => new Zend_Db_Expr('-1'), 'isStartElement' => 'isStartGlobal', 'idParent', 'idParentTypes', 'sortPosition' => 'folders.sortPosition', 'sortTimestamp' => 'folders.sortTimestamp', 'globalProperties.idGlobalTypes', 'globalProperties.idLanguageFallbacks', 'globalProperties.published', 'globalProperties.changed', 'globalProperties.created', 'globalProperties.idStatus'))
                  ->join('folders', 'folders.id = globals.idParent AND globals.idParentTypes = '.$this->core->sysConfig->parent_types->folder, array())
@@ -363,10 +364,6 @@ class Model_Globals {
                  
       if($blnOnlyItems === true){
         $objSelect1->where('globals.isStartGlobal = 0');
-      }
-      
-      if($blnOnlyShowInNavigation === true){
-        $objSelect1->where('globalProperties.showInNavigation = 1');
       }
       
       switch($intEntryDepthId){
@@ -394,6 +391,10 @@ class Model_Globals {
                  ->where('globals.idParent = ?', $intParentId)
                  ->where('globals.isStartGlobal = 0');
       
+      if($blnOnlyShowInNavigation === true){
+        $objSelect1->where('globalProperties.showInNavigation = 1');
+        $objSelect2->where('globalProperties.showInNavigation = 1');
+      }
     }
     
 

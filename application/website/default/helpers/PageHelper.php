@@ -58,6 +58,22 @@ class PageHelper {
   protected $objTranslate;
   
   /**
+   * @var string
+   */
+  protected $strBottomContent = '';
+  public function BottomContent(){
+    return $this->strBottomContent;
+  }
+  
+  /**
+   * @var string
+   */
+  protected $strDomLoadedJs = '';
+  public function DomLoadedJs(){
+    return $this->strDomLoadedJs;
+  }
+  
+  /**
    * constructor
    * @author Thomas Schedler <tsh@massiveart.com>   
    */
