@@ -1424,14 +1424,14 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    */
   final protected function removeFromIndex($strIndexPath, $strKey){
     try{
+      $this->core->logger->debug('massiveart->generic->data->types->GenericDataTypeAbstract->removeFromIndex('.$strIndexPath.', '.$strKey.')');
       if(count(scandir($strIndexPath)) > 2){
         $this->objIndex = Zend_Search_Lucene::open($strIndexPath);
 
         $objTerm = new Zend_Search_Lucene_Index_Term($strKey, 'key');
-        $objQuery = new Zend_Search_Lucene_Search_Query_Term($objTerm);
+        $objQuery = (strpos($strKey, '*') !== false) ? new Zend_Search_Lucene_Search_Query_Wildcard($objTerm) : new Zend_Search_Lucene_Search_Query_Term($objTerm);
 
         $objHits = $this->objIndex->find($objQuery);
-
         foreach($objHits as $objHit){
           $this->objIndex->delete($objHit->id);
         }

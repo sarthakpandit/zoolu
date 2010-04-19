@@ -343,6 +343,9 @@ class IndexController extends Zend_Controller_Action {
         }
       }else{
       	$this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$objTheme->path.'/');
+      	$this->getResponse()->setHeader('HTTP/1.1', '404 Not Found');
+        $this->getResponse()->setHeader('Status', '404 File not found');
+        $this->getResponse()->setHttpResponseCode(404);
         $this->renderScript('error-404.php');
       }
     }else{

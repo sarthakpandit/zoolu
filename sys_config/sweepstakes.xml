@@ -32,6 +32,498 @@
             <email>info@ivoclarvivadent.com</email>
           </from>
           <to>
+            <name>Ivoclar Vivadent AG</name>
+            <email>info@ivoclarvivadent.com</email>
+          </to>
+          <subject>Tetric EvoFlow Sweepstake</subject>
+          <title>Tetric EvoFlow Sweepstake, Maldives</title>
+          <intro></intro>
+        </mail>
+        <!-- appearance config (portals, countries) -->
+        <portals>
+          <com>1</com>
+        </portals>                    
+        <countries>
+          <ax>
+            <code>AX</code>
+            <language>en</language>                
+          </ax>
+          <al>
+            <code>AL</code>
+            <language>en</language>                
+          </al>
+          <ad>
+            <code>AD</code>
+            <language>en</language>                
+          </ad>
+          <at> <!-- 80.77.22.159 -->
+            <code>AT</code>
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </at>
+          <by>
+            <code>BY</code>
+            <language>en</language>                
+          </by>
+          <be>
+            <code>BE</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Dorine Odink</name>
+                <email>dorine.odink@ivoclarvivadent.com</email>
+              </to>
+            </mail>         
+          </be>
+          <ba>
+            <code>BA</code>
+            <language>en</language>                
+          </ba>
+          <bg>
+            <code>BG</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </bg>
+          <hr>
+            <code>HR</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </hr>
+          <cz>
+            <code>CZ</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </cz>          
+          <ee>
+            <code>EE</code>
+            <language>en</language>                
+          </ee>
+          <fo>
+            <code>FO</code>
+            <language>en</language>                
+          </fo>
+          <fr>
+            <code>FR</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Delphine Docarmo</name>
+                <email>delphine.docarmo@ivoclarvivadent.fr</email>
+              </to>
+            </mail>         
+          </fr>
+          <de> <!-- 91.214.11.255 -->
+            <code>DE</code>
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Service Clinical</name>
+                <email>service.clinical@ivoclarvivadent.de</email>
+              </to>
+            </mail>                
+          </de>
+          <gi>
+            <code>GI</code>
+            <language>en</language>                
+          </gi>
+          <gr>
+            <code>GR</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Dorine Odink</name>
+                <email>dorine.odink@ivoclarvivadent.com</email>
+              </to>
+            </mail>
+          </gr>
+          <gg>
+            <code>GG</code>
+            <language>en</language>                
+          </gg>
+          <va>
+            <code>VA</code>
+            <language>en</language>                
+          </va>
+          <hu>
+            <code>HU</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </hu>
+          <is>
+            <code>IS</code>
+            <language>en</language>                
+          </is>
+          <ie>
+            <code>IE</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Dorine Odink</name>
+                <email>dorine.odink@ivoclarvivadent.com</email>
+              </to>
+            </mail>
+          </ie>
+          <im>
+            <code>IM</code>
+            <language>en</language>                
+          </im>
+          <je>
+            <code>JE</code>
+            <language>en</language>                
+          </je>
+          <lv>
+            <code>LV</code>
+            <language>en</language>                
+          </lv>
+          <li> <!-- 195.112.160.131 -->
+            <code>LI</code>
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Annelore Wehinger</name>
+                <email>annelore.wehinger@ivoclarvivadent.com</email>
+              </to>
+            </mail>         
+          </li>
+          <lt>
+            <code>LT</code>
+            <language>en</language>                
+          </lt>
+          <lu>
+            <code>LU</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Dorine Odink</name>
+                <email>dorine.odink@ivoclarvivadent.com</email>
+              </to>
+            </mail>
+          </lu>
+          <mk>
+            <code>MK</code>
+            <language>en</language>                
+          </mk>
+          <mt>
+            <code>MT</code>
+            <language>en</language>                
+          </mt>
+          <md>
+            <code>MD</code>
+            <language>en</language>                
+          </md>
+          <mc>
+            <code>MC</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Delphine Docarmo</name>
+                <email>delphine.docarmo@ivoclarvivadent.fr</email>
+              </to>
+            </mail>         
+          </mc>
+          <me>
+            <code>ME</code>
+            <language>en</language>                
+          </me>
+          <nl>
+            <code>NL</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Dorine Odink</name>
+                <email>dorine.odink@ivoclarvivadent.com</email>
+              </to>
+            </mail>
+          </nl>          
+          <pl>
+            <code>PL</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Katarzyna Lelinska</name>
+                <email>Katarzyna.Lelinska@ivoclarvivadent.com</email>
+              </to>
+            </mail>         
+          </pl>
+          <pt> <!-- 62.229.90.63 -->
+            <code>PT</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Soraya Munoz</name>
+                <email>soraya.munoz@ivoclarvivadent.es</email>
+              </to>
+            </mail>         
+          </pt>
+          <ro>
+            <code>RO</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </ro>
+          <sm>
+            <code>SM</code>
+            <language>en</language>                
+          </sm>
+          <rs>
+            <code>RS</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Danimir Jevremovic</name>
+                <email>danimir.jevremovic@ivoclarvivadent.com</email>
+              </to>
+            </mail>         
+          </rs>
+          <sk>
+            <code>SK</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>                
+          </sk>
+          <si>
+            <code>SI</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Patricia Pfitscher</name>
+                <email>patricia.pfitscher@ivoclarvivadent.com</email>
+              </to>
+            </mail>         
+          </si>
+          <es> <!-- 62.146.42.31 -->
+            <code>ES</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Soraya Munoz</name>
+                <email>soraya.munoz@ivoclarvivadent.es</email>
+              </to>
+            </mail>         
+          </es>
+          <sj>
+            <code>SJ</code>
+            <language>en</language>                
+          </sj>
+          <ch>
+            <code>CH</code>
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Annelore Wehinger</name>
+                <email>annelore.wehinger@ivoclarvivadent.com</email>
+              </to>
+            </mail>                    
+          </ch>
+          <ua>
+            <code>UA</code>
+            <language>en</language>                
+          </ua>
+          <gb>
+            <code>GB</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>David Ross</name>
+                <email>david.ross@ivoclarvivadent.co.uk</email>
+              </to>
+            </mail>         
+          </gb>
+          <uk>
+            <code>UK</code>
+            <language>en</language>
+            <mail>
+              <to>
+                <name>David Ross</name>
+                <email>david.ross@ivoclarvivadent.co.uk</email>
+              </to>
+            </mail>
+          </uk>
+        </countries>
+      </sweepstake>
+      <sweepstake>
+        <id>2</id>
+        <key>evoflow_lisbon</key>        
+        <title>Tetric EvoFlow, Lissbon</title>
+        <mode>live</mode>
+        <!-- period -->
+        <period>
+          <start>2010-03-30 06:00:00</start>
+          <end>2010-04-30 22:00:00</end>
+        </period>
+        <appear_counter>3</appear_counter>
+        <!-- pathes / files -->
+        <path>public/website/themes/ivoclarvivadent/sweepstakes/evoflow_lisbon/</path>
+        <files>
+          <sweepstake>sweepstake.php</sweepstake>
+          <form>form.php</form>
+        </files>
+        <!-- mail -->
+        <mail>
+          <from>
+            <name>Ivoclar Vivadent AG</name>
+            <email>info@ivoclarvivadent.com</email>
+          </from>
+          <to>
+            <name>Ivoclar Vivadent Norden</name>
+            <email>info@ivoclarvivadent.se</email>
+          </to>
+          <subject>Tetric EvoFlow Sweepstake</subject>
+          <title>Tetric EvoFlow Sweepstake, Lissbon</title>
+          <intro></intro>
+        </mail>
+        <!-- appearance config (portals, countries) -->
+        <portals>
+            <com>1</com>
+        </portals>                    
+        <countries>          
+          <fi> <!-- 62.173.204.243 -->
+              <code>FI</code>                
+          </fi>
+          <se> <!-- 62.84.194.47 -->
+              <code>SE</code>               
+          </se>
+          <no> <!-- 62.92.34.239 -->
+              <code>NO</code>                
+          </no>
+          <dk> <!-- 62.146.11.95 -->
+              <code>DK</code>                
+          </dk>
+        </countries>
+      </sweepstake>
+      <sweepstake>
+        <id>3</id>
+        <key>nceram_monza</key>        
+        <title>Tetric N-Ceram, F1 Monza</title>
+        <mode>live</mode>
+        <!-- period -->
+        <period>
+          <start>2010-03-30 09:00:00</start>
+          <end>2010-06-01 22:00:00</end>
+        </period>
+        <appear_counter>3</appear_counter>
+        <!-- pathes / files -->
+        <path>public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/</path>
+        <files>
+          <sweepstake>sweepstake.php</sweepstake>
+          <form>form.php</form>
+        </files>
+        <!-- mail -->
+        <mail>
+          <from>
+            <name>Ivoclar Vivadent AG</name>
+            <email>info@ivoclarvivadent.com</email>
+          </from>
+          <to>
+            <name>Karin Schlegel</name>
+            <email>karin.schlegel@ivoclarvivadent.com</email>
+          </to>
+          <subject>Tetric N Ceram Sweepstake</subject>
+          <title>Tetric N Ceram Sweepstake, F1 Monza</title>
+          <intro></intro>
+        </mail>
+        <!-- appearance config (portals, countries) -->
+        <portals>
+          <com>1</com>
+        </portals>      
+        <countries>
+          <ir> <!-- 78.111.12.255 -->
+            <code>IR</code>
+            <language>en</language>                
+          </ir>
+          <ke> <!-- 66.178.33.7 -->
+            <code>KE</code>
+            <language>en</language>                
+          </ke>
+          <ly> <!-- 82.205.182.31 -->
+            <code>LY</code>
+            <language>en</language>                
+          </ly>
+          <za> <!-- 62.184.88.63 -->
+            <code>ZA</code>
+            <language>en</language>                
+          </za>
+          <dz> <!-- 81.31.198.51 -->
+            <code>DZ</code>
+            <language>fr</language>                
+          </dz>
+          <ma> <!-- 67.215.1.7 -->
+            <code>MA</code>
+            <language>fr</language>                
+          </ma>
+          <tn> <!-- 207.65.70.47 -->
+            <code>TN</code>
+            <language>fr</language>                
+          </tn>          
+        </countries>
+      </sweepstake>
+    </sweepstakes>
+  </production>
+  
+  <!--
+  ***********************************************************
+  * config for developement evnironment                     *
+  ***********************************************************
+  -->
+  <staging extends="production">
+    <sweepstakes>    
+      <sweepstake>
+        <id>1</id>
+        <key>evoflow_maldives</key>        
+        <title>Tetric EvoFlow, Maldives</title>
+        <mode>live</mode>        
+        <!-- period -->
+        <period>
+          <start>2010-03-30 06:00:00</start>
+          <end>2010-06-30 22:00:00</end>
+        </period> 
+        <appear_counter>3</appear_counter>       
+        <!-- pathes / files -->
+        <path>public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/</path>
+        <files>
+          <sweepstake>sweepstake.php</sweepstake>
+          <form>form.php</form>
+        </files>        
+        <!-- mail -->
+        <mail>
+          <from>
+            <name>Ivoclar Vivadent AG</name>
+            <email>info@ivoclarvivadent.com</email>
+          </from>
+          <to>
             <name>Cornelius Hansjakob</name>
             <email>cha@massiveart.com</email>
           </to>
@@ -58,13 +550,7 @@
           </ad>
           <at> <!-- 80.77.22.159 -->
             <code>AT</code>
-            <language>de</language>
-            <mail>
-              <to>
-                <name>Conny AT</name>
-                <email>cha@massiveart.com</email>
-              </to>
-            </mail>                
+            <language>de</language>                
           </at>
           <by>
             <code>BY</code>
@@ -72,7 +558,7 @@
           </by>
           <be>
             <code>BE</code>
-            <language>en</language>                
+            <language>en</language>         
           </be>
           <ba>
             <code>BA</code>
@@ -80,7 +566,7 @@
           </ba>
           <bg>
             <code>BG</code>
-            <language>en</language>                
+            <language>en</language>
           </bg>
           <hr>
             <code>HR</code>
@@ -100,7 +586,7 @@
           </fo>
           <fr>
             <code>FR</code>
-            <language>en</language>                
+            <language>en</language>         
           </fr>
           <de> <!-- 91.214.11.255 -->
             <code>DE</code>
@@ -148,7 +634,7 @@
           </lv>
           <li> <!-- 195.112.160.131 -->
             <code>LI</code>
-            <language>de</language>                
+            <language>de</language>         
           </li>
           <lt>
             <code>LT</code>
@@ -172,7 +658,7 @@
           </md>
           <mc>
             <code>MC</code>
-            <language>en</language>                
+            <language>en</language>         
           </mc>
           <me>
             <code>ME</code>
@@ -180,15 +666,15 @@
           </me>
           <nl>
             <code>NL</code>
-            <language>en</language>                
+            <language>en</language>               
           </nl>          
           <pl>
             <code>PL</code>
-            <language>en</language>                
+            <language>en</language>         
           </pl>
           <pt> <!-- 62.229.90.63 -->
             <code>PT</code>
-            <language>en</language>                
+            <language>en</language>         
           </pt>
           <ro>
             <code>RO</code>
@@ -200,7 +686,7 @@
           </sm>
           <rs>
             <code>RS</code>
-            <language>en</language>                
+            <language>en</language>
           </rs>
           <sk>
             <code>SK</code>
@@ -208,11 +694,11 @@
           </sk>
           <si>
             <code>SI</code>
-            <language>en</language>                
+            <language>en</language>         
           </si>
           <es> <!-- 62.146.42.31 -->
             <code>ES</code>
-            <language>en</language>                
+            <language>en</language>         
           </es>
           <sj>
             <code>SJ</code>
@@ -220,7 +706,7 @@
           </sj>
           <ch>
             <code>CH</code>
-            <language>de</language>                           
+            <language>de</language>                    
           </ch>
           <ua>
             <code>UA</code>
@@ -228,11 +714,11 @@
           </ua>
           <gb>
             <code>GB</code>
-            <language>en</language>                
+            <language>en</language>         
           </gb>
           <uk>
             <code>UK</code>
-            <language>en</language>                
+            <language>en</language>
           </uk>
         </countries>
       </sweepstake>
@@ -256,7 +742,7 @@
         <!-- mail -->
         <mail>
           <from>
-            <name>Ivoclar Vivadent</name>
+            <name>Ivoclar Vivadent AG</name>
             <email>info@ivoclarvivadent.com</email>
           </from>
           <to>
@@ -306,7 +792,7 @@
         <!-- mail -->
         <mail>
           <from>
-            <name>Ivoclar Vivadent</name>
+            <name>Ivoclar Vivadent AG</name>
             <email>info@ivoclarvivadent.com</email>
           </from>
           <to>
@@ -352,16 +838,6 @@
           </tn>          
         </countries>
       </sweepstake>
-    </sweepstakes>
-  </production>
-  
-  <!--
-  ***********************************************************
-  * config for developement evnironment                     *
-  ***********************************************************
-  -->
-  <staging extends="production">
-    
+    </sweepstakes>  
   </staging>
 </configdata>
-

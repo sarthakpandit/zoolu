@@ -28,7 +28,7 @@
       <params>
         <host>mailer.at</host>
         <username>zoolu@mailer.at</username>
-        <password>mailer</password>
+        <password>zoolu</password>
       </params>
       <actions>
         <sendmail>
