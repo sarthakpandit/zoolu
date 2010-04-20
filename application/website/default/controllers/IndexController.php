@@ -75,6 +75,8 @@ class IndexController extends Zend_Controller_Action {
   private $blnCachingStart = false;
 
   private $blnSearch = false;
+  
+  private $blnCachingOutput = false;
    
   /**
    * @var integer
@@ -105,27 +107,29 @@ class IndexController extends Zend_Controller_Action {
    */
   public function postDispatch(){
 
-    /**
-     * Tidy is a binding for the Tidy HTML clean and repair utility which allows 
-     * you to not only clean and otherwise manipulate HTML documents, 
-     * but also traverse the document tree. 
-     */
-    $arrConfig = array(
-        'indent'        => TRUE,
-        'output-xhtml'  => TRUE,
-        'wrap'          => 200
-    );
-    
-    $objTidy = tidy_parse_string($this->getResponse()->getBody(), $arrConfig, 'UTF8');    
-    $objTidy->cleanRepair();
-    
-    $this->getResponse()->setBody($objTidy);
-        
+    if(function_exists('tidy_parse_string') && $this->blnCachingOutput == false){
+      /**
+       * Tidy is a binding for the Tidy HTML clean and repair utility which allows 
+       * you to not only clean and otherwise manipulate HTML documents, 
+       * but also traverse the document tree. 
+       */
+      $arrConfig = array(
+          'indent'        => TRUE,
+          'output-xhtml'  => TRUE,
+          'wrap'          => 200
+      );
+      
+      $objTidy = tidy_parse_string($this->getResponse()->getBody(), $arrConfig, 'UTF8');    
+      $objTidy->cleanRepair();
+      
+      $this->getResponse()->setBody($objTidy);
+    }
+     
     if(isset($this->objCache) && $this->objCache instanceof Zend_Cache_Frontend_Output){
       if($this->blnCachingStart === true){
         $response = $this->getResponse()->getBody();        
         $this->getResponse()->setBody(str_replace("<head>", "<head>
-  <!-- This is a ZOOLU cached page (".date('d.m.Y H:i:s').") -->", $objTidy));
+    <!-- This is a ZOOLU cached page (".date('d.m.Y H:i:s').") -->", $response));
         $this->getResponse()->outputBody();
 
         $arrTags = array();
@@ -133,10 +137,12 @@ class IndexController extends Zend_Controller_Action {
         if($this->objPage->getIsStartElement(false) == true)
           $arrTags[] = 'Start'.ucfirst($this->objPage->getType());
 
-        $arrTags[] = ucfirst($this->objPage->getType()).'Type'.$this->objPage->getTypeId();
+        $arrTags[] = ucfirst($this->objPage->getType()).'Type_'.$this->objPage->getTypeId();
+        $arrTags[] = ucfirst($this->objPage->getType()).'Id_'.$this->objPage->getPageId().'_'.$this->objPage->getLanguageId();
 
-        $this->core->logger->debug($arrTags);
+        $this->core->logger->debug(var_export($arrTags, true));
         $this->objCache->end($arrTags);
+        $this->core->logger->debug('... end caching!');
         exit();
       }
     }
@@ -155,7 +161,7 @@ class IndexController extends Zend_Controller_Action {
      * get domain
      */
     $strDomain = $_SERVER['SERVER_NAME'];
-
+    
     /**
      * get uri
      */
@@ -170,6 +176,18 @@ class IndexController extends Zend_Controller_Action {
     $this->intLanguageId = $this->core->intLanguageId;
     $this->strLanguageCode = $this->core->strLanguageCode;
     
+    $this->getModelFolders();
+    $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
+    if($this->core->blnIsDefaultLanguage === true){
+      $this->core->intLanguageId = $objTheme->idLanguages;
+      $this->core->strLanguageCode = strtolower($objTheme->languageCode);
+      $this->intLanguageId = $this->core->intLanguageId;
+      $this->strLanguageCode = $this->core->strLanguageCode;
+    }
+    $this->view->analyticsKey = $objTheme->analyticsKey;  
+    $this->view->analyticsDomain = $strDomain;
+    $this->view->mapsKey = $objTheme->mapsKey;
+    
     $this->view->languageId = $this->intLanguageId;
     $this->view->languageCode = $this->strLanguageCode;
     
@@ -183,10 +201,7 @@ class IndexController extends Zend_Controller_Action {
     }
     
     $this->view->translate = $this->translate;
-        
-    $this->getModelFolders();
-    $objTheme = $this->objModelFolders->getThemeByDomain($strDomain)->current();
-
+  
     /**
      * check if "q" param is in the url for the search
      */
@@ -254,7 +269,7 @@ class IndexController extends Zend_Controller_Action {
 
         $this->objPage = new Page();
         $this->objPage->setRootLevelId($objTheme->idRootLevels);
-        $this->objPage->setRootLevelTitle($objTheme->title);
+        $this->objPage->setRootLevelTitle(($this->core->blnIsDefaultLanguage === true ? $objTheme->defaultTitle : $objTheme->title));
         $this->objPage->setRootLevelGroupId($objTheme->idRootLevelGroups);        
         $this->objPage->setPageId($objUrlData->relationId);
         $this->objPage->setPageVersion($objUrlData->version);
@@ -298,8 +313,8 @@ class IndexController extends Zend_Controller_Action {
         /**
          * set values for replacers
          */
-        Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/startpage.css"></link>' : '<link rel="stylesheet" type="text/css" media="screen" href="/website/themes/'.$objTheme->path.'/css/content.css"></link>');
-        Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->event_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->core->webConfig->gmaps->key.'" type="text/javascript"></script>' : '');
+        Zend_Registry::set('TemplateCss', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->portal_startpage_templateId) ? '' : '');
+        Zend_Registry::set('TemplateJs', ($this->objPage->getTemplateId() == $this->core->sysConfig->page_types->page->headquarters_templateId) ? '<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key='.$this->view->mapsKey.'" type="text/javascript"></script>' : '');
 
         if($this->objPage->ParentPage() instanceof Page){
           $objNavigation->setPage($this->objPage->ParentPage());
@@ -350,6 +365,7 @@ class IndexController extends Zend_Controller_Action {
       }
     }else{
       $this->_helper->viewRenderer->setNoRender();
+      $this->blnCachingOutput = true;
       echo $this->objCache->load($strCacheId);
     }
   }

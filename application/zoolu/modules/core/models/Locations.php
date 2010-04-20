@@ -145,7 +145,7 @@ class Model_Locations {
      *  locations.type = ?
      */ 
     $objSelect->from('locations');
-    $objSelect->where('locations.country = (SELECT categoryCodes.idCategories FROM categoryCodes WHERE categoryCodes.code = \''.$strCountry.'\' AND categoryCodes.idLanguages = '.$this->intLanguageId.')');
+    $objSelect->where('locations.country = (SELECT categoryCodes.idCategories FROM categoryCodes INNER JOIN categories ON categories.id = categoryCodes.idCategories AND categories.idRootCategory = 268 WHERE categoryCodes.code = \''.$strCountry.'\' AND categoryCodes.idLanguages = '.$this->intLanguageId.')');
     if($intUnitId > 0){
       $objSelect->where('locations.idUnits = ?', $intUnitId); 
     }

@@ -211,6 +211,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
           $objUrl = $objUrlData->current();
           $this->objElement->setValue('/'.strtolower($objUrl->languageCode).'/'.$objUrl->url);
           $this->objElement->url = $objUrl->url;
+          $this->objElement->languageCode = $objUrl->languageCode;
 
           $this->objElement->blnIsStartElement = $this->objElement->Setup()->getIsStartElement(false);
           $this->objElement->intParentId = $this->objElement->Setup()->getParentId();

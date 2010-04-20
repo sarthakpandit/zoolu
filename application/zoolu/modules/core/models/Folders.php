@@ -338,9 +338,11 @@ class Model_Folders {
      *     themes.id = rootLevels.idThemes
      * WHERE rootLevelUrls.url = ?
      */
-    $objSelect->from('rootLevelUrls', array('id', 'idRootLevels'));
+    $objSelect->from('rootLevelUrls', array('id', 'idRootLevels', 'idLanguages', 'analyticsKey', 'mapsKey'));
     $objSelect->join('rootLevels', 'rootLevels.id = rootLevelUrls.idRootLevels', array('idRootLevelGroups'));
+    $objSelect->join('languages', 'languages.id = rootLevelUrls.idLanguages', array('languageCode'));    
     $objSelect->joinLeft('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id AND rootLevelTitles.idLanguages = '.$this->intLanguageId, array('title'));
+    $objSelect->joinLeft('rootLevelTitles', 'rootLevelTitles.idRootLevels = rootLevels.id AND rootLevelTitles.idLanguages = rootLevelUrls.idLanguages', array('defaultTitle' => 'title'));
     $objSelect->join('themes', 'themes.id = rootLevels.idThemes', array('path'));
     $objSelect->where('rootLevelUrls.url = ?', $strDomain);
 

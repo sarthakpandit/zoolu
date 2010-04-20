@@ -168,10 +168,10 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
       }
       
       //cache expiring
-      //TODO:FIXME
       if($this->Setup()->getField('url')){
         $strUrl = $this->Setup()->getField('url')->getValue();
-
+        $strUrlLanguageCode = $this->Setup()->getField('url')->languageCode;
+        
         $arrFrontendOptions = array(
           'lifetime' => null, // cache lifetime (in seconds), if set to null, the cache is valid forever.
           'automatic_serialization' => true
@@ -187,11 +187,16 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
                                         $arrFrontendOptions,
                                         $arrBackendOptions);
 
-        $strCacheId = 'global'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
+        $strCacheId = 'page_'.$this->Setup()->getRootLevelId().'_'.$strUrlLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
 
         $objCache->remove($strCacheId);
 
-        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartGlobal', 'GlobalType'.$this->core->sysConfig->global_types->product_overview->id));
+        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartGlobal', 
+                                                                           'GlobalType_'.$this->core->sysConfig->global_types->product_overview->id,
+                                                                           'GlobalType_'.$this->core->sysConfig->global_types->content_overview->id,
+                                                                           'GlobalType_'.$this->core->sysConfig->global_types->press_overview->id,
+                                                                           'GlobalType_'.$this->core->sysConfig->global_types->course_overview->id,
+                                                                           'GlobalId_'.$objGlobal->globalId.'_'.$this->setup->getLanguageId()));        
       }
 
       //global index      
