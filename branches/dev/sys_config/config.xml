@@ -592,6 +592,8 @@
         <portal_startpage_templateId>3</portal_startpage_templateId>
         <event_formId>DEFAULT_EVENT</event_formId>
         <event_templateId>7</event_templateId>
+        <headquarters_formId>DEFAULT_PAGE_1</headquarters_formId>
+        <headquarters_templateId>30</headquarters_templateId>
       </page>
       <link>
         <id>2</id>
@@ -824,11 +826,6 @@
       </youtube>
     </video_channels>
     
-    <!--  GOOGLE API KEY -->
-    <gmaps>
-      <key>ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRAVH-JYFCc6lusqHRR7lbnr44jyhQx2aaLzVrRaWiOX82wq9l4f4uANA</key>
-    </gmaps>
-        
     <!-- Plugins / Fields Javascript -->
     <pluginsJs>
       <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRAVH-JYFCc6lusqHRR7lbnr44jyhQx2aaLzVrRaWiOX82wq9l4f4uANA</gmaps>
@@ -847,11 +844,6 @@
       <priority>7</priority>     
       <firebug>true</firebug>
     </logger>
-    
-     <!--  GOOGLE API KEY -->
-    <gmaps>
-      <key>ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRyxZQUI3T-IMubCCclONMboMQeNRRvJHe_rnZB4d9yTlU197TaGarG4g</key>
-    </gmaps>
      
     <!-- Plugins / Fields Javascript -->
     <pluginsJs>
@@ -860,7 +852,7 @@
     
     <!-- CACHE -->
     <cache>
-      <page>false</page>
+      <page>true</page>
       <generic_form_structure>false</generic_form_structure>
     </cache>
   </staging>

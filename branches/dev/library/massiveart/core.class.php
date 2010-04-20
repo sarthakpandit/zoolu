@@ -91,7 +91,12 @@ class Core {
    * @var string
    */
   public $strLanguageCode;
-
+  
+  /**
+   * @var boolean
+   */
+  public $blnIsDefaultLanguage = false;
+  
   /**
    * Constructor
    */
@@ -167,6 +172,7 @@ class Core {
       }
       IP2Location_close($ip);*/
     }else{
+      $this->blnIsDefaultLanguage = true;
       $this->intLanguageId = $this->sysConfig->languages->default->id;
       $this->strLanguageCode = $this->sysConfig->languages->default->code;
     }    

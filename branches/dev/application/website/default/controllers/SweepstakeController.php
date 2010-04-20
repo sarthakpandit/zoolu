@@ -87,6 +87,11 @@ class SweepstakeController extends Zend_Controller_Action {
   
   private $arrFormFields = array();
   
+  protected $blnOnlySweepstake = false;
+  protected $intRootLevelId = 0;
+  protected $strLanguage = '';
+  protected $intSweepstakeCounter = 0;
+  
   /**
    * init index controller and get core obj
    */
@@ -114,129 +119,136 @@ class SweepstakeController extends Zend_Controller_Action {
    * @version 1.0
    */
   public function checkAction(){
-    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
-      $blnShowSweepstake = true;
-      
-      $intRootLevelId = $this->getRequest()->getParam('rootLevelId');
-      $strIPAddress = $this->getRequest()->getParam('ipaddress');
-      $strLanguage = $this->getRequest()->getParam('language');
-      $intSweepstakeCounter = $this->getRequest()->getParam('counter');
-      
-      $arrSweepstakes = array();
-      $arrSweepstakes = $this->sweepstakeConfig->sweepstakes->sweepstake->toArray();
-      
-      if(count($arrSweepstakes) > 0){
-        $strCountryShort = $this->getCountryShortByIP($strIPAddress);
-        $this->objSweepstakeSession->strCountryShort = $strCountryShort;
+    $blnShowSweepstake = true;
+    
+    $intRootLevelId = (($this->_hasParam('rootLevelId')) ? $this->getRequest()->getParam('rootLevelId') : $this->objSweepstakeSession->rootLevelId);
+    $strIPAddress = $this->getRequest()->getParam('ipaddress');
+    $strLanguage = $this->getRequest()->getParam('language');
+    $intSweepstakeCounter = (($this->_hasParam('counter')) ? $this->getRequest()->getParam('counter') : $this->objSweepstakeSession->sweepstakeCounter);
+        
+    $arrSweepstakes = array();
+    $arrSweepstakes = $this->sweepstakeConfig->sweepstakes->sweepstake->toArray();
+    
+    if(count($arrSweepstakes) > 0){
+      $strCountryShort = $this->getCountryShortByIP($strIPAddress);
+      $this->objSweepstakeSession->strCountryShort = $strCountryShort;
 
-        foreach($arrSweepstakes as $arrSweepstake){        
-          if(array_key_exists('countries', $arrSweepstake)){
-            foreach($arrSweepstake['countries'] as $key => $arrCountry){
-              if(strtoupper($arrSweepstake['countries'][$key]['code']) === strtoupper($strCountryShort)){                
-                $this->intSweepstakeId = $arrSweepstake['id'];
-                // write id to session
-                $this->objSweepstakeSession->intSweepstakeId = $this->intSweepstakeId;  
-                if(array_key_exists('language', $arrSweepstake['countries'][$key])){                  
-                  $this->strLanguageCode = $arrSweepstake['countries'][$key]['language'];  
-                }
-                if($strLanguage != ''){
-                  $this->strLanguageCode = $strLanguage;   
-                }            
-                $this->arrCurrSweepstake = $arrSweepstake;
-                $this->objSweepstakeSession->arrCurrSweepstake = $this->arrCurrSweepstake;
-                $this->objSweepstakeSession->strLanguageCode = $this->strLanguageCode;                              
-              }    
-            }  
+      foreach($arrSweepstakes as $arrSweepstake){        
+        if(array_key_exists('countries', $arrSweepstake)){
+          foreach($arrSweepstake['countries'] as $key => $arrCountry){
+            if(strtoupper($arrSweepstake['countries'][$key]['code']) === strtoupper($strCountryShort)){                
+              $this->intSweepstakeId = $arrSweepstake['id'];
+              // write id to session
+              $this->objSweepstakeSession->intSweepstakeId = $this->intSweepstakeId;  
+              if(array_key_exists('language', $arrSweepstake['countries'][$key])){                  
+                $this->strLanguageCode = $arrSweepstake['countries'][$key]['language'];  
+              }
+              if($strLanguage != ''){
+                $this->strLanguageCode = $strLanguage;   
+              }            
+              $this->arrCurrSweepstake = $arrSweepstake;
+              $this->objSweepstakeSession->arrCurrSweepstake = $this->arrCurrSweepstake;
+              $this->objSweepstakeSession->strLanguageCode = $this->strLanguageCode;                              
+            }    
+          }  
+        }
+      }
+      
+      if($this->intSweepstakeId > 0 && count($this->arrCurrSweepstake) > 0){          
+        $this->strBasePath = $this->arrCurrSweepstake['path'];
+        $this->strSweepstakeFile = $this->arrCurrSweepstake['files']['sweepstake'];
+        $this->strFormFile = $this->arrCurrSweepstake['files']['form'];
+        // write path and file to session
+        $this->objSweepstakeSession->strBasePath = $this->strBasePath;          
+        $this->objSweepstakeSession->strFormFile = $this->strFormFile;
+        
+        /**
+         * check if portals exists and if the sweepstake should appear in the current portal
+         */
+        if(array_key_exists('portals', $this->arrCurrSweepstake)){
+          $arrPortals = array();
+          $arrPortals = $this->arrCurrSweepstake['portals'];            
+          if(array_search($intRootLevelId, $arrPortals) === false){
+            $blnShowSweepstake = false;  
           }
         }
         
-        if($this->intSweepstakeId > 0 && count($this->arrCurrSweepstake) > 0){          
-          $this->strBasePath = $this->arrCurrSweepstake['path'];
-          $this->strSweepstakeFile = $this->arrCurrSweepstake['files']['sweepstake'];
-          $this->strFormFile = $this->arrCurrSweepstake['files']['form'];
-          // write path and file to session
-          $this->objSweepstakeSession->strBasePath = $this->strBasePath;          
-          $this->objSweepstakeSession->strFormFile = $this->strFormFile;
+        /**
+         * check if period exists and if the sweepstake should appear
+         */
+        if(array_key_exists('period', $this->arrCurrSweepstake)){
+          $arrPeriod = array();
+          $arrPeriod = $this->arrCurrSweepstake['period'];            
+          $intCurrTime = time();
           
-          /**
-           * check if portals exists and if the sweepstake should appear in the current portal
-           */
-          if(array_key_exists('portals', $this->arrCurrSweepstake)){
-            $arrPortals = array();
-            $arrPortals = $this->arrCurrSweepstake['portals'];            
-            if(array_search($intRootLevelId, $arrPortals) === false){
-              $blnShowSweepstake = false;  
-            }
+          $intStart = 0;
+          if(array_key_exists('start', $arrPeriod)){
+            $intStart = strtotime($arrPeriod['start']);  
+          }
+          $intEnd = 0;
+          if(array_key_exists('end', $arrPeriod)){
+            $intEnd = strtotime($arrPeriod['end']);  
           }
           
-          /**
-           * check if period exists and if the sweepstake should appear
-           */
-          if(array_key_exists('period', $this->arrCurrSweepstake)){
-            $arrPeriod = array();
-            $arrPeriod = $this->arrCurrSweepstake['period'];            
-            $intCurrTime = time();
-            
-            $intStart = 0;
-            if(array_key_exists('start', $arrPeriod)){
-              $intStart = strtotime($arrPeriod['start']);  
-            }
-            $intEnd = 0;
-            if(array_key_exists('end', $arrPeriod)){
-              $intEnd = strtotime($arrPeriod['end']);  
-            }
-            
-            if((($intStart > 0 && $intEnd > 0) && ($intCurrTime >= $intStart && $intCurrTime <= $intEnd)) || (($intStart > 0 && $intEnd == 0) && $intCurrTime >= $intStart) || (($intEnd > 0 && $intStart == 0) && $intCurrTime <= $intEnd)) {
-              // do nothing
-            }else{
-              $blnShowSweepstake = false;
-            }
+          if((($intStart > 0 && $intEnd > 0) && ($intCurrTime >= $intStart && $intCurrTime <= $intEnd)) || (($intStart > 0 && $intEnd == 0) && $intCurrTime >= $intStart) || (($intEnd > 0 && $intStart == 0) && $intCurrTime <= $intEnd)) {
+            // do nothing
+          }else{
+            $blnShowSweepstake = false;
           }
-          
-          /**
-           * check if mode is live/test
-           */
-          if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
-            if(array_key_exists('mode', $this->arrCurrSweepstake)){
-              if($this->arrCurrSweepstake['mode'] == 'test'){
-                $blnShowSweepstake = false; 
-              } 
-            }
-          }
-          
-          /**
-           * check appearance counter
-           */
-          if(array_key_exists('appear_counter', $this->arrCurrSweepstake)){
-            if($this->arrCurrSweepstake['appear_counter'] <= $intSweepstakeCounter){
+        }
+        
+        /**
+         * check if mode is live/test
+         */
+        if(!isset($_SESSION['sesTestMode']) || (isset($_SESSION['sesTestMode']) && $_SESSION['sesTestMode'] == false)){
+          if(array_key_exists('mode', $this->arrCurrSweepstake)){
+            if($this->arrCurrSweepstake['mode'] == 'test'){
               $blnShowSweepstake = false; 
             } 
           }
-          
-          /**
-           * set up translate obj for sweepstake
-           */
-          if(isset($this->strLanguageCode) && $this->strLanguageCode != ''){            
-            if(file_exists(GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo')){
-              $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo');
-            }
-            $this->view->assign('language', $this->strLanguageCode);
-             $this->view->assign('translate', $this->translate);  
-          }
-                    
-          $this->view->assign('basePath', $this->strBasePath);
-          $this->view->assign('file', $this->strSweepstakeFile);
-          $this->view->assign('hasAppearCounter', ((array_key_exists('appear_counter', $this->arrCurrSweepstake)) ? true : false));
-        }else{
-          $blnShowSweepstake = false;
         }
+        
+        /**
+         * check appearance counter
+         */
+        if(array_key_exists('appear_counter', $this->arrCurrSweepstake)){
+          if($this->arrCurrSweepstake['appear_counter'] <= $intSweepstakeCounter){
+            $blnShowSweepstake = false; 
+          } 
+        }
+        
+        /**
+         * set up translate obj for sweepstake
+         */
+        if(isset($this->strLanguageCode) && $this->strLanguageCode != ''){            
+          if(file_exists(GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo')){
+            $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/website/default/language/website-'.$this->strLanguageCode.'.mo');
+          }
+          $this->view->assign('language', $this->strLanguageCode);
+           $this->view->assign('translate', $this->translate);  
+        }
+        
+        
+                  
+        $this->view->assign('basePath', $this->strBasePath);
+        $this->view->assign('file', $this->strSweepstakeFile);
+        $this->view->assign('hasAppearCounter', ((array_key_exists('appear_counter', $this->arrCurrSweepstake)) ? true : false));
+        
+        if($this->objSweepstakeSession->onlySweepstake != null){
+          $this->blnOnlySweepstake = $this->objSweepstakeSession->onlySweepstake;
+        }
+        $this->view->assign('onlySweepstake', $this->blnOnlySweepstake);
+        $this->objSweepstakeSession->onlySweepstake = null;
       }else{
         $blnShowSweepstake = false;
       }
+    }else{
+      $blnShowSweepstake = false;
     }
     
     if(!$blnShowSweepstake){
-      $this->_helper->viewRenderer->setNoRender();  
+      $this->_helper->viewRenderer->setNoRender();
+      $this->objSweepstakeSession->onlySweepstake = null;  
     }
   }
   
@@ -280,6 +292,21 @@ class SweepstakeController extends Zend_Controller_Action {
         $this->view->assign('translate', $this->translate);  
       }
     }  
+  }
+  
+  /**
+   * maldivesAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function maldivesAction(){
+    $this->_helper->viewRenderer->setNoRender();
+    
+    $this->objSweepstakeSession->rootLevelId = 1;
+    $this->objSweepstakeSession->sweepstakeCounter = 0;
+    $this->objSweepstakeSession->onlySweepstake = true;
+     
+    $this->_forward('check', 'Sweepstake');
   }
   
   /**

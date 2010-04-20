@@ -178,7 +178,8 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
       //cache expiring
       if($this->Setup()->getField('url')){
         $strUrl = $this->Setup()->getField('url')->getValue();
-
+        $strUrlLanguageCode = $this->Setup()->getField('url')->languageCode;
+        
         $arrFrontendOptions = array(
           'lifetime' => null, // cache lifetime (in seconds), if set to null, the cache is valid forever.
           'automatic_serialization' => true
@@ -194,11 +195,11 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
                                         $arrFrontendOptions,
                                         $arrBackendOptions);
 
-        $strCacheId = 'page'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
+        $strCacheId = 'page_'.$this->Setup()->getRootLevelId().'_'.$strUrlLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
 
         $objCache->remove($strCacheId);
 
-        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartPage', 'PageType'.$this->core->sysConfig->page_types->overview->id));
+        $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartPage', 'PageType_'.$this->core->sysConfig->page_types->overview->id));
       }
       return $this->setup->getElementId();
     }catch (Exception $exc) {
