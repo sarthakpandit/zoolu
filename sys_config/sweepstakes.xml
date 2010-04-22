@@ -382,7 +382,7 @@
         <!-- period -->
         <period>
           <start>2010-03-30 06:00:00</start>
-          <end>2010-04-30 22:00:00</end>
+          <end>2010-05-31 22:00:00</end>
         </period>
         <appear_counter>3</appear_counter>
         <!-- pathes / files -->
@@ -538,187 +538,463 @@
         <countries>
           <ax>
             <code>AX</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                
           </ax>
           <al>
             <code>AL</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </al>
           <ad>
             <code>AD</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </ad>
           <at> <!-- 80.77.22.159 -->
             <code>AT</code>
-            <language>de</language>                
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </at>
           <by>
             <code>BY</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </by>
           <be>
             <code>BE</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </be>
           <ba>
             <code>BA</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                
           </ba>
           <bg>
             <code>BG</code>
             <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail> 
           </bg>
           <hr>
             <code>HR</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </hr>
           <cz>
             <code>CZ</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </cz>          
           <ee>
             <code>EE</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </ee>
           <fo>
             <code>FO</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </fo>
           <fr>
             <code>FR</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </fr>
           <de> <!-- 91.214.11.255 -->
             <code>DE</code>
-            <language>de</language>                
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </de>
           <gi>
             <code>GI</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </gi>
           <gr>
             <code>GR</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </gr>
           <gg>
             <code>GG</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </gg>
           <va>
             <code>VA</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </va>
           <hu>
             <code>HU</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </hu>
           <is>
             <code>IS</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </is>
           <ie>
             <code>IE</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </ie>
           <im>
             <code>IM</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </im>
           <je>
             <code>JE</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </je>
           <lv>
             <code>LV</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </lv>
           <li> <!-- 195.112.160.131 -->
             <code>LI</code>
-            <language>de</language>         
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </li>
           <lt>
             <code>LT</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </lt>
           <lu>
             <code>LU</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </lu>
           <mk>
             <code>MK</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </mk>
           <mt>
             <code>MT</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </mt>
           <md>
             <code>MD</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </md>
           <mc>
             <code>MC</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </mc>
           <me>
             <code>ME</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </me>
           <nl>
             <code>NL</code>
-            <language>en</language>               
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                
           </nl>          
           <pl>
             <code>PL</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </pl>
           <pt> <!-- 62.229.90.63 -->
             <code>PT</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </pt>
           <ro>
             <code>RO</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </ro>
           <sm>
             <code>SM</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </sm>
           <rs>
             <code>RS</code>
             <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail> 
           </rs>
           <sk>
             <code>SK</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </sk>
           <si>
             <code>SI</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </si>
           <es> <!-- 62.146.42.31 -->
             <code>ES</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </es>
           <sj>
             <code>SJ</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </sj>
           <ch>
             <code>CH</code>
-            <language>de</language>                    
+            <language>de</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                     
           </ch>
           <ua>
             <code>UA</code>
-            <language>en</language>                
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>                 
           </ua>
           <gb>
             <code>GB</code>
-            <language>en</language>         
+            <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail>          
           </gb>
           <uk>
             <code>UK</code>
             <language>en</language>
+            <mail>
+              <to>
+                <name>Cornelius Hansjakob</name>
+                <email>cha@massiveart.com</email>
+              </to>
+            </mail> 
           </uk>
         </countries>
       </sweepstake>

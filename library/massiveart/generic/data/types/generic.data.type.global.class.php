@@ -194,8 +194,9 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
         $objCache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('StartGlobal', 
                                                                            'GlobalType_'.$this->core->sysConfig->global_types->product_overview->id,
                                                                            'GlobalType_'.$this->core->sysConfig->global_types->content_overview->id,
-                                                                           'GlobalType_'.$this->core->sysConfig->global_types->press_overview->id,
+                                                                           'GlobalType_'.$this->core->sysConfig->global_types->press_overview->id,        
                                                                            'GlobalType_'.$this->core->sysConfig->global_types->course_overview->id,
+                                                                           'GlobalType_'.$this->core->sysConfig->global_types->event_overview->id,
                                                                            'GlobalId_'.$objGlobal->globalId.'_'.$this->setup->getLanguageId()));        
       }
 

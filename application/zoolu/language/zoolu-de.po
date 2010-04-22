@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-16 16:12+0100\n"
+"POT-Creation-Date: 2010-04-20 17:52+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
 "Language-Team: \n"
@@ -167,6 +167,10 @@ msgstr "Neue Pressemitteilung"
 #: application/zoolu/language/addon-language-keys.php:70
 msgid "New_Course"
 msgstr "Neuer Kurs"
+
+#: application/zoolu/language/addon-language-keys.php:71
+msgid "New_Event"
+msgstr "Neue Veranstaltung"
 
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:13
 #: application/zoolu/modules/users/views/scripts/pagination.phtml:22

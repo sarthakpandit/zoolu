@@ -24,50 +24,25 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    application.zoolu.language
+ * @package    library.massiveart.command
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
-  $core = Zend_Registry::get('Core');
+/**
+ * ClientHelperInterface
+ *
+ *
+ * Version history (please keep backward compatible):
+ * 1.0, 2010-04-22: Thomas Schedler
+ *
+ * @author Thomas Schedler <tsh@massiveart.com>
+ * @version 1.0
+ * @package massiveart.command
+ * @subpackage ClientHelperInterface
+ */
 
-  /**
-   * top navigation
-   */
-  $core->translate->_('portals');
-  $core->translate->_('media');
-  $core->translate->_('global');
-  $core->translate->_('user_administration');
-  $core->translate->_('settings');
-
-  /**
-   * user list
-   */
-  $core->translate->_('name');
-  $core->translate->_('fname');
-  $core->translate->_('sname');
-  $core->translate->_('editor');
-  $core->translate->_('changed');
-
-  /**
-   * group list
-   */
-  $core->translate->_('title');
-
-  /**
-   * resources list
-   */
-  $core->translate->_('key');
+interface ClientHelperInterface {
   
-  /**
-   * navigation mehtods
-   */
-  $core->translate->_('New_Content');
-  $core->translate->_('New_Product');
-  $core->translate->_('New_Product_Link');
-  $core->translate->_('New_Press');
-  $core->translate->_('New_Course');
-  $core->translate->_('New_Event');
-  
-?>
+}

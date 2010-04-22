@@ -111,7 +111,7 @@ function get_meta_keywords(){
     foreach($objPageTags as $objTag){
       $strKeywords .= htmlentities($objTag->title, ENT_COMPAT, getCoreObject()->sysConfig->encoding->default).', ';
     }
-    $strHtmlOutput .= trim($strKeywords, ', ').'"></meta>';
+    $strHtmlOutput .= trim($strKeywords, ', ').'"/>';
   }
   echo $strHtmlOutput;
 }
@@ -124,7 +124,7 @@ function get_meta_keywords(){
 function get_meta_description(){
   $strHtmlOutput = '';
   if(getPageObject()->getFieldValue('shortdescription') != ''){
-    $strHtmlOutput .= '<meta name="description" content="'.htmlentities(getPageObject()->getFieldValue('shortdescription'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default).'"></meta>';
+    $strHtmlOutput .= '<meta name="description" content="'.htmlentities(getPageObject()->getFieldValue('shortdescription'), ENT_COMPAT, getCoreObject()->sysConfig->encoding->default).'"/>';
   }
   echo $strHtmlOutput;
 }
@@ -950,7 +950,7 @@ function get_internal_links($strContainerCss = 'internalLinks', $strItemCss = 'i
     $strHtmlOutput .= '<div class="'.$strContainerCss.'">';
     foreach($objPage->getField('internal_links')->objItemInternalLinks as $objPageInternalLink){
       if($objPage->ParentPage() instanceof Page && 
-         ($objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->product_tree->id || $objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->press_area->id || $objPage->ParentPage()->getTypeId() == $this->core->sysConfig->page_types->courses->id)){
+         ($objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->product_tree->id || $objPage->ParentPage()->getTypeId() == $core->sysConfig->page_types->press_area->id || $objPage->ParentPage()->getTypeId() == $this->core->sysConfig->page_types->courses->id || $objPage->ParentPage()->getTypeId() == $this->core->sysConfig->page_types->events->id)){
         $strUrl = $objPage->ParentPage()->getFieldValue('url').$objPageInternalLink->url;  
       }else{
         $strUrl = '/'.strtolower($objPageInternalLink->languageCode).'/'.$objPageInternalLink->url;  
@@ -1308,6 +1308,15 @@ function get_course_detail(){
  */
 function get_similar_courses(){
   echo getPageHelperObject()->getSimilarCourses();
+}
+
+/**
+ * get_event_overview
+ * @return string $strHtmlOutput
+ * @author Thomas Schedler <tsh@massiveart.com> 
+ */
+function get_event_overview(){
+  echo getPageHelperObject()->getEventOverview();
 }
 
 /**

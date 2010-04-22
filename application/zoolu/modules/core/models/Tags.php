@@ -194,6 +194,7 @@ class Model_Tags {
    * @version 1.0
    */
   public function loadTypeTags($strTagType, $strElementId, $intVersion){
+    $this->core->logger->debug('core->models->Tags->loadTypeTags('.$strTagType.', '.$strElementId.', '.$intVersion.')');
 
     $objSelect = $this->getTagTypeTable($strTagType)->select();
     $objSelect->setIntegrityCheck(false);

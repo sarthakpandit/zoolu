@@ -218,7 +218,7 @@ class Model_Urls {
     $objSelect->where('urls.idUrlTypes = ?', $this->core->sysConfig->url_types->page)
               ->where('urls.idLanguages = ?', $this->intLanguageId)
               ->where('folders.idRootLevels = ?', $intRootLevelId)
-              ->where('pageProperties.idPageTypes IN ('.$this->core->sysConfig->page_types->product_tree->id.', '.$this->core->sysConfig->page_types->press_area->id.', '.$this->core->sysConfig->page_types->courses->id.')');
+              ->where('pageProperties.idPageTypes IN ('.$this->core->sysConfig->page_types->product_tree->id.', '.$this->core->sysConfig->page_types->press_area->id.', '.$this->core->sysConfig->page_types->courses->id.', '.$this->core->sysConfig->page_types->events->id.')');
               
     return $this->objUrlTable->fetchAll($objSelect);
   }

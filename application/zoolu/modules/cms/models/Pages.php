@@ -1431,7 +1431,7 @@ class Model_Pages {
 
     $objSelect = $this->getPageContactsTable()->select();
     $objSelect->from($this->objPageContactsTable, array('idContacts'));
-    $objSelect->join('pages', 'pages.pageId = pageContacts.pageId AND pages.version = pageContacts.version', array());
+    $objSelect->join('pages', 'pages.pageId = pageContacts.pageId AND pages.version = pageContacts.version AND pageContacts.idLanguages = '.$this->intLanguageId, array());
     $objSelect->where('pages.id = ?', $intElementId)
               ->where('idFields = ?', $intFieldId);
 
@@ -1465,6 +1465,7 @@ class Model_Pages {
 
       $strWhere = $this->objPageContactsTable->getAdapter()->quoteInto('pageId = ?', $objPage->pageId);
       $strWhere .= 'AND '.$this->objPageContactsTable->getAdapter()->quoteInto('version = ?', $objPage->version);
+      $strWhere .= 'AND '.$this->objPageContactsTable->getAdapter()->quoteInto('idLanguages = ?', $this->intLanguageId);
       $this->objPageContactsTable->delete($strWhere);
 
       $strContactIds = trim($strContactIds, '[]');
@@ -1475,6 +1476,7 @@ class Model_Pages {
       foreach($arrContactIds as $intContactId){
         $arrData = array('pageId'       => $objPage->pageId,
                          'version'      => $objPage->version,
+                         'idLanguages'  => $this->intLanguageId,
                          'idContacts'   => $intContactId,
                          'idFields'     => $intFieldId,
                          'creator'      => $intUserId);

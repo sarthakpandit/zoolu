@@ -27,6 +27,8 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'Core'                      => '/library/massiveart/core.class.php',
     'AuthControllerAction'      => '/library/massiveart/controllers/auth.controller.action.class.php',
     'AjaxControllerAction'      => '/library/massiveart/controllers/ajax.controller.action.class.php',
+    'ClientHelper'              => '/library/massiveart/client/client.helper.class.php',
+     'ClientHelperInterface'    => '/library/massiveart/client/client.helper.interface.php',
     'HtmlOutput'                => '/library/massiveart/utilities/htmlOutput.class.php',
     'Crypt'                     => '/library/massiveart/utilities/crypt.class.php',
     'FormHandler'               => '/library/massiveart/generic/forms/form.handler.class.php',

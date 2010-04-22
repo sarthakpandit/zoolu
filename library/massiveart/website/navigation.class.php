@@ -171,7 +171,7 @@ class Navigation {
             $objTree->setOrder($objNavigationItem->folderOrder);
             $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
-	          $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id);
+	          $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
             if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
               $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);              
             }
@@ -196,7 +196,7 @@ class Navigation {
               $objTree->setOrder($objNavigationItem->folderOrder);
               $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
-	        	  $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id);              
+	        	  $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);              
               if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
                 $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);
               }
@@ -282,7 +282,7 @@ class Navigation {
             $objTree->setOrder($objNavigationItem->folderOrder);            
             $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
-            $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id);
+            $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
             if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
               $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);              
             }
@@ -309,7 +309,7 @@ class Navigation {
               $objTree->setOrder($objNavigationItem->folderOrder);
               $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
 
-              $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id);              
+              $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);              
               if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
                 $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);
               }
@@ -369,7 +369,7 @@ class Navigation {
                                   'LabelId'     => $this->objPage->getFieldValue('entry_label'),
                                   'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'));
         
-        $arrPageTypeRootLevelGroupIds = array($this->core->sysConfig->page_types->product_tree->id => $this->core->sysConfig->root_level_groups->product, $this->core->sysConfig->page_types->press_area->id => $this->core->sysConfig->root_level_groups->press, $this->core->sysConfig->page_types->courses->id => $this->core->sysConfig->root_level_groups->course);
+        $arrPageTypeRootLevelGroupIds = array($this->core->sysConfig->page_types->product_tree->id => $this->core->sysConfig->root_level_groups->product, $this->core->sysConfig->page_types->press_area->id => $this->core->sysConfig->root_level_groups->press, $this->core->sysConfig->page_types->courses->id => $this->core->sysConfig->root_level_groups->course, $this->core->sysConfig->page_types->events->id => $this->core->sysConfig->root_level_groups->event);
         $objNavigationData = $this->getModelFolders()->loadWebsiteGlobalTree($intParentId, $arrFilterOptions, $arrPageTypeRootLevelGroupIds[$intPageTypeId]);
         
         if(count($objNavigationData) > 0){

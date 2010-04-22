@@ -211,6 +211,9 @@ class Model_Templates {
           case $this->core->sysConfig->page_types->courses->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->courses);
             break;
+          case $this->core->sysConfig->page_types->events->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->events);
+            break;
         }
         break;
       case $this->core->sysConfig->form->types->global:
@@ -239,6 +242,12 @@ class Model_Templates {
             break;          
           case $this->core->sysConfig->global_types->course_overview->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->course_overview);
+            break;
+          case $this->core->sysConfig->global_types->event->id:          
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->event);
+            break;          
+          case $this->core->sysConfig->global_types->event_overview->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->event_overview);
             break;
         }
         break;

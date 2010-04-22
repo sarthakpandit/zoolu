@@ -133,9 +133,9 @@ class PageHelper {
                        <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_contactitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
                        <div class="oldcontactitemicon">';
       if($row->filename != ''){
-        $strOutput .= '<img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="Contact'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
+        $strOutput .= '<img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->filepath).$row->filename.'?v='.$row->fileversion.'" id="Contact'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
       }
-      $strOutput .= '</div>
+      $strOutput .= '  </div>
                        <div class="olcontactitemtitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                        <div class="clear"></div>
                      </div>';
