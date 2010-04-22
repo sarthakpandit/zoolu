@@ -300,10 +300,10 @@ class Cms_OverlayController extends AuthControllerAction {
   protected function loadRootContactsAndUnits(){
     $this->core->logger->debug('cms->controllers->OverlayController->loadRootContactsAndUnits()');
 
-    $this->intRootLevelId = 0; //Root id = 0
+    $this->intRootLevelId = 5; 
 
     $this->getModelContacts();
-    $objRootUnits = $this->objModelContacts->loadNavigation($this->intRootLevelId, true);
+    $objRootUnits = $this->objModelContacts->loadNavigation($this->intRootLevelId, null, true);
     $objRootContacts = $this->objModelContacts->loadContactsByUnitId($this->intRootLevelId);
 
     $this->view->assign('navElements', $objRootUnits);

@@ -99,6 +99,13 @@
       <db>UTF8</db>
     </encoding>
     
+    <!-- Helpers -->
+    <helpers>
+      <client>
+        <dispatcher>enabled</dispatcher> <!-- enabled/disabled -->
+      </client>
+    </helpers>
+    
     <!-- GENERIC -->
     <generic>
       <!-- table: actions -->
@@ -151,6 +158,10 @@
         <locations>
           <default>DEFAULT_LOCATION</default>
         </locations>
+        <event>
+          <default>DEFAULT_EVENT</default>
+          <overview>DEFAULT_EVENT_OVERVIEW</overview>
+        </event>
       </ids>
       <!-- GENERIC FORM TYPES -->
       <!-- table: genericFormTypes -->
@@ -570,6 +581,8 @@
       <product>9</product>
       <press>10</press>
       <course>11</course>
+      <location>12</location>
+      <event>13</event>
     </root_level_groups>
     
     <!-- FOLDER TYPES -->
@@ -640,6 +653,11 @@
         <default_formId>DEFAULT_COURSES</default_formId>        
         <default_templateId>29</default_templateId>
       </courses>
+      <events>
+        <id>11</id>
+        <default_formId>DEFAULT_EVENTS</default_formId>        
+        <default_templateId>33</default_templateId>
+      </events>
     </page_types>
     
     <!-- GLOBAL TYPES -->
@@ -688,6 +706,16 @@
         <default_formId>DEFAULT_COURSE_OVERVIEW</default_formId>
         <default_templateId>21</default_templateId>
       </course_overview>
+      <event>
+        <id>10</id>
+        <default_formId>DEFAULT_EVENT</default_formId>
+        <default_templateId>31</default_templateId>
+      </event>
+      <event_overview>
+        <id>11</id>
+        <default_formId>DEFAULT_EVENT_OVERVIEW</default_formId>
+        <default_templateId>32</default_templateId>
+      </event_overview>
     </global_types>
     
     <!-- REGION TYPES -->
@@ -724,6 +752,9 @@
       <course>14</course>
       <course_overview>15</course_overview>
       <courses>16</courses>
+      <event>17</event>
+      <event_overview>18</event_overview>
+      <events>19</events>
     </types>
 
     <!-- URL TYPES -->
@@ -838,6 +869,14 @@
   ***********************************************************
   -->
   <staging extends="production">
+  
+    <!-- Helpers -->
+    <helpers>
+      <client>
+        <dispatcher>disabled</dispatcher> <!-- enabled/disabled -->
+      </client>
+    </helpers>
+    
     <!-- LOGGER / DEBUGGING -->
     <show_errors>true</show_errors>
     <logger>
@@ -852,7 +891,7 @@
     
     <!-- CACHE -->
     <cache>
-      <page>true</page>
+      <page>false</page>
       <generic_form_structure>false</generic_form_structure>
     </cache>
   </staging>

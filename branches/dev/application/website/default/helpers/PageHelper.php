@@ -239,6 +239,15 @@ class PageHelper {
   public function getSimilarCourses(){
     //TODO default product overview
   }  
+  
+  /**
+   * getEventOverview
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getEventOverview(){
+    //TODO default product overview
+  } 
     
   /**
    * getSubPagesOverview

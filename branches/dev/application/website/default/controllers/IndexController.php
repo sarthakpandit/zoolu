@@ -99,6 +99,17 @@ class IndexController extends Zend_Controller_Action {
   public function init(){
     $this->core = Zend_Registry::get('Core');
   }
+  
+  /**
+   * preDispatch
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function preDispatch(){
+    // trigger client specific dispatch helper
+    if($this->core->sysConfig->helpers->client->dispatcher === 'enabled') ClientHelper::get('Dispatcher')->preDispatch($this);
+    parent::preDispatch();
+  }
 
   /**
    * postDispatch
@@ -106,7 +117,9 @@ class IndexController extends Zend_Controller_Action {
    * @version 1.0
    */
   public function postDispatch(){
-
+    // trigger client specific dispatch helper
+    if($this->core->sysConfig->helpers->client->dispatcher === 'enabled') ClientHelper::get('Dispatcher')->postDispatch($this);
+    
     if(function_exists('tidy_parse_string') && $this->blnCachingOutput == false){
       /**
        * Tidy is a binding for the Tidy HTML clean and repair utility which allows 
@@ -119,7 +132,7 @@ class IndexController extends Zend_Controller_Action {
           'wrap'          => 200
       );
       
-      $objTidy = tidy_parse_string($this->getResponse()->getBody(), $arrConfig, 'UTF8');    
+      $objTidy = tidy_parse_string($this->getResponse()->getBody(), $arrConfig, $this->core->sysConfig->encoding->db);    
       $objTidy->cleanRepair();
       
       $this->getResponse()->setBody($objTidy);
@@ -201,14 +214,8 @@ class IndexController extends Zend_Controller_Action {
     }
     
     $this->view->translate = $this->translate;
-  
-    /**
-     * check if "q" param is in the url for the search
-     */
-    if(strpos($strUrl, '?q=') !== false){
-      $this->blnSearch = true;
-      $strUrl = '';
-    }
+      
+    $strCacheId = 'page_'.$objTheme->idRootLevels.'_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
     
     $arrFrontendOptions = array(
       'lifetime' => 604800, // cache lifetime (in seconds), if set to null, the cache is valid forever.
@@ -225,8 +232,14 @@ class IndexController extends Zend_Controller_Action {
                                           $arrFrontendOptions,
                                           $arrBackendOptions);
 
-    $strCacheId = 'page_'.$objTheme->idRootLevels.'_'.$this->strLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
-
+    /**
+     * check if "q" param is in the url for the search
+     */
+    if(strpos($strUrl, '?q=') !== false){
+      $this->blnSearch = true;
+      $strUrl = '';
+    }
+    
     if($this->core->sysConfig->cache->page == 'false' ||
        ($this->core->sysConfig->cache->page == 'true' && $this->objCache->test($strCacheId) == false) ||
        ($this->core->sysConfig->cache->page == 'true' && isset($_SESSION['sesTestMode']))){
@@ -364,9 +377,9 @@ class IndexController extends Zend_Controller_Action {
         $this->renderScript('error-404.php');
       }
     }else{
-      $this->_helper->viewRenderer->setNoRender();
       $this->blnCachingOutput = true;
-      echo $this->objCache->load($strCacheId);
+      $this->getResponse()->setBody($this->objCache->load($strCacheId));
+      $this->_helper->viewRenderer->setNoRender();
     }
   }
 
@@ -379,10 +392,12 @@ class IndexController extends Zend_Controller_Action {
   	$request = $this->getRequest();
   	$strFontSize = $request->getParam('fontsize');
 
-  	$_SESSION['Website']['fontSize'] = $strFontSize;
+    $objWebSession = new Zend_Session_Namespace('Website');
+    $objWebSession->fontSize = $strFontSize;
+    
   	$this->_helper->viewRenderer->setNoRender();
   }
-
+  
   /**
    * getModelPages
    * @return Model_Pages

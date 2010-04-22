@@ -76,38 +76,45 @@ class Model_Contacts {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadNavigation($intRootLevelId, $intItemId, $blnOnlyUnits = false){
+  public function loadNavigation($intRootLevelId, $intItemId = null, $blnOnlyUnits = false){
     $this->core->logger->debug('core->models->Contacts->loadNavigation('.$intRootLevelId.','.$intItemId.')');	
-  	
+    
+  	$objSelect1 = $this->getContactsTable()->select();
+    $objSelect1->setIntegrityCheck(false);
+    
+    $objSelect1->from('units', array('id', 'title' => 'unitTitles.title', 'type' => new Zend_Db_Expr("'unit'")))
+              ->join('genericForms', 'genericForms.id = units.idGenericForms', array('genericFormId', 'version'))
+              ->joinLeft('unitTitles', 'unitTitles.idUnits = units.id AND unitTitles.idLanguages = '.$this->intLanguageId, array())
+              ->where('units.idRootLevels = ?', $intRootLevelId);
+    if($intItemId !== null){
+      $objSelect1->where('units.idParentUnit = ?', $intItemId);
+    }      
+    
+      
     if($blnOnlyUnits == false){
-      $sqlStmt = $this->core->dbh->query("SELECT id, title, genericFormId, version, type
-                                        FROM (SELECT units.id, unitTitles.title, genericForms.genericFormId, genericForms.version, 'unit' AS type
-                                                FROM units
-                                              LEFT JOIN unitTitles ON 
-                                                unitTitles.idUnits = units.id AND 
-                                                unitTitles.idLanguages = ?  
-                                              INNER JOIN genericForms ON genericForms.id = units.idGenericForms
-                                              WHERE units.idRootLevels = ? AND units.idParentUnit = ?
-                                              UNION
-                                              SELECT contacts.id, CONCAT(contacts.fname, ' ', contacts.sname) AS title, genericForms.genericFormId, genericForms.version, 'contact'  AS type
-                                                FROM contacts
-                                              INNER JOIN units ON units.id = contacts.idUnits AND units.idRootLevels = ? 
-                                              INNER JOIN genericForms ON genericForms.id = contacts.idGenericForms
-                                              WHERE contacts.idUnits = ?) 
-                                        AS tbl ORDER BY title", array($this->intLanguageId, $intRootLevelId, $intItemId, $intRootLevelId, $intItemId));  
+      $objSelect2 = $this->getContactsTable()->select();
+      $objSelect2->setIntegrityCheck(false);
+      
+      $objSelect2->from('contacts', array('id', 'title' => new Zend_Db_Expr("CONCAT(contacts.fname, ' ', contacts.sname)"), 'type' => new Zend_Db_Expr("'contact'")))
+                 ->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'))
+                 ->join('units', 'units.id = contacts.idUnits AND units.idRootLevels = '.$intRootLevelId, array())
+                 ->joinLeft('unitTitles', 'unitTitles.idUnits = units.id AND unitTitles.idLanguages = '.$this->intLanguageId, array());
+      if($intItemId !== null){
+        $objSelect2->where('contacts.idUnits = ?', $intItemId);
+      }
+
+      $objSelect = $this->objContactsTable->select()
+                               ->distinct()
+                               ->union(array($objSelect2, $objSelect1));
+        
     }else{
-      $sqlStmt = $this->core->dbh->query("SELECT units.id, unitTitles.title, genericForms.genericFormId, genericForms.version, 'unit' AS type
-                                                FROM units
-                                              LEFT JOIN unitTitles ON 
-                                                unitTitles.idUnits = units.id AND 
-                                                unitTitles.idLanguages = ?  
-                                              INNER JOIN genericForms ON genericForms.id = units.idGenericForms
-                                              WHERE units.idRootLevels = ? AND units.idParentUnit = ? ORDER BY title", array($this->intLanguageId, $intRootLevelId, $intItemId)); 
+      $objSelect = $objSelect1;
     }
     
-    return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+    $objSelect->order('title');      
+    return $this->objContactsTable->fetchAll($objSelect);    
   }
-    
+      
   /**
    * loadContactsByUnitId
    * @param integer $intUnitId
@@ -117,13 +124,16 @@ class Model_Contacts {
   public function loadContactsByUnitId($intUnitId){
     $this->core->logger->debug('core->models->Contacts->loadContactsByUnitId('.$intUnitId.')'); 
 
+    $objSelect = $this->getContactsTable()->select();   
+    $objSelect->setIntegrityCheck(false);
+      
     //FIXME Subselect of `contact-DEFAULT_CONTACT-1-InstanceFiles` for contactPics should be changed!
-    $sqlStmt = $this->core->dbh->query("SELECT contacts.id, CONCAT(contacts.fname, ' ', contacts.sname) AS title, genericForms.genericFormId, genericForms.version, 'contact'  AS type, (SELECT files.filename FROM files INNER JOIN `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics ON files.id = contactPics.idFiles WHERE contactPics.idContacts = contacts.id LIMIT 1) AS filename
-                                                FROM contacts  
-                                              INNER JOIN genericForms ON genericForms.id = contacts.idGenericForms
-                                              WHERE contacts.idUnits = ?", array($intUnitId)); 
-    
-    return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
+    $objSelect->from('contacts', array('id', 'title AS acTitle', 'CONCAT(fname, \' \', sname) AS title', 'position', 'phone', 'mobile', 'fax', 'email', 'website', 'street', 'city', 'state', 'zip', 'country'));
+    $objSelect->joinLeft(array('pics' => 'files'), 'pics.id = (SELECT contactPics.idFiles FROM `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics WHERE contactPics.idContacts = contacts.id AND contactPics.idFields = 84 LIMIT 1)', array('filename',  'filepath' => 'path', 'fileversion' => 'version'));
+    $objSelect->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'));
+    $objSelect->where('contacts.idUnits = ?', $intUnitId);  
+
+    return $this->objContactsTable->fetchAll($objSelect);
   }
   
   /**

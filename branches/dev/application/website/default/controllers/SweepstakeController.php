@@ -258,10 +258,14 @@ class SweepstakeController extends Zend_Controller_Action {
    * @version 1.0
    */
   public function formAction(){
-    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {      
+    if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
             
       $this->view->assign('basePath', $this->objSweepstakeSession->strBasePath);
       $this->view->assign('form', $this->objSweepstakeSession->strFormFile);
+      
+      $this->view->assign('intPromoMonza', $this->getRequest()->getParam('promoMonza'));
+      $this->view->assign('strSloganLisbon', $this->getRequest()->getParam('sloganLisbon'));
+      
       /**
        * set up translate obj for sweepstake
        */
@@ -289,7 +293,7 @@ class SweepstakeController extends Zend_Controller_Action {
           $this->objSweepstakeSession->arrFormFields = $this->arrFormFields;
         }
         $this->view->assign('language', $this->objSweepstakeSession->strLanguageCode);
-        $this->view->assign('translate', $this->translate);  
+        $this->view->assign('translate', $this->translate);
       }
     }  
   }
@@ -317,6 +321,7 @@ class SweepstakeController extends Zend_Controller_Action {
   public function datareceiverAction(){
     if($this->getRequest()->isPost()){
       $this->arrFormData = $this->getRequest()->getPost();
+      unset($this->arrFormData['_']); // safari fix
 
       if(count($this->arrFormData) > 0){
         /**
@@ -395,11 +400,21 @@ class SweepstakeController extends Zend_Controller_Action {
            <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                  <td>
-                  <h1>'.$arrMail['title'].'</h1>
+                  <h1>'.$arrMail['title'].'</h1>';
+      if($arrMail['intro'] != ''){
+        $strHtmlBody .= '
                   <p>'.$arrMail['intro'].'</p>';
+      }
+      $strSpecialOutput = ''; 
       foreach($this->arrFormData as $key => $value){
         if($value != ''){         
-          $strHtmlBody .= '<strong>'.((array_key_exists($key, $this->arrFormFields)) ? $this->arrFormFields[$key] : ucfirst(utf8_decode($key))).':</strong> '.utf8_decode($value).'<br/>';  
+          if($key == 'promoMonza'){
+            $strHtmlBody .= '<strong>Tetric N-Ceram Intro Pack:</strong> '.utf8_decode($value).'<br/><br/>';    
+          }else if($key == 'sloganLisbon'){
+            $strHtmlBody .= '<strong>Tetric EvoFlow Slogan:</strong> '.utf8_decode($value).'<br/><br/>';   
+          }else{
+            $strHtmlBody .= '<strong>'.((array_key_exists($key, $this->arrFormFields)) ? $this->arrFormFields[$key] : ucfirst(utf8_decode($key))).':</strong> '.utf8_decode($value).'<br/>';    
+          }
         }          
       }   
       $strHtmlBody .= '
@@ -426,6 +441,8 @@ class SweepstakeController extends Zend_Controller_Action {
     if(count($this->arrMailRecipients) > 0){
       $mail->clearRecipients();
       $mail->addTo($this->arrMailRecipients['Email'], $this->arrMailRecipients['Name']);
+      $this->core->logger->debug('Sweepstake e-mail to: '.$this->arrMailRecipients['Email'].'::'.$this->arrMailRecipients['Name']);
+
       /**
        * send mail if mail body is not empty
        */

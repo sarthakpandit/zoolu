@@ -314,6 +314,7 @@ class Page {
               case $this->core->sysConfig->page_types->product_tree->id:
               case $this->core->sysConfig->page_types->press_area->id:
               case $this->core->sysConfig->page_types->courses->id:
+              case $this->core->sysConfig->page_types->events->id:
                 if($blnLoadGlobalTreeStartPage == true){
                   $this->objParentPage = clone $this;
                               
@@ -765,7 +766,7 @@ class Page {
       if(!array_key_exists($strFieldName, $this->arrTagsData)){
         $this->getModelTags();
         $this->objModelTags->setLanguageId($this->intLanguageId);
-        $this->arrTagsData[$strFieldName] = $this->objModelTags->loadTypeTags('page', $this->strPageId, $this->intPageVersion);
+        $this->arrTagsData[$strFieldName] = $this->objModelTags->loadTypeTags($this->strType, $this->strPageId, $this->intPageVersion);
       }
       return $this->arrTagsData[$strFieldName];
     }catch (Exception $exc) {
@@ -839,7 +840,7 @@ class Page {
                   $objEntry->title = $objEntryData->title;
                                     
                   if($this->objParentPage instanceof Page && 
-                     ($this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->product_tree->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->press_area->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->courses->id)){
+                     ($this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->product_tree->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->press_area->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->courses->id || $this->objParentPage->getTypeId() == $this->core->sysConfig->page_types->events->id)){
                     $objEntry->url = $this->objParentPage->getFieldValue('url').$objEntryData->url;  
                   }else{
                     $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
@@ -907,6 +908,46 @@ class Page {
                 $objContainer->addPageEntry($objEntry, date('Ymd', $objCourse->start_datetime).sprintf('%07d', $objTmpEntry->getEntryId()).sprintf('%03d', $objCourse->id));                
               }
             }
+          }
+        }
+      }      
+      $objContainer->sortEntries();
+            
+      return $objContainer;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * getEventOverviewContainer
+   * @return PageContainer
+   * @author Thomas Sschedler<cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getEventOverviewContainer(){
+    try{
+            
+      $this->getOverviewContainer(true);      
+      $objContainer = new PageContainer();      
+      if(count($this->arrContainer) > 0){
+        foreach($this->arrContainer as $objTmpContainer){
+          foreach($objTmpContainer->getEntries() as $objTmpEntry){
+             
+            $strEventUrl = '';
+            if(filter_var($objTmpEntry->external, FILTER_VALIDATE_URL)){
+              $strEventUrl = $objTmpEntry->external;
+            }else if(filter_var('http://'.$objTmpEntry->external, FILTER_VALIDATE_URL)){
+              $strEventUrl = 'http://'.$objTmpEntry->external;
+            }
+            
+            if(strtotime($objTmpEntry->start_datetime)){
+              $objEntry = clone $objTmpEntry;
+              $objEntry->start_datetime = strtotime($objTmpEntry->start_datetime);
+              $objEntry->end_datetime = strtotime($objTmpEntry->end_datetime);
+              $objEntry->eventUrl = $strEventUrl;
+              $objContainer->addPageEntry($objEntry, date('Ymd', $objEntry->start_datetime).sprintf('%07d', $objTmpEntry->getEntryId()));
+            }            
           }
         }
       }      
@@ -1487,11 +1528,23 @@ class Page {
               $objPageEntry->fileversion = (isset($objPageRow->fileversion)) ? $objPageRow->fileversion : '';
               $objPageEntry->filepath = (isset($objPageRow->filepath)) ? $objPageRow->filepath : '';
               $objPageEntry->filetitle = (isset($objPageRow->filetitle)) ? $objPageRow->filetitle : '';
-              
+              $objPageEntry->start_datetime = (isset($objPageRow->start_datetime)) ? $objPageRow->start_datetime : '';
+              $objPageEntry->end_datetime = (isset($objPageRow->end_datetime)) ? $objPageRow->end_datetime : '';
+              $objPageEntry->external = (isset($objPageRow->external)) ? $objPageRow->external : '';
+                                   
               if(isset($objPageRow->tagfilename) && $objPageRow->tagfilename !== null) $objPageEntry->filename =  $objPageRow->tagfilename;
               if(isset($objPageRow->tagfileversion) && $objPageRow->tagfileversion !== null) $objPageEntry->fileversion =  $objPageRow->tagfileversion;
               if(isset($objPageRow->tagfilepath) && $objPageRow->tagfilepath !== null) $objPageEntry->filepath =  $objPageRow->tagfilepath;
               if(isset($objPageRow->tagfiletitle) && $objPageRow->tagfiletitle !== null) $objPageEntry->filetitle =  $objPageRow->tagfiletitle;
+              
+              if(isset($objPageRow->categoryId) && $objPageRow->categoryId !== null){
+                if($objPageEntry->categories ===  null){
+                  $objPageEntry->categories = new stdClass();
+                  $objPageEntry->categories->arr = array($objPageRow->categoryId => $objPageRow->category);
+                }else{
+                  $objPageEntry->categories->arr[$objPageRow->categoryId] = $objPageRow->category;
+                }
+              }
               
               if(isset($objPageRow->courseId) && $objPageRow->courseId !== null && date('Ymd', strtotime($objPageRow->start_datetime)) >= date('Ymd')){
                 if($objPageEntry->courses ===  null){

@@ -114,7 +114,8 @@ class GenericDataHelper_Contact extends GenericDataHelperAbstract  {
       $strModelFilePath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.$this->objElement->Setup()->getModelSubPath().((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s').'.php';
       if(file_exists($strModelFilePath)){
         require_once $strModelFilePath;
-        $this->objModel = new Model_Pages();
+        $strModel = 'Model_'.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s');
+        $this->objModel = new $strModel();
         $this->objModel->setLanguageId($this->objElement->Setup()->getLanguageId());
       }else{
         throw new Exception('Not able to load type specific model, because the file didn\'t exist! - strType: "'.$this->strType.'"');

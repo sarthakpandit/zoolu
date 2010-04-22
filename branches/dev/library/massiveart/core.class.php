@@ -138,8 +138,14 @@ class Core {
         }
       }
       if($this->intLanguageId == null){
-        $this->intLanguageId = $this->sysConfig->languages->default->id;
-        $this->strLanguageCode = $this->sysConfig->languages->default->code;
+        if(isset($this->objCoreSession->languageId)){
+          $this->intLanguageId = $this->objCoreSession->languageId;
+          $this->strLanguageCode = $this->objCoreSession->languageCode;
+        }else{
+          $this->blnIsDefaultLanguage = true;
+          $this->intLanguageId = $this->sysConfig->languages->default->id;
+          $this->strLanguageCode = $this->sysConfig->languages->default->code;  
+        }
       }
     }else if(isset($_SERVER['REQUEST_URI']) && preg_match('/^\/[a-zA-Z\-]{2,5}\//', $_SERVER['REQUEST_URI'])){
       preg_match('/^\/[a-zA-Z\-]{2,5}\//', $_SERVER['REQUEST_URI'], $arrMatches);
@@ -151,8 +157,14 @@ class Core {
         }
       }
       if($this->intLanguageId == null){
-        $this->intLanguageId = $this->sysConfig->languages->default->id;
-        $this->strLanguageCode = $this->sysConfig->languages->default->code;
+        if(isset($this->objCoreSession->languageId)){
+          $this->intLanguageId = $this->objCoreSession->languageId;
+          $this->strLanguageCode = $this->objCoreSession->languageCode;
+        }else{
+          $this->blnIsDefaultLanguage = true;
+          $this->intLanguageId = $this->sysConfig->languages->default->id;
+          $this->strLanguageCode = $this->sysConfig->languages->default->code;  
+        }
       }
     }else if(isset($this->objCoreSession->languageId)){
       $this->intLanguageId = $this->objCoreSession->languageId;

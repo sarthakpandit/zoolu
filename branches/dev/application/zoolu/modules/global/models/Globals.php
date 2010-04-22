@@ -75,10 +75,15 @@ class Model_Globals {
   protected $objGlobalInternalLinkTable;
 
   /**
-   * @var Model_Table_GlobalVideosTable
+   * @var Model_Table_GlobalVideos
    */
   protected $objGlobalVideoTable;
 
+  /**
+   * @var Model_Table_GlobalVideosTable 
+   */
+  protected $objGlobalContactsTable;
+  
   /**
    * @var Core
    */
@@ -476,8 +481,27 @@ class Model_Globals {
       $strSqlInstanceFields = '';
       if(strpos($strGenForm, $this->core->sysConfig->form->ids->press->default) !== false){
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
+                                  `global-'.$strGenForm.'-Instances`.description,';
+      }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->event->default) !== false){  
+        $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,
-                                  `globalDatetimes`.datetime,';
+                                  `global-'.$strGenForm.'-Instances`.start_datetime,
+                                  `global-'.$strGenForm.'-Instances`.end_datetime,
+                                   globalExternals.external,
+                                   categoryTitles.title AS category,
+                                   categoryTitles.idCategories AS categoryId,';
+        $strSqlAddon .= ' 
+                                          LEFT JOIN globalExternals ON
+                                            globalExternals.globalId = globals.globalId AND
+                                            globalExternals.version = globals.version AND
+                                            globalExternals.idLanguages = '.$this->intLanguageId.'
+                                          LEFT JOIN globalCategories ON
+                                            globalCategories.globalId = globals.globalId AND
+                                            globalCategories.version = globals.version AND
+                                            globalCategories.idLanguages = '.$this->intLanguageId.'
+                                          LEFT JOIN categoryTitles ON
+                                            categoryTitles.idCategories = globalCategories.category AND
+                                            globalCategories.idLanguages = '.$this->intLanguageId;
       }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->product->default) !== false){      
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,
@@ -488,11 +512,11 @@ class Model_Globals {
                                   `global-'.$strGenForm.'-Region56-Instances`.sortPosition AS courseId,
                                   `global-'.$strGenForm.'-Region56-Instances`.event_title AS courseTitle,
                                   `global-'.$strGenForm.'-Region56-Instances`.start_datetime,
-                                  locations.name AS location,
-                                  CONCAT(contacts.fname, \' \', contacts.sname) AS speaker,
-                                  contacts.id AS speakerId,
-                                  categoryTitles.title AS category,
-                                  categoryTitles.idCategories AS categoryId,'; 
+                                   locations.name AS location,
+                                   CONCAT(contacts.fname, \' \', contacts.sname) AS speaker,
+                                   contacts.id AS speakerId,
+                                   categoryTitles.title AS category,
+                                   categoryTitles.idCategories AS categoryId,'; 
         $strSqlAddon .= ' 
                                           LEFT JOIN `global-'.$strGenForm.'-Region56-Instances` ON
                                             `global-'.$strGenForm.'-Region56-Instances`.globalId = globals.globalId AND
@@ -929,6 +953,73 @@ class Model_Globals {
                                              ORDER BY folders.rgt', array($this->intLanguageId, $this->intLanguageId, $intElementId, $this->core->sysConfig->parent_types->folder));
     return $sqlStmt->fetchAll(Zend_Db::FETCH_OBJ);
   }
+  
+  /**
+   * loadContacts
+   * @param string $intElementId
+   * @param  integer $intFieldId
+   * @return string
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadContacts($intElementId, $intFieldId){
+    $this->core->logger->debug('cms->models->Model_Globals->loadContacts('.$intElementId.','.$intFieldId.')');
+
+    $objSelect = $this->getGlobalContactsTable()->select();
+    $objSelect->from($this->objGlobalContactsTable, array('idContacts'));
+    $objSelect->join('globals', 'globals.globalId = globalContacts.globalId AND globals.version = globalContacts.version AND globalContacts.idLanguages = '.$this->intLanguageId, array());
+    $objSelect->where('globals.id = ?', $intElementId)
+              ->where('idFields = ?', $intFieldId);
+
+    $arrGlobalContactData = $this->objGlobalContactsTable->fetchAll($objSelect);
+
+    $strContactIds = '';
+    foreach($arrGlobalContactData as $objGlobalContact){
+      $strContactIds .= '['.$objGlobalContact->idContacts.']';
+    }
+
+    return $strContactIds;
+  }
+
+  /**
+   * addContact
+   * @param  integer $intElementId
+   * @param  string $strContactIds
+   * @param  integer $intFieldId
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @version 1.0
+   */
+  public function addContact($intElementId, $strContactIds, $intFieldId){
+    $this->core->logger->debug('cms->models->Model_Globals->addContact('.$intElementId.','.$strContactIds.','.$intFieldId.')');
+
+    $objGlobalData = $this->load($intElementId);
+
+    if(count($objGlobalData) > 0){
+      $objGlobal = $objGlobalData->current();
+
+      $this->getGlobalContactsTable();
+
+      $strWhere = $this->objGlobalContactsTable->getAdapter()->quoteInto('globalId = ?', $objGlobal->globalId);
+      $strWhere .= 'AND '.$this->objGlobalContactsTable->getAdapter()->quoteInto('version = ?', $objGlobal->version);
+      $strWhere .= 'AND '.$this->objGlobalContactsTable->getAdapter()->quoteInto('idLanguages = ?', $this->intLanguageId);
+      $this->objGlobalContactsTable->delete($strWhere);
+
+      $strContactIds = trim($strContactIds, '[]');
+      $arrContactIds = split('\]\[', $strContactIds);
+
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+
+      foreach($arrContactIds as $intContactId){
+        $arrData = array('globalId'     => $objGlobal->globalId,
+                         'version'      => $objGlobal->version,
+                         'idLanguages'  => $this->intLanguageId,
+                         'idContacts'   => $intContactId,
+                         'idFields'     => $intFieldId,
+                         'creator'      => $intUserId);
+        $this->objGlobalContactsTable->insert($arrData);
+      }
+    }
+  }
 
   /**
    * addInternalLinks
@@ -1293,6 +1384,22 @@ class Model_Globals {
     }
 
     return $this->objGlobalVideoTable;
+  }
+  
+  /**
+   * getGlobalContactsTable
+   * @return Zend_Db_Table_Abstract
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function getGlobalContactsTable(){
+
+    if($this->objGlobalContactsTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'global/models/tables/GlobalContacts.php';
+      $this->objGlobalContactsTable = new Model_Table_GlobalContacts();
+    }
+
+    return $this->objGlobalContactsTable;
   }
 
   /**

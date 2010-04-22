@@ -370,7 +370,7 @@ class OverlayHelper {
             <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
             <div class="olcontactitemicon">';
       if($row->filename != ''){
-        $strOutput .= '<img width="32" height="32" id="Contact'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->title.'" width="16" height="16"/>';
+        $strOutput .= '<img width="32" height="32" id="Contact'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->filepath).$row->filename.'?v='.$row->fileversion.'" alt="'.$row->title.'" width="16" height="16"/>';
       }
 
       $strOutput .= '</div>
