@@ -388,7 +388,7 @@ class Users_GroupController extends AuthControllerAction {
     $this->objForm->addElement('textarea', 'description', array('label' => $this->core->translate->_('description', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text'));
 
     $this->objForm->addDisplayGroup(array('title', 'key', 'description'), 'main-group', array('columns' => 9));
-    $this->objForm->getDisplayGroup('main-group')->setLegend('Allgemeine Informationen');
+    $this->objForm->getDisplayGroup('main-group')->setLegend($this->core->translate->_('General_information', false));
     $this->objForm->getDisplayGroup('main-group')->setDecorators(array('FormElements', 'Region'));
 
     $arrPermissionOptions = array();
@@ -398,7 +398,7 @@ class Users_GroupController extends AuthControllerAction {
     }
 
     $arrLanguageOptions = array();
-    $arrLanguageOptions['0'] = 'Alle Sprachen';
+    $arrLanguageOptions['0'] = $this->core->translate->_('All_languages', false);
     $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `languages`")->fetchAll();
     foreach($sqlStmt as $arrSql){
       $arrLanguageOptions[$arrSql['id']] = $arrSql['title'];
@@ -433,10 +433,10 @@ class Users_GroupController extends AuthControllerAction {
         'regionId' => 'Permission',
         'regionExt' => $intRegionCounter,
         'isMultiply' => true,
-        'regionTitle' => 'Sprachspezifisch'
+        'regionTitle' => $this->core->translate->_('Language_specific', false)
       ));
 
-      $this->objForm->getDisplayGroup('Permission_'.$intRegionCounter)->setLegend('Rechte');
+      $this->objForm->getDisplayGroup('Permission_'.$intRegionCounter)->setLegend($this->core->translate->_('Permissions', false));
       $this->objForm->getDisplayGroup('Permission_'.$intRegionCounter)->setDecorators(array('FormElements','Region'));
 
       $strRegionInstances .= '['.$intRegionCounter.']';
@@ -453,7 +453,7 @@ class Users_GroupController extends AuthControllerAction {
       'regionExt' => 'REPLACE_n',
       'isMultiply' => true,
       'isEmptyWidget' => true,
-      'regionTitle' => 'Sprachspezifisch'
+      'regionTitle' => $this->core->translate->_('Language_specific', false)
     ));
 
     $this->objForm->getDisplayGroup('Permission_REPLACE_n')->setLegend('Rechte');

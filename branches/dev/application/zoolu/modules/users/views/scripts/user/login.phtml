@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Login</title>
+    <title><?php echo $this->translate->_('Login'); ?></title>
     
-    <link href="/zoolu/css/core_main.css" rel="stylesheet" type="text/css" />
-    <link href="/zoolu/css/core_font.css" rel="stylesheet" type="text/css" />
-    <link href="/zoolu/css/login.css" rel="stylesheet" type="text/css" />
+    <link href="/zoolu-statics/css/core_main.css" rel="stylesheet" type="text/css" />
+    <link href="/zoolu-statics/css/core_font.css" rel="stylesheet" type="text/css" />
+    <link href="/zoolu-statics/css/login.css" rel="stylesheet" type="text/css" />
     
-    <script src="/zoolu/js_incs/prototype/prototype.js" language="javascript" type="text/javascript"></script>
-    <script src="/zoolu/js_incs/script.aculous/scriptaculous.js?load=effects" language="javascript" type="text/javascript"></script>
+    <script src="/zoolu-statics/js_incs/prototype/prototype.js" language="javascript" type="text/javascript"></script>
+    <script src="/zoolu-statics/js_incs/script.aculous/scriptaculous.js?load=effects" language="javascript" type="text/javascript"></script>
     
 	</head>
 
@@ -18,7 +18,7 @@
     <div id="mainwrapper">
              
       <div id="divLogo" style="position: absolute; z-index:400;">
-        <img src="/zoolu/images/login/maske.png" width="220" height="300"/> 
+        <img src="/zoolu-statics/images/login/maske.png" width="220" height="300"/> 
       </div>      
       
       <div id="divLanguageVersions">
@@ -34,7 +34,7 @@
       
       <div id="divMainLoginContainer">
         <div id="divLogin">
-          <h1 style="margin: 0px;">Anmelden</h1>
+          <h1 style="margin: 0px;"><?php echo $this->translate->_('Login'); ?></h1>
           
           <?php if(!empty($this->strErrMessage)) :?>
 	          <div class="mainerrormsg">
@@ -47,7 +47,7 @@
           <form accept-charset="utf-8" method="post">
             <div class="editwrapper">
               <div class="editformelement">
-                <span class="editformheadline">Username</span><br />
+                <span class="editformheadline"><?php echo $this->translate->_('Username'); ?></span><br />
                 <input type="text" value="" name="username" id="username" />
                 <?php if(!empty($this->strErrUsername)) :?>
 			            <div class="mainerrormsg">
@@ -56,7 +56,7 @@
 			          <?php endif; ?>                
               </div>
               <div class="editformelement">
-                <span class="editformheadline">Password</span><br />
+                <span class="editformheadline"><?php echo $this->translate->_('Password'); ?></span><br />
                 <input type="password" value="" name="password" id="password" />
                 <?php if(!empty($this->strErrPassword)) :?>
                   <div class="mainerrormsg">
@@ -64,7 +64,7 @@
                   </div>
                 <?php endif; ?>
                 <div style="padding:5px 8px 0 0; text-align: right;">
-                  <!--<a href="#" onclick="new Effect.Move('divMainLoginContainer', {x: -375, y: 0, mode: 'relative'});  return false;">Passwort vergessen?</a>-->
+                  <!--<a href="#" onclick="new Effect.Move('divMainLoginContainer', {x: -375, y: 0, mode: 'relative'});  return false;"><?php echo $this->translate->_('Password_forgotten'); ?></a>-->
                 </div>
               </div>            
               <hr />
@@ -81,7 +81,7 @@
         </div>
         <div id="divPwdForgotten">
           <div id="divPasswordForgotten">
-            <h1 style="margin: 0px;">Passwort vergessen</h1>
+            <h1 style="margin: 0px;"><?php echo $this->translate->_('Password_forgotten'); ?></h1>
                       
             <!--<p class="gray"><?php //echo($core->guiTexts->getText('Password_forgotten_Info1')); ?></p>
             <p class="gray"><?php //echo(sprintf($core->guiTexts->getText('Password_forgotten_Info2'), '<a href="mailto:support@getzcope.com">', '</a>')); ?></p>          

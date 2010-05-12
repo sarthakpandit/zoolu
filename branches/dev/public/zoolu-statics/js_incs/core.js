@@ -16,6 +16,10 @@ Massiveart.Core = Class.create({
   initialize: function() {
     this.elementInFocus = '';
     
+    this.languageId = 1;
+    this.languageCode = 'de';
+    this.translate = {Save: 'Speichern', Cancel: 'Abbrechen', All_files: 'Alle Files', Apply: 'Übernehmen', Edit: 'Bearbeiten'};
+    
     this.deleteAlertMultiMessage = '';
     this.deleteAlertSingleMessage = '';
     this.CHECK = false;

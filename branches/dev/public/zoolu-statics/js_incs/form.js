@@ -946,7 +946,7 @@ Massiveart.Form = Class.create({
   editUrl: function(elementId){
   	if($(elementId) && $F(elementId) !== ''){
       $(elementId+'_UrlValue').innerHTML = '<input style="width:40%;" id="'+elementId+'_tmpUrl" type="text" value="'+$F(elementId+'_EditableUrl')+'"></input>';
-      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.addUrl(\''+elementId+'\'); return false;">&Uuml;bernehmen</span>';
+      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.addUrl(\''+elementId+'\'); return false;">' + myCore.translate.Apply + '</span>';
       $(elementId+'_tmpUrl').focus();
       this.intValidUrlObserver(elementId+'_tmpUrl', elementId);
   	}
@@ -962,7 +962,7 @@ Massiveart.Form = Class.create({
       this.stopValidUrlObserver(elementId+'_tmpUrl');
       
       $(elementId+'_UrlValue').innerHTML = $F(elementId+'_tmpUrl');
-      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.editUrl(\''+elementId+'\'); return false;">Editieren</span>';
+      $(elementId+'_Controls').innerHTML = '&nbsp;<a href="#" onclick="myForm.editUrl(\''+elementId+'\'); return false;">' + myCore.translate.Edit + '</span>';
     }
   },
   

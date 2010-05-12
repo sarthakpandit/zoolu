@@ -12,7 +12,7 @@
     </li>
     <li id="tabNavItem_Website" class="item" onclick="myOverlay.selectTab('Website'); return false;">
       <div class="start"></div>
-      <div class="middle"><a href="#">Website</a></div>
+      <div class="middle"><a href="#"><?php echo $this->translate->_('Website')?></a></div>
       <div class="end"></div>
     </li>
   </ul>
@@ -32,7 +32,7 @@
 <div style="float: right;">
   <div id="buttonsave" onclick="myFolder.updateFolderSecurity();">
     <div class="button25leftOn"></div>
-    <div class="button25centerOn"><img class="iconsave" width="13" height="13" src="/zoolu/images/icons/icon_save_black.png"/><div>Speichern</div></div>
+    <div class="button25centerOn"><img class="iconsave" width="13" height="13" src="/zoolu-statics/images/icons/icon_save_black.png"/><div><?php echo $this->translate->_('Save')?></div></div>
     <div class="button25rightOn"></div>
     <div class="clear"></div>
   </div>

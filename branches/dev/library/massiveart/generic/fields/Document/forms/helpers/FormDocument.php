@@ -52,6 +52,7 @@ class Form_Helper_FormDocument extends Zend_View_Helper_FormElement {
    */
   public function formDocument($name, $value = null, $attribs = null){
     $info = $this->_getInfo($name, $value, $attribs);
+    $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
 
     /**
@@ -66,7 +67,7 @@ class Form_Helper_FormDocument extends Zend_View_Helper_FormElement {
      * build the element
      */
     $strOutput = '<div class="docwrapper">
-                    <div class="doctop">Dokumente hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddDocumentOverlay(\'divDocumentContainer_'.$this->view->escape($id).'\'); return false;"/></div>
+                    <div class="doctop">'.$core->translate->_('Add_documents').': <img src="/zoolu-statics/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddDocumentOverlay(\'divDocumentContainer_'.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="divDocumentContainer_'.$this->view->escape($id).'"'.$disabled.' class="'.$attribs['class'].'">
                     </div>
                     <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>

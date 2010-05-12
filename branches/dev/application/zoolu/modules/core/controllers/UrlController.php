@@ -171,7 +171,7 @@ class Core_UrlController extends AuthControllerAction {
         require_once $strModelFilePath;
         $strModel = 'Model_'.((substr($this->strType, strlen($this->strType) - 1) == 'y') ? ucfirst(rtrim($this->strType, 'y')).'ies' : ucfirst($this->strType).'s');
         $this->objModel = new $strModel();
-        $this->objModel->setLanguageId($this->getRequest()->getParam("languageId", $this->core->sysConfig->languages->default->id));
+        $this->objModel->setLanguageId($this->getRequest()->getParam("languageId", $this->core->intZooluLanguageId));
       }else{
         throw new Exception('Not able to load type specific model, because the file didn\'t exist! - strType: "'.$this->strType.'"');
       }

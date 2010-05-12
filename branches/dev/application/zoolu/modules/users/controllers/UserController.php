@@ -425,7 +425,7 @@ class Users_UserController extends Zend_Controller_Action {
     $this->objForm->addElement('hidden', 'id', array('decorators' => array('Hidden')));
 
     $arrLanguageOptions = array();
-    $arrLanguageOptions[''] = 'Bitte wählen';
+    $arrLanguageOptions[''] = $this->core->translate->_('Please_choose');
     $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `languages`")->fetchAll();
     foreach($sqlStmt as $arrSql){
       $arrLanguageOptions[$arrSql['id']] = $arrSql['title'];
@@ -437,14 +437,14 @@ class Users_UserController extends Zend_Controller_Action {
     $this->objForm->addElement('select', 'language', array('label' => $this->core->translate->_('system_language', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'select', 'required' => true, 'MultiOptions' => $arrLanguageOptions));
 
     $this->objForm->addDisplayGroup(array('fname', 'sname', 'username', 'language'), 'main-group');
-    $this->objForm->getDisplayGroup('main-group')->setLegend('Allgemeine Bentuzer Informationen');
+    $this->objForm->getDisplayGroup('main-group')->setLegend($this->core->translate->_('General_information', false));
     $this->objForm->getDisplayGroup('main-group')->setDecorators(array('FormElements', 'Region'));
 
     $this->objForm->addElement('password', 'password', array('label' => $this->core->translate->_('password', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'password'));
     $this->objForm->addElement('password', 'passwordConfirmation', array('label' => $this->core->translate->_('Confirm_password', false), 'decorators' => array('Input'), 'columns' => 6, 'class' => 'password'));
 
     $this->objForm->addDisplayGroup(array('password', 'passwordConfirmation'), 'password-group');
-    $this->objForm->getDisplayGroup('password-group')->setLegend('Passwort neu setzen');
+    $this->objForm->getDisplayGroup('password-group')->setLegend($this->core->translate->_('Reset_password', false));
     $this->objForm->getDisplayGroup('password-group')->setDecorators(array('FormElements', 'Region'));
 
     $arrGroups = array();
@@ -500,7 +500,7 @@ class Users_UserController extends Zend_Controller_Action {
       $password = md5($objFilter->filter($this->_request->getPost('password')));
 
       if (empty($username)) {
-        $this->view->strErrUsername = 'Bitte Username eingeben';
+        $this->view->strErrUsername = $this->core->translate->_('Please_enter_username');
       } else {
 
         $this->core = Zend_Registry::get('Core');
@@ -530,14 +530,14 @@ class Users_UserController extends Zend_Controller_Action {
             /**
              * do stuff for nonexistent identity
              */
-            $this->view->strErrUsername = 'Username nicht gefunden!';
+            $this->view->strErrUsername = $this->core->translate->_('Username_not_found');
             break;
 
           case Zend_Auth_Result::FAILURE_CREDENTIAL_INVALID:
             /**
              * do stuff for invalid credential
              */
-            $this->view->strErrPassword = 'Falsches Passwort!';
+            $this->view->strErrPassword = $this->core->translate->_('Wrong_password');
             break;
 
           case Zend_Auth_Result::SUCCESS:
@@ -546,7 +546,21 @@ class Users_UserController extends Zend_Controller_Action {
              */
             $objUsersData = $objDbAuthAdapter->getResultRowObject(array('id', 'idLanguages', 'username', 'fname', 'sname'));
             $objUsersData->languageId = $objUsersData->idLanguages;
-
+            $objUsersData->languageCode = null;
+            
+            $arrLanguages = $this->core->zooConfig->languages->language->toArray();
+            foreach($arrLanguages as $arrLanguage){
+              if($arrLanguage['id'] == $objUsersData->languageId){
+                $objUsersData->languageCode = $arrLanguage['code'];
+                break;
+              }
+            }
+            
+            if($objUsersData->languageCode === null){
+              $objUsersData->languageId = $this->core->zooConfig->languages->default->id;
+              $objUsersData->languageCode = $this->core->zooConfig->languages->default->code;
+            }
+                        
             $objUserRoleProvider = new RoleProvider();
             $arrUserGroups = $this->getModelUsers()->getUserGroups($objUsersData->id);
             if(count($arrUserGroups) > 0){
@@ -571,7 +585,7 @@ class Users_UserController extends Zend_Controller_Action {
             /**
              * do stuff for other failure
              */
-            $this->view->strErrMessage = 'Sonstiger Fehler!';
+            $this->view->strErrMessage = $this->core->translate->_('Login_failed');
             break;
         }
       }

@@ -64,7 +64,7 @@ class Media_FileController extends AuthControllerAction  {
   public function init(){
     parent::init();
     $this->objRequest = $this->getRequest();
-    $this->intLanguageId = ((int) $this->objRequest->getParam("languageId") > 0) ? (int) $this->objRequest->getParam("languageId") : $this->core->sysConfig->languages->default->id;
+    $this->intLanguageId = ((int) $this->objRequest->getParam("languageId") > 0) ? (int) $this->objRequest->getParam("languageId") : $this->core->intZooluLanguageId;
     $this->view->assign('languageId', $this->intLanguageId);
   }
   

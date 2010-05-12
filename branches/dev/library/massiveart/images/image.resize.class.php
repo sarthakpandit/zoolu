@@ -116,8 +116,8 @@ class ImageResizeClass {
   }
   
   protected function doWatermark() {
-    if(file_exists(GLOBAL_ROOT_PATH .'/public/zoolu/images/main/watermark.png')){
-      $foreground = imagecreatefrompng(GLOBAL_ROOT_PATH .'/public/zoolu/images/main/watermark.png');
+    if(file_exists(GLOBAL_ROOT_PATH .'/public/zoolu-statics/images/main/watermark.png')){
+      $foreground = imagecreatefrompng(GLOBAL_ROOT_PATH .'/public/zoolu-statics/images/main/watermark.png');
       $insertWidth = imagesx($foreground);
       $insertHeight = imagesy($foreground);
   

@@ -41,7 +41,10 @@ class Client_Dispatcher implements ClientHelperInterface  {
    * @return void
    */
   public function preDispatch($objController){
-    $objWebSession = new Zend_Session_Namespace('Website');
+    $objWebSession = new Zend_Session_Namespace('Website');    
+    
+    $strCountryShort = strtoupper($this->getCountryShortByIP($objController->getRequest()->getParam('ip')));
+    $this->core->objCoreSession->countryshort = (($strCountryShort != '') ? $strCountryShort : null);
     
     if($objController->getRequest()->getParam('re', 'true') == 'true' && !isset($objWebSession->redirect) && strpos('http://www.ivoclarvivadent.com/', parse_url($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], PHP_URL_PATH)) !== false){
       $objWebSession->redirect = true; // redirect only for the first time

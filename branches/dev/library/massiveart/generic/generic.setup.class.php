@@ -339,12 +339,12 @@ class GenericSetup {
                                       $arrBackendOptions);
 
       // see if a cache already exists:
-      if(!$objFieldsAndRegionsData = $objCache->load('GenForm'.$this->intGenFormId)) {
+      if(!$objFieldsAndRegionsData = $objCache->load('GenForm'.$this->intGenFormId.'_'.$this->intFormLanguageId)) {
 
         // cache miss; get generic form structure
         $objFieldsAndRegionsData = $this->objModelGenericForm->loadFieldsAndRegionsByFormId($this->intGenFormId);
 
-        $objCache->save($objFieldsAndRegionsData, 'GenForm'.$this->intGenFormId);
+        $objCache->save($objFieldsAndRegionsData, 'GenForm'.$this->intGenFormId.'_'.$this->intFormLanguageId);
       }
 
 		  $arrExcludedRegions = array();

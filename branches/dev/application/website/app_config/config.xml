@@ -18,16 +18,16 @@
     <!-- mailer -->
     <mail>
       <from>        
-        <name>Ivoclar Vivadent AG</name>
-        <address>info@ivoclarvivadent.com</address>
+        <name>ZOOLU</name>
+        <address>info@zoolu.at</address>
       </from>
       <recipient>        
         <name>Cornelius Hansjakob</name>
         <address>cha@massiveart.com</address>
       </recipient>
       <params>
-        <host>mailer.at</host>
-        <username>zoolu@mailer.at</username>
+        <host>mailer.zoolu.at</host>
+        <username>zoolu@mailer.zoolu.at</username>
         <password>zoolu</password>
       </params>
       <actions>

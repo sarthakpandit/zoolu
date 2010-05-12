@@ -93,7 +93,7 @@ class ViewHelper {
 	        $strDivThumbPosImgStyle = '';
 	      }
 	      
-	      $intDisplayLanuage = ($objRow->idLanguages == '') ? (isset($objRow->alternativLanguageId) && $objRow->alternativLanguageId != '')  ? $objRow->alternativLanguageId : $this->core->sysConfig->languages->default->id : $objRow->idLanguages;
+	      $intDisplayLanuage = ($objRow->idLanguages == '') ? (isset($objRow->alternativLanguageId) && $objRow->alternativLanguageId != '')  ? $objRow->alternativLanguageId : $this->core->intZooluLanguageId : $objRow->idLanguages;
 	      
 	      if(strpos($objRow->mimeType, 'image/') !== false){
 	        
@@ -103,9 +103,9 @@ class ViewHelper {
 	        $strOutput .= '<div id="divThumbContainerImg'.$objRow->id.'" class="thumbcontainer" style="height:'.($intSliderValue + 10).'px; width:'.($intSliderValue + 10).'px;">
 	                        <table>
 	                          <tr>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_top_left.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_top_left.png" width="5" height="5"/></td>
 	                            <td height="5" style="background-color:#e4e4e4;font-size:0;line-height:0;">&nbsp;</td>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_top_right.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_top_right.png" width="5" height="5"/></td>
 	                          </tr>
 	                          <tr>
 	                            <td width="5" style="background-color:#e4e4e4;">&nbsp;</td>
@@ -126,9 +126,9 @@ class ViewHelper {
 	                            <td width="5" style="background-color:#e4e4e4;">&nbsp;</td>
 	                          </tr>
 	                          <tr>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_bttm_left.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_bttm_left.png" width="5" height="5"/></td>
 	                            <td height="5" style="background-color:#e4e4e4;font-size:0;line-height:0;">&nbsp;</td>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_bttm_right.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_bttm_right.png" width="5" height="5"/></td>
 	                          </tr>
 	                        </table>                                   
 	                      </div>';
@@ -141,9 +141,9 @@ class ViewHelper {
 	        $strOutput .= '<div id="divThumbContainerDoc'.$objRow->id.'" class="thumbcontainer" style="height:'.($intSliderValue + 10).'px; width:'.($intSliderValue + 10).'px;">
 	                        <table>
 	                          <tr>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_top_left.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_top_left.png" width="5" height="5"/></td>
 	                            <td height="5" style="background-color:#e4e4e4;font-size:0;line-height:0;">&nbsp;</td>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_top_right.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_top_right.png" width="5" height="5"/></td>
 	                          </tr>
 	                          <tr>
 	                            <td width="5" style="background-color:#e4e4e4;">&nbsp;</td>
@@ -164,9 +164,9 @@ class ViewHelper {
 	                            <td width="5" style="background-color:#e4e4e4;">&nbsp;</td>
 	                          </tr>
 	                          <tr>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_bttm_left.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_bttm_left.png" width="5" height="5"/></td>
 	                            <td height="5" style="background-color:#e4e4e4;font-size:0;line-height:0;">&nbsp;</td>
-	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu/images/main/corner_thumbhov_bttm_right.png" width="5" height="5"/></td>
+	                            <td width="5" height="5" style="font-size:0;line-height:0;"><img src="/zoolu-statics/images/main/corner_thumbhov_bttm_right.png" width="5" height="5"/></td>
 	                          </tr>
 	                        </table>                                   
 	                      </div>';
@@ -200,7 +200,7 @@ class ViewHelper {
 	        $strFileIconSrc = $this->getDocIcon($objRow->extension, 32);
 	      }
 	      
-	      $intDisplayLanuage = ($objRow->idLanguages == '') ? (isset($objRow->alternativLanguageId) && $objRow->alternativLanguageId != '')  ? $objRow->alternativLanguageId : $this->core->sysConfig->languages->default->id : $objRow->idLanguages;
+	      $intDisplayLanuage = ($objRow->idLanguages == '') ? (isset($objRow->alternativLanguageId) && $objRow->alternativLanguageId != '')  ? $objRow->alternativLanguageId : $this->core->intZooluLanguageId : $objRow->idLanguages;
 	      
 	      /**
 	       * list row entry
@@ -273,7 +273,7 @@ class ViewHelper {
         $strDescription = $row->description;
         $strTextareaCss = ' class="textarea"';      
       }else{
-        $strDescription = 'Beschreibung hinzufügen...';
+        $strDescription = $this->core->translate->_('Add_description_');
         $strTextareaCss = '';
       }
             
@@ -305,7 +305,7 @@ class ViewHelper {
                              <li class="autocompletList input-text">
                                <input type="text" value="" id="FileTags'.$row->id.'" name="FileTags'.$row->id.'"/>
                                <div id="FileTags'.$row->id.'_autocompleter" class="autocompleter">
-                                 <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+                                 <div class="default">'.$this->core->translate->_('Search_or_add_tags').'</div> 
                                  <ul class="feed">
                                    '.$strTags.'  
                                  </ul>
@@ -320,7 +320,7 @@ class ViewHelper {
                          </div>
                          <div class="mediainfolanguagespecific">
                            <div class="field">
-                             <label for="FileIsLanguageSpecific'.$row->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$row->id.'" name="FileIsLanguageSpecific'.$row->id.'"> Medium ist sprachspezifisch</label>                            
+                             <label for="FileIsLanguageSpecific'.$row->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$row->id.'" name="FileIsLanguageSpecific'.$row->id.'"> '.$this->core->translate->_('Medium_is_language_specific').'</label>                            
                            </div>
                          </div>
                          <div class="clear"></div>  
@@ -366,7 +366,7 @@ class ViewHelper {
         $strDescription = $objFile->description;
         $strTextareaCss = ' class="textarea"';      
       }else{
-        $strDescription = 'Beschreibung hinzufügen...';
+        $strDescription = $this->core->translate->_('Add_description_');
         $strTextareaCss = '';
       }
             
@@ -397,19 +397,19 @@ class ViewHelper {
       
       $strOutput .= '
                          <div class="field">
-                           <label for="FileIsLanguageSpecific'.$objFile->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$objFile->id.'" name="FileIsLanguageSpecific'.$objFile->id.'"> Sprachspezifisch</label>                            
+                           <label for="FileIsLanguageSpecific'.$objFile->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$objFile->id.'" name="FileIsLanguageSpecific'.$objFile->id.'"> '.$this->core->translate->_('Language_specific').'</label>                            
                          </div>
                        </div>
                        <div class="mediainfos">
-                         <div class="mediainfotitle"><label for="FileTitle'.$objFile->id.'" class="gray666 bold">Titel</label><br/><input type="text" value="'.$objFile->title.'" id="FileTitle'.$objFile->id.'" name="FileTitle'.$objFile->id.'"/></div>
+                         <div class="mediainfotitle"><label for="FileTitle'.$objFile->id.'" class="gray666 bold">'.$this->core->translate->_('Title').'</label><br/><input type="text" value="'.$objFile->title.'" id="FileTitle'.$objFile->id.'" name="FileTitle'.$objFile->id.'"/></div>
                          <div class="mediainfodescription"><textarea onfocus="myMedia.setFocusTextarea(this.id); return false;" id="FileDescription'.$objFile->id.'" name="FileDescription'.$objFile->id.'"'.$strTextareaCss.'>'.$strDescription.'</textarea></div>
                          <div class="mediainfotags">
-                           <label for="FileTitle'.$objFile->id.'" class="gray666 bold">Tags</label><br/>
+                           <label for="FileTitle'.$objFile->id.'" class="gray666 bold">'.$this->core->translate->_('Tags').'</label><br/>
                            <ol>        
                              <li class="autocompletList input-text">
                                <input type="text" value="" id="FileTags'.$objFile->id.'" name="FileTags'.$objFile->id.'"/>
                                <div id="FileTags'.$objFile->id.'_autocompleter" class="autocompleter">
-                                 <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+                                 <div class="default">'.$this->core->translate->_('Search_or_add_tags').'</div> 
                                  <ul class="feed">
                                    '.$strTags.'  
                                  </ul>
@@ -460,7 +460,7 @@ class ViewHelper {
                        <div class="clear"></div>
                        <div class="spacer1"></div>
                        <div class="mediasingleupload">
-                         <label for="txtFileName" class="gray666 bold">Neue Version</label><br/>
+                         <label for="txtFileName" class="gray666 bold">'.$this->core->translate->_('New_version').'</label><br/>
                          <div>
                            <input type="text" id="txtFileName" disabled="true" />
                            <span id="spanButtonPlaceholder"></span>
@@ -473,13 +473,13 @@ class ViewHelper {
         
         $strOutput .= '
                          <div class="spacer1"></div>
-                         <label for="txtFileName" class="gray666 bold">Ältere Versionen</label><br/>
+                         <label for="txtFileName" class="gray666 bold">'.$this->core->translate->_('Version_list').'</label><br/>
                          <div class="mediaversions">';
         foreach($objFileVersions as $objFileVersion){
           $objCreated->set($objFileVersion->created);
           $objArchived->set($objFileVersion->archived);
           $strOutput .= '
-                           <div class="version"><a href="/zoolu-website/media/download/'.$objFileVersion->idFiles.'/'.urlencode(str_replace('.', '-', $objFileVersion->title)).'?v='.$objFileVersion->version.'" target="_blank">Version '.$objFileVersion->version.'</a> ('.$objCreated->get(Zend_Date::DATETIME_MEDIUM).' - '.$objArchived->get(Zend_Date::DATETIME_MEDIUM).')</div>';  
+                           <div class="version"><a href="/zoolu-website/media/download/'.$objFileVersion->idFiles.'/'.urlencode(str_replace('.', '-', $objFileVersion->title)).'?v='.$objFileVersion->version.'" target="_blank">'.$this->core->translate->_('Version').' '.$objFileVersion->version.'</a> ('.$objCreated->get(Zend_Date::DATETIME_MEDIUM).' - '.$objArchived->get(Zend_Date::DATETIME_MEDIUM).')</div>';  
         }
 
         $strOutput .= '
@@ -530,17 +530,17 @@ class ViewHelper {
       case 'docx' :
       case 'doc' :
       case 'rtf' :
-        //$strDocIcon = '/zoolu/images/icons/docs/icon_word_'.$intSize.'.png';
-        $strDocIcon = '/zoolu/images/icons/docs/icon_word.png';
+        //$strDocIcon = '/zoolu-statics/images/icons/docs/icon_word_'.$intSize.'.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_word.png';
         break;
       case 'xlsx' :
       case 'xls' :
-        //$strDocIcon = '/zoolu/images/icons/docs/icon_excel_'.$intSize.'.png';
-        $strDocIcon = '/zoolu/images/icons/docs/icon_excel.png';
+        //$strDocIcon = '/zoolu-statics/images/icons/docs/icon_excel_'.$intSize.'.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_excel.png';
         break;
       case 'pdf' :
-        //$strDocIcon = '/zoolu/images/icons/docs/icon_pdf_'.$intSize.'.png';
-        $strDocIcon = '/zoolu/images/icons/docs/icon_pdf.png';
+        //$strDocIcon = '/zoolu-statics/images/icons/docs/icon_pdf_'.$intSize.'.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_pdf.png';
         break;
       case 'ppt' :
       case 'pps' :
@@ -548,36 +548,37 @@ class ViewHelper {
       case 'ppsx' :
       case 'ppz' :
       case 'pot' :
-        //$strDocIcon = '/zoolu/images/icons/docs/icon_ppt_'.$intSize.'.png';
-        $strDocIcon = '/zoolu/images/icons/docs/icon_ppt.png';
+        //$strDocIcon = '/zoolu-statics/images/icons/docs/icon_ppt_'.$intSize.'.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_ppt.png';
         break;
       case 'zip' :
       case 'rar' :
       case 'tar' :
       case 'ace' :
-        //$strDocIcon = '/zoolu/images/icons/docs/icon_zip_'.$intSize.'.png';
-        $strDocIcon = '/zoolu/images/icons/docs/icon_compressed.png';
+        //$strDocIcon = '/zoolu-statics/images/icons/docs/icon_zip_'.$intSize.'.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_compressed.png';
         break;
       case 'avi' :
       case 'mov' :
+      case 'mp4' :
       case 'swf' :
       case 'mpg' :
       case 'mpeg' :
       case 'wmv' :
       case 'f4v' :
       case 'flv' :
-      	$strDocIcon = '/zoolu/images/icons/docs/icon_movie.png';
+      	$strDocIcon = '/zoolu-statics/images/icons/docs/icon_movie.png';
       	break;
       case 'mp3' :
       case 'wav' :
       case 'f4a' :
       case 'wma' :
       case 'aif' :
-        $strDocIcon = '/zoolu/images/icons/docs/icon_audio.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_audio.png';
       	break;
       default :
-        //$strDocIcon = '/zoolu/images/icons/docs/icon_default_'.$intSize.'.png';
-        $strDocIcon = '/zoolu/images/icons/docs/icon_unknown.png';
+        //$strDocIcon = '/zoolu-statics/images/icons/docs/icon_default_'.$intSize.'.png';
+        $strDocIcon = '/zoolu-statics/images/icons/docs/icon_unknown.png';
         break;
     }
     return $strDocIcon;

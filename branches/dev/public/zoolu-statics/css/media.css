@@ -74,7 +74,7 @@ Media Main Toolbar */
 
 #mediaslider .slidermediasmall {
   position:absolute;
-  background:url(/zoolu/images/slider/icon_media_small.png) no-repeat center center;
+  background:url(/zoolu-statics/images/slider/icon_media_small.png) no-repeat center center;
   width:9px;
   height:20px;
   top:0;
@@ -83,7 +83,7 @@ Media Main Toolbar */
 
 #mediaslider .slidermediabig {
   position:absolute;
-  background:url(/zoolu/images/slider/icon_media_big.png) no-repeat center center;
+  background:url(/zoolu-statics/images/slider/icon_media_big.png) no-repeat center center;
   width:17px;
   height:20px;
   top:0;
@@ -91,7 +91,7 @@ Media Main Toolbar */
 }
 
 #mediaslider .slidertrack {
-  background:url(/zoolu/images/slider/bg_slider_track.png) no-repeat left center; 
+  background:url(/zoolu-statics/images/slider/bg_slider_track.png) no-repeat left center; 
 }
 
 #mediaslider .slidertrack img {
@@ -111,7 +111,7 @@ Media Main Toolbar */
 }
 
 #mediabuttons .buttonsdivider {
-  /*background: url(/zoolu/images/main/divider_purple_light.gif) no-repeat 0 center;*/
+  /*background: url(/zoolu-statics/images/main/divider_purple_light.gif) no-repeat 0 center;*/
   width:10px;
   height:40px;
   float:left;
@@ -174,19 +174,19 @@ Media Content Thumb */
 }
 
 .thumbshadowright {
-  background: url('/zoolu/images/main/shadow_right.png') repeat-y; 
+  background: url('/zoolu-statics/images/main/shadow_right.png') repeat-y; 
   width:5px;
 }
 
 .thumbshadowbottom {
-  background: url('/zoolu/images/main/shadow_bottom.png') repeat-x; 
+  background: url('/zoolu-statics/images/main/shadow_bottom.png') repeat-x; 
   height:5px; 
   font-size:0; 
   line-height:0;
 }
 
 .thumbshadowcorner {
-  background: url('/zoolu/images/main/shadow_corner_b_r.png') no-repeat; 
+  background: url('/zoolu-statics/images/main/shadow_corner_b_r.png') no-repeat; 
   height:5px; 
   font-size:0; 
   line-height:0;
@@ -458,7 +458,7 @@ a.progressCancel {
   display: block;
   height: 14px;
   width: 14px;
-  background-image: url(/zoolu/images/main/cancelbutton.gif);
+  background-image: url(/zoolu-statics/images/main/cancelbutton.gif);
   background-repeat: no-repeat;
   background-position: -14px 0px;
   float: right;

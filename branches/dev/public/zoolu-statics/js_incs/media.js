@@ -23,7 +23,7 @@ Massiveart.Media = Class.create({
     
     this.lastFileId = 0;
     this.lastFileIds = '';
-    
+            
     this.intFolderId = 0;
     this.currViewType = 0;
     this.sliderValue = 100;    
@@ -34,12 +34,12 @@ Massiveart.Media = Class.create({
                             '<div id="overlayMediaWrapperUpload" class="mediawrapper"></div>' +
                             '<input type="hidden" id="UploadedFileIds" name="FileIds" value=""/>' +
                             '<div class="clear"></div>' +
-                            '<div class="buttoncancel" onclick="myOverlay.close(); return false;">Abbrechen</div>' +  
+                            '<div class="buttoncancel" onclick="myOverlay.close(); return false;">' + myCore.translate.Cancel + '</div>' +  
                             '<div onclick="myMedia.updateUploadedFiles(); return false;" id="buttoneditsave">' +
                             '  <div class="button25leftOn"></div>' +
                             '  <div class="button25centerOn">' + 
-                            '    <img width="13" height="13" src="/zoolu/images/icons/icon_save_black.png" class="iconsave"/>' +
-                            '    <div>Speichern</div>' +
+                            '    <img width="13" height="13" src="/zoolu-statics/images/icons/icon_save_black.png" class="iconsave"/>' +
+                            '    <div>' + myCore.translate.Save + '</div>' +
                             '  </div>' +
                             '  <div class="button25rightOn"></div>' +
                             '  <div class="clear"></div>' +
@@ -274,7 +274,7 @@ Massiveart.Media = Class.create({
     $('divSWFUploadUI').update(this.constSWFUploadUI);
         
     var settings = {
-      flash_url : "/zoolu/flash/swfupload/swfupload.swf",
+      flash_url : "/zoolu-statics/flash/swfupload/swfupload.swf",
       upload_url: "/zoolu/media/upload",
       post_params: {
         PHPSESSID: sessionId, 
@@ -282,7 +282,7 @@ Massiveart.Media = Class.create({
       }, 
       file_size_limit : "100 MB",
       file_types : "*.*",
-      file_types_description : "All Files",
+      file_types_description : myCore.translate.All_files,
       file_upload_limit : 100,
       file_queue_limit : 0,
       custom_settings : {
@@ -292,7 +292,7 @@ Massiveart.Media = Class.create({
       debug: false,
   
       // Button Settings
-      button_image_url : "/zoolu/images/buttons/button_selectfiles_de.png",
+      button_image_url : "/zoolu-statics/images/buttons/button_selectfiles_" + myCore.languageCode + ".png",
       button_placeholder_id : "buttonplaceholder",
       button_width: 113,
       button_height: 25,
@@ -331,7 +331,7 @@ Massiveart.Media = Class.create({
   initSingleSWFUpload: function(fileId){
             
     var settings = {
-      flash_url: "/zoolu/flash/swfupload/swfupload.swf",
+      flash_url: "/zoolu-statics/flash/swfupload/swfupload.swf",
       upload_url: "/zoolu/media/upload/version",
       post_params: {
         PHPSESSID: sessionId,
@@ -339,7 +339,7 @@ Massiveart.Media = Class.create({
       }, 
       file_size_limit: "100 MB",
       file_types: "*.*",
-      file_types_description: "All Files",
+      file_types_description: myCore.translate.All_files,
       file_upload_limit: "0",
       file_queue_limit: "1",
       custom_settings: {
@@ -349,7 +349,7 @@ Massiveart.Media = Class.create({
       debug: false,
   
       // Button Settings
-      button_image_url: "/zoolu/images/buttons/button_selectfiles_de.png",
+      button_image_url: "/zoolu-statics/images/buttons/button_selectfiles_" + myCore.languageCode + ".png",
       button_placeholder_id: "spanButtonPlaceholder",
       button_width: 113,
       button_height: 25,

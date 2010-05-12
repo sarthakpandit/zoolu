@@ -125,7 +125,7 @@ class PageCommand implements CommandInterface {
         $objGenericData->Setup()->setTemplateId($intTemplateId);
         $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->add);
         $objGenericData->Setup()->setLanguageId($arrArgs['LanguageId']);
-        $objGenericData->Setup()->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+        $objGenericData->Setup()->setFormLanguageId($this->core->intZooluLanguageId);
 
         $objGenericData->Setup()->setParentId($arrArgs['ParentId']);
         $objGenericData->Setup()->setRootLevelId($objGenericSetup->getRootLevelId());

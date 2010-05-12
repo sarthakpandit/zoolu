@@ -112,7 +112,7 @@ body {
 }
 
 .submitbuttongraysmall[class] {
-	background:transparent url(/zoolu/images/login/bg_button_gray_small.png) no-repeat scroll 0 0;
+	background:transparent url(/zoolu-statics/images/login/bg_button_gray_small.png) no-repeat scroll 0 0;
 	border:0 none;
 	cursor:pointer;
 	height:24px;

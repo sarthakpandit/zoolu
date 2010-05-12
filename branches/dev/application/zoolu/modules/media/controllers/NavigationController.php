@@ -63,7 +63,7 @@ class Media_NavigationController extends AuthControllerAction {
     
     $this->view->assign('mediaTypes', $objMediaRootLevels);
     $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
-    $this->view->assign('fileDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : translate
+    $this->view->assign('fileDefaultDescription', $this->core->translate->_('Add_description_'));
     $this->view->assign('currLevel', 1);
   }
   
@@ -127,7 +127,7 @@ class Media_NavigationController extends AuthControllerAction {
        */ 
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId(1); // TODO : get language id
+      $this->objModelFolders->setLanguageId($this->core->intZooluLanguageId);
     }
     
     return $this->objModelFolders;

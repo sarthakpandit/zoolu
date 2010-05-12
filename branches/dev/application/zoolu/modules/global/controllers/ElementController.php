@@ -561,8 +561,8 @@ class Global_ElementController extends AuthControllerAction {
       $objGenericData->Setup()->setRootLevelGroupId($this->objRequest->getParam("rootLevelGroupId"));
       $objGenericData->Setup()->setParentId($this->objRequest->getParam("parentFolderId"));
       $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
-      $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-      $objGenericData->Setup()->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objGenericData->Setup()->setFormLanguageId($this->core->intZooluLanguageId);
       $objGenericData->Setup()->setModelSubPath('global/models/');
 
       /**
@@ -819,8 +819,8 @@ class Global_ElementController extends AuthControllerAction {
       $objFormHandler->setTemplateId($intTemplateId);
       $objFormHandler->setFormVersion($intFormVersion);
       $objFormHandler->setActionType($intActionType);
-      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-      $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
       $objFormHandler->setElementId($intElementId);
 
       $this->objForm = $objFormHandler->getGenericForm();
@@ -903,7 +903,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'global/models/Globals.php';
       $this->objModelGlobals = new Model_Globals();
-      $this->objModelGlobals->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelGlobals->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelGlobals;
@@ -923,7 +923,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelFolders;
@@ -943,7 +943,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFiles->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelFiles;
@@ -963,7 +963,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
-      $this->objModelContacts->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelContacts->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelContacts;
@@ -1003,7 +1003,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/GenericForms.php';
       $this->objModelGenericForm = new Model_GenericForms();
-      $this->objModelGenericForm->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelGenericForm->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelGenericForm;

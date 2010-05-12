@@ -82,14 +82,14 @@ class NavigationHelper {
           
           $strOutput .= '
         <div class="naviitemcontainer">
-          <div id="naviitem'.$objNavigation->getId().'top" class="top'.$strSelected.'"><img src="/zoolu/images/main/bg_box_230_top.png" width="230" height="4"/></div>
+          <div id="naviitem'.$objNavigation->getId().'top" class="top'.$strSelected.'"><img src="/zoolu-statics/images/main/bg_box_230_top.png" width="230" height="4"/></div>
           <div id="naviitem'.$objNavigation->getId().'" class="naviitem'.$strSelected.'" onclick="myNavigation.selectRootLevel('.$objNavigation->getId().', '.$objNavigationTree->getTypeId().', \''.$objNavigation->getUrl().'\', true, \''.$strViewType.'\'); return false;">
             <div class="producticon"></div>
             <div id="divRootLevelTitle_'.$objNavigation->getId().'" class="itemtitle">'.htmlentities($objNavigation->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
             <div class="clear"></div>
             <input type="hidden" value="'.$objNavigationTree->getItemId().'" id="rootLevelGroupKey'.$objNavigationTree->getTypeId().'"/>
           </div>
-          <div id="naviitem'.$objNavigation->getId().'bottom" class="bottom'.$strSelected.'"><img src="/zoolu/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
+          <div id="naviitem'.$objNavigation->getId().'bottom" class="bottom'.$strSelected.'"><img src="/zoolu-statics/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
           <div class="clear"></div>
         </div>';
         }
@@ -122,7 +122,7 @@ class NavigationHelper {
         
         $strOutput .= '
         <div class="naviitemcontainer">
-          <div id="naviitem'.$objNavigationTree->getId().'top" class="top'.$strSubNaviSelected.'"><img src="/zoolu/images/main/bg_box_230_top.png" width="230" height="4"/></div>
+          <div id="naviitem'.$objNavigationTree->getId().'top" class="top'.$strSubNaviSelected.'"><img src="/zoolu-statics/images/main/bg_box_230_top.png" width="230" height="4"/></div>
           <div id="naviitem'.$objNavigationTree->getId().'" class="naviitem'.$strSubNaviSelected.'" onclick="myNavigation.selectRootLevel('.$objNavigationTree->getId().', '.$objNavigationTree->getTypeId().', \'\', false, \''.$strViewType.'\'); return false;">
             <div class="producticon"></div>
             <div id="divRootLevelTitle_'.$objNavigationTree->getId().'" class="itemtitle">'.htmlentities($objNavigationTree->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
@@ -132,7 +132,7 @@ class NavigationHelper {
           <div id="naviitem'.$objNavigationTree->getId().'menu" class="menu"'.$strDisplaySubNavi.'>
           '.$strSubNavi.'
           </div>
-          <div id="naviitem'.$objNavigationTree->getId().'bottom" class="bottom'.$strSubNaviSelected.'"><img src="/zoolu/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
+          <div id="naviitem'.$objNavigationTree->getId().'bottom" class="bottom'.$strSubNaviSelected.'"><img src="/zoolu-statics/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
           <div class="clear"></div>
         </div>';
         

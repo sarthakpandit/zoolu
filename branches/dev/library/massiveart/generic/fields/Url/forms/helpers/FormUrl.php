@@ -56,6 +56,7 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
    */
   public function formUrl($name, $value = null, $attribs = null, $blnIsStartElement = null, $options = null, $intParentId = null){
     $info = $this->_getInfo($name, $value, $attribs);
+    $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
     
     // XHTML or HTML end tag
@@ -98,14 +99,14 @@ class Form_Helper_FormUrl extends Zend_View_Helper_FormElement {
            
           $strOutput = '
                   <div class="urlwrapper">
-                    <span class="gray666 bold">Adresse: '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($blnIsStartElement == true) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">Bearbeiten</a></span>
+                    <span class="gray666 bold">'.$core->translate->_('Address').': '.$strUrlShown.'</span><span id="'.$this->view->escape($id).'_UrlValue" class="gray666">'.$strUrlEditable.'</span>'.(($blnIsStartElement == true) ? '<span class="gray666 bold">/</span>' : '').'<span id="'.$this->view->escape($id).'_Controls">&nbsp;<a href="#" onclick="myForm.editUrl(\''.$this->view->escape($id).'\'); return false;">'.$core->translate->_('Edit').'</a></span>
                     <input type="hidden" value="'.$value.'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
                     <input type="hidden" value="'.$strUrlEditable.'" id="'.$this->view->escape($id).'_EditableUrl" name="'.$this->view->escape($name).'_EditableUrl" '.$endTag.'
                   </div>';
         }
         
         $strOutput .= '
-                  <div id="'.$this->view->escape($id).'_UrlHistory" class="urlTop" onclick="myForm.toggleUrlHistory(\''.$this->view->escape($id).'\')"><div class="urlTopTitle">Url-History</div></div>
+                  <div id="'.$this->view->escape($id).'_UrlHistory" class="urlTop" onclick="myForm.toggleUrlHistory(\''.$this->view->escape($id).'\')"><div class="urlTopTitle">'.$core->translate->_('Url_history').'</div></div>
                   <div id="'.$this->view->escape($id).'_ToggleUrlHistory" class="urlHistoryContainer" style="display:none"></div>';    
       }
     }

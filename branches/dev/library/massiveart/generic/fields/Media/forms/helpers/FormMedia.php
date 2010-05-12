@@ -73,6 +73,7 @@ class Form_Helper_FormMedia extends Zend_View_Helper_FormElement {
    */
   public function formMedia($name, $value = null, $attribs = null){
     $info = $this->_getInfo($name, $value, $attribs);
+    $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
 
     /**
@@ -88,7 +89,7 @@ class Form_Helper_FormMedia extends Zend_View_Helper_FormElement {
      */
     //$strOutput = '<textarea name="'.$this->view->escape($name).'" id="'.$this->view->escape($id).'"'.$disabled.' '. $this->_htmlAttribs($attribs).'>'.$this->view->escape($value).'</textarea>';
     $strOutput = '<div class="mediawrapper">
-                    <div class="mediatop">Medien hinzuf&uuml;gen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddMediaOverlay(\'divMediaContainer_'.$this->view->escape($id).'\'); return false;"/></div>
+                    <div class="mediatop">'.$core->translate->_('Add_medias').': <img src="/zoolu-statics/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getAddMediaOverlay(\'divMediaContainer_'.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="divMediaContainer_'.$this->view->escape($id).'"'.$disabled.' class="'.$attribs['class'].'">
                     </div>
                     <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value="'.$this->view->escape($value).'"/>';
@@ -153,7 +154,7 @@ class Form_Helper_FormMedia extends Zend_View_Helper_FormElement {
         $strAction = 'myForm.updateMediaDisplayPosition(\''.$this->view->escape($name).'_display_option\', \''.self::$arrPositionOptions[$intPos]['Key'].'\');';        
       }
       
-      $strPositionChooser .= '<div id="'.$this->view->escape($name).'_display_option_'.self::$arrPositionOptions[$intPos]['Key'].'" class="item'.$strCssClass.'" style="background-image:url(\'/zoolu/images/position/'.$strImage.'\');" onclick="'.$strAction.'"></div>'; 
+      $strPositionChooser .= '<div id="'.$this->view->escape($name).'_display_option_'.self::$arrPositionOptions[$intPos]['Key'].'" class="item'.$strCssClass.'" style="background-image:url(\'/zoolu-statics/images/position/'.$strImage.'\');" onclick="'.$strAction.'"></div>'; 
     }
     
     return $strPositionChooser;

@@ -302,7 +302,7 @@ class Properties_LocationController extends AuthControllerAction {
 	    $objFormHandler->setFormId($strFormId);
 	    $objFormHandler->setActionType($intActionType);
 	    $objFormHandler->setLanguageId(1); //TODO : get Language id
-	    $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+	    $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
 	    $objFormHandler->setElementId($intElementId);
 
       $this->objForm = $objFormHandler->getGenericForm();

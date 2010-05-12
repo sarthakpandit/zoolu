@@ -344,7 +344,7 @@ class Users_ResourceController extends AuthControllerAction {
     $this->objForm->addElement('text', 'key', array('label' => $this->core->translate->_('key', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text', 'required' => true));
 
     $this->objForm->addDisplayGroup(array('title', 'key'), 'main-resource');
-    $this->objForm->getDisplayGroup('main-resource')->setLegend('Allgemeine Resourcen Informationen');
+    $this->objForm->getDisplayGroup('main-resource')->setLegend($this->core->translate->_('General_information', false));
     $this->objForm->getDisplayGroup('main-resource')->setDecorators(array('FormElements', 'Region'));
 
     $arrGroups = array();

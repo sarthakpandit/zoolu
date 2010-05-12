@@ -22,17 +22,17 @@
 	            </tr>
 	            <?php if($this->publishDate != '') : ?>
 	            <tr>
-	              <td class="tdNormal">Ver&ouml;ffentlicht:</td>
+	              <td class="tdNormal"><?php echo $this->translate->_('Published'); ?>:</td>
 	              <td>
 	                <div class="publishdate"><?php echo $this->publishDate; ?></div>
-	                <!-- <img class="iconcalendar" src="/zoolu/images/icons/icon_calendar_purple.png" width="13" height="15"/> -->
+	                <!-- <img class="iconcalendar" src="/zoolu-statics/images/icons/icon_calendar_purple.png" width="13" height="15"/> -->
 	                <div class="clear"></div>
 	              </td>
 	            </tr>
 	            <?php endif; ?>
 	            <!--
 	            <tr>
-	              <td class="tdNormal">Sicherheit:</td>
+	              <td class="tdNormal"><?php echo $this->translate->_('Publish'); ?>:</td>
 	              <td>
 	                <select class="normal">
 	                  <option value="1">&Ouml;ffentlich</option>
@@ -42,7 +42,7 @@
 	            </tr>
 	            -->
 	            <tr>
-	              <td class="tdNormal">Author:</td>
+	              <td class="tdNormal"><?php echo $this->translate->_('Author'); ?>:</td>
 	              <td>
 	                <select id="creatorSelect" class="normal" onchange="$('creator').setValue(this.value); return false;">
 	                  <?php echo $this->creatorOptions; ?>
@@ -52,7 +52,7 @@
 	            <tr>
 	              <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation > 0) ? print(' checked="checked"') : ''; ?> onclick="if($('divShowInNavigationOptions')) { myForm.toggleNavigationOptions(); } else { $('showInNavigation').value = (this.checked) ? '1' : '0'; }"/></td>
 	              <td>
-                  <label for="showinnavigation">in Navigation anzeigen</label>
+                  <label for="showinnavigation"><?php echo $this->translate->_('show_in_navigation'); ?></label>
                   <?php if($this->blnIsRootLevelChild && $this->module == $this->core->sysConfig->modules->cms): ?>
                   <div id="divShowInNavigationOptions"<?php echo ($this->showinnavigation == 0) ? ' style="display:none;"' : ''; ?>>
                     <div class="navigationoptios">
@@ -71,18 +71,18 @@
               <?php if($this->folderId) : ?>
               <tr>
                 <td></td>
-                <td><a href="#" onclick="myFolder.getCurrentFolderSecurity(); return false;">Ordner Berechtigung</a></td>
+                <td><a href="#" onclick="myFolder.getCurrentFolderSecurity(); return false;"><?php echo $this->translate->_('Folder_permission'); ?></a></td>
               </tr>
               <?php endif; ?>
 	            <?php if($this->version > 0) : ?>
 	            <!--<tr>
-	              <td class="tdNormal">Version:</td>
+	              <td class="tdNormal"><?php echo $this->translate->_('Version'); ?>:</td>
 	              <td>
 	                <div class="currversion"><?php echo $this->version; ?>.0</div>
 	                 <div id="buttonnewversion">
 	                  <div class="button17leftOff"></div>
 	                  <div class="button17centerOff">
-	                    <img src="/zoolu/images/icons/icon_plus_white_small.png" width="8" height="8"/>
+	                    <img src="/zoolu-statics/images/icons/icon_plus_white_small.png" width="8" height="8"/>
 	                    <div>Neue Version</div>
 	                  </div>
 	                  <div class="button17rightOff"></div>
@@ -94,14 +94,14 @@
             <?php endif; ?>
             <?php if($this->changeUser != '' && $this->changeDate != '') : ?>
             <tr>
-              <td class="tdNormal">Letzte &Auml;nderung:</td>
+              <td class="tdNormal"><?php echo $this->translate->_('Last_change'); ?>:</td>
               <td><?php echo $this->changeDate; ?><br/><?php echo $this->changeUser; ?></td>
             </tr>
             <?php endif; ?>
             <?php if($this->version > 1 && $this->module == $this->core->sysConfig->modules->cms) : ?>
             <!-- <tr>
               <td class="tdNormal">&nbsp;</td>
-              <td><a href="#">Versionsliste</a></td>
+              <td><a href="#"><?php echo $this->translate->_('Version_list'); ?></a></td>
             </tr> -->
             <?php endif; ?>
           </table>

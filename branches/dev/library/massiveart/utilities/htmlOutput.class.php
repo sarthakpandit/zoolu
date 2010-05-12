@@ -115,7 +115,7 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_doc.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_doc.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_doc.png';
         }
         break;
       case 'xlsx' :
@@ -123,14 +123,14 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_excel.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_excel.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_excel.png';
         }
         break;
       case 'pdf' :
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_pdf.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_pdf.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_pdf.png';
         }
         break;
       case 'ppt' :
@@ -142,7 +142,7 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_ppt.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_ppt.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_ppt.png';
         }
         break;
       case 'zip' :
@@ -152,7 +152,7 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_compressed.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_compressed.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_compressed.png';
         }
         break;
       case 'avi' :
@@ -165,7 +165,7 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_movie.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_movie.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_movie.png';
         }
         break;
       case 'mp3' :
@@ -176,7 +176,7 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_audio.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_audio.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_audio.png';
         }
         break;
       case 'gif' :
@@ -192,14 +192,14 @@ class HtmlOutput {
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_img.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_img.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_img.png';
         }
         break;
       default :
         if($strIconBase != ''){
           $strIcon = $strIconBase.'/icon_unknown.'.$strIconExtension;
         }else{
-          $strIcon = '/zoolu/images/icons/docs/icon_unknown.png';
+          $strIcon = '/zoolu-statics/images/icons/docs/icon_unknown.png';
         }
         break;
     }

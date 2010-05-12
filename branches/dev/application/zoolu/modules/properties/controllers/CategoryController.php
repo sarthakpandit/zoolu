@@ -294,8 +294,8 @@ class Properties_CategoryController extends AuthControllerAction {
       $objFormHandler = FormHandler::getInstance();
 	    $objFormHandler->setFormId($strFormId);
 	    $objFormHandler->setActionType($intActionType);
-	    $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-	    $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+	    $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+	    $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
 	    $objFormHandler->setElementId($intElementId);
 
       $this->objForm = $objFormHandler->getGenericForm();

@@ -406,6 +406,15 @@ class PageHelper {
   public function setTranslate(Zend_Translate $objTranslate){
     $this->objTranslate = $objTranslate;
   }
+  
+  /**
+   * getTranslate    
+   * @return Zend_Translate $objTranslate   
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function getTranslate(){
+    return $this->objTranslate;
+  }
 }
 
 /**
