@@ -185,7 +185,7 @@ class Core_FolderController extends AuthControllerAction {
         $this->view->assign('blnShowFormAlert', true);
 
         $arrArgs = array('ParentId'         => $intFolderId,
-                         'LanguageId'       => $this->objRequest->getParam('languageId', $this->core->sysConfig->languages->default->id),
+                         'LanguageId'       => $this->objRequest->getParam('languageId', $this->core->intZooluLanguageId),
                          'GenericSetup'     => $this->objForm->Setup());
         if($this->objCommandChain->runCommand('addFolderStartElement', $arrArgs)){
           $this->view->assign('selectNavigationItemNow', true);
@@ -299,7 +299,7 @@ class Core_FolderController extends AuthControllerAction {
         /**
          * update the folder start element
          */
-        $arrArgs = array('LanguageId'       => $this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id),
+        $arrArgs = array('LanguageId'       => $this->objRequest->getParam("languageId", $this->core->intZooluLanguageId),
                          'GenericSetup'     => $this->objForm->Setup());
         $this->objCommandChain->runCommand('editFolderStartElement', $arrArgs);
         
@@ -444,7 +444,7 @@ class Core_FolderController extends AuthControllerAction {
 
     $this->loadFolderTreeForPortal($intPortalId, $intFolderId);
     $this->view->assign('key', $strActionKey);
-    $this->view->assign('overlaytitle', 'Ordner wählen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Select_folder'));
   }
 
   /**
@@ -484,7 +484,7 @@ class Core_FolderController extends AuthControllerAction {
 
       $this->view->assign('elements', $objRootelements);
       $this->view->assign('rootLevelId', $this->intRootLevelId);
-      $this->view->assign('overlaytitle', 'Ordner w&auml;hlen');
+      $this->view->assign('overlaytitle', $this->core->translate->_('Select_folder'));
 
       $this->view->assign('selectedRootLevelId', $this->objRequest->getParam('rootLevelId', -1));
       $this->view->assign('selectedFolderIds', $this->objRequest->getParam('folderIds', '[]'));
@@ -568,8 +568,8 @@ class Core_FolderController extends AuthControllerAction {
     $objFormHandler->setFormId($strFormId);
     $objFormHandler->setFormVersion($intFormVersion);
     $objFormHandler->setActionType($intActionType);
-    $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-    $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+    $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+    $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
     $objFormHandler->setElementId($intElementId);
 
     $this->objForm = $objFormHandler->getGenericForm();
@@ -639,7 +639,7 @@ class Core_FolderController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelFolders;

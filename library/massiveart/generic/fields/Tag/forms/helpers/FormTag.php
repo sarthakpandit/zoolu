@@ -82,7 +82,7 @@ class Form_Helper_FormTag extends Zend_View_Helper_FormElement {
 							        <li id="autocompletList_'.$this->view->escape($id).'" class="autocompletList input-text">
                         <input type="text" value="" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$this->_htmlAttribs($attribs).$endTag.'
 							          <div id="'.$this->view->escape($id).'_autocompleter" class="autocompleter">
-							            <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+							            <div class="default">'.$core->translate->_('Search_or_add_tags').'</div> 
 							            <ul class="feed">
 							              '.$strTags.'
 							            </ul>

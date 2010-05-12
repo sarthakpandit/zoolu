@@ -46,7 +46,7 @@ Basics */
 }
 
 .itemremovethumb {
-  background:url(/zoolu/images/icons/icon_remove.png) no-repeat 0 0;
+  background:url(/zoolu-statics/images/icons/icon_remove.png) no-repeat 0 0;
   position:absolute; 
   bottom:0; 
   left:0; 
@@ -56,7 +56,7 @@ Basics */
 }
 
 .itemremovelist, .itemremovelist2 {
-  background:url(/zoolu/images/icons/icon_close.png) no-repeat 0 0;
+  background:url(/zoolu-statics/images/icons/icon_close.png) no-repeat 0 0;
   width:11px; 
   height:11px;
   cursor:pointer;
@@ -70,7 +70,7 @@ Basics */
 }
 
 .itemadd {
-  background:url(/zoolu/images/icons/icon_add_2.png) no-repeat 0 0;
+  background:url(/zoolu-statics/images/icons/icon_add_2.png) no-repeat 0 0;
   position:absolute; 
   bottom:0; 
   left:0; 
@@ -169,14 +169,14 @@ Edit Mask */
 
 .pagepreviewleft,
 .pagepreviewright {
-  background:url(/zoolu/images/main/bg_page_preview_left.png) no-repeat 0 0; 
+  background:url(/zoolu-statics/images/main/bg_page_preview_left.png) no-repeat 0 0; 
   width:5px; 
   height:20px; 
   float:left;
 }
 
 .pagepreviewright {
-  background:url(/zoolu/images/main/bg_page_preview_right.png) no-repeat 0 0;
+  background:url(/zoolu-statics/images/main/bg_page_preview_right.png) no-repeat 0 0;
 }
 
 .pagepreviewcenter {
@@ -277,7 +277,7 @@ Edit Mask */
 }
 
 .editboxdrag {
-  background: url(/zoolu/images/buttons/grid_sort_list.png) no-repeat 0 0;
+  background: url(/zoolu-statics/images/buttons/grid_sort_list.png) no-repeat 0 0;
   cursor:move;
   float:left;
   width:49px;
@@ -299,7 +299,7 @@ Edit Mask */
 } 
 
 .editboxmultiplyminus {
-  background: url(/zoolu/images/buttons/button_list_remove.png) no-repeat 0 0;
+  background: url(/zoolu-statics/images/buttons/button_list_remove.png) no-repeat 0 0;
   float:left;
   width:17px;
   height:16px;
@@ -308,7 +308,7 @@ Edit Mask */
 }
 
 .editboxmultiplyplus {
-  background: url(/zoolu/images/buttons/button_list_add.png) no-repeat 0 0;
+  background: url(/zoolu-statics/images/buttons/button_list_add.png) no-repeat 0 0;
   float:left;
   width:17px;
   height:16px;
@@ -400,7 +400,7 @@ Region Positions */
 }
 
 .multiregionline {
-  background: url(/zoolu/images/main/bg_line_dashed.png) repeat-x 0 50%;
+  background: url(/zoolu-statics/images/main/bg_line_dashed.png) repeat-x 0 50%;
   height:20px;
   margin-right:10px;
   margin-bottom:20px;
@@ -954,13 +954,13 @@ Buttons: Save, Delete */
 }
 
 .buttonedittop {
-  background: transparent url(/zoolu/images/buttons/button_purple_top.png) no-repeat 0 0;
+  background: transparent url(/zoolu-statics/images/buttons/button_purple_top.png) no-repeat 0 0;
   height:5px;
   width:143px;
 }
 
 .buttoneditbottom {
-  background: transparent url(/zoolu/images/buttons/button_purple_bottom.png) no-repeat 0 0;
+  background: transparent url(/zoolu-statics/images/buttons/button_purple_bottom.png) no-repeat 0 0;
   height:5px;
   width:143px;
 }
@@ -992,7 +992,7 @@ Buttons: Save, Delete */
 }
 
 .buttoneditmiddle {
-  background:#774580 url(/zoolu/images/icons/pointer_dark_opened.png) no-repeat 123px 4px;
+  background:#774580 url(/zoolu-statics/images/icons/pointer_dark_opened.png) no-repeat 123px 4px;
   border-left:1px solid #000;
   border-right:1px solid #000;
   width:131px;
@@ -1002,63 +1002,63 @@ Buttons: Save, Delete */
 }
 
 .button17leftOff {
-  background: url(/zoolu/images/buttons/button_purple_left_small.png) no-repeat;
+  background: url(/zoolu-statics/images/buttons/button_purple_left_small.png) no-repeat;
   width: 5px !important;
   height: 17px;
   float:left;
 }
 
 .button17rightOff {
-  background: url(/zoolu/images/buttons/button_purple_right_small.png) no-repeat;
+  background: url(/zoolu-statics/images/buttons/button_purple_right_small.png) no-repeat;
   width: 5px !important;
   height: 17px;
   float:left;
 }
 
 .button17centerOff {
-  background: url(/zoolu/images/buttons/button_purple_center_small.png) repeat-x;
+  background: url(/zoolu-statics/images/buttons/button_purple_center_small.png) repeat-x;
   height:17px;
   float:left;
   padding:0 2px 0 2px;
 }
 
 .button25leftOff {
-  background: url(/zoolu/images/buttons/button_purple_left.png) no-repeat;
+  background: url(/zoolu-statics/images/buttons/button_purple_left.png) no-repeat;
   width: 6px !important;
   height: 25px;
   float:left;
 }
 
 .button25leftOn {
-  background: url(/zoolu/images/buttons/button_yellow_left.png) no-repeat;
+  background: url(/zoolu-statics/images/buttons/button_yellow_left.png) no-repeat;
   width: 6px !important;
   height: 25px;
   float:left;
 }
 
 .button25rightOff {
-  background: url(/zoolu/images/buttons/button_purple_right.png) no-repeat;
+  background: url(/zoolu-statics/images/buttons/button_purple_right.png) no-repeat;
   width: 6px !important;
   height: 25px;
   float:left;
 }
 
 .button25rightOn {
-  background: url(/zoolu/images/buttons/button_yellow_right.png) no-repeat;
+  background: url(/zoolu-statics/images/buttons/button_yellow_right.png) no-repeat;
   width: 6px !important;
   height: 25px;
   float:left;
 }
 
 .button25centerOff {
-  background: url(/zoolu/images/buttons/button_purple_center.png) repeat-x;
+  background: url(/zoolu-statics/images/buttons/button_purple_center.png) repeat-x;
   height:25px;
   float:left;
   width:90px;
 }
 
 .button25centerOn {
-  background: url(/zoolu/images/buttons/button_yellow_center.png) repeat-x;
+  background: url(/zoolu-statics/images/buttons/button_yellow_center.png) repeat-x;
   height:25px;
   float:left;
   width:90px;
@@ -1199,11 +1199,11 @@ Pointers */
 }
 
 .opened {
-  background-image:url(/zoolu/images/icons/pointer_white_opened.png);
+  background-image:url(/zoolu-statics/images/icons/pointer_white_opened.png);
 }
 
 .closed {
-  background-image:url(/zoolu/images/icons/pointer_white_closed.png);
+  background-image:url(/zoolu-statics/images/icons/pointer_white_closed.png);
   margin-top:1px;
 }
 
@@ -1211,7 +1211,7 @@ Pointers */
 Corners */
 
 .cornertl {
-  background-image: url(/zoolu/images/main/content_inner_corners_tl.png);
+  background-image: url(/zoolu-statics/images/main/content_inner_corners_tl.png);
   background-color:#754480;
   background-repeat:no-repeat;
   width: 10px;
@@ -1221,7 +1221,7 @@ Corners */
 }
 
 .cornertr {
-  background-image: url(/zoolu/images/main/content_inner_corners_tr.png);
+  background-image: url(/zoolu-statics/images/main/content_inner_corners_tr.png);
   background-color:#e4e4e4;
   background-repeat:no-repeat;
   width: 4px;
@@ -1236,7 +1236,7 @@ Corners */
 } 
 
 .cornerbl {
-  background-image: url(/zoolu/images/main/content_inner_corners.png);
+  background-image: url(/zoolu-statics/images/main/content_inner_corners.png);
   background-position: 0px 4px;
   width: 4px;
   height: 4px;
@@ -1245,7 +1245,7 @@ Corners */
 }
 
 .cornerbr {
-  background-image: url(/zoolu/images/main/content_inner_corners.png);
+  background-image: url(/zoolu-statics/images/main/content_inner_corners.png);
   background-position: 4px 4px;
   width: 4px;
   height: 4px;
@@ -1254,7 +1254,7 @@ Corners */
 }
 
 .cornerbl-closed {
-  background-image: url(/zoolu/images/main/content_inner_corners_bl.png);
+  background-image: url(/zoolu-statics/images/main/content_inner_corners_bl.png);
   background-color:#754480;
   background-repeat:no-repeat;
   width: 10px;
@@ -1347,21 +1347,21 @@ Overlay Inner */
 /* --- overlay content files --- */
 
 .olfiletopleft {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_left_top.png) no-repeat scroll 0 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_left_top.png) no-repeat scroll 0 0;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olfiletopright {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_right_top.png) no-repeat scroll right 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_right_top.png) no-repeat scroll right 0;
 	height:26px;
 	width:11px;
 	float:left;
 }
 
 .olfiletopitemicon {
-  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x scroll 0 0;
 	height:26px;
 	padding:0 10px 0 0;
 	text-align:left;
@@ -1370,7 +1370,7 @@ Overlay Inner */
 }
 
 .olfiletopitemtitle {
-  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x scroll 0 0;
   height:20px;
   padding:6px 10px 0 0;
   text-align:left;
@@ -1417,21 +1417,21 @@ Overlay Inner */
 }
 
 .olfilebottomleft {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_left_bottom.png) no-repeat scroll 0 bottom;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_left_bottom.png) no-repeat scroll 0 bottom;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olfilebottomright {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_right_bottom.png) no-repeat scroll right bottom;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_right_bottom.png) no-repeat scroll right bottom;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olfilebottomcenter {
-  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 bottom;
+  background:#e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x scroll 0 bottom;
   height:26px;
   width:391px;
   float:left;
@@ -1440,21 +1440,21 @@ Overlay Inner */
 /* --- overlay content contacts --- */
 
 .olcontacttopleft {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_left_top.png) no-repeat scroll 0 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_left_top.png) no-repeat scroll 0 0;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olcontacttopright {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_right_top.png) no-repeat scroll right 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_right_top.png) no-repeat scroll right 0;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olcontacttopitemicon {
-  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x scroll 0 0;
   height:26px;
   padding:0 10px 0 0;
   text-align:left;
@@ -1463,7 +1463,7 @@ Overlay Inner */
 }
 
 .olcontacttopitemtitle {
-  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 0;
+  background:#e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x scroll 0 0;
   height:20px;
   padding:6px 10px 0 0;
   text-align:left;
@@ -1510,21 +1510,21 @@ Overlay Inner */
 }
 
 .olcontactbottomleft {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_left_bottom.png) no-repeat scroll 0 bottom;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_left_bottom.png) no-repeat scroll 0 bottom;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olcontactbottomright {
-  background:#e4e4e4 url(/zoolu/images/main/list_corner_right_bottom.png) no-repeat scroll right bottom;
+  background:#e4e4e4 url(/zoolu-statics/images/main/list_corner_right_bottom.png) no-repeat scroll right bottom;
   height:26px;
   width:11px;
   float:left;
 }
 
 .olcontactbottomcenter {
-  background:#e4e4e4 url(/zoolu/images/main/pixel_white.gif) repeat-x scroll 0 bottom;
+  background:#e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x scroll 0 bottom;
   height:26px;
   width:391px;
   float:left;
@@ -1690,7 +1690,7 @@ video select */
   float: left;
   height: 30px;
   width: 11px;
-  background: url(/zoolu/images/navigation/tab_left_off.png) no-repeat 0 0;
+  background: url(/zoolu-statics/images/navigation/tab_left_off.png) no-repeat 0 0;
   position: relative;
   z-index: 10;
   padding: 0px;
@@ -1699,18 +1699,18 @@ video select */
   float: left;
   height: 30px;
   width: 11px;
-  background: url(/zoolu/images/navigation/tab_right_off.png) no-repeat 0 0;
+  background: url(/zoolu-statics/images/navigation/tab_right_off.png) no-repeat 0 0;
 }
 .tabNavContainer li .middle  {
   float: left;
   height: 19px; /* 30px - padding */
   padding: 11px 10px 0 10px;
   position: relative;
-  background: url(/zoolu/images/navigation/tab_middle_off.png) repeat-x 0 0;  
+  background: url(/zoolu-statics/images/navigation/tab_middle_off.png) repeat-x 0 0;  
 }
 .tabNavContainer li:hover .start,
 .tabNavContainer .selected .start {  
-  background: url(/zoolu/images/navigation/tab_left_on.png) repeat-x 0 0;
+  background: url(/zoolu-statics/images/navigation/tab_left_on.png) repeat-x 0 0;
   float: left;
   height: 30px;
   width: 11px;
@@ -1718,7 +1718,7 @@ video select */
 }
 .tabNavContainer li:hover .end,
 .tabNavContainer .selected .end {  
-  background: url(/zoolu/images/navigation/tab_right_on.png) repeat-x 0 0;
+  background: url(/zoolu-statics/images/navigation/tab_right_on.png) repeat-x 0 0;
   float: left;
   height: 30px;
   width: 11px;
@@ -1731,7 +1731,7 @@ video select */
 }
 .tabNavContainer li:hover .middle,
 .tabNavContainer .selected .middle { 
-  background: #666 url(/zoolu/images/navigation/tab_middle_on.png) repeat-x 0 0;
+  background: #666 url(/zoolu-statics/images/navigation/tab_middle_on.png) repeat-x 0 0;
   float: left;
   height: 19px; /* 30px - padding */
   padding: 11px 10px 0 10px;
@@ -1769,7 +1769,7 @@ Media Toolbar */
 
 #mediaviewtypes .iconlistview_on,
 #mediaviewtypes .iconlistview {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat 0 -23px;
+  background: url(/zoolu-statics/images/icons/icon_media_view.png) no-repeat 0 -23px;
   width:23px;
   height:23px;
   float:left;
@@ -1777,13 +1777,13 @@ Media Toolbar */
 }
 
 #mediaviewtypes .iconlistview_on {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat -23px -23px;
+  background: url(/zoolu-statics/images/icons/icon_media_view.png) no-repeat -23px -23px;
   cursor:pointer;
 }
 
 #mediaviewtypes .iconthumbview_on,
 #mediaviewtypes .iconthumbview {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat 0 0;
+  background: url(/zoolu-statics/images/icons/icon_media_view.png) no-repeat 0 0;
   width:23px;
   height:23px;
   float:left;
@@ -1792,6 +1792,6 @@ Media Toolbar */
 }
 
 #mediaviewtypes .iconthumbview_on {
-  background: url(/zoolu/images/icons/icon_media_view.png) no-repeat -23px 0;
+  background: url(/zoolu-statics/images/icons/icon_media_view.png) no-repeat -23px 0;
   cursor:pointer;
 }

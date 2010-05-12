@@ -31,7 +31,7 @@ var STORE_NAME = "zoolu_offline_docset";
 // Change this to set the URL of tha manifest file, which describe which
 // URLs to capture. It can be relative to the current page, or an
 // absolute URL.
-var MANIFEST_FILENAME = "/zoolu/js_incs/gears/gears_manifest.json";
+var MANIFEST_FILENAME = "/zoolu-statics/js_incs/gears/gears_manifest.json";
 
 var localServer;
 var store;

@@ -93,6 +93,16 @@ class Core {
   public $strLanguageCode;
   
   /**
+   * @var integer
+   */
+  public $intZooluLanguageId;
+
+  /**
+   * @var string
+   */
+  public $strZooluLanguageCode;  
+  
+  /**
    * @var boolean
    */
   public $blnIsDefaultLanguage = false;
@@ -192,12 +202,15 @@ class Core {
     /**
      * set up zoolu translate obj
      */
-    if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo')){
-      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strLanguageCode.'.mo');  
-    }else{
-      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->sysConfig->languages->default->code.'.mo');
-    }
+    $this->intZooluLanguageId = (Zend_Auth::getInstance()->hasIdentity()) ? Zend_Auth::getInstance()->getIdentity()->languageId : $this->intLanguageId;
+    $this->strZooluLanguageCode = (Zend_Auth::getInstance()->hasIdentity()) ? Zend_Auth::getInstance()->getIdentity()->languageCode : $this->strLanguageCode;
     
+    if(file_exists(GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strZooluLanguageCode.'.mo')){
+      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->strZooluLanguageCode.'.mo');  
+    }else{
+      $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-'.$this->zooConfig->languages->default->code.'.mo');
+    }
+        
     /**
      * write language to session
      */
@@ -230,12 +243,6 @@ class Core {
      */
     $filter = new Zend_Log_Filter_Priority((int) $this->sysConfig->logger->priority);
     $this->logger->addFilter($filter);
-
-    /**
-     * set up zoolu translate obj
-     */
-    $this->translate = new HtmlTranslate('gettext', GLOBAL_ROOT_PATH.'application/zoolu/language/zoolu-de.mo', 'de');
-
 
     if($blnWithDbh == true){
       /**

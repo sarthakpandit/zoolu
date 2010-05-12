@@ -72,7 +72,7 @@ class NavigationHelper {
        * get values of the row and create output
        */
       $strOutput .= '<div class="portalcontainer">
-        <div id="portal'.$objRow->id.'top" class="portaltop"><img src="/zoolu/images/main/bg_box_230_top.png" width="230" height="4"/></div>
+        <div id="portal'.$objRow->id.'top" class="portaltop"><img src="/zoolu-statics/images/main/bg_box_230_top.png" width="230" height="4"/></div>
         <div id="portal'.$objRow->id.'" class="portal" onclick="myNavigation.selectPortal('.$objRow->id.'); myNavigation.loadDashboard(); return false;">
           <div class="portalicon"></div>
           <div id="divRootLevelTitle_'.$objRow->id.'" class="portaltitle">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
@@ -81,22 +81,22 @@ class NavigationHelper {
         <div id="portal'.$objRow->id.'menu" style="display:none;" class="portalmenu">
           <div class="portalmenulink">
             <div class="portalcontenticon"></div>
-            <div class="portalmenutitle"><a href="#" onclick="myNavigation.selectPortal('.$objRow->id.'); return false;">Webinhalte</a></div>
+            <div class="portalmenutitle"><a href="#" onclick="myNavigation.selectPortal('.$objRow->id.'); return false;">'.$this->core->translate->_('Web_content').'</a></div>
             <div class="clear"></div>
           </div>
           <!--<div class="portalmenulink">
             <div class="portalwidgetsicon"></div>
-            <div class="portalmenutitle"><a href="#" onclick="return false;">Widgets</a></div>
+            <div class="portalmenutitle"><a href="#" onclick="return false;">'.$this->core->translate->_('Widgets').'</a></div>
             <div class="clear"></div>
           </div>
           <div class="portalmenulink">
             <div class="portalsettingsicon"></div>
-            <div class="portalmenutitle"><a href="#" onclick="return false;">Einstellungen</a></div>
+            <div class="portalmenutitle"><a href="#" onclick="return false;">'.$this->core->translate->_('Settings').'</a></div>
             <div class="clear"></div>
           </div>-->
           <div class="clear"></div>
         </div>
-        <div id="portal'.$objRow->id.'bottom" class="portalbottom"><img src="/zoolu/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
+        <div id="portal'.$objRow->id.'bottom" class="portalbottom"><img src="/zoolu-statics/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
         <div class="clear"></div>
       </div>';
     }

@@ -13,7 +13,7 @@
   </div>
 </div>
 <?php endif; ?>
-<div class="oltitle">Medien bearbeiten</div>
+<div class="oltitle"><?php echo $this->translate->_('Edit_media'); ?></div>
 <div class="clear spacer1"></div>
 <form id="editForm" name="editForm" method="post" action="<?php echo $this->strEditFormAction; ?>" onsubmit="return false;">
   <input type="hidden" id="mediaFormLanguageId" value="<?php echo $this->languageId; ?>" name="languageId"/>
@@ -23,12 +23,12 @@
     <input type="hidden" name="IsSingleEdit" id="EditIsSingleEdit" value="true"/>
   </div>
   <div class="clear"></div>
-  <div class="buttoncancel" onclick="myOverlay.close(); return false;">Abbrechen</div>  
+  <div class="buttoncancel" onclick="myOverlay.close(); return false;"><?php echo $this->translate->_('Cancel'); ?></div>  
   <div onclick="myMedia.editFiles();" class="buttoneditsave" id="btnSingleEditSubmit">
     <div class="button25leftOn"></div>
     <div class="button25centerOn">
-      <img width="13" height="13" src="/zoolu/images/icons/icon_save_black.png" class="iconsave"/>
-      <div>Speichern</div>
+      <img width="13" height="13" src="/zoolu-statics/images/icons/icon_save_black.png" class="iconsave"/>
+      <div><?php echo $this->translate->_('Save'); ?></div>
     </div>
     <div class="button25rightOn"></div>
     <div class="clear"></div>

@@ -97,13 +97,13 @@ class NavigationHelper {
     	}
     	
       $strOutput .= '<div class="portalcontainer">
-        <div id="portal'.$row->id.'top" class="portaltop"><img src="/zoolu/images/main/bg_box_230_top.png" width="230" height="4"/></div>
+        <div id="portal'.$row->id.'top" class="portaltop"><img src="/zoolu-statics/images/main/bg_box_230_top.png" width="230" height="4"/></div>
         <div id="portal'.$row->id.'" class="portal" onclick="'.$strJsClickFunc.'return false;">
           <div class="'.$strRootLevelIconCss.'"></div>
           <div id="divRootLevelTitle_'.$row->id.'" class="portaltitle">'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
           <div class="clear"></div>
         </div>
-        <div id="portal'.$row->id.'bottom" class="portalbottom"><img src="/zoolu/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
+        <div id="portal'.$row->id.'bottom" class="portalbottom"><img src="/zoolu-statics/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
         <div class="clear"></div>
       </div>';
     }

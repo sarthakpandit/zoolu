@@ -131,7 +131,7 @@ class Plugin_FormDecorator_VideoSelect extends Zend_Form_Decorator_Abstract {
                       <div class="selectedVideo bg2">
                         <div id="div_selected'.$element->getName().'"></div>
                         <div class="videoItem bg1">
-                          <div class="videoThumb"><img src="/zoolu/images/icons/icon_novideo.png" witdh="100" style="border-right:1px solid #ccc;"/></div>
+                          <div class="videoThumb"><img src="/zoolu-statics/images/icons/icon_novideo.png" witdh="100" style="border-right:1px solid #ccc;"/></div>
                           <div class="videoInfos"><strong>Kein Video</strong></div>   
                         </div>
                       </div>

@@ -114,10 +114,10 @@ class Form_Helper_FormDocumentFilter extends Zend_View_Helper_FormElement {
     $strOutput = '<div>
 	                  <ol>
 							        <li id="autocompletList_'.$this->view->escape($id).'" class="autocompletList input-text">
-                        <label class="fieldtitle" for="'.$this->view->escape($id).'_Tags">Dokument filtern nach Tags</label>
+                        <label class="fieldtitle" for="'.$this->view->escape($id).'_Tags">'.$core->translate->_('Document_filtering_by_tags').'</label>
                         <input type="text" value="'.$this->view->escape(trim($strTagIds, ',')).'" onchange="myForm.loadFileFilterFieldContent(\''.$this->view->escape($id).'\', \'documentFilter\');" id="'.$this->view->escape($id).'_Tags" name="'.$this->view->escape($name).'_Tags"'.$endTag.'
 							          <div id="'.$this->view->escape($id).'_Tags_autocompleter" class="autocompleter">
-							            <div class="default">Tags suchen</div>
+							            <div class="default">'.$core->translate->_('Search_tags').'</div>
 							            <ul class="feed">
 							              '.$strTags.'
 							            </ul>
@@ -153,13 +153,13 @@ class Form_Helper_FormDocumentFilter extends Zend_View_Helper_FormElement {
                   </script>*/
     $strOutput .= '
                   <div style="display:none;">
-                    <div>Ordner wählen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getDocumentFolderChooserOverlay(\''.$this->view->escape($id).'_FoldersContainer\', \''.$this->view->escape($id).'\'); return false;"/></div>
+                    <div>'.$core->translate->_('Select_folder').': <img src="/zoolu-statics/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getDocumentFolderChooserOverlay(\''.$this->view->escape($id).'_FoldersContainer\', \''.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="'.$this->view->escape($id).'_FoldersContainer"></div>
                     <input type="hidden" value="'.$this->view->escape($strFolderIds).'" id="'.$this->view->escape($id).'_Folders" name="'.$this->view->escape($name).'_Folders"'.$endTag.'
                     <input type="hidden" value="'.$this->view->escape($strRootLeveId).'" id="'.$this->view->escape($id).'_RootLevel" name="'.$this->view->escape($name).'_RootLevel"'.$endTag.'
                   </div>						      
                   <div class="docwrapper">
-                    <div class="doctop">Ordner wählen: <img src="/zoolu/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getDocumentFolderChooserOverlay(\''.$this->view->escape($id).'_FoldersContainer\', \''.$this->view->escape($id).'\'); return false;"/></div>
+                    <div class="doctop">'.$core->translate->_('Select_folder').': <img src="/zoolu-statics/images/icons/icon_addmedia.png" width="16" height="16" onclick="myForm.getDocumentFolderChooserOverlay(\''.$this->view->escape($id).'_FoldersContainer\', \''.$this->view->escape($id).'\'); return false;"/></div>
                     <div id="documentFilterContainer_'.$this->view->escape($id).'"'.$disabled.' class="'.$attribs['class'].'"></div>
                   </div>
                   <input type="hidden" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" isCoreField="'.$attribs['isCoreField'].'" fieldId="'.$attribs['fieldId'].'" value=""/>';

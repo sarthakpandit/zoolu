@@ -18,7 +18,7 @@
        <li class="autocompletList input-text">
          <input type="text" value="" id="FileTags<?php echo $this->fileId; ?>" name="FileTags<?php echo $this->fileId; ?>"/>
          <div id="FileTags<?php echo $this->fileId; ?>_autocompleter" class="autocompleter">
-           <div class="default">Tags suchen oder hinzuf&uuml;gen</div> 
+           <div class="default"><?php echo $this->translate->_('Search_or_add_tags'); ?></div> 
            <ul class="feed"></ul>
          </div>
        </li>
@@ -26,7 +26,7 @@
     </div>
     <div class="mediainfolanguagespecific">
       <div class="field">
-         <label for="FileIsLanguageSpecific<?php echo $this->fileId; ?>"><input type="checkbox" class="multiCheckbox" value="1" id="FileIsLanguageSpecific<?php echo $this->fileId; ?>" name="FileIsLanguageSpecific<?php echo $this->fileId; ?>"> Medium ist sprachspezifisch</label>                            
+         <label for="FileIsLanguageSpecific<?php echo $this->fileId; ?>"><input type="checkbox" class="multiCheckbox" value="1" id="FileIsLanguageSpecific<?php echo $this->fileId; ?>" name="FileIsLanguageSpecific<?php echo $this->fileId; ?>"> <?php echo $this->translate->_('Medium_is_language_specific'); ?></label>                            
       </div>
     </div>
     <div class="clear"></div>

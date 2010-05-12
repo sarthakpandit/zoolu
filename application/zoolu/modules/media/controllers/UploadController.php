@@ -65,7 +65,7 @@ class Media_UploadController extends AuthControllerAction  {
    */
   public function init(){
     parent::init();
-    $this->intLanguageId = ((int) $this->getRequest()->getParam("languageId") > 0) ? (int) $this->getRequest()->getParam("languageId") : $this->core->sysConfig->languages->default->id;
+    $this->intLanguageId = ((int) $this->getRequest()->getParam("languageId") > 0) ? (int) $this->getRequest()->getParam("languageId") : $this->core->intZooluLanguageId;
     $this->view->assign('languageId', $this->intLanguageId);
   }
 
@@ -277,7 +277,7 @@ class Media_UploadController extends AuthControllerAction  {
     $this->view->assign('fileVersion', $objFile->getVersion());
     $this->view->assign('filePath', sprintf($this->core->sysConfig->media->paths->icon32, $objFile->getSegmentPath()));
     $this->view->assign('mimeType', $objFile->getMimeType());
-    $this->view->assign('strDefaultDescription', 'Beschreibung hinzufügen...'); // TODO : translate
+    $this->view->assign('strDefaultDescription', $this->core->translate->_('Add_description_'));
     $this->view->assign('languageId', $this->intLanguageId);
   }
   

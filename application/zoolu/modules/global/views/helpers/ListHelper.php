@@ -132,16 +132,16 @@ class ListHelper {
     if($strSearchValue != ''){
       if(count($objPaginator) > 0){
         $strOutput = '
-            <div class="formsubtitle searchtitle">Suche nach "'.$strSearchValue.'"</div>'; 
+            <div class="formsubtitle searchtitle">'.sprintf($this->core->translate->_('Search_for_'), $strSearchValue).'</div>'; 
       }else{
         $strOutput = '
-            <div class="formsubtitle searchtitle">Es wurden keine Ergebnisse für "'.$strSearchValue.'" gefunden.</div>';   
+            <div class="formsubtitle searchtitle">'.sprintf($this->core->translate->_('No_search_results_for_'), $strSearchValue).'</div>';   
       }
       $strOutput .= '
             <div class="bttnSearchReset" onclick="myList.resetSearch();">
               <div class="button17leftOff"></div>
               <div class="button17centerOff">
-                <div>Zurücksetzen</div>
+                <div>'.$this->core->translate->_('Reset').'</div>
                 <div class="clear"></div>
               </div>
               <div class="button17rightOff"></div>

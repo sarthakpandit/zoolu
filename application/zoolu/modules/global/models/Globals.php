@@ -481,7 +481,8 @@ class Model_Globals {
       $strSqlInstanceFields = '';
       if(strpos($strGenForm, $this->core->sysConfig->form->ids->press->default) !== false){
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
-                                  `global-'.$strGenForm.'-Instances`.description,';
+                                  `global-'.$strGenForm.'-Instances`.description,
+                                  `globalDatetimes`.datetime,';
       }elseif(strpos($strGenForm, $this->core->sysConfig->form->ids->event->default) !== false){  
         $strSqlInstanceFields = ' `global-'.$strGenForm.'-Instances`.shortdescription,
                                   `global-'.$strGenForm.'-Instances`.description,

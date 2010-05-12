@@ -223,7 +223,7 @@ class Global_NavigationController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId(1); // TODO : get language id
+      $this->objModelFolders->setLanguageId($this->core->intZooluLanguageId);
     }
 
     return $this->objModelFolders;

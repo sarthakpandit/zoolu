@@ -311,7 +311,7 @@ Inner */
 }
 
 #divNaviRightInner div#divFolderRapper div#divFolderInfo div#divFolderActions div.icon_folder {
-	background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 2px -238px;
+	background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 2px -238px;
 	width: 25px;
 	height: 16px;
 	float: left;
@@ -319,7 +319,7 @@ Inner */
 }
 
 #divNaviRightInner div#divFolderRapper div#divFolderInfo div#divFolderActions div.icon_list {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 2px -34px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 2px -34px;
   width: 25px;
   height: 16px;
   float: left;  
@@ -480,84 +480,84 @@ Navigtion left */
 
 .portal .portalicon,
 .naviitem .producticon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -188px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -188px;
 }
 
 .portal .imageicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -21px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -21px;
 }
 
 .portal .documenticon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -63px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -63px;
 }
 
 .portal .videoicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -314px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -314px;
 }
 
 .portal .categoryicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -105px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -105px;
 }
 
 .portal .usericon,
 .naviitem .usericon,
 .naviitem .groupicon,
 .naviitem .resourceicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -147px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -147px;
 }
 
 .portal .locationicon,
 .naviitem .locationicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -356px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -356px;
 }
 
 .portal .labelicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -272px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -272px;
 }
 
 .portal .sysinternicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -210px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -210px;
 }
 
 .selected .portalicon,
 .selected .producticon  {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -167px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -167px;
 }
 
 .selected .imageicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% 0;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% 0;
 }
 
 .selected .documenticon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -42px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -42px;
 }
 
 .selected .videoicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -293px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -293px;
 }
 
 .selected .categoryicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -84px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -84px;
 }
 
 .selected .usericon,
 .selected .usericon,
 .selected .groupicon,
 .selected .resourceicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -126px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -126px;
 }
 
 .selected .locationicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -335px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -335px;
 }
 
 
 .selected .labelicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -251px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -251px;
 }
 
 .selected .sysinternicon {
-  background:transparent url(/zoolu/images/icons/icons_main.png) no-repeat 50% -231px;
+  background:transparent url(/zoolu-statics/images/icons/icons_main.png) no-repeat 50% -231px;
 }
 
 .portal .portaltitle {
@@ -582,19 +582,19 @@ Navigtion left */
 }
 
 .portalcontenticon {
-  background:transparent url(/zoolu/images/icons/icon_menu_content.png) no-repeat 0 0;  
+  background:transparent url(/zoolu-statics/images/icons/icon_menu_content.png) no-repeat 0 0;  
 }
 
 .selected .portalcontenticon {
-  background:transparent url(/zoolu/images/icons/icon_menu_content.png) no-repeat 0 -32px;  
+  background:transparent url(/zoolu-statics/images/icons/icon_menu_content.png) no-repeat 0 -32px;  
 }
 
 .portalwidgetsicon {
-  background:transparent url(/zoolu/images/icons/icon_menu_widgets.png) no-repeat 0 0;
+  background:transparent url(/zoolu-statics/images/icons/icon_menu_widgets.png) no-repeat 0 0;
 }
 
 .portalsettingsicon {
-  background:transparent url(/zoolu/images/icons/icon_menu_settings.png) no-repeat 0 0;
+  background:transparent url(/zoolu-statics/images/icons/icon_menu_settings.png) no-repeat 0 0;
 }
 
 .portalmenu .portalmenutitle {
@@ -670,7 +670,7 @@ Navigtion left */
 }
 
 .x-btn-with-menu .x-btn-center em {
-  background:transparent url(/js_incs/ext.js/resources/zoolu/images/default/toolbar/btn-arrow.gif) no-repeat scroll left 0;
+  background:transparent url(/js_incs/ext.js/resources/zoolu-statics/images/default/toolbar/btn-arrow.gif) no-repeat scroll left 0;
   display:block;
   padding-right:0;
   width:15px;
@@ -749,7 +749,7 @@ div.navlevelinner .contact {
 .folder, 
 .category,
 .unit {
-  background:transparent url(/zoolu/images/icons/arrows.png) no-repeat right 0;
+  background:transparent url(/zoolu-statics/images/icons/arrows.png) no-repeat right 0;
   position:relative;
   padding-right:15px;
   padding-top:2px;
@@ -800,7 +800,7 @@ Icons */
 
 .img_startpage_on,
 .img_start_on {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -136px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -136px;
   position:relative;
   width:16px;
   height:16px;
@@ -808,21 +808,21 @@ Icons */
 
 .img_startpage_off,
 .img_start_off {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -153px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -153px;
   position:relative;
   width:16px;
   height:16px;
 }
 
 .img_folder_on, .img_unit {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -255px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -255px;
   position:relative;
   width:16px;
   height:16px;
 }
 
 .img_folder_off {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -238px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -238px;
   position:relative;
   width:16px;
   height:16px;
@@ -832,7 +832,7 @@ Icons */
 .selected .img_unit,
 .pselected .img_folder_on,
 .img_folder_on_open {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -221px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -221px;
   position:relative;
   width:16px;
   height:16px;
@@ -840,7 +840,7 @@ Icons */
 
 .selected .img_folder_off,
 .pselected .img_folder_off {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -204px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -204px;
   position:relative;
   width:16px;
   height:16px;
@@ -848,7 +848,7 @@ Icons */
 
 .img_category_on,
 .img_category_off{
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -119px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -119px;
   position:relative;
   width:16px;
   height:16px;
@@ -856,7 +856,7 @@ Icons */
 
 .img_label_on,
 .img_label_off{
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -322px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -322px;
   position:relative;
   width:16px;
   height:16px;
@@ -864,7 +864,7 @@ Icons */
 
 .img_sysintern_on,
 .img_sysintern_off{
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -288px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -288px;
   position:relative;
   width:16px;
   height:16px;
@@ -872,7 +872,7 @@ Icons */
 
 .img_page_on,
 .img_global_on {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -187px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -187px;
   position:relative;
   width:16px;
   height:16px;
@@ -880,14 +880,14 @@ Icons */
 
 .img_page_off,
 .img_global_off {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -170px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -170px;
   position:relative;
   width:16px;
   height:16px;
 }
 
 .img_contact {
-  background:transparent url(/zoolu/images/icons/icons_small.png) no-repeat scroll 50% -85px;
+  background:transparent url(/zoolu-statics/images/icons/icons_small.png) no-repeat scroll 50% -85px;
   position:relative;
   width:16px;
   height:16px;
@@ -949,14 +949,14 @@ Navigtion levels */
   bottom:0;
   width:19px;
   height:18px;
-  background:transparent url(/zoolu/images/icons/bg_add_icon.png) no-repeat top left;
+  background:transparent url(/zoolu-statics/images/icons/bg_add_icon.png) no-repeat top left;
   padding:2px 0 0 1px;
   overflow:hidden;
   cursor:pointer; 
 }
 
 .addmenuhover {
-  background:transparent url(/zoolu/images/icons/bg_add_icon.png) no-repeat bottom left;
+  background:transparent url(/zoolu-statics/images/icons/bg_add_icon.png) no-repeat bottom left;
 }
 
 .addmenu {
@@ -979,7 +979,7 @@ Navigtion levels */
   float:left;
   width:5px;
   height:5px;
-  background:transparent url(/zoolu/images/main/corner_addmenue_top_right.png) no-repeat top right;
+  background:transparent url(/zoolu-statics/images/main/corner_addmenue_top_right.png) no-repeat top right;
 }
 
 .addmenucontent {

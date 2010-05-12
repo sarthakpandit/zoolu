@@ -136,7 +136,7 @@ class Media_ViewController extends AuthControllerAction  {
        */ 
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId($this->getRequest()->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFiles->setLanguageId($this->getRequest()->getParam("languageId", $this->core->intZooluLanguageId));
       $this->objModelFiles->setAlternativLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);      
     }
     

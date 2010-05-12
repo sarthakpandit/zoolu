@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-22 10:41+0100\n"
+"POT-Creation-Date: 2010-05-11 17:36+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
+"Last-Translator: Cornelius Hansjakob <cha@massiveart.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,13 +30,13 @@ msgid "Searchresults"
 msgstr "Suchergebnisse"
 
 #: application/website/default/language/addon-language-keys.php:38
-#: application/website/default/controllers/SweepstakeController.php:272
+#: application/website/default/controllers/SweepstakeController.php:276
 #: application/website/default/controllers/DatareceiverController.php:116
 msgid "Salutation"
 msgstr "Anrede"
 
 #: application/website/default/language/addon-language-keys.php:39
-#: application/website/default/controllers/SweepstakeController.php:273
+#: application/website/default/controllers/SweepstakeController.php:277
 #: application/website/default/controllers/DatareceiverController.php:117
 msgid "Title"
 msgstr "Titel"
@@ -52,31 +52,31 @@ msgid "Sname"
 msgstr "Nachname"
 
 #: application/website/default/language/addon-language-keys.php:42
-#: application/website/default/controllers/SweepstakeController.php:276
+#: application/website/default/controllers/SweepstakeController.php:280
 #: application/website/default/controllers/DatareceiverController.php:120
 msgid "Company"
 msgstr "Firma"
 
 #: application/website/default/language/addon-language-keys.php:43
-#: application/website/default/controllers/SweepstakeController.php:277
+#: application/website/default/controllers/SweepstakeController.php:281
 #: application/website/default/controllers/DatareceiverController.php:121
 msgid "Email"
 msgstr "E-Mail"
 
 #: application/website/default/language/addon-language-keys.php:44
-#: application/website/default/controllers/SweepstakeController.php:278
+#: application/website/default/controllers/SweepstakeController.php:282
 #: application/website/default/controllers/DatareceiverController.php:122
 msgid "Phone"
 msgstr "Telefon"
 
 #: application/website/default/language/addon-language-keys.php:45
-#: application/website/default/controllers/SweepstakeController.php:279
+#: application/website/default/controllers/SweepstakeController.php:283
 #: application/website/default/controllers/DatareceiverController.php:123
 msgid "Fax"
 msgstr "Fax"
 
 #: application/website/default/language/addon-language-keys.php:46
-#: application/website/default/controllers/SweepstakeController.php:280
+#: application/website/default/controllers/SweepstakeController.php:284
 #: application/website/default/controllers/DatareceiverController.php:124
 msgid "Function"
 msgstr "Funktion"
@@ -87,7 +87,7 @@ msgid "Type"
 msgstr "Typ des Unternehmens"
 
 #: application/website/default/language/addon-language-keys.php:48
-#: application/website/default/controllers/SweepstakeController.php:282
+#: application/website/default/controllers/SweepstakeController.php:286
 #: application/website/default/controllers/DatareceiverController.php:126
 msgid "Street"
 msgstr "Straße"
@@ -98,19 +98,19 @@ msgid "Zip"
 msgstr "PLZ"
 
 #: application/website/default/language/addon-language-keys.php:50
-#: application/website/default/controllers/SweepstakeController.php:284
+#: application/website/default/controllers/SweepstakeController.php:288
 #: application/website/default/controllers/DatareceiverController.php:128
 msgid "City"
 msgstr "Ort"
 
 #: application/website/default/language/addon-language-keys.php:51
-#: application/website/default/controllers/SweepstakeController.php:285
+#: application/website/default/controllers/SweepstakeController.php:289
 #: application/website/default/controllers/DatareceiverController.php:129
 msgid "State"
 msgstr "Bundesland"
 
 #: application/website/default/language/addon-language-keys.php:52
-#: application/website/default/controllers/SweepstakeController.php:286
+#: application/website/default/controllers/SweepstakeController.php:290
 #: application/website/default/controllers/DatareceiverController.php:130
 msgid "Country"
 msgstr "Land"
@@ -125,23 +125,23 @@ msgstr "Bemerkungen"
 msgid "Attachment"
 msgstr "Anhang/Beilage"
 
-#: application/website/default/controllers/SweepstakeController.php:274
+#: application/website/default/controllers/SweepstakeController.php:278
 msgid "Firstname"
 msgstr "Vorname"
 
-#: application/website/default/controllers/SweepstakeController.php:275
+#: application/website/default/controllers/SweepstakeController.php:279
 msgid "Surname"
 msgstr "Nachname"
 
-#: application/website/default/controllers/SweepstakeController.php:281
+#: application/website/default/controllers/SweepstakeController.php:285
 msgid "Type_of_company"
 msgstr "Typ des Unternehmens"
 
-#: application/website/default/controllers/SweepstakeController.php:283
+#: application/website/default/controllers/SweepstakeController.php:287
 msgid "ZipCode"
 msgstr "PLZ"
 
-#: application/website/default/controllers/SweepstakeController.php:287
+#: application/website/default/controllers/SweepstakeController.php:291
 #: application/website/default/controllers/DatareceiverController.php:133
 msgid "Check_Legalnotes"
 msgstr "Rechtliche Hinweise"
@@ -243,6 +243,11 @@ msgstr "Ich bin damit einverstanden, dass meine oben eingegebenen Daten von der 
 msgid "Press_Contact"
 msgstr "Medienkontakt"
 
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1272
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1307
+msgid "Tel"
+msgstr "Tel"
+
 #: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1298
 msgid "Contact"
 msgstr "Kontakt"
@@ -295,7 +300,7 @@ msgstr ""
 msgid "nceram_monza_form_IntroText"
 msgstr ""
 
-#: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:107
+#: public/website/themes/ivoclarvivadent/sweepstakes/nceram_monza/form.php:108
 msgid "nceram_monza_form_LegalNotes"
 msgstr ""
 
@@ -411,6 +416,10 @@ msgstr "Drei Badetücher von Tetric EvoFlow"
 #: public/website/themes/ivoclarvivadent/sweepstakes/evoflow_maldives/sweepstake.php:33
 msgid "evoFlow_maldives_Question"
 msgstr "In wie vielen Farben gibt es Tetric EvoFlow?"
+
+#: public/website/themes/ivoclarvivadent/includes/header.inc.php:55
+msgid "Font_Size"
+msgstr "Schriftgrösse"
 
 #: application/website/default/views/scripts/search/livesearch.phtml:6
 msgid "Advanced_Search"

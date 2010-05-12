@@ -142,7 +142,7 @@ function get_zoolu_header(){
     $strHtmlOutput .= '<div class="divModusContainer">
       <div class="divModusLogo">
         <a href="/zoolu/cms" target="_blank">
-          <img src="'.$core->webConfig->domains->static->components.'/zoolu/images/modus/logo_zoolu_modus.gif" alt="ZOOLU" />
+          <img src="'.$core->webConfig->domains->static->components.'/zoolu-statics/images/modus/logo_zoolu_modus.gif" alt="ZOOLU" />
         </a>
       </div>
       <div class="divModusAdvice">Hinweis: Im Moment werden auch Seiten mit dem <strong>Status "Test"</strong> dargestellt.</div>

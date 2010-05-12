@@ -89,19 +89,22 @@ class ContentController extends Zend_Controller_Action {
     $this->core->logger->debug('website->controllers->ContentController->destinationFilterAction()');
     $this->_helper->viewRenderer->setNoRender();
     
-    $strTmpCacheId = $this->getRequest()->getParam('tmpId');
+    $strTmpCacheId = $this->getRequest()->getParam('tmpId');    
+    $strCountryCode = ((isset($this->core->objCoreSession->countryshort)) ? $this->core->objCoreSession->countryshort : '');
     
     if($strTmpCacheId != '' && $this->core->TmpCache()->test($strTmpCacheId)){
-      $arrDestinationSpecifics = $this->core->TmpCache()->load($strTmpCacheId);
+      $arrDestinationSpecifics = $this->core->TmpCache()->load($strTmpCacheId);      
       $arrDesinationCountryCodes = array();
-      $strCountryCode = $this->getCountryShortByIP();
+      if($strCountryCode == ''){
+        $strCountryCode = $this->getCountryShortByIP();  
+      }
       foreach($arrDestinationSpecifics as $objPageEntry){
         if(!array_key_exists($objPageEntry->destinationId, $arrDesinationCountryCodes)){
           $arrDesinationCountryCodes[$objPageEntry->destinationId] = $this->getDesinationCountryCodes($objPageEntry->destinationId);
         }
-        if(is_array($arrDesinationCountryCodes[$objPageEntry->destinationId]) && array_search($strCountryCode, $arrDesinationCountryCodes[$objPageEntry->destinationId])){
-          echo $objPageEntry->output;
-        }        
+        if(is_array($arrDesinationCountryCodes[$objPageEntry->destinationId]) && array_search($strCountryCode, $arrDesinationCountryCodes[$objPageEntry->destinationId]) !== false){
+          echo $objPageEntry->output;          
+        }       
       }
       if($this->core->sysConfig->cache->page == 'false') $this->core->TmpCache()->remove($strTmpCacheId);
     }
@@ -120,7 +123,6 @@ class ContentController extends Zend_Controller_Action {
         $arrCountryCodes[] = $objCategory->code;
       }
     }
-    
     return $arrCountryCodes;
   }
   

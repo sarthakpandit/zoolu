@@ -57,6 +57,7 @@ class Form_Helper_FormInternalLink extends Zend_View_Helper_FormElement {
    */
   public function formInternalLink($name, $value = null, $attribs = null, $options = null, Form_Element_InternalLink &$element){
     $info = $this->_getInfo($name, $value, $attribs);
+    $core = Zend_Registry::get('Core');
     extract($info); // name, value, attribs, options, listsep, disable
     
     // XHTML or HTML end tag
@@ -70,7 +71,7 @@ class Form_Helper_FormInternalLink extends Zend_View_Helper_FormElement {
     // build the element
     $strOutput = '
                 <div class="linkedpage" id="divLinkedPage_'.$id.'">
-                  <span class="big" id="spanLinkedPageBreadcrumb_'.$id.'">'.$this->view->escape($element->strLinkedPageBreadcrumb).'</span><span class="bold big" id="spanLinkedPageTitle_'.$id.'">'.$this->view->escape($element->strLinkedPageTitle).'</span> (<a href="#" onclick="myForm.getLinkedPageOverlay(\''.$id.'\'); return false;">Seite wählen</a>)<br/>
+                  <span class="big" id="spanLinkedPageBreadcrumb_'.$id.'">'.$this->view->escape($element->strLinkedPageBreadcrumb).'</span><span class="bold big" id="spanLinkedPageTitle_'.$id.'">'.$this->view->escape($element->strLinkedPageTitle).'</span> (<a href="#" onclick="myForm.getLinkedPageOverlay(\''.$id.'\'); return false;">'.$core->translate->_('Select_page').'</a>)<br/>
                   <span class="small" id="spanLinkedPageUrl_'.$id.'"><a href="'.$element->strLinkedPageUrl.'" target="_blank">'.$this->view->escape($element->strLinkedPageUrl).'</a></span>
                   <input type="hidden" value="'.$this->view->escape($value).'" id="'.$this->view->escape($id).'" name="'.$this->view->escape($name).'" '.$endTag.'
                 </div>';

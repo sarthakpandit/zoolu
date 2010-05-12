@@ -873,7 +873,7 @@
     <!-- Helpers -->
     <helpers>
       <client>
-        <dispatcher>disabled</dispatcher> <!-- enabled/disabled -->
+        <dispatcher>enabled</dispatcher> <!-- enabled/disabled -->
       </client>
     </helpers>
     

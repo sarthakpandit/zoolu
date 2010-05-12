@@ -526,8 +526,8 @@ class Cms_PageController extends AuthControllerAction {
       $objGenericData->Setup()->setParentId((($this->objRequest->getParam("parentFolderId") != '') ? $this->objRequest->getParam("parentFolderId") : null));
       $objGenericData->Setup()->setElementId($this->objRequest->getParam("id"));
       $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
-      $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-      $objGenericData->Setup()->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objGenericData->Setup()->setFormLanguageId($this->core->intZooluLanguageId);
       $objGenericData->Setup()->setModelSubPath('cms/models/');
 
       /**
@@ -755,7 +755,7 @@ class Cms_PageController extends AuthControllerAction {
       $objField->isMultiply = $objFieldRegionData->isMultiply;
 
       $objGenericSetup = new GenericSetup();
-      $objGenericSetup->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $objGenericSetup->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
 
       $objField->setGenericSetup($objGenericSetup);
       $objField->loadLinkPage($intPageId);
@@ -771,7 +771,7 @@ class Cms_PageController extends AuthControllerAction {
           'height' => $objField->height,
           'isGenericSaveField' => $objField->isSaveField,
           'isCoreField' => $objField->isCoreField,
-          'LanguageId' => $this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id),
+          'LanguageId' => $this->objRequest->getParam("languageId", $this->core->intZooluLanguageId),
           'isEmptyField' => 0,
           'required' => (($objField->isKeyField == 1) ? true : false)
         ));
@@ -842,8 +842,8 @@ class Cms_PageController extends AuthControllerAction {
       $objFormHandler->setTemplateId($intTemplateId);
       $objFormHandler->setFormVersion($intFormVersion);
       $objFormHandler->setActionType($intActionType);
-      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
-      $objFormHandler->setFormLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
       $objFormHandler->setElementId($intElementId);
 
       $this->objForm = $objFormHandler->getGenericForm();
@@ -917,7 +917,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
       $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelPages->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelPages;
@@ -937,7 +937,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelFolders;
@@ -957,7 +957,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelFiles->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelFiles;
@@ -977,7 +977,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
-      $this->objModelContacts->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelContacts->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelContacts;
@@ -1017,7 +1017,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/GenericForms.php';
       $this->objModelGenericForm = new Model_GenericForms();
-      $this->objModelGenericForm->setLanguageId($this->objRequest->getParam("languageId", $this->core->sysConfig->languages->default->id));
+      $this->objModelGenericForm->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
     }
 
     return $this->objModelGenericForm;

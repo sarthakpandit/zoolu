@@ -853,7 +853,7 @@ body.x-body-masked .x-window-plain .x-window-mc{background:#C7D6E9;}
 .ext-border-box .x-layout-collapsed{width:22px;height:22px;}
 .x-layout-collapsed-over{cursor:pointer;background-color:#d9e8fb;}
 .x-layout-collapsed-west .x-layout-collapsed-tools,.x-layout-collapsed-east .x-layout-collapsed-tools{position:absolute;top:0;left:0;width:20px;height:20px;}
-.x-layout-split{position:absolute;height:10px;width:5px;line-height:1px;font-size:1px;z-index:3;background-color:#fff; background-image:url(/zoolu/images/main/bg_split.gif); background-repeat:repeat-x; background-position:bottom;} /* background-color:transparent */
+.x-layout-split{position:absolute;height:10px;width:5px;line-height:1px;font-size:1px;z-index:3;background-color:#fff; background-image:url(/zoolu-statics/images/main/bg_split.gif); background-repeat:repeat-x; background-position:bottom;} /* background-color:transparent */
 .ext-strict .ext-ie6 .x-layout-split{background-color:#fff!important;} /* filter:alpha(opacity=1); */
 .x-layout-split-h{background-image:url(../images/default/s.gif);background-position:left;}
 .x-layout-split-v{background-image:url(../images/default/s.gif);background-position:top;}
@@ -872,13 +872,13 @@ body.x-body-masked .x-window-plain .x-window-mc{background:#C7D6E9;}
 .x-layout-cmini-south .x-layout-mini{left:48%;height:5px;width:35px;background-image:url(../images/default/layout/mini-top.gif);}*/
 
 
-.x-layout-split-north .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
-.x-layout-split-south .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
-.x-layout-cmini-north .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
-.x-layout-cmini-south .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
+.x-layout-split-north .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu-statics/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
+.x-layout-split-south .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu-statics/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
+.x-layout-cmini-north .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu-statics/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
+.x-layout-cmini-south .x-layout-mini {left:48%;height:10px;width:35px;background-image:url(/zoolu-statics/images/main/button_split.gif);background-repeat:no-repeat;background-position:50% 100%;}
 
 .x-layout-cmini-west,.x-layout-cmini-east{border:0 none;width:10px!important;padding:0;background:#fff;} /*transparent*/
-.x-layout-cmini-north,.x-layout-cmini-south{border:0 none;height:10px!important;padding:0; background-color:#fff; background-image:url(/zoolu/images/main/bg_split.gif); background-repeat:repeat-x; background-position:bottom;}
+.x-layout-cmini-north,.x-layout-cmini-south{border:0 none;height:10px!important;padding:0; background-color:#fff; background-image:url(/zoolu-statics/images/main/bg_split.gif); background-repeat:repeat-x; background-position:bottom;}
 .x-viewport,.x-viewport body{margin:0;padding:0;border:0 none;overflow:hidden;height:100%;}
 .x-abs-layout-item{position:absolute;left:0;top:0;}
 .ext-ie input.x-abs-layout-item,.ext-ie textarea.x-abs-layout-item{margin:0;}

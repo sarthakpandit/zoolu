@@ -21,12 +21,12 @@
 
         <div class="toplogo">
           <a href="/zoolu">
-            <img src="/zoolu/images/main/logo_zoolu_small.png" width="69" height="17" alt="ZOOLU"/>
+            <img src="/zoolu-statics/images/main/logo_zoolu_small.png" width="69" height="17" alt="ZOOLU"/>
           </a>
         </div>
         <div class="topright">
           <div class="faqtitle"><a href="http://code.google.com/p/zoolu/issues/list" target="_blank"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
-          <div class="faqicon"><img src="/zoolu/images/icons/icon_help.png" width="16" height="16"/></div>
+          <div class="faqicon"><img src="/zoolu-statics/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
 
@@ -36,7 +36,7 @@
       <?php echo $this->layout()->userinfo; ?>
 
       <div id="navtopleftclient">
-        <img id="navtopleftimgclient" width="42" height="40" src="/zoolu/images/zoolu_client_logo.png"/>
+        <img id="navtopleftimgclient" width="42" height="40" src="/zoolu-statics/images/zoolu_client_logo.png"/>
       </div>
 
       <div id="navtopwrapper">
@@ -45,7 +45,7 @@
       </div>
 
       <div id="navtopright">
-        <img id="navtoprightimg" width="5" height="40" src="/zoolu/images/main/bg_navigation_right.png"/>
+        <img id="navtoprightimg" width="5" height="40" src="/zoolu-statics/images/main/bg_navigation_right.png"/>
       </div>
 
     </div>
@@ -60,26 +60,26 @@
       <div class="widgetfunctions">
         <div class="widgetcontenttop">
           <div id="widgetcontentlefttop">
-		        <img width="5" height="5" src="/zoolu/images/main/bg_corner_top_left_white.png"/>
+		        <img width="5" height="5" src="/zoolu-statics/images/main/bg_corner_top_left_white.png"/>
 		      </div>
           <div id="widgetcontentrighttop">
-            <img width="5" height="5" src="/zoolu/images/main/bg_corner_top_right_white.png"/>
+            <img width="5" height="5" src="/zoolu-statics/images/main/bg_corner_top_right_white.png"/>
           </div>
 
           <!-- alerts for saving, editing, deleting, ... -->
           <div id="divFormSaveLoader" class="alertsave" style="display:none;">
-            <div class="alertsaveloader white"><img src="/zoolu/images/main/loader_save_gray.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;">Abbrechen</a></div>
+            <div class="alertsaveloader white"><img src="/zoolu-statics/images/main/loader_save_gray.gif" /><a href="#" onclick="myForm.cancleFormSaveLoader(); return false;" style="color:#fff;"><?php echo $this->translate->_('Cancel'); ?></a></div>
           </div>
-          <div id="divFormSaveSucces" class="alertsavesucces" style="display:none;">Gespeichert!</div>
-          <div id="divFormSaveError" class="alertsaveerror" style="display:none;">Speichern nicht möglich!</div>
-          <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;">Gel&ouml;scht!</div>
+          <div id="divFormSaveSucces" class="alertsavesucces" style="display:none;"><?php echo $this->translate->_('Saved'); ?>!</div>
+          <div id="divFormSaveError" class="alertsaveerror" style="display:none;"><?php echo $this->translate->_('Can_not_Save'); ?>!</div>
+          <div id="divFormDeleteSucces" class="alertdeletesucces" style="display:none;"><?php echo $this->translate->_('Deleted'); ?>!</div>
 
           <div id="genListFunctions" style="display:none;">
             <!-- new button 
             <div id="buttonsave" onclick="myNavigation.getAddForm();">
               <div class="button25leftOn"></div>
               <div class="button25centerOn">
-                <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
+                <img class="iconsave" src="/zoolu-statics/images/icons/icon_save_black.png" width="13" height="13"/>
                 <div>Neu</div>
               </div>
               <div class="button25rightOn"></div>
@@ -89,14 +89,14 @@
             <!-- edit menu -->
             <div id="buttonedit" onclick="return false;">
               <div class="buttonedittop"></div>
-              <div id="buttonmediaedittitle" class="buttoneditmiddle white" onclick="myList.toggleEditMenu(this.id); return false;">Bearbeiten</div>
+              <div id="buttonmediaedittitle" class="buttoneditmiddle white" onclick="myList.toggleEditMenu(this.id); return false;"><?php echo $this->translate->_('Edit'); ?></div>
               <div class="buttoneditbottom"></div>
               <div class="clear"></div>
             </div>
 
             <div id="buttonEditMenu" class="buttoneditmenu2" style="display:none;">
               <div class="buttoneditmenuinner">
-                <div class="buttoneditlink" onclick="myList.deleteListItem(); return false;">L&ouml;schen</div>
+                <div class="buttoneditlink" onclick="myList.deleteListItem(); return false;"><?php echo $this->translate->_('Delete'); ?></div>
                 <div class="clear"></div>
               </div>
               <div class="buttoneditbottom"></div>
@@ -110,8 +110,8 @@
               <div id="buttonsearch" onclick="myList.search();">
                 <div class="button25leftOff"></div>
                 <div class="button25centerOff">
-                  <img class="icondelete" src="/zoolu/images/icons/icon_search_white.png" width="14" height="14"/>
-                  <div>Suchen</div>
+                  <img class="icondelete" src="/zoolu-statics/images/icons/icon_search_white.png" width="14" height="14"/>
+                  <div><?php echo $this->translate->_('Search'); ?></div>
                 </div>
                 <div class="button25rightOff"></div>
                 <div class="clear"></div>
@@ -125,8 +125,8 @@
             <div id="buttonsave" onclick="myForm.save();">
               <div class="button25leftOn"></div>
               <div class="button25centerOn">
-                <img class="iconsave" src="/zoolu/images/icons/icon_save_black.png" width="13" height="13"/>
-                <div>Speichern</div>
+                <img class="iconsave" src="/zoolu-statics/images/icons/icon_save_black.png" width="13" height="13"/>
+                <div><?php echo $this->translate->_('Save'); ?></div>
               </div>
               <div class="button25rightOn"></div>
               <div class="clear"></div>
@@ -136,8 +136,8 @@
             <div id="buttondelete" onclick="myForm.deleteElement();">
               <div class="button25leftOff"></div>
               <div class="button25centerOff">
-                <img class="icondelete" src="/zoolu/images/icons/icon_delete_white.png" width="11" height="14"/>
-                <div>L&ouml;schen</div>
+                <img class="icondelete" src="/zoolu-statics/images/icons/icon_delete_white.png" width="11" height="14"/>
+                <div><?php echo $this->translate->_('Delete'); ?></div>
               </div>
               <div class="button25rightOff"></div>
               <div class="clear"></div>
@@ -189,8 +189,8 @@
                 <div id="buttonOk">
                   <div class="button25leftOn"></div>
 		              <div class="button25centerOn">
-		                <!-- <img width="13" height="13" src="/zoolu/images/icons/icon_ok_black.png" class="iconok"/> -->
-		                <div>Ok</div>
+		                <!-- <img width="13" height="13" src="/zoolu-statics/images/icons/icon_ok_black.png" class="iconok"/> -->
+		                <div><?php echo $this->translate->_('Ok'); ?></div>
 		              </div>
 		              <div class="button25rightOn"></div>
 		              <div class="clear"></div>
@@ -198,8 +198,8 @@
                 <div id="buttonCancel">
                   <div class="button25leftOff"></div>
 		              <div class="button25centerOff">
-		                <!-- <img width="11" height="14" src="/zoolu/images/icons/icon_cancel_white.png" class="iconcancel"/> -->
-		                <div>Abbrechen</div>
+		                <!-- <img width="11" height="14" src="/zoolu-statics/images/icons/icon_cancel_white.png" class="iconcancel"/> -->
+		                <div><?php echo $this->translate->_('Cancel'); ?></div>
 		              </div>
 		              <div class="button25rightOff"></div>
 		              <div class="clear"></div>
@@ -221,7 +221,7 @@
     <!-- libaries -->
     <script type="text/javascript" src="/min/g=zJs&v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/min/g=zGlobalListJs&v=<?php echo $this->jsVersion; ?>"></script>
-    <script type="text/javascript" src="/zoolu/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu-statics/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
    
     <?php echo $this->jsPlugins; ?>
 
@@ -231,6 +231,16 @@
       //document.observe('dom:loaded', function() {
       Event.observe(window, 'load', function() {
         myCore = new Massiveart.Core();
+        
+        myCore.languageId = <?php echo Zend_Registry::get('Core')->intZooluLanguageId; ?>;
+        myCore.languageCode = '<?php echo Zend_Registry::get('Core')->strZooluLanguageCode; ?>';
+        myCore.translate = {
+          Save: '<?php echo $this->translate->_('Save'); ?>', 
+          Cancel: '<?php echo $this->translate->_('Cancel'); ?>', 
+          Apply: '<?php echo $this->translate->_('Apply'); ?>', 
+          Edit: '<?php echo $this->translate->_('Edit'); ?>'
+        };
+        
         myNavigation = new Massiveart.Navigation.Global();
         myList = new Massiveart.List();
         myGlobal = new Massiveart.Global();

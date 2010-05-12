@@ -30,6 +30,7 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
    */
   public function formVideoSelect($name, $value = null, $attribs = null, $options = null, $intVideoTypeId, $strVideoUserId, $strVideoThumb, $strVideoTitle){
     $info = $this->_getInfo($name, $value, $attribs);
+    $core = Zend_Registry::get('Core');
     extract($info); // name, id, value, attribs, options, listsep, disable
 
     // XHTML or HTML end tag
@@ -56,7 +57,7 @@ class Plugin_FormHelper_FormVideoSelect extends Zend_View_Helper_FormElement {
 
     // build the list of options
     $list = array();
-    $list[] = '<option label="Bitte w&auml;hlen" value="" selected="selected">Bitte w&auml;hlen</option>';
+    $list[] = '<option label="'.$core->translate->_('Please_choose').'" value="" selected="selected">'.$core->translate->_('Please_choose').'</option>';
            
     foreach ($attribs['MultiOptions'] as $opt_value => $opt_label) {
       if (is_array($opt_label)) {
