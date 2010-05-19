@@ -151,7 +151,7 @@ class GenericSubForm extends Zend_Form_SubForm {
         $sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getFormLanguageId(), $this->objGenericForm->Setup()->getRootLevelId());
         $sqlStmt = $this->core->dbh->query($sqlSelect)->fetchAll();
         if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SELECT_ID) {
-          $arrOptions[''] = $this->core->translate->_('Please_choose');
+          $arrOptions[''] = $this->core->translate->_('Please_choose', false);
         }
         foreach($sqlStmt as $arrSql){
           if(array_key_exists('depth', $arrSql)){

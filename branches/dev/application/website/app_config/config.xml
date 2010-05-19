@@ -11,7 +11,7 @@
     <domains>
       <static>
         <!-- http://developer.yahoo.com/performance/rules.html#split -->
-        <components>http://static.dev.zoolu.area51.at</components>
+        <components></components>
       </static>
     </domains>    
     
@@ -19,15 +19,15 @@
     <mail>
       <from>        
         <name>ZOOLU</name>
-        <address>info@zoolu.at</address>
+        <address>info@getzoolu.org</address>
       </from>
       <recipient>        
         <name>Cornelius Hansjakob</name>
         <address>cha@massiveart.com</address>
       </recipient>
       <params>
-        <host>mailer.zoolu.at</host>
-        <username>zoolu@mailer.zoolu.at</username>
+        <host>mailer.com</host>
+        <username>zoolu@mailer.com</username>
         <password>zoolu</password>
       </params>
       <actions>
@@ -219,6 +219,13 @@
   -->
   <staging extends="production">
       
+    <domains>
+      <static>
+        <!-- http://developer.yahoo.com/performance/rules.html#split -->
+        <components></components>
+      </static>
+    </domains>
+    
     <!-- mailer -->
     <mail>
       <recipient>        
@@ -228,5 +235,14 @@
     </mail>
     
   </staging>
+  
+  <!--
+  ***********************************************************
+  * config for development evnironment                     *
+  ***********************************************************
+  -->
+  <development extends="staging">
+  
+  </development>
   
 </configdata>
