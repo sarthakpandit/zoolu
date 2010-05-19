@@ -425,7 +425,7 @@ class Users_UserController extends Zend_Controller_Action {
     $this->objForm->addElement('hidden', 'id', array('decorators' => array('Hidden')));
 
     $arrLanguageOptions = array();
-    $arrLanguageOptions[''] = $this->core->translate->_('Please_choose');
+    $arrLanguageOptions[''] = $this->core->translate->_('Please_choose', false);
     $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `languages`")->fetchAll();
     foreach($sqlStmt as $arrSql){
       $arrLanguageOptions[$arrSql['id']] = $arrSql['title'];

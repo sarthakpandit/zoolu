@@ -26,11 +26,19 @@
   
   <!--
   ***********************************************************
-  * config for developement evnironment                     *
+  * config for staging evnironment                     *
   ***********************************************************
   -->
   <staging extends="production">
   
   </staging>
   
+  <!--
+  ***********************************************************
+  * config for development evnironment                     *
+  ***********************************************************
+  -->
+  <development extends="staging">
+  
+  </development>
 </configdata>

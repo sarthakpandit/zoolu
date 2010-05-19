@@ -72,7 +72,7 @@ class Properties_OverlayController extends AuthControllerAction {
   public function mediaAction(){
     $this->core->logger->debug('properties->controllers->OverlayController->mediaAction()');    
     $this->loadRootNavigation();    
-    $this->view->assign('overlaytitle', 'Medien zuweisen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Assign_medias'));
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->thumb);
     $this->renderScript('overlay/overlay.phtml');       
   }
@@ -85,7 +85,7 @@ class Properties_OverlayController extends AuthControllerAction {
   public function documentAction(){
     $this->core->logger->debug('properties->controllers->OverlayController->documentAction()');    
     $this->loadRootNavigation();    
-    $this->view->assign('overlaytitle', 'Dokumente zuweisen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Assign_documents'));
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
     $this->renderScript('overlay/overlay.phtml');       
   }

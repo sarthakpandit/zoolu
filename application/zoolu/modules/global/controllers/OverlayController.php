@@ -77,7 +77,7 @@ class Global_OverlayController extends AuthControllerAction {
 
 
     $this->loadGlobalTreeForRootLevel($intRootLevelId, $intRootLevelGroupId);
-    $this->view->assign('overlaytitle', 'Produkt wählen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Select_product'));
     $this->view->assign('itemAction', $strItemAction);
     $this->view->assign('elementIds', $arrElementIds);
   }

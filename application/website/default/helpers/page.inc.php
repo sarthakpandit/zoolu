@@ -709,18 +709,17 @@ function get_text_blocks_extended($strImageFolder = '', $blnZoom = true, $blnUse
 
 /**
  * get_block_documents
- * @param string $strContainerCss
- * @param string $strIconCss
- * @param string $strTitleCss
+ * @param integer $intRegionId
+ * @param boolean $blnFileFilterDocs
  * @return string $strHtmlOutput
  * @author Cornelius Hansjakob <cha@massiveart.com>
  * @version 1.0
  */
-function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'divDocIcon', $strTitleCss = 'divDocInfos'){
+function get_block_documents($intRegionId = 47, $blnFileFilterDocs = true){
   $core = getCoreObject();
   $objPage = getPageObject();
 
-  $objMyMultiRegion = $objPage->getRegion(47); //47 is the default block document region
+  $objMyMultiRegion = $objPage->getRegion($intRegionId); //47 is the default block document region
 
   $strHtmlOutput = '';
 
@@ -731,7 +730,8 @@ function get_block_documents($strContainerCss = 'divDocItem', $strIconCss = 'div
       if($strBlockTitle != ''){
         $strHtmlOutput .= '<h2>'.$strBlockTitle.'</h2>';
 
-        $objFiles = $objPage->getFileFilterFieldValue($objMyMultiRegion->getField('docs')->getInstanceValue($intRegionInstanceId));
+        $objFiles = ($blnFileFilterDocs == true) ? $objPage->getFileFilterFieldValue($objMyMultiRegion->getField('docs')->getInstanceValue($intRegionInstanceId)) : $objPage->getFileFieldValueById($objMyMultiRegion->getField('docs')->getInstanceValue($intRegionInstanceId));
+        
         if($objFiles != '' && count($objFiles) > 0){
           $strHtmlOutput .= '<div class="documents">';
           foreach($objFiles as $objFile){

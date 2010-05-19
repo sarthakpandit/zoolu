@@ -78,7 +78,7 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->core->logger->debug('cms->controllers->OverlayController->mediaAction()');
     $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->images);
     $this->view->assign('rootLevelType', $this->core->sysConfig->root_level_types->images);
-    $this->view->assign('overlaytitle', 'Medien zuweisen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Assign_medias'));
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->thumb);
     $this->renderScript('overlay/overlay.phtml');
   }
@@ -92,7 +92,7 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->core->logger->debug('cms->controllers->OverlayController->documentAction()');
     $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->documents);
     $this->view->assign('rootLevelType', $this->core->sysConfig->root_level_types->documents);
-    $this->view->assign('overlaytitle', 'Dokumente zuweisen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Assign_documents'));
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
     $this->renderScript('overlay/overlay.phtml');
   }
@@ -106,7 +106,7 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->core->logger->debug('cms->controllers->OverlayController->videoAction()');
     $this->loadRootNavigation($this->core->sysConfig->modules->media, $this->core->sysConfig->root_level_types->videos);
     $this->view->assign('rootLevelType', $this->core->sysConfig->root_level_types->videos);
-    $this->view->assign('overlaytitle', 'Video zuweisen');
+    $this->view->assign('overlaytitle',  $this->core->translate->_('Assign_videos'));
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
     $this->renderScript('overlay/overlay.phtml');
   }
@@ -121,7 +121,7 @@ class Cms_OverlayController extends AuthControllerAction {
 
     $this->loadRootContactsAndUnits();
 
-    $this->view->assign('overlaytitle', 'Kontakt zuweisen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Assign_contacts'));
     $this->view->assign('viewtype', $this->core->sysConfig->viewtypes->list);
   }
 
@@ -144,7 +144,7 @@ class Cms_OverlayController extends AuthControllerAction {
 
 
     $this->loadPageTreeForPortal($intPortalId);
-    $this->view->assign('overlaytitle', 'Seite wählen');
+    $this->view->assign('overlaytitle', $this->core->translate->_('Select_page'));
     $this->view->assign('itemAction', $strItemAction);
     $this->view->assign('pageIds', $arrPageIds);
   }
