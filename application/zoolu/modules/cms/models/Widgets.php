@@ -262,8 +262,8 @@ class Model_Widgets {
   	$objSelect->join('widgetInstances', 'subwidgets.widgetInstanceId = widgetInstances.widgetInstanceId', array('widgetInstanceTitles.title','widgets.name'));
   	$objSelect->join('widgetInstanceTitles', 'widgetInstances.widgetInstanceId = widgetInstanceTitles.widgetInstanceId', array());
   	$objSelect->join('widgets', 'widgetInstances.idWidgets = widgets.id', array());
-  	$objSelect->join('widgettable', 'widgettable.id = subwidgets.idWidgetTable', array());
-  	$objSelect->join('genericForms', 'genericForms.id = widgettable.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
+  	$objSelect->join('widgetTable', 'widgetTable.id = subwidgets.idWidgetTable', array());
+  	$objSelect->join('genericForms', 'genericForms.id = widgetTable.idGenericForms', array('genericFormId', 'version', 'idGenericFormTypes'));
   	$objSelect->where('subwidgets.subwidgetId = ?', $intWidgetInstanceId);
   	
   	return $this->getModelSubwidgets()->getGenericTable('subwidgets')->fetchRow($objSelect);
