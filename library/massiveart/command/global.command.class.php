@@ -177,13 +177,16 @@ class GlobalCommand implements CommandInterface {
                                'showInNavigation' => $objGenericSetup->getShowInNavigation(),
                                'changed'          => date('Y-m-d H:i:s'));
 
+        $strGlobalType = $this->strRootLevelGroupKey.'_overview';        
+        $intDefaultTemplateId = $this->core->sysConfig->global_types->$strGlobalType->default_templateId;
+        
         $arrTitle = array('idUsers'     => $intUserId,
                           'creator'     => $objGenericSetup->getCreatorId(),
                           'title'       => $objGenericSetup->getCoreField('title')->getValue(),
                           'idLanguages' => $objGenericSetup->getLanguageId(),
                           'changed'     => date('Y-m-d H:i:s'));
 
-        $this->getModelGlobals($arrArgs)->updateFolderStartGlobal($intFolderId, $arrProperties, $arrTitle, $this->intRootLevelGroupId);
+        $this->getModelGlobals($arrArgs)->updateFolderStartGlobal($intFolderId, $arrProperties, $arrTitle, $this->intRootLevelGroupId, $intDefaultTemplateId);
         return true;
       }else{
         throw new Exception('There ist now GenericSetup in the args array!');

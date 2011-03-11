@@ -177,7 +177,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
 
       //cache expiring
       if($this->Setup()->getField('url')){
-        $strUrl = $this->Setup()->getField('url')->getValue();
+        $strUrl = $this->Setup()->getField('url')->url;
         $strUrlLanguageCode = $this->Setup()->getField('url')->languageCode;
         
         $arrFrontendOptions = array(
@@ -195,7 +195,7 @@ class GenericDataTypePage extends GenericDataTypeAbstract {
                                         $arrFrontendOptions,
                                         $arrBackendOptions);
 
-        $strCacheId = 'page_'.$this->Setup()->getRootLevelId().'_'.$strUrlLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
+        $strCacheId = 'page_'.$this->Setup()->getRootLevelId().'_'.strtolower(str_replace('-', '_', $strUrlLanguageCode)).'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
 
         $objCache->remove($strCacheId);
 

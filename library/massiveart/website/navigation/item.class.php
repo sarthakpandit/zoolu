@@ -48,11 +48,14 @@ class NavigationItem {
   
   protected $strTitle;
   protected $strUrl;
+  protected $strTarget;
   
   protected $intId;
   protected $intTypeId;
   protected $intParentId;
   protected $strItemId;
+  protected $intLanguageId;
+  protected $objChanged;
   
   /**
    * construct
@@ -91,6 +94,22 @@ class NavigationItem {
    */
   public function getUrl(){
     return $this->strUrl;
+  }
+  
+  /**
+   * setTarget
+   * @param string $strTarget
+   */
+  public function setTarget($strTarget){
+    $this->strTarget = $strTarget;
+  }
+
+  /**
+   * getTarget
+   * @param string $strTarget
+   */
+  public function getTarget(){
+    return $this->strTarget;
   }
   
   /**
@@ -171,6 +190,62 @@ class NavigationItem {
    */
   public function getItemId(){
     return $this->strItemId;
+  }
+  
+  /**
+   * setLanguageId
+   * @return integer $intLanguageId
+   */
+  public function setLanguageId($intLanguageId){
+    $this->intLanguageId = $intLanguageId;
+  }
+  
+  /**
+   * getLanguageId
+   * @return integer
+   */
+  public function getLanguageId(){
+    return $this->intLanguageId;
+  }
+  
+  /**
+   * setChanged
+   * @param string/obj $Date
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function setChanged($Date, $blnIsValidDateObj = false){
+    if($blnIsValidDateObj == true){
+      $this->objChanged = $Date;
+    }else{
+      $arrTmpTimeStamp = explode(' ', $Date);
+      if(count($arrTmpTimeStamp) > 1){
+        $arrTmpTime = explode(':', $arrTmpTimeStamp[1]);
+        $arrTmpDate = explode('-', $arrTmpTimeStamp[0]);
+        if(count($arrTmpDate) == 3){
+          $this->objChanged =  mktime($arrTmpTime[0], $arrTmpTime[1], $arrTmpTime[2], $arrTmpDate[1], $arrTmpDate[2], $arrTmpDate[0]);
+        }
+      }
+    }
+  }
+
+  /**
+   * getChanged
+   * @param string $strFormat
+   * @return string $strChanged
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getChanged($strFormat = 'd.m.Y', $blnGetDateObj = false){
+    if($blnGetDateObj == true){
+      return $this->objChanged;
+    }else{
+      if($this->objChanged != null){
+        return date($strFormat, $this->objChanged);
+      }else{
+        return null;
+      }
+    }
   }
 }
 ?>

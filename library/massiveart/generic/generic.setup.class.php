@@ -196,6 +196,8 @@ class GenericSetup {
   const TYPE_CONTACT = 5;
   const TYPE_GLOBAL = 6;
   const TYPE_LOCATION = 7;
+  const TYPE_MEMBER = 8;
+  const TYPE_COMPANY = 9;
 
   /**
    * field type container
@@ -463,14 +465,19 @@ class GenericSetup {
 	            if($objGenField->isMultiply == 1){
 	            	if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SPECIALFIELD_ID) {
 	                $this->getRegion($objFieldRegionTagData->regionId)->addSpecialFieldName($objGenField->name);
+	                $this->getRegion($objFieldRegionTagData->regionId)->addFieldName($objGenField->name, self::SPECIAL_FIELD);	                
 	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addFileFieldName($objGenField->name);
+	                $this->getRegion($objFieldRegionTagData->regionId)->addFieldName($objGenField->name, self::FILE_FIELD);
                 }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_FILE_FILTER_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addFileFilterFieldName($objGenField->name);
+	                $this->getRegion($objFieldRegionTagData->regionId)->addFieldName($objGenField->name, self::FILE_FILTER_FIELD);
 	              }else if($objGenField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_MULTIFIELD_ID){
 	                $this->getRegion($objFieldRegionTagData->regionId)->addMultiFieldName($objGenField->name);
+	                $this->getRegion($objFieldRegionTagData->regionId)->addFieldName($objGenField->name, self::MULTI_FIELD);
 	              }else{
 	                $this->getRegion($objFieldRegionTagData->regionId)->addInstanceFieldName($objGenField->name);
+	                $this->getRegion($objFieldRegionTagData->regionId)->addFieldName($objGenField->name, self::INSTANCE_FIELD);
 	              }
 	            }else{
 	              if($objGenField->isCoreField == 1){
@@ -825,6 +832,12 @@ class GenericSetup {
       case GenericSetup::TYPE_LOCATION :
         require_once(dirname(__FILE__).'/data/types/generic.data.type.location.class.php');
         return new GenericDataTypeLocation();
+      case GenericSetup::TYPE_MEMBER :
+        require_once(dirname(__FILE__).'/data/types/generic.data.type.member.class.php');
+        return new GenericDataTypeMember();
+      case GenericSetup::TYPE_COMPANY :
+        require_once(dirname(__FILE__).'/data/types/generic.data.type.company.class.php');
+        return new GenericDataTypeCompany();
     }
   }
 
@@ -1236,7 +1249,7 @@ class GenericSetup {
 	 * @param integer $intRootLevelId
 	 */
 	public function getRootLevelId(){
-		return $this->intRootLevelId;
+		return (int) $this->intRootLevelId;
 	}
 
   /**

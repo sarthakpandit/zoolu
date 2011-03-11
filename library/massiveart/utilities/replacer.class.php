@@ -52,8 +52,9 @@ class Replacer {
 	private $sqlStmt;	
 	
 	const SQL_LANGUAGE_ID = '%LANGUAGE_ID%';
-	const SQL_ROOTLEVEL_ID = '%ROOTLEVEL_ID%'; 
-  const SQL_WHERE = '%WHERE_ADDON%';
+	const SQL_ROOTLEVEL_LANGUAGE_ID = '%ROOTLEVEL_LANGUAGE_ID%';
+	const SQL_ROOTLEVEL_ID = '%ROOTLEVEL_ID%';
+	const SQL_WHERE = '%WHERE_ADDON%';
   const SQL_FIELDS = '%FIELDS_ADDON%';
   const SQL_JOIN = '%JOIN_ADDON%';  
   
@@ -67,22 +68,30 @@ class Replacer {
   /**
    * sqlReplacer
    * @param string $strSQLStmt
-   * @param integer $intReplaceLanguageId
+   * @param integer|array $mixedReplaceLanguageId
    * @param integer $intReplaceRootLevelId
    * @param string $strReplaceWhere
    * @return string $sqlStmt
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-	public function sqlReplacer($strSQLStmt, $intReplaceLanguageId, $intReplaceRootLevelId = 0, $strReplaceWhere = '', $arrFields = array(), $arrJoins = array()){    
+	public function sqlReplacer($strSQLStmt, $mixedReplaceLanguageId, $intReplaceRootLevelId = 0, $strReplaceWhere = '', $arrFields = array(), $arrJoins = array()){    
 		try{
 			if($strSQLStmt != ''){
 	      $this->sqlStmt = $strSQLStmt;
 	      
+	      
+	      $arrReplaceLanguageIds = (is_array($mixedReplaceLanguageId)) ? $mixedReplaceLanguageId : array('LANGUAGE_ID' => $mixedReplaceLanguageId);
+	      
 	      /**
 		     * replace placeholder LANGUAGE_ID
 		     */
-	      $this->replaceLanguageIdPlaceholder($intReplaceLanguageId);
+	      $this->replaceLanguageIdPlaceholder($arrReplaceLanguageIds['LANGUAGE_ID']);
+	      
+	      /**
+         * replace placeholder ROOTLEVEL_LANGUAGE_ID
+         */
+        $this->replaceRootLevelLanguageIdPlaceholder((array_key_exists('ROOTLEVEL_LANGUAGE_ID', $arrReplaceLanguageIds) ? $arrReplaceLanguageIds['ROOTLEVEL_LANGUAGE_ID'] : $arrReplaceLanguageIds['LANGUAGE_ID']));
 	      
 	      /**
          * replace placeholder ROOTLEVEL_ID
@@ -132,6 +141,28 @@ class Replacer {
       $this->core->logger->err($exc);
     } 	
 	}
+	
+  /**
+   * replaceRootLevelLanguageIdPlaceholder
+   * @param integer $intReplaceLanguageId
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  private function replaceRootLevelLanguageIdPlaceholder($intReplaceLanguageId){
+    try{
+      
+      if(strpos($this->sqlStmt, self::SQL_ROOTLEVEL_LANGUAGE_ID) > -1){
+        if($intReplaceLanguageId != ''){
+          $this->sqlStmt = str_replace(self::SQL_ROOTLEVEL_LANGUAGE_ID, $intReplaceLanguageId, $this->sqlStmt);  
+        }else{
+          $this->sqlStmt = str_replace(self::SQL_ROOTLEVEL_LANGUAGE_ID, '1', $this->sqlStmt); // TODO : replace with default language  
+        }
+      }
+      
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }   
+  }	
 	
   /**
    * replaceRootLevelIdPlaceholder

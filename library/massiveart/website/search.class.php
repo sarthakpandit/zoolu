@@ -32,6 +32,7 @@ class Search {
   protected $intLimitLiveSearch;
   protected $intRootLevelId;
   protected $intLanguageId;
+  protected $strParentFolderId;
 
   /**
    * Constructor
@@ -78,7 +79,7 @@ class Search {
     if(strlen($this->strSearchValue) < 3){
       $strQuery = $this->strSearchValue;
     }else{
-      $arrSearchValue = split(' ',  $this->strSearchValue);
+      $arrSearchValue = explode(' ',  $this->strSearchValue);
       foreach($arrSearchValue as $strSearchValue){
         $strQuery .= '+('.$strSearchValue.' OR ';
         $strSearchValue = preg_replace('/([^\pL\s\d])/u', '?', $strSearchValue);
@@ -130,7 +131,7 @@ class Search {
     if(strlen($this->strSearchValue) < 3){
       $strQuery = $this->strSearchValue;
     }else{
-      $arrSearchValue = split(' ',  $this->strSearchValue);
+      $arrSearchValue = explode(' ',  $this->strSearchValue);
       foreach($arrSearchValue as $strSearchValue){
         $strQuery .= '+(title:'.$strSearchValue.' OR articletitle:'.$strSearchValue.' OR page_tags:'.$strSearchValue.' OR ';
         $strSearchValue = preg_replace('/([^\pL\s\d])/u', '?', $strSearchValue);
@@ -141,6 +142,7 @@ class Search {
     }
     
     $strQuery = $strQuery.' +(languageId:'.$this->intLanguageId.') +(rootLevelId:'.$this->intRootLevelId.')';
+    if($this->strParentFolderId != '') $strQuery .= ' +(parentFolderIds:'.$this->strParentFolderId.')';
     $objQuery = Zend_Search_Lucene_Search_QueryParser::parse($strQuery, $this->core->sysConfig->encoding->default);
     
     return $objIndex->find($objQuery);
@@ -224,6 +226,22 @@ class Search {
    */
   public function getLanguageId(){
     return $this->intLanguageId;
+  }
+  
+  /**
+   * setParentFolderId
+   * @param string $strParentFolderId
+   */
+  public function setParentFolderId($strParentFolderId){
+    $this->strParentFolderId = $strParentFolderId;
+  }
+
+  /**
+   * getParentFolderId
+   * @return string $strParentFolderId
+   */
+  public function getParentFolderId(){
+    return $this->strParentFolderId;
   }
 }
 ?>

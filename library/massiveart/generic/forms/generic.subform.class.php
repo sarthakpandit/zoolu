@@ -81,6 +81,7 @@ class GenericSubForm extends Zend_Form_SubForm {
                                                     'intVideoTypeId',
                                                     'strVideoUserId',
                                                     'strVideoThumb',
+                                                    'strVideoTitle',
                                                     'intParentId',
                                                     'blnIsStartElement',                                                                                                   
                                                     'objItemInternalLinks',
@@ -148,7 +149,7 @@ class GenericSubForm extends Zend_Form_SubForm {
        */
       if($objField->sqlSelect != '' && $objField->sqlSelect){
         $objReplacer = new Replacer();
-        $sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, $this->objGenericForm->Setup()->getFormLanguageId(), $this->objGenericForm->Setup()->getRootLevelId());
+        $sqlSelect = $objReplacer->sqlReplacer($objField->sqlSelect, array('LANGUAGE_ID' => $this->objGenericForm->Setup()->getFormLanguageId(), 'ROOTLEVEL_LANGUAGE_ID' => $this->objGenericForm->Setup()->getLanguageId()), $this->objGenericForm->Setup()->getRootLevelId());
         $sqlStmt = $this->core->dbh->query($sqlSelect)->fetchAll();
         if($objField->idFieldTypeGroup == GenericSetup::FIELD_TYPE_SELECT_ID) {
           $arrOptions[''] = $this->core->translate->_('Please_choose', false);

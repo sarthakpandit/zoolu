@@ -68,9 +68,9 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
 
       $this->getModel();
 
-      $this->objModel->deleteInternalLinks($strElementId, $intVersion);
+      $this->objModel->deleteInternalLinks($strElementId, $intVersion, $this->objElement->id);
 
-      if($this->objElement->getValue() != '') $this->objModel->addInternalLinks($this->objElement->getValue(), $strElementId, $intVersion);
+      if($this->objElement->getValue() != '') $this->objModel->addInternalLinks($this->objElement->getValue(), $strElementId, $intVersion, $this->objElement->id);
 
       $this->load($intElementId, $strType, $strElementId, $intVersion);
 
@@ -94,7 +94,7 @@ class GenericDataHelper_InternalLinks extends GenericDataHelperAbstract  {
       
       $this->getModel();
 
-      $objItemInternalLinksData = $this->objModel->loadInternalLinks($strElementId, $intVersion);
+      $objItemInternalLinksData = $this->objModel->loadInternalLinks($strElementId, $intVersion, $this->objElement->id);
 
       if(count($objItemInternalLinksData) > 0){
         $this->objElement->objItemInternalLinks = $objItemInternalLinksData;

@@ -121,7 +121,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
        */
       foreach($this->setup->CoreFields() as $strField => $objField){
 
-      	$objGenTable = $this->getModelGenericData()->getGenericTable($strType.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+      	$objGenTable = $this->getModelGenericData()->getGenericTable($strType.str_replace('_', '', ((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s')));
 
       	if($objField->getValue() != ''){
 	        /**
@@ -207,28 +207,10 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 	        }
 	        
           /**
-           * add title for zoolu gui
+           * add title for zoolu gui fallback with language id = 0
            */        
           if($strField == 'title'){
-            $arrZooluLanguages = $this->core->zooConfig->languages->language->toArray();
-            foreach($arrZooluLanguages as $arrZooluLanguage){
-              if($arrZooluLanguage['id'] != $this->setup->getLanguageId()){
-                $objGenItem = $objGenTable->fetchRow($objGenTable->select()
-                                                                 ->where($strType.'Id = ?',$strTypeId)
-                                                                 ->where('version = ?', $intTypeVersion)
-                                                                 ->where('idLanguages = ?', $arrZooluLanguage['id']));
-                if(count($objGenItem) == 0){
-                  $arrCoreData = array($strType.'Id' => $strTypeId,
-                                     'version'      => $intTypeVersion,
-                                     'idLanguages'  => $arrZooluLanguage['id'],
-                                     'title'        => $objField->getValue(),
-                                     'idUsers'      => $intUserId,
-                                     'creator'      => $intUserId,
-                                     'created'      => date('Y-m-d H:i:s'));
-                  $objGenTable->insert($arrCoreData);
-                }
-              }
-            }
+            $this->saveZooluFallbackTitle($objField->getValue(), $strType, $strTypeId, $intTypeVersion, $objGenTable);
           }
       	}
       }
@@ -417,7 +399,46 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       $this->core->logger->err($exc);
     }
   }
-
+  
+  /**
+   * saveZooluFallbackTitle
+   * @param string $stTitle, string $strType, string $strTypeId, integer $intTypeVersion, Model_Table_Generics $objGenTable
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  final private function saveZooluFallbackTitle($stTitle, $strType, $strTypeId, $intTypeVersion, Model_Table_Generics &$objGenTable){
+    try{
+      $intUserId = Zend_Auth::getInstance()->getIdentity()->id;
+      
+      $objGenItem = $objGenTable->fetchRow($objGenTable->select()
+                                                       ->where($strType.'Id = ?',$strTypeId)
+                                                       ->where('version = ?', $intTypeVersion)
+                                                       ->where('idLanguages = ?', 0));
+      if(count($objGenItem) == 0){
+        $this->core->logger->info('insert zoolu gui fallback title');
+        $arrCoreData = array($strType.'Id' => $strTypeId,
+                            'version'      => $intTypeVersion,
+                            'idLanguages'  => 0,
+                            'title'        => $stTitle,
+                            'idUsers'      => $intUserId,
+                            'creator'      => $intUserId,
+                            'created'      => date('Y-m-d H:i:s'));
+        $objGenTable->insert($arrCoreData);
+      }else{
+        $this->core->logger->info('update zoolu gui fallback title');
+        $strWhere = $objGenTable->getAdapter()->quoteInto($strType.'Id = ?',$strTypeId);
+        $strWhere .= $objGenTable->getAdapter()->quoteInto(' AND version = ?', $intTypeVersion);
+        $strWhere .= $objGenTable->getAdapter()->quoteInto(' AND idLanguages = ?', 0);
+        $arrCoreData = array('title'       => $stTitle,
+                             'idUsers'     => $intUserId);
+        $objGenTable->update($arrCoreData, $strWhere);
+      }
+          
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
   /**
    * updateCoreData
    * @param string $strType, string $strTypeId, integer $intTypeVersion
@@ -435,7 +456,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
        */
       foreach($this->setup->CoreFields() as $strField => $objField){
 
-      	$objGenTable = $this->getModelGenericData()->getGenericTable($strType.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+      	$objGenTable = $this->getModelGenericData()->getGenericTable($strType.str_replace('_', '', ((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s')));
 
       	if($objField->getValue() != ''){
 	        if(is_array($objField->getValue())){
@@ -503,6 +524,13 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
               $objGenTable->insert($arrCoreData);
 	          }
 	        }
+	        
+      	 /**
+           * update title for zoolu gui fallback with language id = 0
+           */        
+          if($strField == 'title'){
+            $this->saveZooluFallbackTitle($objField->getValue(), $strType, $strTypeId, $intTypeVersion, $objGenTable);
+          }
       	}else{
       	  $strWhere = $objGenTable->getAdapter()->quoteInto($strType.'Id = ?', $strTypeId);
           $strWhere .= $objGenTable->getAdapter()->quoteInto(' AND version = ?', $intTypeVersion);
@@ -791,21 +819,23 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
 
           $objFilters = $objField->getInstanceValue($intRegionInstanceId);
 
-          foreach($objFilters->filters as $objFilter){
-            if(!is_array($objFilter->referenceIds)){
-              $objFilter->referenceIds = array($objFilter->referenceIds);
-            }
-
-            foreach($objFilter->referenceIds as $intReferenceId){
-              if(is_numeric($intReferenceId)){
-                $arrFileFilterData = array($strType.'Id'        => $strTypeId,
-                                           'version'            => $intTypeVersion,
-                                           'idLanguages'        => $this->setup->getLanguageId(),
-                                           'idRegionInstances'  => $idRegionInstance,
-                                           'idFilterTypes'      => $objFilter->typeId,
-                                           'referenceId'        => $intReferenceId,
-                                           'idFields'           => $intFieldId);
-                $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFileFilters')->insert($arrFileFilterData);
+          if(isset($objFilters->filters)){
+            foreach($objFilters->filters as $objFilter){
+              if(!is_array($objFilter->referenceIds)){
+                $objFilter->referenceIds = array($objFilter->referenceIds);
+              }
+  
+              foreach($objFilter->referenceIds as $intReferenceId){
+                if(is_numeric($intReferenceId)){
+                  $arrFileFilterData = array($strType.'Id'        => $strTypeId,
+                                             'version'            => $intTypeVersion,
+                                             'idLanguages'        => $this->setup->getLanguageId(),
+                                             'idRegionInstances'  => $idRegionInstance,
+                                             'idFilterTypes'      => $objFilter->typeId,
+                                             'referenceId'        => $intReferenceId,
+                                             'idFields'           => $intFieldId);
+                  $this->getModelGenericData()->getGenericTable($strType.'-'.$this->setup->getFormId().'-'.$this->setup->getFormVersion().'-Region'.$objRegion->getRegionId().'-InstanceFileFilters')->insert($arrFileFilterData);
+                }
               }
             }
           }
@@ -883,7 +913,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
          */
         foreach($this->setup->CoreFields() as $strField => $objField){
 
-          $objGenTable = $this->getModelGenericData()->getGenericTable($strType.((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s'));
+          $objGenTable = $this->getModelGenericData()->getGenericTable($strType.str_replace('_', '', ((substr($strField, strlen($strField) - 1) == 'y') ? ucfirst(rtrim($strField, 'y')).'ies' : ucfirst($strField).'s')));
           $objSelect = $objGenTable->select();
 
           $objSelect->from($objGenTable->info(Zend_Db_Table_Abstract::NAME), array($strField));
@@ -958,8 +988,10 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
         if(count($arrGenFormsData) > 0){
           $this->blnHasLoadedFileData = true;
           foreach($arrGenFormsData as $arrGenRowFormsData){
-            $strFileIds = $this->setup->getFileField($arrGenRowFormsData['name'])->getValue().'['.$arrGenRowFormsData['idFiles'].']';
-            $this->setup->getFileField($arrGenRowFormsData['name'])->setValue($strFileIds);
+            if($this->setup->getFileField($arrGenRowFormsData['name']) !== null){
+              $strFileIds = $this->setup->getFileField($arrGenRowFormsData['name'])->getValue().'['.$arrGenRowFormsData['idFiles'].']';
+              $this->setup->getFileField($arrGenRowFormsData['name'])->setValue($strFileIds);
+            }
           }
         }
       }
@@ -1262,7 +1294,7 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  final protected function addToIndex($strIndexPath, $strKey, $objParentPageContainer = null){
+  final protected function addToIndex($strIndexPath, $strKey, $objParentPageContainer = null, $arrParentFolderIds = array()){
     try{
       $this->core->logger->debug('massiveart->generic->data->types->GenericDataTypeAbstract->addToIndex('.$strIndexPath.', '.$strKey.')');
       
@@ -1279,7 +1311,11 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       $objDoc = new Zend_Search_Lucene_Document();      
 
       $objDoc->addField(Zend_Search_Lucene_Field::keyword('key', $strKey)); 
-      $objDoc->addField(Zend_Search_Lucene_Field::keyword('languageId', $this->setup->getLanguageId()));     
+      if($this->setup->getLanguageFallbackId() > 0 && $this->setup->getLanguageFallbackId() != $this->setup->getLanguageId()){
+        $objDoc->addField(Zend_Search_Lucene_Field::keyword('languageId', $this->setup->getLanguageFallbackId()));
+      }else{
+        $objDoc->addField(Zend_Search_Lucene_Field::keyword('languageId', $this->setup->getLanguageId()));  
+      }           
       $objDoc->addField(Zend_Search_Lucene_Field::keyword('rootLevelId', $this->setup->getRootLevelId()));
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('date', $this->setup->getPublishDate('d.m.Y')));
       $objDoc->addField(Zend_Search_Lucene_Field::unIndexed('elementTypeId', $this->setup->getElementTypeId()));
@@ -1290,96 +1326,34 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
           $objDoc->addField(Zend_Search_Lucene_Field::keyword('rootLevelId', end($objParentPageContainer->getEntries())->rootLevelId));
         }
       }
+      
+      if(count($arrParentFolderIds) > 0){
+        $objDoc->addField(Zend_Search_Lucene_Field::unStored('parentFolderIds', implode(',', $arrParentFolderIds)));
+      }
 
       /**
        * index fields
        */
       foreach($this->setup->FieldNames() as $strField => $intFieldType){
         $objField = $this->setup->getField($strField);
-        if(is_object($objField) && $objField->idSearchFieldTypes != Search::FIELD_TYPE_NONE){          
-          $strValue = '';
-          $strValueIds = '';
-          if($objField->typeId == GenericSetup::FIELD_TYPE_ID_TAG){
-            $mixedValue = $objField->getValue();
-            if(is_object($mixedValue) || is_array($mixedValue)){
-              foreach($mixedValue as $objTag){
-                $strValue .= $objTag->title.', ';
-                $strValueIds .= '['.$objTag->id.']';        
-              }
-              $strValue = rtrim($strValue, ', ');
-            }     
-          }elseif(!is_object($objField->getValue()) && $objField->sqlSelect != ''){
-            $sqlSelect = $objField->sqlSelect;
-            
-            $arrIds = array();
-                          
-            if(is_array($objField->getValue())){
-              $arrIds = $objField->getValue();
-            }else if($objField->getValue() != ''){
-              $arrIds = array($objField->getValue());
-            }
-                        
-            if(is_array($arrIds)){
-              if(count($arrIds) > 0){
-                $strReplaceWhere = '';
-                foreach($arrIds as $strId){
-                  $strReplaceWhere .= $strId.',';
-                }
-                $strReplaceWhere = trim($strReplaceWhere, ',');
+        if(is_object($objField) && $objField->idSearchFieldTypes != Search::FIELD_TYPE_NONE){
+          $this->indexFieldNow($objField, $strField, $intFieldType, $objField->getValue(), $objDoc);
+        }
+      }
+      
+      foreach($this->setup->MultiplyRegionIds() as $intRegionId){
+        $objRegion = $this->setup->getRegion($intRegionId);
 
-                $objReplacer = new Replacer();
-                $sqlSelect = $objReplacer->sqlReplacer($sqlSelect, $this->setup->getLanguageId(), $this->setup->getRootLevelId(),' AND tbl.id IN ('.$strReplaceWhere.')');
-                $objCategoriesData = $this->core->dbh->query($sqlSelect)->fetchAll(Zend_Db::FETCH_OBJ);
-
-                if(count($objCategoriesData) > 0){
-                  foreach($objCategoriesData as $objCategories){
-                    $strValue .= $objCategories->title.', ';
-                    $strValueIds .= '['.$objCategories->id.']';
-                  }
-                  $strValue = rtrim($strValue, ', ');
-                }
+        if($objRegion instanceof GenericElementRegion){
+          $intRegionPosition = 0;
+          foreach($objRegion->RegionInstanceIds() as $intRegionInstanceId){   
+            $intRegionPosition++;          
+            foreach($objRegion->FieldNames() as $strField => $intFieldType){
+              $objField = $objRegion->getField($strField);
+              if(is_object($objField) && $objField->idSearchFieldTypes != Search::FIELD_TYPE_NONE){
+                $this->indexFieldNow($objField, $objField->name.'_'.$intRegionPosition, $intFieldType, $objField->getInstanceValue($intRegionInstanceId), $objDoc);
               }
-            }
-          }else{
-            $strValue = $objField->getValue();
-          }
-                    
-          if(is_string($strValue) && $strValue != ''){
-
-            if($intFieldType == GenericSetup::FILE_FIELD){
-              $objFiles = $this->getModelFiles()->loadFilesById($strValue);
-              $arrValues = array();
-              if(count($objFiles) > 0){
-                foreach($objFiles as $objFile){
-                  $arrValues[] = array('path' => $objFile->path, 'filename' => $objFile->filename, 'version' => $objFile->version);
-                }
-              }
-              $strValueIds = $strValue;
-              $strValue = serialize($arrValues);
-            }
-          
-            if($strValueIds != ''){
-              $objDoc->addField(Zend_Search_Lucene_Field::unIndexed($strField.'Ids', $strValueIds, $this->core->sysConfig->encoding->default));
-            }
-            
-            $this->core->logger->debug($strField.': '.$strValue);
-            switch ($objField->idSearchFieldTypes){
-              case Search::FIELD_TYPE_KEYWORD:
-                $objDoc->addField(Zend_Search_Lucene_Field::keyword($strField, $strValue, $this->core->sysConfig->encoding->default));
-                break;
-              case Search::FIELD_TYPE_UNINDEXED:
-                $objDoc->addField(Zend_Search_Lucene_Field::unIndexed($strField, $strValue, $this->core->sysConfig->encoding->default));
-                break;
-              case Search::FIELD_TYPE_BINARY:
-                $objDoc->addField(Zend_Search_Lucene_Field::binary($strField, $strValue, $this->core->sysConfig->encoding->default));
-                break;
-              case Search::FIELD_TYPE_TEXT:
-                $objDoc->addField(Zend_Search_Lucene_Field::text($strField, $strValue, $this->core->sysConfig->encoding->default));
-                break;
-              case Search::FIELD_TYPE_UNSTORED:
-                $objDoc->addField(Zend_Search_Lucene_Field::unStored($strField, strip_tags($strValue), $this->core->sysConfig->encoding->default));
-                break;
-            }
+            }        
           }
         }
       }
@@ -1393,6 +1367,112 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * indexFieldNow
+   * @param GenericElementField $objField
+   * @param string $strField
+   * @param integer $intFieldType
+   * @param string|array|object $mixedFieldValue
+   * @param Zend_Search_Lucene_Document $objDoc
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  final protected function indexFieldNow($objField, $strField, $intFieldType, $mixedFieldValue, Zend_Search_Lucene_Document &$objDoc){
+    try{
+      $strValue = '';
+      $strValueIds = '';  
+      if($objField->typeId == GenericSetup::FIELD_TYPE_ID_TAG){
+        $mixedValue = $mixedFieldValue;
+        if(is_object($mixedValue) || is_array($mixedValue)){
+          foreach($mixedValue as $objTag){
+            $strValue .= $objTag->title.', ';
+            $strValueIds .= '['.$objTag->id.']';        
+          }
+          $strValue = rtrim($strValue, ', ');
+        }     
+      }elseif(!is_object($mixedFieldValue) && $objField->sqlSelect != ''){
+        $sqlSelect = $objField->sqlSelect;
+        
+        $arrIds = array();
+                      
+        if(is_array($mixedFieldValue)){
+          $arrIds = $mixedFieldValue;
+        }else if($mixedFieldValue != ''){
+          if(strpos($mixedFieldValue, '[') !== false){
+            $mixedFieldValue = trim($mixedFieldValue, '[]');
+            $arrIds = explode('][', $mixedFieldValue);  
+          }else{
+            $arrIds = array($mixedFieldValue);  
+          }          
+        }
+                    
+        if(is_array($arrIds)){
+          if(count($arrIds) > 0){
+            $strReplaceWhere = '';
+            foreach($arrIds as $strId){
+              $strReplaceWhere .= $strId.',';
+            }
+            $strReplaceWhere = trim($strReplaceWhere, ',');
+
+            $objReplacer = new Replacer();
+            $sqlSelect = $objReplacer->sqlReplacer($sqlSelect, $this->setup->getLanguageId(), $this->setup->getRootLevelId(),' AND tbl.id IN ('.$strReplaceWhere.')');
+            $objCategoriesData = $this->core->dbh->query($sqlSelect)->fetchAll(Zend_Db::FETCH_OBJ);
+
+            if(count($objCategoriesData) > 0){
+              foreach($objCategoriesData as $objCategories){
+                $strValue .= $objCategories->title.', ';
+                $strValueIds .= '['.$objCategories->id.']';
+              }
+              $strValue = rtrim($strValue, ', ');
+            }
+          }
+        }
+      }else{
+        $strValue = html_entity_decode($mixedFieldValue, ENT_COMPAT, $this->core->sysConfig->encoding->default);
+      }
+                
+      if(is_string($strValue) && $strValue != ''){
+
+        if($intFieldType == GenericSetup::FILE_FIELD){
+          $objFiles = $this->getModelFiles()->loadFilesById($strValue);
+          $arrValues = array();
+          if(count($objFiles) > 0){
+            foreach($objFiles as $objFile){
+              $arrValues[] = array('path' => $objFile->path, 'filename' => $objFile->filename, 'version' => $objFile->version);
+            }
+          }
+          $strValueIds = $strValue;
+          $strValue = serialize($arrValues);
+        }
+      
+        if($strValueIds != ''){
+          $objDoc->addField(Zend_Search_Lucene_Field::unIndexed($strField.'Ids', $strValueIds, $this->core->sysConfig->encoding->default));
+        }
+        
+        $this->core->logger->debug($strField.': '.$strValue);
+        switch ($objField->idSearchFieldTypes){
+          case Search::FIELD_TYPE_KEYWORD:
+            $objDoc->addField(Zend_Search_Lucene_Field::keyword($strField, $strValue, $this->core->sysConfig->encoding->default));
+            break;
+          case Search::FIELD_TYPE_UNINDEXED:
+            $objDoc->addField(Zend_Search_Lucene_Field::unIndexed($strField, $strValue, $this->core->sysConfig->encoding->default));
+            break;
+          case Search::FIELD_TYPE_BINARY:
+            $objDoc->addField(Zend_Search_Lucene_Field::binary($strField, $strValue, $this->core->sysConfig->encoding->default));
+            break;
+          case Search::FIELD_TYPE_TEXT:
+            $objDoc->addField(Zend_Search_Lucene_Field::text($strField, $strValue, $this->core->sysConfig->encoding->default));
+            break;
+          case Search::FIELD_TYPE_UNSTORED:
+            $objDoc->addField(Zend_Search_Lucene_Field::unStored($strField, strip_tags($strValue), $this->core->sysConfig->encoding->default));
+            break;
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
 
   /**
    * updateIndex
@@ -1402,13 +1482,13 @@ abstract class GenericDataTypeAbstract implements GenericDataTypeInterface {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  final public function updateIndex($strIndexPath, $strKey, $objParentPageContainer = null){
+  final public function updateIndex($strIndexPath, $strKey, $objParentPageContainer = null, $arrParentFolderIds = array()){
     try{
       if(count(scandir($strIndexPath)) > 2){
         $this->removeFromIndex($strIndexPath, $strKey);
       }
             
-      $this->addToIndex($strIndexPath, $strKey, $objParentPageContainer);
+      $this->addToIndex($strIndexPath, $strKey, $objParentPageContainer, $arrParentFolderIds);
 
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
