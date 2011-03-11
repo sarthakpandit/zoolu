@@ -13,17 +13,19 @@ Massiveart.Media = Class.create({
   initialize: function() { 
     this.formId = 'uploadForm';
     this.editFormId = 'editForm';
+    this.updateOverlayContainer = 'overlayGenContent';
         
     this.constThumbContainer = 'divThumbViewContainer';
     this.constListContainer = 'divListViewContainer';
     this.constOverlayGenContent = 'overlayGenContent';
     this.constOverlayMediaWrapper = 'overlayMediaWrapper';
     this.constList = 'list';
-    this.constThumb = 'thumb';   
-    
+    this.constThumb = 'thumb';
+
     this.lastFileId = 0;
     this.lastFileIds = '';
-            
+    this.fileCounter = 0;
+
     this.intFolderId = 0;
     this.currViewType = 0;
     this.sliderValue = 100;    
@@ -144,6 +146,7 @@ Massiveart.Media = Class.create({
     new Ajax.Updater(updateDiv, strAjaxAction, {
       parameters: { 
         folderId: folderId,
+        rootLevelId: myNavigation.rootLevelId,
         sliderValue: Math.round(currSliderValue) 
       },
       evalScripts: true,     
@@ -156,6 +159,41 @@ Massiveart.Media = Class.create({
       }.bind(this)
     });
 
+  },
+  
+  /**
+   * isAuthorizedToAdd
+   */
+  isAuthorizedToAdd: function(authorized){
+    if(authorized == true){
+      $('buttonmedianew').show();
+      $('divMediaEditMenu').setStyle({left:'122px'});
+    }else{
+      $('buttonmedianew').hide();
+      $('divMediaEditMenu').setStyle({left:'10px'});
+    }
+  },
+  
+  /**
+   * isAuthorizedToDelete
+   */
+  isAuthorizedToDelete: function(authorized){
+    if(authorized == true){
+      $('buttonmediadelete').show();
+    }else{
+      $('buttonmediadelete').hide();
+    }
+  },
+  
+  /**
+   * isAuthorizedToUpdate
+   */
+  isAuthorizedToUpdate: function(authorized){
+    if(authorized == true){
+      $('buttonmediamove').show();
+    }else{
+      $('buttonmediamove').hide();
+    }
   },
   
   /**
@@ -234,12 +272,14 @@ Massiveart.Media = Class.create({
 	    $('divListView').removeClassName('iconlistview');
 	    $('divListView').addClassName('iconlistview_on');
 	    $('mediaslider').show();
+	    $('mediaSearchContainer').hide();
     }else{
       $('divThumbView').removeClassName('iconthumbview');
 	    $('divThumbView').addClassName('iconthumbview_on');	    
 	    $('divListView').removeClassName('iconlistview_on');
 	    $('divListView').addClassName('iconlistview');
 	    $('mediaslider').hide();
+	    $('mediaSearchContainer').show();
     }    
   },
   
@@ -256,6 +296,32 @@ Massiveart.Media = Class.create({
         $('divMediaEditMenu').fade({ duration: 0.3 });
         if($(elementId)) $(elementId).addClassName('white');
       }
+    }
+  },
+  
+  /**
+   * toggleDestinationOptions
+   */
+  toggleDestinationOptions: function(checkBox, elId){
+    if($('shownDestinationOptions'+elId) && checkBox.checked){
+      Effect.SlideDown('shownDestinationOptions'+elId, {duration: 0.5});
+      $('FileDestinationId'+elId).value = $F('selectFileDestinationId'+elId);
+    }else{
+      Effect.SlideUp('shownDestinationOptions'+elId, {duration: 0.5});
+      $('FileDestinationId'+elId).value = 0;
+    }
+  },
+  
+  /**
+   * toggleGroupOptions
+   */
+  toggleGroupOptions: function(checkBox, elId){
+    if($('shownGroupOptions'+elId) && checkBox.checked){
+      Effect.SlideDown('shownGroupOptions'+elId, {duration: 0.5});
+      $('FileGroupId'+elId).value = $F('selectFileGroupId'+elId);
+    }else{
+      Effect.SlideUp('shownGroupOptions'+elId, {duration: 0.5});
+      $('FileGroupId'+elId).value = 0;
     }
   },
   
@@ -451,7 +517,7 @@ Massiveart.Media = Class.create({
       $('overlayGenContentWrapper').show();
             
       new Ajax.Updater(this.constOverlayGenContent, '/zoolu/media/file/geteditform', {
-        parameters: { fileIds: strFileIds, languageId: intLanguageId },
+        parameters: { fileIds: strFileIds, rootLevelId: myNavigation.rootLevelId, languageId: intLanguageId },
         evalScripts: true,
         onComplete: function() {
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
@@ -461,6 +527,26 @@ Massiveart.Media = Class.create({
         }.bind(this)
       });
     }   
+  },
+  
+  /**
+   * getAddMediaOverlay
+   */
+  getAddMediaOverlay: function(areaId){    
+    $(this.updateOverlayContainer).innerHTML = '';
+    myCore.putCenter('overlayGenContentWrapper');
+    $('overlayGenContentWrapper').show();    
+    if($(areaId)){
+      new Ajax.Updater(this.updateOverlayContainer, '/zoolu/cms/overlay/media', { 
+        evalScripts: true,
+        onComplete: function(){
+          myCore.putOverlayCenter('overlayGenContentWrapper');
+          myOverlay.areaId = areaId;
+          myOverlay.updateViewTypeIcons();
+          myOverlay.overlayCounter++;
+        } 
+      });
+    }    
   },
   
   /**
@@ -487,6 +573,12 @@ Massiveart.Media = Class.create({
     if(fileId != ''){
       this.lastFileId = fileId;
       this.lastFileIds = '';
+      
+      var blnShow = true;
+      
+      if($('overlaySingleEdit').visible() == true) {
+        blnShow = false;
+      }
       myCore.addBusyClass('overlaySingleEditContent');
       myCore.putCenter('overlaySingleEdit');
       
@@ -494,18 +586,75 @@ Massiveart.Media = Class.create({
       $('overlaySingleEdit').show();
                   
       new Ajax.Updater('overlaySingleEditContent', '/zoolu/media/file/getsingleeditform', {
-        parameters: { fileId: fileId, languageId: intLanguageId },
+        parameters: { fileId: fileId, rootLevelId: myNavigation.rootLevelId, languageId: intLanguageId },
         evalScripts: true,
         onComplete: function() {
-          this.initSingleSWFUpload(fileId);
+          if($('spanButtonPlaceholder')) this.initSingleSWFUpload(fileId);
           myCore.calcMaxOverlayHeight(this.constOverlayMediaWrapper, true);
           myCore.putOverlayCenter('overlaySingleEdit');          
-          myCore.removeBusyClass('overlaySingleEditContent');                    
+          myCore.removeBusyClass('overlaySingleEditContent');       
+          if(blnShow) myOverlay.overlayCounter++;
           this.toggleMediaEditMenu('buttonmediaedittitle', true);
           this.iniZeroClipboard();
+          // load medias
+          myMedia.loadFileFieldsContent('media');
         }.bind(this)
       });
     }   
+  },
+  
+  /**
+   * loadFileFieldsContent
+   * @param string strType
+   */
+  loadFileFieldsContent: function(strType){
+  
+    if(strType != ''){
+      
+      var strViewType = 0;
+      if(strType == 'document' || strType == 'video'){
+        strViewType = 2; // viewtypes->list constant of config.xml
+      }else{
+        strViewType = 1; // viewtypes->thumb constant of config.xml
+      }
+      
+      var languageId = null;
+      if($('languageId')) {
+        languageId = $F('languageId');
+      }
+      
+      $$('#editForm .'+strType).each(function(elDiv){    
+        if($(elDiv.id)){          
+          var fileFieldId = elDiv.id.substring(elDiv.id.indexOf('_')+1);
+          if($(fileFieldId).value != ''){
+            myCore.addBusyClass(elDiv.id);     
+            new Ajax.Updater(elDiv.id, '/zoolu/cms/page/getfiles', {
+              parameters: { 
+                fileIds: $(fileFieldId).value,
+                fileFieldId: fileFieldId,
+                viewtype: strViewType,
+                languageId: languageId
+              },
+              evalScripts: true,
+              onComplete: function(){
+                // add the scriptaculous sortable functionality to the parent container
+                //alert('complete');
+                switch(strViewType){
+                  case 1:
+                    myForm.initSortable(fileFieldId, elDiv.id, 'mediaitem', 'div', 'fileid', 'both');  
+                    break;
+                  case 2:
+                    myForm.initSortable(fileFieldId, elDiv.id, 'docitem', 'div', 'fileid', 'vertical');  
+                    break;
+                }
+                
+                myCore.removeBusyClass(elDiv.id); 
+              }.bind(this)
+            });
+          }          
+        }
+      }.bind(this));
+    }    
   },
   
   /**
@@ -558,6 +707,7 @@ Massiveart.Media = Class.create({
         parameters: serializedForm,
         onComplete: function(transport) {  
           if(isSingleEdit == true && transport.responseText != ''){
+            this.overlayCounter--;
             this.getSingleFileEditForm(transport.responseText);
           }else{
             myCore.removeBusyClass('overlayMediaWrapper');
@@ -626,15 +776,38 @@ Massiveart.Media = Class.create({
     var strFileIds = this.getStringFileIds();
     
     if(strFileIds != ''){
-      new Ajax.Updater(this.constThumbContainer, '/zoolu/media/file/delete', {
-        parameters: { fileIds: strFileIds },
-        evalScripts: true,
-        onComplete: function() {       
-          this.toggleMediaEditMenu('buttonmediaedittitle', true);
-          this.getMediaFolderContent(this.intFolderId);          
-        }.bind(this)
-      });
-    }    
+
+      if($('rootLevelType' + myNavigation.rootLevelId)){
+        tmpKey = 'Delete_' + $('rootLevelType' + myNavigation.rootLevelId).getValue();
+        var key = (myCore.translate[tmpKey]) ? tmpKey : 'Delete_';
+        var keyMulti = (myCore.translate[tmpKey + 's']) ? tmpKey + 's' : 'Delete_';
+      }else{
+        var key = 'Delete_';
+        var keyMulti = 'Delete_';
+      }
+
+      myCore.deleteAlertSingleMessage = myCore.translate[key];
+      myCore.deleteAlertMultiMessage = myCore.translate[keyMulti];
+      myCore.showDeleteAlertMessage(this.fileCounter);
+
+      $('buttonOk').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+
+        new Ajax.Updater(this.constThumbContainer, '/zoolu/media/file/delete', {
+          parameters: { fileIds: strFileIds, rootLevelId: myNavigation.rootLevelId },
+          evalScripts: true,
+          onComplete: function() {
+            this.toggleMediaEditMenu('buttonmediaedittitle', true);
+            this.getMediaFolderContent(this.intFolderId);
+          }.bind(this)
+        });
+      }.bind(this));
+
+      $('buttonCancel').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+        this.toggleMediaEditMenu('buttonmediaedittitle', true);
+      }.bind(this));
+    }   
   },
   
   /**
@@ -643,8 +816,10 @@ Massiveart.Media = Class.create({
   getStringFileIds: function(){
     
     var strFileIds = '';
+    this.fileCounter = 0;
     $$('.contentview .selected').each(function(element){ 
-      strFileIds = strFileIds + '[' + element.readAttribute('fileid') + ']';      
+      strFileIds = strFileIds + '[' + element.readAttribute('fileid') + ']';
+      this.fileCounter++;
     }.bind(this));
     
     return strFileIds;    

@@ -1,10 +1,6 @@
-        <?php //if(has_sub_navigation()) : ?>
-        <div class="divSubNavContainer">          
+        <?php if(has_sub_navigation()) : ?>      
           <ul>
-            <?php get_static_sub_navigation(); ?>               
+            <?php get_sub_navigation(); ?>               
           </ul>
-          &nbsp;
-          <div class="clear"></div>
-        </div>
-        <?php //endif; ?>          
+        <?php endif; ?>          
       

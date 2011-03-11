@@ -31,7 +31,7 @@ if($sysConfig->show_errors === 'false'){
   ini_set('display_errors', 0);
 }else{
   error_reporting(E_ALL);
-  ini_set('display_errors', E_ALL);
+  ini_set('display_errors', E_ALL && ~E_WARNING);
 }
 
 /**
@@ -58,7 +58,7 @@ date_default_timezone_set($sysConfig->timezone);
  * initialize the core class
  * (Zend_Db, Zend_Log, ...)
  */
-$core = Core::getInstance(true, $sysConfig, $zooConfig, $webConfig);
+$core = Core::getInstance(true, $sysConfig, $zooConfig, $config);
 Zend_Registry::set('Core', $core);
 
 /**

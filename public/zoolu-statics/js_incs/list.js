@@ -37,10 +37,13 @@ Massiveart.List = Class.create({
         this.page = page;
       }
       
+      // wait
+      setTimeout(function(){ return true; }, 10);
+      
       new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/list', {
         parameters: { 
       	  rootLevelId: myNavigation.rootLevelId,
-      	  itemId: myNavigation.currItemId,
+      	  folderId: myNavigation.currItemId,
       	  page: this.page, 
       	  itemsPerPage: this.ItemsPerPage,
       	  order: this.sortColumn,
@@ -52,13 +55,27 @@ Massiveart.List = Class.create({
       	  if($(myNavigation.genFormContainer)) $(myNavigation.genFormContainer).hide();
           if($(myNavigation.genFormFunctions)) $(myNavigation.genFormFunctions).hide();
           if($(myNavigation.genFormSaveContainer)) $(myNavigation.genFormSaveContainer).hide();
-    	    $(myNavigation.genListContainer).show();
-    	    $(myNavigation.genListFunctions).show();
+          if($(myNavigation.genListContainer)) $(myNavigation.genListContainer).show();
+          if($(myNavigation.genListFunctions)) $(myNavigation.genListFunctions).show();
     	    myCore.initSelectAll();
     	    myCore.initListHover();
         }.bind(this)
       });
     }
+  },
+  
+  /**
+   * backFilter
+   */
+  backFilter: function(){
+    this.getListPage();
+  },
+  
+  /**
+   * backReset
+   */
+  backReset: function(){
+    this.resetSearch();
   },
   
   /**
@@ -99,21 +116,28 @@ Massiveart.List = Class.create({
     var strEntries = '';
     var index = 0;
   	$$('#listEntries input').each(function(e){ 
-        if(e.type == 'checkbox'){
-          if(e.checked){
-            arrEntries[index] = e.value;
-            strEntries += '[' + e.value + ']';
-            index++;
-          }
-        }      
-  	});
+      if(e.type == 'checkbox'){
+        if(e.checked){
+          arrEntries[index] = e.value;
+          strEntries += '[' + e.value + ']';
+          index++;
+        }
+      }      
+  	});    
   	if(arrEntries.size() > 0){
       myCore.showDeleteAlertMessage(arrEntries.size());
       $('buttonOk').observe('click', function(event){
         new Ajax.Updater(myNavigation.genListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/listdelete', {
       	  parameters: { 
-      	    values: strEntries   
-            },      
+      	    values: strEntries,
+      	    rootLevelId: myNavigation.rootLevelId,
+            folderId: myNavigation.currItemId,
+            page: this.page, 
+            itemsPerPage: this.ItemsPerPage,
+            order: this.sortColumn,
+            sort: this.sortOrder,
+            search: this.searchValue
+          },      
       	  evalScripts: true,     
       	  onComplete: function() {
               myCore.hideDeleteAlertMessage();  
@@ -139,5 +163,4 @@ Massiveart.List = Class.create({
       }
     }    
   }
-  
 });

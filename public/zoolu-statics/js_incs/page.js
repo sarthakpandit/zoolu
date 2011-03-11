@@ -12,6 +12,63 @@ Massiveart.Page = Class.create({
 
   initialize: function() {
     this.isStartPage = false;
+    this.intPageId = 0;
+  },
+  
+  /**
+   * selectParentFolder
+   */
+  selectParentFolder: function(parentFolderId){
+    if($('id')){
+      this.pageId = $F('id');      
+      myCore.addBusyClass('overlayGenContent');
+      
+      new Ajax.Request('/zoolu/cms/page/changeparentfolder', {
+        parameters: { 
+         pageId: this.pageId,
+         parentFolderId: parentFolderId
+        },      
+        evalScripts: true,     
+        onComplete: function() {  
+          $('overlayGenContentWrapper').hide(); 
+          $('overlayBlack75').hide();
+          
+          new Effect.Highlight('page'+this.pageId, {startcolor: '#ffd300', endcolor: '#ffffff'});
+          $('page'+this.pageId).fade({duration: 0.5});
+          $('page'+this.pageId).remove();        
+                  
+          myCore.removeBusyClass('overlayGenContent');
+        }.bind(this)
+      });
+    }
+  },
+  
+  /**
+   * selectParentRootFolder
+   */
+  selectParentRootFolder: function(rootFolderId){
+    if($('id')){
+      this.pageId = $F('id');
+      myCore.addBusyClass('overlayGenContent');
+      
+      new Ajax.Request('/zoolu/cms/page/changeparentrootfolder', {
+        parameters: { 
+         pageId: this.pageId,
+         rootFolderId: rootFolderId
+        },      
+        evalScripts: true,     
+        onComplete: function() {  
+          $('overlayGenContentWrapper').hide(); 
+          $('overlayBlack75').hide();
+          
+          new Effect.Highlight('page'+this.pageId, {startcolor: '#ffd300', endcolor: '#ffffff'});
+          $('page'+this.pageId).fade({duration: 0.5});
+          $('page'+this.pageId).remove();        
+                  
+          myCore.removeBusyClass('overlayGenContent');
+        }.bind(this)
+      });
+    }
   },
   
   /**
@@ -52,6 +109,10 @@ Massiveart.Page = Class.create({
         myForm.loadFileFieldsContent('document');
         // load videos
         myForm.loadFileFieldsContent('video');
+        // load filter documents
+        myForm.loadFileFilterFieldsContent('documentFilter');
+        // load contacts
+        myForm.loadContactFieldsContent();
         
         $('divMetaInfos').innerHTML = '';
         myCore.removeBusyClass(myNavigation.genFormContainer);

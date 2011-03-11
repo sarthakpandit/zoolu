@@ -18,6 +18,7 @@ Massiveart.Navigation = Class.create({
     this.genFormFunctions = 'genFormFunctions';
     this.genListContainer = 'genListContainer';
     this.genListFunctions = 'genListFunctions';
+    this.genTableListContainer = 'genTableListContainer';
     this.genTmpContainer = 'genTmpContainer';
     
     this.constFolder = 'folder';
@@ -51,6 +52,7 @@ Massiveart.Navigation = Class.create({
     this.itemId = '';
     
     this.folderId;
+    this.pageId;
     
     this.arrNavigationTreeIds = new Array();
   },
@@ -179,20 +181,24 @@ Massiveart.Navigation = Class.create({
    * selectPortal
    * @param integer portalId
    */
-  selectPortal: function(portalId){            
+  selectPortal: function(portalId, mainPortalId){            
     this.currLevel = 1;
     
     this.hideCurrentFolder();
     
     $(this.genFormContainer).hide();
-    $(this.genFormSaveContainer).hide();    
+    $(this.genFormSaveContainer).hide();   
     
-    this.makeSelected('portal'+portalId);
-    if($(this.preSelectedPortal) && ('portal'+portalId) != this.preSelectedPortal){ 
+    if(typeof(mainPortalId) == 'undefined'){
+      mainPortalId = portalId;
+    } 
+    
+    this.makeSelected('portal'+mainPortalId);
+    if($(this.preSelectedPortal) && ('portal'+mainPortalId) != this.preSelectedPortal){ 
       this.makeDeselected(this.preSelectedPortal);
     }  
             
-    this.preSelectedPortal = 'portal'+portalId;
+    this.preSelectedPortal = 'portal'+mainPortalId;
     this.rootLevelId = portalId;
     
     $('divNaviCenterInner').innerHTML = '';
@@ -202,10 +208,10 @@ Massiveart.Navigation = Class.create({
     new Insertion.Bottom('divNaviCenterInner', levelContainer);
     
     if(Prototype.Browser.IE){
-			newNavHeight = $('divNaviCenter').getHeight();
-			$$('.navlevel').each(function(elDiv){
-			  $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
-			});
+      newNavHeight = $('divNaviCenter').getHeight();
+      $$('.navlevel').each(function(elDiv){
+        $(elDiv).setStyle({height: (newNavHeight-42) + 'px'});
+      });
     }
     else if(Prototype.Browser.WebKit){
       newNavHeight = $('divNaviCenter').getHeight();
@@ -217,9 +223,11 @@ Massiveart.Navigation = Class.create({
     new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
       parameters: { 
         rootLevelId: this.rootLevelId,
+        rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
         rootLevelGroupId: this.rootLevelGroupId,
         rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
-        currLevel: this.currLevel},      
+        currLevel: this.currLevel
+      },      
       evalScripts: true,     
       onComplete: function() {
         myCore.removeBusyClass('navlevel'+this.currLevel);
@@ -243,7 +251,7 @@ Massiveart.Navigation = Class.create({
    * selectRootLevel
    * @param integer rootLevelId
    */
-  selectRootLevel: function(rootLevelId, rootLevelGroupId, url, makeRequest, viewType){
+  selectRootLevel: function(rootLevelId, rootLevelGroupId, url, makeRequest, viewType, rootLevelTypeId){
     
     if(typeof(viewType) == 'undefined'){
       viewType = 'tree';
@@ -270,10 +278,17 @@ Massiveart.Navigation = Class.create({
       myRootLevelGroupIdInput.setAttribute('type', 'hidden');
       myForm.appendChild(myRootLevelGroupIdInput);
       
-      document.body.appendChild(myForm);
-      myForm.submit();      
-    }else{
+      if(typeof(rootLevelTypeId) != 'undefined'){
+        var myRootLevelTypeIdInput = document.createElement("input");
+        myRootLevelTypeIdInput.setAttribute('name', 'rootLevelTypeId');
+        myRootLevelTypeIdInput.setAttribute('value', rootLevelTypeId);
+        myRootLevelTypeIdInput.setAttribute('type', 'hidden');
+        myForm.appendChild(myRootLevelTypeIdInput);
+      }
       
+      document.body.appendChild(myForm);
+      myForm.submit();
+    }else{
       if(typeof(makeRequest) == 'undefined'){
         makeRequest = true;
       } 
@@ -299,6 +314,9 @@ Massiveart.Navigation = Class.create({
       
       this.rootLevelId = rootLevelId;
       this.rootLevelGroupId = rootLevelGroupId;
+      if(typeof(rootLevelTypeId) != 'undefined'){
+        this.rootLevelTypeId = rootLevelTypeId; 
+      }
       
       if($('divNaviCenterInner')) $('divNaviCenterInner').innerHTML = '';
       this.levelArray = [];
@@ -323,9 +341,12 @@ Massiveart.Navigation = Class.create({
         new Ajax.Updater('navlevel'+this.currLevel, this.constRequestRootNav, {
           parameters: { 
             rootLevelId: this.rootLevelId,
+            rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
             rootLevelGroupId: this.rootLevelGroupId,
             rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
-            currLevel: this.currLevel},      
+            rootLevelTypeId: this.rootLevelTypeId,
+            currLevel: this.currLevel
+          },      
           evalScripts: true,     
           onComplete: function() {
             myCore.removeBusyClass('navlevel'+this.currLevel);
@@ -353,6 +374,7 @@ Massiveart.Navigation = Class.create({
   selectNavigationItem: function(parentLevel, elType, itemId){
     $(this.genFormContainer).hide();
     $(this.genFormSaveContainer).hide();
+    if($(this.genTableListContainer)) $(this.genTableListContainer).hide();
     
     var level = parentLevel + 1;    
     var element = elType+itemId;
@@ -409,23 +431,25 @@ Massiveart.Navigation = Class.create({
     if(elType == this.constFolder){    
       new Ajax.Updater('navlevel'+this.currLevel, this.constRequestChildNav, {
         parameters: { 
-  	      folderId: this.currItemId,
-  	      rootLevelId: this.rootLevelId,
+          folderId: this.currItemId,
+          rootLevelId: this.rootLevelId,
+          rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
           rootLevelGroupId: this.rootLevelGroupId,
           rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
-	        currLevel: this.currLevel
-	      },      
-	      evalScripts: true,     
-	      onComplete: function() {        
-	        myCore.removeBusyClass('navlevel'+this.currLevel);
-	        this.initFolderHover();
-	        this.initPageHover();
-	        this.initAddMenuHover();
+          currLevel: this.currLevel
+        },      
+        evalScripts: true,     
+        onComplete: function() {        
+          myCore.removeBusyClass('navlevel'+this.currLevel);
+          this.initFolderHover();
+          this.initPageHover();
+          this.initAddMenuHover();
           //this.createSortableNavLevel(this.currLevel);
           this.scrollNavigationBar();
+          this.hideCurrentPage();
           this.updateCurrentFolder();
-	    }.bind(this)
-	  });
+      }.bind(this)
+    });
     }
   },
   
@@ -509,6 +533,27 @@ Massiveart.Navigation = Class.create({
   },
   
   /**
+   * updateCurrentPage
+   */
+  updateCurrentPage: function() {
+    this.pageId = this.currItemId;
+    if($('divPageRapper')){
+      $('divPageRapper').show();
+      $('divPageTitle').innerHTML = $('divNavigationTitle_page'+this.pageId).innerHTML;
+    } 
+  },
+  
+  /**
+   * hideCurrentPage
+   */
+  hideCurrentPage: function() {
+    if($('divPageRapper')){
+      $('divPageRapper').hide();
+      $('divPageTitle').innerHTML = '';
+    } 
+  },
+  
+  /**
    * getEditFormMainFolder
    */
   getEditFormMainFolder: function(){
@@ -525,16 +570,16 @@ Massiveart.Navigation = Class.create({
     Sortable.destroy(SortableNavLevel);
     if($(SortableNavLevel)){      
       Sortable.create(SortableNavLevel,{
-            tag:'div',
-            scroll:SortableNavLevel,
-            only: ['folder', 'page'],
-            handle:'icon',            
-            //constraint: false,
-            //ghosting: true,
-            containment: SortableNavLevel,
-            onUpdate: function(){ 
-              Sortable.serialize(SortableNavLevel);
-          }
+        tag:'div',
+        scroll:SortableNavLevel,
+        only: ['folder', 'page'],
+        handle:'icon',            
+        //constraint: false,
+        //ghosting: true,
+        containment: SortableNavLevel,
+        onUpdate: function(){ 
+          Sortable.serialize(SortableNavLevel);
+        }
       });
     }
   },
@@ -577,59 +622,62 @@ Massiveart.Navigation = Class.create({
     var strAjaxAction = '';
     var strParams = '';
         
-		if(parentId != '' && parentId > 0){
-		  strAjaxAction = this.constRequestChildNav;
-		  strParams = 'currLevel='+currLevel+'&folderId='+parentId+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;
-		} else {
-		  strAjaxAction = this.constRequestRootNav;
-		  strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;
-		}
-		
-		var rootLevelGroupKey = ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '';
-		strParams += '&rootLevelGroupKey='+rootLevelGroupKey; 
+    if(parentId != '' && parentId > 0){
+      strAjaxAction = this.constRequestChildNav;
+      strParams = 'currLevel='+currLevel+'&folderId='+parentId+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;     
+    } else {
+      strAjaxAction = this.constRequestRootNav;
+      strParams = 'currLevel='+currLevel+'&rootLevelId='+this.rootLevelId+'&rootLevelGroupId='+this.rootLevelGroupId;
+    }
     
+    var rootLevelGroupKey = ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '';
+    strParams += '&rootLevelGroupKey='+rootLevelGroupKey; 
+    
+    var rootLevelLanguageId = ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '';
+    strParams += '&rootLevelLanguageId='+rootLevelLanguageId; 
+        
     if(strParams != '' && strAjaxAction != ''){      
       new Ajax.Updater('navlevel'+currLevel, strAjaxAction, {
-	      parameters: strParams,      
-	      evalScripts: true,     
-	      onComplete: function() {       
-	        new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'});
+        parameters: strParams,      
+        evalScripts: true,     
+        onComplete: function() {       
+          new Effect.Highlight('navlevel'+currLevel, {startcolor: '#ffd300', endcolor: '#ffffff'});
           
           if(elementType != '' && elementId != '' && $(elementType+elementId)){ 
             if(this.navigation[currLevel]){
               this.makeDeselected(this.navigation[currLevel]);
             }    
             this.navigation[currLevel] = elementType+elementId;
-				    
-				    if(this.navigation.length > 0){      
-				      for(var i = 1; i <= this.navigation.length-1; i++){
-				        if(this.navigation[i] != elementType+elementId){
-				          if(currLevel < i){
-				            this.makeDeselected(this.navigation[i]);
-				          }else{
-				            this.makeParentSelected(this.navigation[i]);
-				          }
-				        }else{
-				          this.makeSelected(this.navigation[currLevel]);
-				        }   
-				      } 
-				    }				    
-				    if(this.levelArray.indexOf(currLevel) != -1 && elType == this.constPage){
-				      var levelPos = this.levelArray.indexOf(currLevel)+1;
-				      for(var i = levelPos; i < this.levelArray.length; i++){
-				        if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
-				      }
-				    }				    
-				    if(elementType == this.constFolder){
+            
+            if(this.navigation.length > 0){      
+              for(var i = 1; i <= this.navigation.length-1; i++){
+                if(this.navigation[i] != elementType+elementId){
+                  if(currLevel < i){
+                    this.makeDeselected(this.navigation[i]);
+                  }else{
+                    this.makeParentSelected(this.navigation[i]);
+                  }
+                }else{
+                  this.makeSelected(this.navigation[currLevel]);
+                }   
+              } 
+            }           
+            if(this.levelArray.indexOf(currLevel) != -1 && elType == this.constPage){
+              var levelPos = this.levelArray.indexOf(currLevel)+1;
+              for(var i = levelPos; i < this.levelArray.length; i++){
+                if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
+              }
+            }           
+            if(elementType == this.constFolder){
               this.selectItem();
             } 
           }
                              
-	        this.initFolderHover();
-	        this.initPageHover();
-	        this.initAddMenuHover();    
-	      }.bind(this)
-	    });       
+          this.initFolderHover();
+          this.initPageHover();
+          this.initAddMenuHover();    
+        }.bind(this)
+      });       
     }  
   },
   
@@ -650,23 +698,24 @@ Massiveart.Navigation = Class.create({
     }
   
     new Ajax.Updater('navlevel'+level, strAjaxAction, {
-		  parameters: {
-		    id: itemId,
-		    elementType: elType,
-		    sortPosition: $(posElement).getValue(),
-		    rootLevelId: this.rootLevelId,
-		    rootLevelTypeId: this.rootLevelTypeId,
-		    rootLevelGroupId: this.rootLevelGroupId,
-		    rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
-		    parentId: parentId		    
-		  },      
-		  evalScripts: true,     
-		  onComplete: function() {	    
-		    if(this.rootLevelId != '' && this.rootLevelId > 0){
+      parameters: {
+        id: itemId,
+        elementType: elType,
+        sortPosition: $(posElement).getValue(),
+        rootLevelId: this.rootLevelId,
+        rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
+        rootLevelTypeId: this.rootLevelTypeId,
+        rootLevelGroupId: this.rootLevelGroupId,
+        rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
+        parentId: parentId        
+      },      
+      evalScripts: true,     
+      onComplete: function() {      
+        if(this.rootLevelId != '' && this.rootLevelId > 0){
           this.updateNavigationLevel(level, parentId);
-        }		        
-		  }.bind(this)
-		});		
+        }           
+      }.bind(this)
+    });   
     
   },
   
@@ -727,7 +776,7 @@ Massiveart.Navigation = Class.create({
    */
   showAddMenu: function(levelId){
     currMenuDiv = 'addmenu'+levelId;
-    $(currMenuDiv).appear({ duration: 0.5 });    	  
+    $(currMenuDiv).appear({ duration: 0.5 });       
   },
   
   /**
@@ -754,6 +803,7 @@ Massiveart.Navigation = Class.create({
       parameters: {
         formId: folderFormDefaultId,
         rootLevelId: this.rootLevelId,
+        rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
         rootLevelTypeId: this.rootLevelTypeId,
         rootLevelGroupId: this.rootLevelGroupId,
         rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
@@ -798,6 +848,7 @@ Massiveart.Navigation = Class.create({
       parameters: {
         templateId: pageTemplateDefaultId,
         rootLevelId: this.rootLevelId,
+        rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
         rootLevelGroupId: this.rootLevelGroupId,
         rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
@@ -842,6 +893,7 @@ Massiveart.Navigation = Class.create({
       parameters: {
         templateId: pageTemplateDefaultId,
         rootLevelId: this.rootLevelId,
+        rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
         rootLevelGroupId: this.rootLevelGroupId,
         rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
         parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
@@ -909,17 +961,18 @@ Massiveart.Navigation = Class.create({
       for(var i = levelPos; i < this.levelArray.length; i++){
         if($('navlevel'+this.levelArray[i])) $('navlevel'+this.levelArray[i]).innerHTML = '';
       }
-      $('divFolderRapper').hide();
+      this.hideCurrentFolder();
+      
+      if($(element).down('.icon').className.indexOf(this.constStartItem) == -1){
+        this.updateCurrentPage();
+      }else{
+        this.hideCurrentPage();
+      }
     }
     
     this.showFormContainer();
-
-    if($(element).down('.icon').className.indexOf(this.constStartItem) == -1){
-      $('buttondelete').show();
-    }else{
-      $('buttondelete').hide();
-    }
     
+    if($(this.genTableListContainer)) $(this.genTableListContainer).hide();
     $(this.genFormContainer).show();
     $(this.genFormSaveContainer).show();    
     
@@ -946,6 +999,7 @@ Massiveart.Navigation = Class.create({
          linkId: linkId,
          currLevel: currLevel,
          rootLevelId: this.rootLevelId,
+         rootLevelLanguageId: ($('rootLevelLanguageId'+this.rootLevelId)) ? $F('rootLevelLanguageId'+this.rootLevelId) : '',
          rootLevelGroupId: this.rootLevelGroupId,
          rootLevelGroupKey: ($('rootLevelGroupKey'+this.rootLevelGroupId)) ? $F('rootLevelGroupKey'+this.rootLevelGroupId) : '',
          parentFolderId: $('navlevel'+currLevel).readAttribute('parentid'),
@@ -967,7 +1021,7 @@ Massiveart.Navigation = Class.create({
          // load filter documents
          myForm.loadFileFilterFieldsContent('documentFilter');
          // load contacts
-         myForm.loadContactFieldsContent();     
+         myForm.loadContactFieldsContent();  
        }.bind(this)
      });
   },
@@ -1003,11 +1057,11 @@ Massiveart.Navigation = Class.create({
   makeSelected: function(element){
     if(element != ''){
       if($(element)){
-	      $(element).addClassName('selected');
-	      if($(element+'top')) $(element+'top').addClassName('selected');
-	      if($(element+'bottom')) $(element+'bottom').addClassName('selected');
-	      if($(element+'menu')) $(element+'menu').show();
-	      if($(element)) $(element).removeClassName('hover');
+        $(element).addClassName('selected');
+        if($(element+'top')) $(element+'top').addClassName('selected');
+        if($(element+'bottom')) $(element+'bottom').addClassName('selected');
+        if($(element+'menu')) $(element+'menu').show();
+        if($(element)) $(element).removeClassName('hover');
       } 
     }
   },
@@ -1019,10 +1073,10 @@ Massiveart.Navigation = Class.create({
     if(element != ''){
       if($(element)){
         $(element).removeClassName('selected');
-	      if($(element+'menu')) $(element+'menu').hide();
-	      if($(element+'top')) $(element+'top').removeClassName('selected');
-	      if($(element+'bottom')) $(element+'bottom').removeClassName('selected');
-	      if($(element).hasClassName('pselected')) $(element).removeClassName('pselected');
+        if($(element+'menu')) $(element+'menu').hide();
+        if($(element+'top')) $(element+'top').removeClassName('selected');
+        if($(element+'bottom')) $(element+'bottom').removeClassName('selected');
+        if($(element).hasClassName('pselected')) $(element).removeClassName('pselected');
       }
     }
   },

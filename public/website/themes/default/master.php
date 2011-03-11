@@ -2,64 +2,65 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title><?php get_portal_title(); ?> - <?php get_main_navigation_title(); ?></title>
+  <title><?php get_title(); ?></title>
   <?php get_meta_description(); ?>
   <?php get_meta_keywords(); ?>
 
-  <link rel="stylesheet" type="text/css" media="screen" href="/website/themes/default/css/screen.css"></link>
-  <link rel="stylesheet" type="text/css" media="screen" href="/website/themes/default/lightbox/css/lightbox.css"></link>
+  <!-- SCREEN CSS -->
+  <link type="text/css" rel="stylesheet" href="<? get_static_component_domain() ?>/min/b=website/themes/default&amp;f=css/reset.css,css/screen.css,lightbox/css/lightbox.css" />
+  
+  <%template_css%>
   <%plugin_css%>
+
   <?php if(Zend_Auth::getInstance()->hasIdentity()) : ?>
-  <link rel="stylesheet" type="text/css" media="screen" href="/website/themes/default/css/modus.css"></link>
+  <link rel="stylesheet" type="text/css" media="screen" href="<? get_static_component_domain() ?>/website/themes/default/css/modus.css"></link>
   <?php endif; ?>
 
-  <script type="text/javascript" src="/website/themes/default/js_incs/prototype/prototype.js"></script>
-  <script type="text/javascript" src="/website/themes/default/js_incs/script.aculous/scriptaculous.js"></script>
+  <link rel="shortcut icon" href="<? get_static_component_domain() ?>/website/themes/default/favicon.ico" type="image/x-icon"></link>
+  
+  <script type="text/javascript" src="<? get_static_component_domain() ?>/min/b=website/themes/default&amp;f=js_incs/prototype/prototype.js,js_incs/script.aculous/builder.js,js_incs/script.aculous/effects.js,js_incs/script.aculous/controls.js,js_incs/script.aculous/fader.js,lightbox/js/lightbox.js,js_incs/default.js,flowplayer/flowplayer-3.2.2.min.js"></script>
   <%plugin_js%>
-  <script type="text/javascript" src="/website/themes/default/lightbox/js/lightbox.js"></script>
   <%template_js%>
-  <script type="text/javascript" src="/website/themes/default/js_incs/default.js"></script>
-
-  <script type="text/javascript">//<![CDATA[
-    var myDefault = new Default();
-    document.observe('dom:loaded', function() {
-        myDefault.init();
-    });
-    //]]>
-  </script>
-
-  <?php if (strpos($_SERVER['HTTP_USER_AGENT'], 'IE 6') !== false): ?>
-  <!-- IE PNG FIX
-  <style type="text/css">
-    #divScrollLeft img,
-    #divScrollRight img {
-      behavior: url(/website/themes/default/css/iepngfix/iepngfix.htc);
-    }
-  </style>-->
-  <?php endif; ?>
-
 </head>
 
 <body>
   <?php get_zoolu_header(); ?>
+  <div id="wrap">
+    <div id="main" class="clearfix">      
+      <!-- header and main navigation -->
+      <?php include dirname(__FILE__).'/includes/header.inc.php'; ?>
+      
+      <!-- Template Content -->
+      <?php include dirname(__FILE__).'/templates/'.get_template_file(); ?>
+    </div> <!-- /#main -->
+  </div> <!-- /#wrap --> 
 
-  <!-- Header Section -->
-  <?php include dirname(__FILE__).'/includes/header.inc.php'; ?>
-  <!-- Template Content -->
-  <?php include dirname(__FILE__).'/templates/'.get_template_file(); ?>
-  <!-- Footer Section -->
+  <!-- Footer -->
   <?php include dirname(__FILE__).'/includes/footer.inc.php'; ?>
-
-  <!-- Google Analytics -->
+  
+  <?php get_bottom_content(); ?>
+  
+  <script type="text/javascript">//<![CDATA[
+    var myDefault;
+    document.observe('dom:loaded', function() {
+      myDefault = new Default();
+      
+      <?php get_dom_loaded_js(); ?>
+    });
+    //]]>
+  </script>
+  
+  <!-- @start, Google Analytics -->
   <script type="text/javascript">
     var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
     document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
   </script>
   <script type="text/javascript">
     try {
-      var pageTracker = _gat._getTracker("UA-XXXXXXX-1");
+      var pageTracker = _gat._getTracker("<?php echo $this->analyticsKey; ?>");
       pageTracker._trackPageview();
     } catch(err) {}
   </script>
+  <!-- @end, Google Analytics -->
 </body>
 </html>

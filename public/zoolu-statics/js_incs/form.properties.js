@@ -83,38 +83,57 @@ Massiveart.Form.Properties = Class.create(Massiveart.Form, {
   deleteElement: function(){
     
     if($(this.formId)){
-      
-      //var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
-      //var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
-      var strAjaxActionBase = $(this.formId).readAttribute('action').replace('edit', 'delete');
-      var elementId = $('id').getValue();
-      
-      // loader
-      this.getFormSaveLoader();
-      myCore.resetTinyMCE(true);
-      
-      if($('formType')){
-        navItemId = $F('formType')+elementId;
+      var tmpKey = 'Delete_' + $('formType').getValue();
+      if(myCore.translate[tmpKey]){
+        var key = tmpKey;
+      }else if($('rootLevelGroupKey' + myNavigation.rootLevelGroupId)){
+        tmpKey = 'Delete_' + $('rootLevelGroupKey' + myNavigation.rootLevelGroupId).getValue();
+        var key = (myCore.translate[tmpKey]) ? tmpKey : 'Delete_';
+      }else{
+        var key = 'Delete_';
       }
-      
-      new Ajax.Updater(this.updateContainer, strAjaxActionBase, {
-        parameters: { id: elementId },
-        evalScripts: true,
-        onComplete: function() {
-          //deleted
-          this.getFormDeleteSucces();
-          
-          if($(navItemId)){
-            new Effect.Highlight(navItemId, {startcolor: '#ffd300', endcolor: '#ffffff'});
-            $(navItemId).fade({duration: 0.5});
-            setTimeout('$("'+navItemId+'").remove()', 500);
-          }
-          
-          $(myNavigation.genFormContainer).hide();
-          $(myNavigation.genFormSaveContainer).hide(); 
-           
-        }.bind(this)
-      });
+
+      myCore.deleteAlertSingleMessage = myCore.translate[key];
+      myCore.showDeleteAlertMessage(1);
+
+      $('buttonOk').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+        //var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
+        //var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
+        var strAjaxActionBase = $(this.formId).readAttribute('action').replace('edit', 'delete');
+        var elementId = $('id').getValue();
+
+        // loader
+        this.getFormSaveLoader();
+        myCore.resetTinyMCE(true);
+
+        if($('formType')){
+          navItemId = $F('formType')+elementId;
+        }
+
+        new Ajax.Updater(this.updateContainer, strAjaxActionBase, {
+          parameters: { id: elementId },
+          evalScripts: true,
+          onComplete: function() {
+            //deleted
+            this.getFormDeleteSucces();
+
+            if($(navItemId)){
+              new Effect.Highlight(navItemId, {startcolor: '#ffd300', endcolor: '#ffffff'});
+              $(navItemId).fade({duration: 0.5});
+              setTimeout('$("'+navItemId+'").remove()', 500);
+            }
+
+            $(myNavigation.genFormContainer).hide();
+            $(myNavigation.genFormSaveContainer).hide();
+
+          }.bind(this)
+        });
+      }.bind(this));
+
+      $('buttonCancel').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+      }.bind(this));
     }
   },
   

@@ -8,8 +8,6 @@
         <!-- Main Content -->
         <div class="divContentContainer">
           <h1><?php get_title(); ?></h1>
-          
-          <!-- TODO: project template (e.g. ivoclar) -->
 
           <div class="clear"></div>
         </div>

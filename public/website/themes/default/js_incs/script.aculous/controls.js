@@ -1,8 +1,8 @@
-// script.aculo.us controls.js v1.8.2, Tue Nov 18 18:30:58 +0100 2008
+// script.aculo.us controls.js v1.8.3, Thu Oct 08 11:23:33 +0200 2009
 
-// Copyright (c) 2005-2008 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
-//           (c) 2005-2008 Ivan Krstic (http://blogs.law.harvard.edu/ivan)
-//           (c) 2005-2008 Jon Tirsen (http://www.tirsen.com)
+// Copyright (c) 2005-2009 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
+//           (c) 2005-2009 Ivan Krstic (http://blogs.law.harvard.edu/ivan)
+//           (c) 2005-2009 Jon Tirsen (http://www.tirsen.com)
 // Contributors:
 //  Richard Livsey
 //  Rahul Bhargava
@@ -107,8 +107,8 @@ Autocompleter.Base = Class.create({
 
   fixIEOverlapping: function() {
     Position.clone(this.update, this.iefix, {setTop:(!this.update.style.height)});
-    this.iefix.style.zIndex = 1;
-    this.update.style.zIndex = 2;
+    this.iefix.style.zIndex = 100;
+    this.update.style.zIndex = 200;
     Element.show(this.iefix);
   },
 

@@ -102,6 +102,16 @@ Content List View */
   width:98%;
 }
 
+#genTableListContainer .tablelist {
+  margin-left:1%;
+  margin-top:20px;
+}
+
+#genTableListContainer .listfooter {
+  margin-left:1%;
+  margin-bottom:20px;
+}
+
 /* --- top --- */
 .topcornerleft {
   background: #e4e4e4 url(/zoolu-statics/images/main/list_corner_left_top.png) no-repeat 0 0;
@@ -132,7 +142,7 @@ Content List View */
 }
 
 .topicon {
-  width:50px;
+  width:20px;
   background: #e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x 0 0;
   height:26px;
   padding:0 11px 0 11px;
@@ -143,7 +153,11 @@ Content List View */
 .topname,
 .topsname,
 .topfname,
-.topkey {
+.topkey,
+.toplanguagespecific,
+.toplanguages,
+.topcompany,
+.topusername {
   background: #e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x 0 0;
   height:26px;
   padding:0 11px 0 11px;
@@ -177,11 +191,19 @@ Content List View */
 }
 
 .topstatus {
-  width:140px;
+  width:100px;
   background: #e4e4e4 url(/zoolu-statics/images/main/pixel_white.gif) repeat-x 0 0;
   height:26px;
   padding:0 11px 0 11px;
   text-align:left;
+}
+
+.toplanguagespecific {
+  width:100px;
+}
+
+.toplanguages {
+  width:200px;
 }
 
 .tablelist th div {
@@ -219,7 +241,7 @@ Content List View */
 }
 
 .rowicon {
-  width:50px;
+  width:20px;
   height:30px;
   padding:0 11px 0 11px;
 }
@@ -227,7 +249,10 @@ Content List View */
 .rowtitle,
 .rowsname,
 .rowfname,
-.rowkey {
+.rowname,
+.rowkey,
+.rowusername,
+.rowcompany {
   height:30px;
   padding:0 11px 0 11px; 
 }
@@ -253,9 +278,19 @@ Content List View */
 }
 
 .rowstatus {
-  width:140px;
+  width:100px;
   height:30px;
   padding:0 11px 0 11px;
+}
+
+.rowlanguagespecific {
+  padding:0 11px;
+  width:100px;
+}
+
+.rowlanguages {
+  padding:0 11px;
+  width:200px;
 }
 
 /* --- footer --- */
@@ -383,10 +418,14 @@ Screen Overlay */
   background: url('/zoolu-statics/images/main/trans_black75.png') repeat;
 }
 
-.overlaycontentwrapper {
+.overlaycontentwrapper, .overlaycontentwrapper2 {
   position:absolute;
   z-index:810;
   width:460px;
+}
+
+.overlaycontentwrapper2 {
+  z-index:820;
 }
 
 #overlaySingleEdit {
@@ -438,7 +477,7 @@ td.contentcenter #buttonCancel {
 
 /* --- overlay border --- */
 
-.overlaycontentwrapper table {
+.overlaycontentwrapper table, .overlaycontentwrapper2 table {
   width:100%;
 }
 
@@ -514,6 +553,45 @@ td.contentright {
   background-repeat:repeat-y;
   font-size:0;
   width:10px;
+}
+
+/* --- property overlay --- */
+
+#overlayPropertyWrapper {
+  width:560px;
+}
+
+.overlaycontentwrapper .buttoncancel {
+  padding:15px 0 0 0;
+  float:left;
+  cursor:pointer;
+}
+
+.overlaycontentwrapper .buttoneditsave {
+  padding:10px 0 0 0;
+  float:right;
+  cursor:pointer;
+}
+
+.propertywrapper {
+  background-color: #e4e4e4;
+  overflow: hidden;
+  overflow-y:scroll;
+  height:270px;
+  padding:10px 0 10px 10px;
+}
+
+.propertywrapper .olfield {
+  padding:0 0 20px 0;
+}
+
+.propertywrapper .field-6 input {
+  width:99%;  
+}
+
+.busy.propertywrapper div, 
+.busy.propertywrapper span{
+  visibility:hidden;
 }
 
 /* ----------------

@@ -15,7 +15,7 @@ require_once(dirname(__FILE__).'/../../sys_config/general.inc.php');
  * To allow debugging, set this option to true and add "&debug=1" to
  * a URI. E.g. /min/?f=script1.js,script2.js&debug=1
  */
-$min_allowDebugFlag = false;
+$min_allowDebugFlag = true;
 
 
 /**
@@ -44,6 +44,7 @@ $min_enableBuilder = true;
  */
 //$min_cachePath = 'c:\\WINDOWS\\Temp';
 $min_cachePath = GLOBAL_ROOT_PATH.$core->sysConfig->path->cache->min;
+
 //$min_cachePath = preg_replace('/^\\d+;/', '', session_save_path());
 
 //require 'lib/Minify/Cache/APC.php';

@@ -14,9 +14,12 @@ Massiveart.Navigation.Media = Class.create(Massiveart.Navigation, {
     // initialize superclass
     $super();
     
-    this.mediaContainer = 'divMediaContainer';    
+    this.mediaContainer = 'divMediaContainer';
     this.constRequestRootNav = '/zoolu/media/navigation/rootnavigation';
-    this.constRequestChildNav = '/zoolu/media/navigation/childnavigation';        
+    this.constRequestChildNav = '/zoolu/media/navigation/childnavigation';
+    this.constBasePath = '/zoolu/media';
+    this.rootLevelType = 'view';
+    this.genListContainer = 'divListViewContainer';
   },
   
   /**
@@ -47,23 +50,27 @@ Massiveart.Navigation.Media = Class.create(Massiveart.Navigation, {
   
   /**
    * selectMediaType
-   * @param integer portalId
+   * @param integer rootLevelId
    */
-  selectMediaType: function(portalId){
+  selectMediaType: function(rootLevelId, viewType){
     this.currLevel = 1;
     
     $(this.genFormContainer).hide();
     $(this.genFormContainer).innerHTML = '';
     $(this.genFormSaveContainer).hide(); 
-    $(this.mediaContainer).hide();   
+    $(this.mediaContainer).hide(); 
     
-    this.makeSelected('portal'+portalId);
-    if($(this.preSelectedPortal) && ('portal'+portalId) != this.preSelectedPortal){ 
+    if(typeof(viewType) != 'undefined' && viewType != ''){
+      myMedia.currViewType = viewType;
+    }
+    
+    this.makeSelected('portal'+rootLevelId);
+    if($(this.preSelectedPortal) && ('portal'+rootLevelId) != this.preSelectedPortal){ 
       this.makeDeselected(this.preSelectedPortal);
-    }  
+    }
             
-    this.preSelectedPortal = 'portal'+portalId;
-    this.rootLevelId = portalId;
+    this.preSelectedPortal = 'portal'+rootLevelId;
+    this.rootLevelId = rootLevelId;
     
     $('divNaviCenterInner').innerHTML = '';
     this.levelArray = [];

@@ -2,14 +2,14 @@
  * Modus
  *
  * @author Cornelius Hansjakob <cha@massiveart.com>
- * @version 1.0
+ * @version 1.1
  */
 
 /* ----------------
 Main (overwrite core.css) */
  
 body {
-  padding:40px 0 0 0; 
+  padding: 40px 0 0 0; 
   background-position: 0 40px;
 }
 
@@ -18,7 +18,7 @@ Modus Container */
 
 .divModusContainer {
   position:fixed; 
-  z-index:80; 
+  z-index:10000; 
   right:0; 
   top:0; 
   left:0; 
@@ -62,9 +62,9 @@ Modus Container */
 }
 
 .divModusStatus {
-  float:right; 
-  padding:14px 20px 0 0; 
   color:#fff; 
+  float:right; 
+  padding:14px 20px 0 0;
   font-weight:bold;
 }
 
@@ -73,5 +73,44 @@ Modus Container */
   font-weight:bold;
 }
 
+.divModusCache {
+  float:right; 
+  padding:10px 20px 0 0;
+  font-weight:bold;
+  cursor:pointer;
+}
 
+.button25leftOn {
+  background: url(/zoolu-statics/images/buttons/button_yellow_left.png) no-repeat;
+  width: 6px !important;  
+  height: 25px;
+  float:left;
+}
+
+.button25rightOn {
+  background: url(/zoolu-statics/images/buttons/button_yellow_right.png) no-repeat;
+  width: 6px !important;
+  height: 25px;
+  float:left;
+}
+
+.button25centerOn {
+  background: url(/zoolu-statics/images/buttons/button_yellow_center.png) repeat-x;
+  height:25px;
+  float:left;
+}
+
+.button25centerOn div {
+  padding-top:4px;
+}
+
+.divModusCache .busy {  
+  background-image: url(/zoolu-statics/images/main/loader_small_purple.gif);
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.divModusCache .busy div {  
+  visibility: hidden;
+}
  

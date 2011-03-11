@@ -126,19 +126,19 @@ Massiveart.Core = Class.create({
     if(typeof(size != 'undefined') && size > 0){
       if($('overlayGenContentWrapper')){
         $('overlayGenContent').innerHTML = '';	      
-    	//this.putCenter('overlayGenContentWrapper');    	      
-    	if($('overlayBlack75')) $('overlayBlack75').show();
-    	      
-    	if(size == 1){
-    	  $('overlayGenContent').innerHTML = this.deleteAlertSingleMessage; 
-    	}else{
-    	  $('overlayGenContent').innerHTML = this.deleteAlertMultiMessage.replace('%i', size);  
-    	}
-    	$('overlayButtons').show();
-    	      
-    	this.calcMaxOverlayHeight('overlayGenContentWrapper', true);
-    	this.putOverlayCenter('overlayGenContentWrapper');
-    	$('overlayGenContentWrapper').show();    	
+
+      	if($('overlayBlack75')) $('overlayBlack75').show();
+      	      
+      	if(size == 1){
+      	  $('overlayGenContent').innerHTML = this.deleteAlertSingleMessage; 
+      	}else{
+      	  $('overlayGenContent').innerHTML = this.deleteAlertMultiMessage.replace('%i', size);  
+      	}
+      	$('overlayButtons').show();
+      	      
+      	this.calcMaxOverlayHeight('overlayGenContentWrapper', true);
+      	this.putOverlayCenter('overlayGenContentWrapper');
+      	$('overlayGenContentWrapper').show();    	
       }	  
     }
   },

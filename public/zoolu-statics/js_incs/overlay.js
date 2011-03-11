@@ -23,6 +23,7 @@ Massiveart.Overlay = Class.create({
     this.areaViewType = new Object();
     this.viewtype = null;
     this.lastFolderId = null;
+    this.overlayCounter = 0;
   },
   
   /**
@@ -205,7 +206,9 @@ Massiveart.Overlay = Class.create({
          pageId: idPage,
          fieldId: this.fieldId, 
          formId: $F('formId'),
-         formVersion: $F('formVersion')
+         formVersion: $F('formVersion'),
+         languageId: $F('languageId'),
+         rootLevelLanguageId: ($('rootLevelLanguageId'+myNavigation.rootLevelId)) ? $F('rootLevelLanguageId'+myNavigation.rootLevelId) : ''
         },      
         evalScripts: true,     
         onComplete: function() {  
@@ -490,15 +493,62 @@ Massiveart.Overlay = Class.create({
   },
   
   /**
+   * saveMaintenance
+   */
+  saveMaintenance: function(){ 
+    if($('maintenanceForm')){
+      
+      /**
+       * serialize generic form
+       */
+      var serializedForm = $('maintenanceForm').serialize();
+      
+      myCore.addBusyClass('overlayMaintenanceContent');
+      new Ajax.Request('/zoolu/cms/overlay/maintenance', {
+        parameters: serializedForm+'&rootLevelId='+myNavigation.rootLevelId+'&operation=save',      
+        evalScripts: true,     
+        onComplete: function(transport) {
+          if(transport.responseText.isJSON()){
+            var response = transport.responseText.evalJSON();
+            
+            if(response.active == true){
+              if($('spanMaintenanceStatus_'+myNavigation.rootLevelId)) $('spanMaintenanceStatus_'+myNavigation.rootLevelId).appear();
+            }else{
+              if($('spanMaintenanceStatus_'+myNavigation.rootLevelId)) $('spanMaintenanceStatus_'+myNavigation.rootLevelId).fade();
+            }
+          }
+          this.closeMaintenanceOverlay();
+          myCore.removeBusyClass('overlayMaintenanceContent');
+        }.bind(this)
+      });  
+    }
+  },
+  
+  /**
    * close
    */
-  close: function(viewType){
-    if($('overlayGenContentWrapper')) $('overlayGenContentWrapper').hide();
-    if($('overlayUpload')) $('overlayUpload').hide();
-    if($('overlaySingleEdit')) $('overlaySingleEdit').hide();
-    if($('overlayBlack75')) $('overlayBlack75').hide();
-    if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';
-    if($('overlaySingleEditContent')) $('overlaySingleEditContent').innerHTML = '';
-    //this.lastFolderId = null;
+  close: function(id){
+    if(this.overlayCounter > 1 && id != undefined) {
+      $(id).hide();
+      this.overlayCounter--;
+    } else {
+      if($('overlayGenContentWrapper')) $('overlayGenContentWrapper').hide();
+      if($('overlayUpload')) $('overlayUpload').hide();
+      if($('overlaySingleEdit')) $('overlaySingleEdit').hide();
+      if($('overlayBlack75')) $('overlayBlack75').hide();
+      if($('overlayGenContent')) $('overlayGenContent').innerHTML = '';
+      if($('overlaySingleEditContent')) $('overlaySingleEditContent').innerHTML = '';
+      //this.lastFolderId = null;
+      this.overlayCounter = 0;
+    }
+    this.closeMaintenanceOverlay();
+  },
+  
+  /**
+   * closeMaintenanceOverlay
+   */
+  closeMaintenanceOverlay: function(){
+    if($('overlayMaintenanceWrapper')) $('overlayMaintenanceWrapper').hide();
+    if($('overlayBlack75')) $('overlayBlack75').hide();    
   }
 });
