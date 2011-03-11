@@ -82,7 +82,7 @@ Massiveart.Global = Class.create({
       $('elementSearchResult').innerHTML = '';
       myCore.addBusyClass('elementSearchResult')
       new Ajax.Updater('elementSearchResult', '/zoolu/global/element/overlaysearch', {
-        parameters: {searchValue: $F('elementSearchValue')},
+        parameters: {searchValue: $F('elementSearchValue'), rootLevelId: myNavigation.rootLevelId },
         evalScripts: true,
         onComplete: function() {
           myCore.removeBusyClass('elementSearchResult');

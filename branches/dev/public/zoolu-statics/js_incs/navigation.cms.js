@@ -13,6 +13,9 @@ Massiveart.Navigation.Cms = Class.create(Massiveart.Navigation, {
   initialize: function($super) {
     // initialize superclass
     $super();
+    this.constBasePath = '/zoolu/core';
+    this.rootLevelType = 'folder';
+    this.genListContainer = 'genTableListContainer';
   },
   
   /**
@@ -56,6 +59,31 @@ Massiveart.Navigation.Cms = Class.create(Massiveart.Navigation, {
         myCore.initListHover(false);
       }.bind(this)
     });
-  }
-
+  },
+  
+  /**
+   * loadMaintenanceOverlay
+   */
+  loadMaintenanceOverlay: function(rootLevelId){
+    if($('overlayBlack75')) $('overlayBlack75').show();    
+    if('overlayMaintenanceWrapper'){
+      myCore.putCenter('overlayMaintenanceWrapper');
+      $('overlayMaintenanceWrapper').show();
+      
+      this.rootLevelId = rootLevelId;      
+      if($('overlayMaintenanceContent')){
+        myCore.addBusyClass('overlayMaintenanceContent');
+        new Ajax.Updater('overlayMaintenanceContent', '/zoolu/cms/overlay/maintenance', {
+          parameters: { 
+            rootLevelId: this.rootLevelId,
+            operation: 'load'
+          },      
+          evalScripts: true,     
+          onComplete: function() {
+            myCore.removeBusyClass('overlayMaintenanceContent');          
+          }.bind(this)
+        });  
+      }
+    }
+  }  
 });

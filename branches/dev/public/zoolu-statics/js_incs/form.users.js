@@ -72,31 +72,48 @@ Massiveart.Form.Users = Class.create(Massiveart.Form, {
    */
   deleteElement: function(){
     if($(this.formId)){
-      
-      var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
-      var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
-      var elementId = $('id').getValue();
-                  
-      // loader
-      this.getFormSaveLoader();
-      
-      new Ajax.Updater(myNavigation.genListContainer, strAjaxActionBase + 'delete', {
-        parameters: { id: elementId },
-        evalScripts: true,
-        onComplete: function() {
-          //deleted
-          this.getFormDeleteSucces();
-                    
-          $(myNavigation.genFormContainer).hide();
-          $(myNavigation.genFormFunctions).hide();
-          
-          $(myNavigation.genListContainer).show();
-          $(myNavigation.genListFunctions).show();
-          
-          myCore.initSelectAll();
-          myCore.initListHover();          
-        }.bind(this)
-      });
-    }    
+
+      if($('rootLevelGroupKey' + myNavigation.rootLevelGroupId)){
+        tmpKey = 'Delete_' + $('rootLevelGroupKey' + myNavigation.rootLevelGroupId).getValue();
+        var key = (myCore.translate[tmpKey]) ? tmpKey : 'Delete_';
+      }else{
+        var key = 'Delete_';
+      }
+
+      myCore.deleteAlertSingleMessage = myCore.translate[key];
+      myCore.showDeleteAlertMessage(1);
+
+      $('buttonOk').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+        var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
+        var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
+        var elementId = $('id').getValue();
+
+        // loader
+        this.getFormSaveLoader();
+
+        new Ajax.Updater(myNavigation.genListContainer, strAjaxActionBase + 'delete', {
+          parameters: { id: elementId },
+          evalScripts: true,
+          onComplete: function() {
+            //deleted
+            this.getFormDeleteSucces();
+
+            $(myNavigation.genFormContainer).hide();
+            $(myNavigation.genFormFunctions).hide();
+
+            $(myNavigation.genListContainer).show();
+            $(myNavigation.genListFunctions).show();
+
+            myCore.initSelectAll();
+            myCore.initListHover();
+          }.bind(this)
+        });
+      }.bind(this));
+
+      $('buttonCancel').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+      }.bind(this));
+    }
   }    
 });

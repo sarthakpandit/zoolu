@@ -14,8 +14,9 @@ Massiveart.Form = Class.create({
     this.formId = 'genForm';  
     this.updateContainer = 'genFormContainer';
     this.updateOverlayContainer = 'overlayGenContent';
+    this.updateTableListContainer = 'genTableListContainer';
     
-    this.theme = 'ivoclarvivadent'; //'default'; //FIXME
+    this.theme = 'default'; //'default'; //FIXME
     
     this.portalId = 0;
     this.preSelectedPortal = '';
@@ -79,11 +80,11 @@ Massiveart.Form = Class.create({
             this.getFormSaveSucces();
 
             if($('isStartPage') && $F('isStartPage') == 0){
-              $('buttondelete').show();
+              //$('buttondelete').show();
             }
             
             if($('isStartGlobal') && $F('isStartGlobal') == 0){
-              $('buttondelete').show();
+              //$('buttondelete').show();
             }
           }else{
             this.getFormSaveError();
@@ -115,41 +116,68 @@ Massiveart.Form = Class.create({
   deleteElement: function(){
     
     if($(this.formId)){
+
+      var tmpKey = 'Delete_' + $('elementType').getValue();
+      if(myCore.translate[tmpKey]){
+        var key = tmpKey;
+      }else if($('rootLevelGroupKey' + myNavigation.rootLevelGroupId)){
+        tmpKey = 'Delete_' + $('rootLevelGroupKey' + myNavigation.rootLevelGroupId).getValue();
+        var key = (myCore.translate[tmpKey]) ? tmpKey : 'Delete_';
+      }else{
+        var key = 'Delete_';
+      }
       
-      var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
-      var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
-      var elType = $('elementType').getValue();
-      var elementId = $('id').getValue();
-      var linkId = ($('linkId')) ? $F('linkId') : -1;
-      var parentFolderId = ($('parentFolderId')) ? $F('parentFolderId') : 0;
+      myCore.deleteAlertSingleMessage = myCore.translate[key];
+      myCore.showDeleteAlertMessage(1);
+
+      $('buttonOk').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+        
+        var intPosLastSlash = $(this.formId).readAttribute('action').lastIndexOf('/');
+        var strAjaxActionBase = $(this.formId).readAttribute('action').substring(0, intPosLastSlash + 1);
+        var elType = $('elementType').getValue();
+        var elementId = $('id').getValue();
+        var linkId = ($('linkId')) ? $F('linkId') : -1;
+        var parentFolderId = ($('parentFolderId')) ? $F('parentFolderId') : 0;
+              
+        // loader
+        this.getFormSaveLoader();
+        
+        myCore.resetTinyMCE(true);
+        
+        new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'delete', {
+          parameters: {
+            id: elementId, 
+            linkId: linkId,
+            rootLevelId: $F('rootLevelId'),
+            languageId: $F('languageId')
+          },
+          evalScripts: true,
+          onComplete: function() {
             
-      // loader
-      this.getFormSaveLoader();
+            //deleted
+            this.getFormDeleteSucces();
+                        
+            new Effect.Highlight(elType+elementId, {startcolor: '#ffd300', endcolor: '#ffffff'});
+            $(elType+elementId).fade({duration: 0.5});
+            //setTimeout('$("'+elType+elementId+'").remove()', 500);
+            
+            $(myNavigation.genFormContainer).hide();
+            $(myNavigation.genFormSaveContainer).hide();   
+            
+            if(parentFolderId > 0){
+              myNavigation.itemId = parentFolderId;
+              myNavigation.selectItem();
+            }else{
+              myNavigation.hideCurrentFolder();
+            }      
+          }.bind(this)
+        });      
+      }.bind(this));
       
-      myCore.resetTinyMCE(true);
-      
-      new Ajax.Updater(this.updateContainer, strAjaxActionBase + 'delete', {
-        parameters: {id: elementId, linkId: linkId},
-        evalScripts: true,
-        onComplete: function() {
-          //deleted
-          this.getFormDeleteSucces();
-          
-          new Effect.Highlight(elType+elementId, {startcolor: '#ffd300', endcolor: '#ffffff'});
-          $(elType+elementId).fade({duration: 0.5});
-          //setTimeout('$("'+elType+elementId+'").remove()', 500);
-          
-          $(myNavigation.genFormContainer).hide();
-          $(myNavigation.genFormSaveContainer).hide();   
-          
-          if(parentFolderId > 0){
-            myNavigation.itemId = parentFolderId;
-            myNavigation.selectItem();
-          }else{
-            myNavigation.hideCurrentFolder();
-          }      
-        }.bind(this)
-      });
+      $('buttonCancel').observe('click', function(event){
+        myCore.hideDeleteAlertMessage();
+      }.bind(this));
     }
   },
   
@@ -173,7 +201,7 @@ Massiveart.Form = Class.create({
         languageId = $F('languageId');
       }
       
-      $$('#genFormContainer .'+strType).each(function(elDiv){    
+      $$('#genFormContainer .'+strType).each(function(elDiv){   
         if($(elDiv.id)){          
           var fileFieldId = elDiv.id.substring(elDiv.id.indexOf('_')+1);
           if($(fileFieldId).value != ''){
@@ -285,6 +313,28 @@ Massiveart.Form = Class.create({
     }.bind(this));
   },  
   
+  /**
+   * isAuthorizedToDelete
+   */
+  isAuthorizedToDelete: function(authorized){
+    if(authorized == true){
+      $('buttondelete').show();
+    }else{
+      $('buttondelete').hide();
+    }
+  },
+  
+  /**
+   * isAuthorizedToUpdate
+   */
+  isAuthorizedToUpdate: function(authorized){
+    if(authorized == true){
+      $('buttonsave').show();
+    }else{
+      $('buttonsave').hide();
+    }
+  },
+    
   /**
    * writeMetaInfos
    */
@@ -405,6 +455,7 @@ Massiveart.Form = Class.create({
                       rootLevelId: $F('rootLevelId'),
                       rootLevelGroupId: intRootLevelGroupId,
                       rootLevelGroupKey: ($('rootLevelGroupKey'+intRootLevelGroupId)) ? $F('rootLevelGroupKey'+intRootLevelGroupId) : '',
+                      languageId: $F('languageId'),
                       itemAction: itemAction,
                       itemIds: $(fieldname).value},
         evalScripts: true,
@@ -445,7 +496,7 @@ Massiveart.Form = Class.create({
     $('overlayGenContentWrapper').show();    
     if($(fieldId)){
       new Ajax.Updater(this.updateOverlayContainer, '/zoolu/cms/overlay/pagetree', { 
-        parameters: {portalId: myNavigation.rootLevelId},
+        parameters: {portalId: myNavigation.rootLevelId, portalLanguageId: ($('rootLevelLanguageId'+myNavigation.rootLevelId)) ? $F('rootLevelLanguageId'+myNavigation.rootLevelId) : ''},
         evalScripts: true,
         onComplete: function(){
           myCore.putOverlayCenter('overlayGenContentWrapper');
@@ -719,10 +770,11 @@ Massiveart.Form = Class.create({
   createSortableRegion: function(regionId) {
     SortableRegionId = 'divRegion_'+regionId;
     Sortable.destroy(SortableRegionId);
-    if($(SortableRegionId)){      
+    if($(SortableRegionId)){
+      Position.includeScrollOffsets = true;
       Sortable.create(SortableRegionId,{
             tag:'div',
-            scroll:'genFormContainer',              
+            scroll:'genFormContainer',
             only: 'sortablebox',
             handle:'editboxdrag',
             onUpdate: function(el){
@@ -803,7 +855,8 @@ Massiveart.Form = Class.create({
           
         content_css: "/website/themes/" + this.theme + "/css/screen.css",
         
-        relative_urls : false                              
+        relative_urls : false,
+        convert_urls : false
       });
     }
   },
@@ -1190,7 +1243,7 @@ Massiveart.Form = Class.create({
         $('div_selected'+elementId).down('.buttonSelectVideo').setStyle({display:'none'});
         $('div_selected'+elementId).down('.buttonUnselectVideo').setStyle({display:'inline'});
       }
-	}
+    }
   },
   
   /**
@@ -1298,8 +1351,8 @@ Massiveart.Form = Class.create({
   /**
    * toggleNavigationOptions
    */
-  toggleNavigationOptions: function(){
-    if($('divShowInNavigationOptions') && $('showinnavigation') && $('showinnavigation').checked){
+  toggleNavigationOptions: function(checkBox){
+    if($('divShowInNavigationOptions') && checkBox.checked){
       Effect.SlideDown('divShowInNavigationOptions', {duration: 0.5});
       $('showInNavigation').value = $F('showinnavigationoption');
     }else{
@@ -1311,8 +1364,8 @@ Massiveart.Form = Class.create({
   /**
    * toggleDestinationOptions
    */
-  toggleDestinationOptions: function(){
-    if($('divShownOnlyForDestinationOptions') && $('shownonlyfordestination') && $('shownonlyfordestination').checked){
+  toggleDestinationOptions: function(checkBox){
+    if($('divShownOnlyForDestinationOptions') && checkBox.checked){
       Effect.SlideDown('divShownOnlyForDestinationOptions', {duration: 0.5});
       $('destinationId').value = $F('shownonlyfordestinationoption');
     }else{
@@ -1324,8 +1377,8 @@ Massiveart.Form = Class.create({
   /**
    * toggleLanguageFallbackOptions
    */
-  toggleLanguageFallbackOptions: function(){
-    if($('divLanguageFallbackOptions') && $('languagefallback') && $('languagefallback').checked){
+  toggleLanguageFallbackOptions: function(checkBox){
+    if($('divLanguageFallbackOptions') && checkBox.checked){
       Effect.SlideDown('divLanguageFallbackOptions', {duration: 0.5});
       $('languageFallback').value = $F('languagefallbackoption');
     }else{
@@ -1337,8 +1390,7 @@ Massiveart.Form = Class.create({
   /**
    * toggleTemplateChooser
    */
-  toggleTemplateChooser: function(){
-    
+  toggleTemplateChooser: function(){    
     if($('divAllTemplates') && $('divAllTemplates').style.display == 'none'){
       Effect.SlideDown('divAllTemplates'); //$('divAllTemplates').show();
     }else{

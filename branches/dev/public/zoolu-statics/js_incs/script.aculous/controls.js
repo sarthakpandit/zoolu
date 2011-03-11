@@ -1,8 +1,8 @@
-// script.aculo.us controls.js v1.8.2, Tue Nov 18 18:30:58 +0100 2008
+// script.aculo.us controls.js v1.9.0, Thu Dec 23 16:54:48 -0500 2010
 
-// Copyright (c) 2005-2008 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
-//           (c) 2005-2008 Ivan Krstic (http://blogs.law.harvard.edu/ivan)
-//           (c) 2005-2008 Jon Tirsen (http://www.tirsen.com)
+// Copyright (c) 2005-2010 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
+//           (c) 2005-2010 Ivan Krstic (http://blogs.law.harvard.edu/ivan)
+//           (c) 2005-2010 Jon Tirsen (http://www.tirsen.com)
 // Contributors:
 //  Richard Livsey
 //  Rahul Bhargava
@@ -211,30 +211,30 @@ Autocompleter.Base = Class.create({
   },
 
   markPrevious: function() {
-	  if(this.index > 0) {this.index--;}
+	  if(this.index > 0) { this.index--; }
 	  else {
-	   this.index = this.entryCount-1;
-	   this.update.scrollTop = this.update.scrollHeight;
+	    this.index = this.entryCount - 1;
+	    this.update.scrollTop = this.update.scrollHeight;
 	  }
 	  selection = this.getEntry(this.index);
 	  selection_top = selection.offsetTop;
-	  if(selection_top < this.update.scrollTop){
-	   this.update.scrollTop = this.update.scrollTop-selection.offsetHeight;
+	  if(selection_top < this.update.scrollTop) {
+	    this.update.scrollTop = this.update.scrollTop-selection.offsetHeight;
 	  }
-	 },
+	},
 	  
-	 markNext: function() {
-	  if(this.index < this.entryCount-1) {this.index++;}
+	markNext: function() {
+	  if(this.index < this.entryCount-1) { this.index++; }
 	  else {
-	   this.index = 0;
-	   this.update.scrollTop = 0;
+	    this.index = 0;
+	    this.update.scrollTop = 0;
 	  }
 	  selection = this.getEntry(this.index);
 	  selection_bottom = selection.offsetTop+selection.offsetHeight;
-	  if(selection_bottom > this.update.scrollTop+this.update.offsetHeight){
-	   this.update.scrollTop = this.update.scrollTop+selection.offsetHeight;
+	  if(selection_bottom > this.update.scrollTop+this.update.offsetHeight) {
+	    this.update.scrollTop = this.update.scrollTop+selection.offsetHeight;
 	  }
-	 },
+	},
 
   getEntry: function(index) {
     return this.update.firstChild.childNodes[index];

@@ -23,7 +23,7 @@
   -->
   <production>
     <!-- STANDARD -->
-    <client>dev</client>
+    <client></client>
     <language>de</language>
     <location>de_AT</location>
     <timezone>Europe/Vienna</timezone>
@@ -87,7 +87,7 @@
       <params>
         <host>localhost</host>
         <username>zoolu</username>
-        <password>zoolu</password>
+        <password>password</password>
         <dbname>zoolu</dbname>
       </params>
     </database>
@@ -105,6 +105,13 @@
         <dispatcher>disabled</dispatcher> <!-- enabled/disabled -->
       </client>
     </helpers>
+    
+    <!-- List Config -->
+    <list>
+      <default>
+        <itemsPerPage>100</itemsPerPage>
+      </default>
+    </list>
     
     <!-- GENERIC -->
     <generic>
@@ -162,6 +169,12 @@
           <default>DEFAULT_EVENT</default>
           <overview>DEFAULT_EVENT_OVERVIEW</overview>
         </event>
+        <members>
+          <default>DEFAULT_MEMBER</default>
+        </members>
+        <companies>
+          <default>DEFAULT_COMPANY</default>
+        </companies>
       </ids>
       <!-- GENERIC FORM TYPES -->
       <!-- table: genericFormTypes -->
@@ -172,6 +185,8 @@
         <unit>4</unit>
         <contact>5</contact>
         <global>6</global>
+        <location>7</location>
+        <member>8</member>
       </types>
       <!-- default status for folder/page creation(1...Test, 2...Published, 3...Approval) -->
       <!-- table: status -->
@@ -322,6 +337,15 @@
                 <params>180</params>
               </action>
             </actions>                        
+          </default_size>
+          <default_size>
+            <folder>140x140</folder>
+            <actions>
+              <action>
+                <method>scale</method>
+                <params>140,140</params>
+              </action>             
+            </actions>                        
           </default_size>          
           <default_size>
             <folder>80x80</folder>
@@ -340,114 +364,7 @@
                 <params>40,40</params>
               </action>             
             </actions>                        
-          </default_size>
-          <!-- ivoclarvivadent -->
-          <default_size>
-            <folder>933x</folder>
-            <actions>
-              <action>
-                <method>resize</method>
-                <params>933</params>
-              </action>
-              <action>
-                <method>watermark</method>
-                <params>/var/data/tmp/watermark-933x.png,Center,5</params>
-              </action>
-            </actions>
-            <display>
-              <single_edit>true</single_edit>              
-            </display>
-          </default_size>
-          <default_size>
-            <folder>677x</folder>
-            <actions>
-              <action>
-                <method>resize</method>
-                <params>677</params>
-              </action>              
-            </actions>            
-            <display>
-              <single_edit>true</single_edit>              
-            </display>
-          </default_size>
-          <default_size>
-            <folder>331x</folder>
-            <actions>
-              <action>
-                <method>resize</method>
-                <params>331</params>
-              </action>    
-            </actions>
-            <display>
-              <single_edit>true</single_edit>
-              <text_block>true</text_block>
-            </display>
-          </default_size>
-          <default_size>
-            <folder>219x</folder>
-            <actions>
-              <action>
-                <method>resize</method>
-                <params>219</params>
-              </action>
-            </actions>
-            <display>
-              <single_edit>true</single_edit>
-              <text_block>true</text_block>
-            </display>
-          </default_size>
-          <default_size>
-            <folder>159x</folder>
-            <actions>
-              <action>
-                <method>resize</method>
-                <params>159</params>
-              </action>
-            </actions>
-            <display>
-              <single_edit>true</single_edit>
-              <text_block>default</text_block>
-            </display>
-          </default_size>
-          <default_size>
-            <folder>140x70</folder>
-            <actions>
-              <action>
-                <method>scale</method>
-                <params>140,70</params>
-              </action>
-            </actions>
-            <display>
-              <single_edit>true</single_edit>
-              <text_block>true</text_block>
-            </display>
-          </default_size>
-          <default_size>
-            <folder>117x88</folder>
-            <actions>
-              <action>
-                <method>scale</method>
-                <params>117,88</params>
-              </action>
-            </actions>
-            <display>
-              <single_edit>true</single_edit>
-              <text_block>true</text_block>
-            </display>
-          </default_size>
-          <default_size>
-            <folder>47x47</folder>
-            <actions>
-              <action>
-                <method>scale</method>
-                <params>47,47</params>
-              </action>              
-            </actions>
-            <display>
-              <single_edit>true</single_edit>
-              <text_block>true</text_block>
-            </display>
-          </default_size>          
+          </default_size>             
         </default_sizes>
       </images>
       
@@ -527,10 +444,20 @@
     </media>
     
     <!-- ENVIRONMENT -->    
-    <environment>
+    <zone>
       <zoolu>1</zoolu>
       <website>2</website>
-    </environment>
+    </zone>
+    
+    <!-- ENVIRONMENTS --> 
+    <!-- table: environments -->   
+    <environments>
+      <production>1</production>
+      <staging>2</staging>
+      <development>3</development>
+      <testing>4</testing>
+    </environments>
+    
     
     <!-- PARENT TYPES -->
     <!-- table: parentTypes -->
@@ -547,6 +474,7 @@
       <properties>3</properties>
       <users>4</users>
       <global>5</global>
+      <contacts>6</contacts>
     </modules>
     
     <!-- ROOTLEVEL TYPES -->
@@ -565,6 +493,9 @@
       <global>11</global>
       <videos>12</videos>
       <locations>13</locations>
+      <shops>14</shops>
+      <members>15</members>
+      <companies>16</companies>
     </root_level_types>
     
     <!-- ROOTLEVEL GROUPS -->
@@ -583,6 +514,7 @@
       <course>11</course>
       <location>12</location>
       <event>13</event>
+      <tradeinfonet>14</tradeinfonet>
     </root_level_groups>
     
     <!-- FOLDER TYPES -->
@@ -658,6 +590,16 @@
         <default_formId>DEFAULT_EVENTS</default_formId>        
         <default_templateId>33</default_templateId>
       </events>
+      <download_center>
+        <id>12</id>
+        <default_formId>DEFAULT_DOWNLOAD_CENTER</default_formId>        
+        <default_templateId>35</default_templateId>
+      </download_center>
+      <sitemap>
+        <id>13</id>
+        <default_formId>DEFAULT_PAGE_1</default_formId>
+        <default_templateId>37</default_templateId>
+      </sitemap>
     </page_types>
     
     <!-- GLOBAL TYPES -->
@@ -733,6 +675,13 @@
       <label>3</label>
     </category_types>
     
+    <!-- GROUP TYPES -->
+    <!-- table: groupTypes -->
+    <group_types>
+      <frontend>1</frontend>
+      <backend>2</backend>
+    </group_types>
+    
     <!-- TYPES -->
     <!-- table: types -->
     <types>
@@ -755,6 +704,8 @@
       <event>17</event>
       <event_overview>18</event_overview>
       <events>19</events>
+      <download_center>20</download_center>
+      <sitemap>21</sitemap>
     </types>
 
     <!-- URL TYPES -->
@@ -837,10 +788,6 @@
         <id>1</id>
         <users>
           <user>
-            <id>zcope</id>
-            <name>ZCOPE</name>
-          </user>
-          <user>
             <id>massiveart</id>
             <name>Massive Art</name>
           </user>
@@ -851,7 +798,7 @@
         <users>
           <user>
             <id>GoogleDevelopers</id>
-            <name>GoogleDevelopers</name>
+            <name>Google Developers</name>
           </user>      	
         </users>
       </youtube>
@@ -859,13 +806,13 @@
     
     <!-- Plugins / Fields Javascript -->
     <pluginsJs>
-      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRAVH-JYFCc6lusqHRR7lbnr44jyhQx2aaLzVrRaWiOX82wq9l4f4uANA</gmaps>
+      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key={MAPSKEY}</gmaps>
     </pluginsJs>
   </production>
 
   <!--
   ***********************************************************
-  * config for developement evnironment                     *
+  * config for staging evnironment                          *
   ***********************************************************
   -->
   <staging extends="production">
@@ -878,35 +825,52 @@
     </helpers>
     
     <!-- LOGGER / DEBUGGING -->
+    <show_errors>false</show_errors>
+    <logger>
+      <priority>5</priority>     
+      <firebug>false</firebug>
+    </logger>
+    
+    <!-- CACHE -->
+    <cache>
+      <page>false</page>
+      <generic_form_structure>true</generic_form_structure>
+    </cache>
+  </staging>
+  
+  <!--
+  ***********************************************************
+  * config for testing evnironment                          *
+  ***********************************************************
+  -->
+  <testing extends="staging">
+      
+    <!-- LOGGER / DEBUGGING -->
     <show_errors>true</show_errors>
     <logger>
-      <priority>7</priority>     
+      <priority>6</priority>     
       <firebug>true</firebug>
     </logger>
-     
-    <!-- Plugins / Fields Javascript -->
-    <pluginsJs>
-      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhRWJqSrubo52pNokDo_P8y76O3IzRTD9oHC_IarLRopZ2Lv5z2pmS52DQ</gmaps>
-    </pluginsJs>
     
     <!-- CACHE -->
     <cache>
       <page>false</page>
       <generic_form_structure>false</generic_form_structure>
     </cache>
-  </staging>
+  </testing>
   
   <!--
   ***********************************************************
-  * config for development evnironment                     *
+  * config for development evnironment                      *
   ***********************************************************
   -->
-  <development extends="staging">
+  <development extends="testing">
   
-    <!-- Plugins / Fields Javascript -->
-    <pluginsJs>
-      <gmaps>http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=ABQIAAAAnHMYIdYGZwrp2NXW2gvzxhTqld5cmTrrwS1aqEPKXuX_0scLRBSoyyNTmdIf7bNnfc8fiwxV6-oolw</gmaps>
-    </pluginsJs>
+    <!-- LOGGER / DEBUGGING -->
+    <logger>
+      <priority>7</priority> 
+    </logger>
+    
   </development>
 
 </configdata>

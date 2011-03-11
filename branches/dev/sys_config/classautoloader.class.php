@@ -19,7 +19,7 @@ require_once('Zend/Loader/Autoloader.php');
 
 class ClassAutoLoader extends Zend_Loader_Autoloader {
 
-	/**
+  /**
    * class / class-path definition
    * @var  array
    */
@@ -43,13 +43,16 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
     'Document'                  => '/library/massiveart/documents/document.class.php',
     'DocumentValidator'         => '/library/massiveart/validators/document.validator.class.php',
     'NestedSet'                 => '/library/massiveart/trees/nested.set.class.php',
+    'Website'                   => '/library/massiveart/website.class.php',
     'Page'                      => '/library/massiveart/website/page.class.php',
     'PageContainer'             => '/library/massiveart/website/page/container.class.php',
     'PageEntry'                 => '/library/massiveart/website/page/entry.class.php',
+    'DownloadCenter'            => '/library/massiveart/website/download/center.class.php',
     'Navigation'                => '/library/massiveart/website/navigation.class.php',
     'NavigationTree'            => '/library/massiveart/website/navigation/tree.class.php',
     'Search'                    => '/library/massiveart/website/search.class.php',
     'Index'                     => '/library/massiveart/website/index.class.php',
+    'Sitemap'                   => '/library/massiveart/website/sitemap.class.php',
     'DateTimeHelper'            => '/library/massiveart/utilities/datetime.class.php',
     'Replacer'                  => '/library/massiveart/utilities/replacer.class.php',
     'HtmlTranslate'             => '/library/massiveart/utilities/html.translate.class.php',
@@ -71,32 +74,29 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
    * @version 1.0
    */
   public static function autoload($class){
-  	try {
+    try {
+      $sysConfig = Zend_Registry::get('SysConfig');
 
-  		$sysConfig = Zend_Registry::get('SysConfig');
-      $zooConfig = Zend_Registry::get('ZooConfig');
-      $webConfig = Zend_Registry::get('WebConfig');
+      if(strpos($class,'Zend_') === false && strpos($class,'ZendX_') === false){
+        /**
+         * check if given $className exists and file exists
+         */
+        if(array_key_exists($class, self::$arrClasses)){
+          if(file_exists(GLOBAL_ROOT_PATH.$sysConfig->path->root.self::$arrClasses[$class])){
+            require_once(GLOBAL_ROOT_PATH.$sysConfig->path->root.self::$arrClasses[$class]);
+          }
+        }
+      } else {
+        /**
+         * load Zend Class
+         */
+        parent::autoload($class);
+      }
 
-  		if(strpos($class,'Zend_') === false && strpos($class,'ZendX_') === false){
-	      /**
-	       * check if given $className exists and file exists
-	       */
-	      if(array_key_exists($class, self::$arrClasses)){
-	        if(file_exists(GLOBAL_ROOT_PATH.$sysConfig->path->root.self::$arrClasses[$class])){
-	          require_once(GLOBAL_ROOT_PATH.$sysConfig->path->root.self::$arrClasses[$class]);
-	        }
-	      }
-	    } else {
-	      /**
-	       * load Zend Class
-	       */
-	      parent::autoload($class);
-	    }
-
-	    return $class;
-  	}catch(Exception $e){
-  		return false;
-  	}
+      return $class;
+    }catch(Exception $e){
+      return false;
+    }
   }
 
   /**
@@ -105,10 +105,10 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
    * @return Zend_Loader_Autoloader
    */
   public static function getInstance(){
-  	if(null == self::$_instance){
-  	  self::$_instance = new self();
-  	}
-  	return self::$_instance;
+    if(null == self::$_instance){
+      self::$_instance = new self();
+    }
+    return self::$_instance;
   }
 
   /**
@@ -119,8 +119,8 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
    * @return void
    */
   protected function __construct(){
-  	spl_autoload_register(array(__CLASS__, 'autoload'));
-  	$this->_internalAutoloader = array($this, '_autoload');
+    spl_autoload_register(array(__CLASS__, 'autoload'));
+    $this->_internalAutoloader = array($this, '_autoload');
   }
 
 
@@ -130,7 +130,7 @@ class ClassAutoLoader extends Zend_Loader_Autoloader {
 /**
  * register class ClassAutoLoader
  */
-$autoloader = ClassAutoLoader::getInstance();
-//Zend_Loader::registerAutoload('ClassAutoLoader');
+#$autoloader = ClassAutoLoader::getInstance();
+Zend_Loader_Autoloader::getInstance()->pushAutoloader(array('ClassAutoLoader', 'autoload'));
 
 ?>

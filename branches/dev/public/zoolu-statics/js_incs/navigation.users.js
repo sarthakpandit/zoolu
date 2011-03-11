@@ -41,7 +41,6 @@ Massiveart.Navigation.Users = Class.create(Massiveart.Navigation, {
     myList.sortColumn = '';
     myList.sortOrder = '';
     myList.resetSearch();
-    myList.getListPage();
   },
   
   /**

@@ -45,6 +45,7 @@ Override Content Basics */
   overflow-y:scroll;
   padding-right:40px;
   padding: 10px 0 0 0;
+  z-index:140;
 }
 
 /* only IE7 */
@@ -98,6 +99,12 @@ Media Main Toolbar */
   height:19px;
   width:19px;
   cursor:w-resize;
+}
+
+/* --- media search --- */
+#mediaSearchContainer {
+  position:absolute;
+  right:76px;
 }
 
 /* --- media buttons --- */
@@ -160,6 +167,8 @@ Media Content Thumb */
 	height:40px;
 	background-color:#999; /*#754480;*/
 	padding:0px;
+	position:relative;
+	z-index:150;
 }
 
 .thumbcontainer{
@@ -313,6 +322,10 @@ input[disabled]{
    
 }
 
+.mediafield {
+  padding: 0 0 10px 0;
+}
+
 .mediainfolanguagespecific {
   border-top:1px solid #ccc;
   padding:5px 0 8px 0;  
@@ -364,12 +377,21 @@ input[disabled]{
 }
 
 .mediasizes select{
-  width:128px;
+  width: 128px;
+}
+
+.mediaicon select{
+  width: 120px;
+  margin: 10px 0 0 6px;
 }
 
 .mediasingleupload{
   margin:0 0 0 138px;
   padding:0 10px 0 0;
+}
+
+.mediainfos .mediasingleupload{
+  margin:0;
 }
 
 .mediasingleupload input {

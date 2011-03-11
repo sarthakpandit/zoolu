@@ -36,8 +36,19 @@
 require_once(dirname(__FILE__).'/../sys_config/general.inc.php');
 
 try{
+  
+  $objConsoleOpts = new Zend_Console_Getopt(
+    array(
+      'rootLevelId|r=i'     => 'RootLevel Id',
+      'languageId|l=i'      => 'Language Id',
+    )
+  );
+  
   $objIndex = new Index();
-  $objIndex->indexAllPublicGlobals();
+  $intRootLevelId = isset($objConsoleOpts->rootLevelId) ? $objConsoleOpts->rootLevelId : null;
+  $intLanguageId = isset($objConsoleOpts->languageId) ? $objConsoleOpts->languageId : null;
+  
+  $objIndex->indexAllPublicGlobals($intRootLevelId, $intLanguageId);
     
 }catch (Exception $exc) {
   $core->logger->err($exc);

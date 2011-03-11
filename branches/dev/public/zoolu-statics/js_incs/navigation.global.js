@@ -16,7 +16,8 @@ Massiveart.Navigation.Global = Class.create(Massiveart.Navigation, {
 
     this.constBasePath = '/zoolu/global';
 
-    this.rootLevelType = '';
+    this.rootLevelType = 'folder';
+    this.genListContainer = 'genTableListContainer';
   },
   
   /**

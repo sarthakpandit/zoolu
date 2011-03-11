@@ -1,30 +1,45 @@
-/**
- * Screen
- *
- * @author Cornelius Hansjakob <cha@massiveart.com>
- * @version 1.0
- */
-
+/* --------------------------------------------------------------------------
+Style Sheet
+ __  __           _____ _____ _______      ________            _____ _______ 
+|  \/  |   /\    / ____/ ____|_   _\ \    / /  ____|     /\   |  __ \__   __|
+| \  / |  /  \  | (___| (___   | |  \ \  / /| |__       /  \  | |__) | | |   
+| |\/| | / /\ \  \___ \\___ \  | |   \ \/ / |  __|     / /\ \ |  _  /  | |   
+| |  | |/ ____ \ ____) |___) |_| |_   \  /  | |____   / ____ \| | \ \  | |   
+|_|  |_/_/    \_\_____/_____/|_____|   \/   |______| /_/    \_\_|  \_\ |_|   
+                                                                             
+Site:       DEFAULT
+Author:     Cornelius Hansjakob <cha@massiveart.com>
+Version:    1.0
+-------------------------------------------------------------------------- */
 
 /* ----------------
-Reset */
-@import url(reset.css);
+Reset
+@import url(reset.css); 
+*/
 
-/* ----------------
-Main */
+/* -----------------------
+    General */
 
 body {
   background-color:#fff;
   color:#000;
   font-family: Arial,Helvetica,sans-serif;
   font-size:14px;
-  line-height:1.3em;
-  position:relative;
-  text-align:center;
+  line-height:20px;
 }
 
 p {
-  padding-bottom:1.3em;
+  padding-bottom:20px;
+}
+
+ul {
+  padding:0 0 20px 20px;
+  list-style-type: disc;
+}
+
+ol {
+  padding:0 0 20px 20px;
+  list-style-type: decimal;
 }
 
 .clear {
@@ -34,20 +49,59 @@ p {
   font-size:0;
 }
 
-.wrapper {
-  text-align:center;
-  width:100%;
+/* -----------------------
+    STICKY FOOTER */
+
+* { 
+  margin:0; 
+  padding:0; 
+} 
+
+html, body, #wrap { 
+  height: 100%; 
 }
 
-.subwrapper {
-  margin:0 auto;
-  width:940px;
-  text-align:left;
+body > #wrap {
+  height: auto; 
+  min-height: 100%;
 }
+
+#main { 
+  padding-bottom: 30px; /* must be same height as the footer */ 
+}  
+
+#footer {
+  background-color:#d6d6d6;
+  position: relative;
+  margin-top: -30px; /* negative value of footer height */
+  height: 30px;
+  clear: both;
+} 
+
+/* CLEAR FIX */
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clearfix {
+  display: inline-block;
+}
+
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%;}
+.clearfix {display: block;}
+/* End hide from IE-mac */
+
+/* -----------------------
+    Main Container Construct */
 
 .inner {
-  position:relative;
-  height:100%;
+  margin:0 auto 0 auto;
+  width:940px;
 }
 
 .header {
@@ -63,47 +117,84 @@ p {
 
 .top {
   background-color:#ccc;
+  padding:40px 0 20px 0;
 }
 
-.content {
+.contentContainer {
   background-color:#fff;
+  padding:20px 0 20px 0;
 }
 
-.footer {
-  background-color:#d6d6d6;
-  height:30px;
-}
-
-/* ----------------
-Headlines */
+/* -----------------------
+    Headlines */
 
 h1 {
-  font-size:24px;
-  line-height:1.5em;
+  font-size:18px;
+  line-height:24px;
   font-weight:bold;
+  color:#666;
+  padding:0 0 10px 0;
+}
+
+.top h1 {
+  font-size:36px;
+  line-height:42px;
+  font-weight:bold;
+  padding:0 0 10px 0;
+  color:#000;
 }
 
 h2 {
   font-size:18px;
-  line-height:1.5em;
+  line-height:24px;
   font-weight:bold;
+  color:#000;
+  padding:0 0 10px 0;
 }
 
 h3 {
-  font-size:14px;
-  line-height:1.3em;
+  font-size:16px;
+  line-height:24px;
   font-weight:bold;
-  padding:0 0 1.3em 0;
+  padding:0 0 10px 0;
 }
 
 h4 {
-
+  font-size:14px;
+  line-height:24px;
+  font-weight:bold;
+  padding:0 0 10px 0;
 }
 
-/* ----------------
-Header */
+/* -----------------------
+    Links */
+    
+a, a:hover {
+  font-weight: bold;
+  text-decoration: underline;
+  color:#000;
+  font-size:14px;
+}
 
-.divLogo {
+a:hover {
+  
+}
+
+#footer li a,
+#footer li a:hover {
+  font-size:12px;
+  font-weight:bold;
+  color:#000;
+}
+
+/* -----------------------
+    Header */
+
+.header .inner {
+  position:relative;
+}
+
+.logo {
   position:absolute;
   font-size:36px;
   font-weight:bold;
@@ -111,14 +202,14 @@ Header */
   left:0;  
 }
 
-.divSlogan {
+.slogan {
   position:absolute;
   font-size:14px;
   top:60px;
   left:120px;
 }
 
-.divLangs {
+.languages {
   position:absolute;
   font-size:12px;
   font-weight:bold;
@@ -127,37 +218,40 @@ Header */
   text-align:right;
 }
 
-.divLangs ul {
-
+.languages ul {
+  list-style:none outside none;
+  padding:0;
 }
 
-.divLangs li {
+.languages li {
   display:inline;
   padding-right:1em;
 }
 
-.divLangs li:last-child {
+.languages li:last-child {
   padding-right:0;
 }
 
-.divLangs li a {
+.languages li a,
+.languages li a:hover {
   color:#333;
+  font-size:12px;
+  line-height:20px;
   text-decoration:none;
 }
 
-.divLangs li a:hover {
-  color:#333;
+.languages li a:hover {
   text-decoration:underline;
 }
 
-.divSearch {
+.search {
   position:absolute;
   top:40px;
   right:0;
   width:220px;
 }
 
-.divSearch input {
+.search input {
   width:210px;
   font-size:12px;
   line-height:16px;
@@ -168,11 +262,37 @@ Header */
   padding-right:5px;
 }
 
-/* ----------------
-Navigation */
+/* -----------------------
+    Footer */
+
+#footer .inner {
+  font-size:12px;
+  line-height:30px;
+}
+
+#footer .left {
+  float:left;
+}
+
+#footer .right {
+  float:right;
+}
+
+#footer ul {
+  padding:0;
+}
+
+#footer li {
+  display:inline;
+  padding-left:10px;
+}
+
+/* -----------------------
+    Navigation */
 
 .nav ul {
-  padding:10px 0 0 0;  
+  padding:10px 0 0 0;
+  list-style: none outside none;
 }
 
 .nav li {
@@ -199,302 +319,480 @@ Navigation */
   text-decoration:underline;
 }
 
-/* ----------------
-Sub Navigation */
+.nav li.selected a,
+.nav li.selected a:hover {
+  color:#fff;
+  font-weight:bold;
+  text-decoration:underline;
+}
 
-.divSubNavContainer {
+/* -----------------------
+    Sub Navigation */
+
+.subnav {
   float:left;
-  width:220px;
+  width:140px;
   padding:0 20px 0 0;
 }
 
-.divSubNavContainer ul {
-  
+.subnav ul {
+  list-style:none outside none;
+  padding:0;  
 } 
 
-.divSubNavContainer	li {
+.subnav li {
 
 }
 
-.divSubNavContainer li ul {
+.subnav li ul {
   padding:0 0 0 20px;
 }
 
-
-/* ----------------
-Top Content Startpage */
-
-.top .start {
-  margin:0 0 20px 0;
-  padding:20px 0 20px 0;
-}
-
-/* ----------------
-Content */
-
-.content .overview,
-.content .detail {
-  padding-top:20px;
-  padding-bottom:20px;
-}
-
-.overview .divContentContainer {
+/* -----------------------
+    Sidebar */
+    
+.sidebar {
   float:left;
-  width:700px;
+  width:220px;
 }
 
-.detail .divContentContainer {
+.sidebar .block {
+  padding:0 0 20px 0;  
+}
+
+.sidebar img {
+  padding:0 0 10px 0; 
+}
+
+/* -----------------------
+    Content */
+
+.content {
   float:left;
-  width:460px;
+  width:540px;
   padding:0 20px 0 0;
 }
 
-.divContentIntro {
+.content .description {
   padding:0 0 20px 0;
 }
 
-.divContentOverview {
-  float:left;
-  width:460px;
-  padding:0 10px 0 0;
-  margin:0 9px 0 0;
-  border-right:1px solid #d6d6d6;
-}
+/* -----------------------
+    Overview Definitions */
 
-.overview .divContentSidebar,
-.detail .divContentSidebar {
-  float:left;
-  width:220px;
-}
-
-.detail .divContentSidebar {
-  padding-top:12px;
-}
-
-.divContentSidebar ul {
-  padding-bottom:20px;
-}
-
-.divContentContainer .divImgLeft {
-  padding:0 10px 5px 0;
-}
-
-.divContentItem {
-  padding:0 0 20px 0;
-  margin: 0 0 20px 0;
-  border-bottom:1px solid #d6d6d6;
-}
-
-.divContentItem .divImgLeft {
-  padding:0 10px 5px 0;
-}
-
-.divContentItem .divImgRight {
-  padding:0 0 5px 10px;
-}
-
-.overview .divColContainer {
-  padding:0 0 20px 0;
-  margin: 0 0 20px 0;
-  border-bottom:1px solid #d6d6d6;
-}
-
-.overview .divColItem {
-  padding-bottom:10px;
-  width:220px;
-}
-
-.overview .divColItem .divImgLeft {
-  padding:0 10px  5px 0;
-}
-
-.overview .divListContainer {
-  padding:0 0 20px 0;
-}
-
-.overview .divListItemImg {
-  padding:0 0 10px 0;
-}
-
-.overview .divListItemImg .divListItemImgLeft {
-  float:left;
-  padding:0 10px 0 0;  
-}
-
-.overview .divListItemImg .divListItemImgRight {
-  float:left;
-}
-
-.overview .divListItem {
-  padding:0 0 10px 0;
-}
-
-.overview .divListItem .divListItemTitle {
-
-}
-
-/* ----------------
-Content Gallery */
-
-
-.divImageGallery {
-  padding:0 0 20px 0;
-}
-
-.divGallery {
-
-}
-
-.divGalleryItem {
-  float:left;
-  width:80px;
-  height:80px;
-  overflow:hidden;
-  padding:0 20px 20px 0;
-}
-
-/* ----------------
-Content Documents */
-
-.divDocuments {
-  padding:0 0 20px 0;
-}
-
-.divDocItem {
-  padding:0 0 10px 0;
-}
-
-.divDocIcon {
-  float:left;
-  width:32px;
-  padding-right:20px;
-}
-
-.divDocInfos {
-  float:left;
-}
-
-
-/* ----------------
-Content Contact */
-
-.divContactContainer {
+.overview {
   
 }
 
-.divContactPerson { 
+.overview h3 {
+  padding-bottom:20px;  
+}
+
+/* 1 col */
+
+.overview .item {
+  
+}
+
+.overview .item .headline {
+  padding:0 0 5px 0;
+}
+
+.overview .item .headline a,
+.overview .item .headline a:hover {
+  color:#666666;
+  font-size:16px;
+  font-weight:bold;
+  line-height:20px;
+  text-decoration: none; 
+}
+
+.overview .item .headline a:hover {
+  text-decoration: underline;
+}
+
+.overview .item .icon {
+  float:left;
+  padding:0 20px 10px 0;  
+}
+
+.overview .item .text {
+  
+}
+
+.overview .item .text p {
+  padding:0;
+}
+
+/* 2 col */
+
+.overview .col2 {
+  padding:0 0 20px 0;  
+}
+
+.overview .col2 .item {
+  float:left;
+  width:220px;  
+}
+
+.overview .col2 .item .headline {
+  padding:0 0 5px 0;
+}
+
+.overview .col2 .item .headline a,
+.overview .col2 .item .headline a:hover {
+  color:#666666;
+  font-size:16px;
+  font-weight:bold;
+  line-height:20px;
+  text-decoration: none; 
+}
+
+.overview .col2 .item .headline a:hover {
+  text-decoration: underline;
+}
+
+.overview .col2 .item .icon {
+  
+}
+
+.overview .col2 .item .text {
+  
+}
+
+/* list */
+
+.overview .list {
+  padding:0 0 30px;  
+}
+
+.overview .list .item {
+  padding:0; 
+}
+
+.overview .list .item .icon {
+  padding:0 10px 10px 0; 
+}
+
+.overview .list .item .text {
+  padding:0 0 10px 0;  
+}
+
+/* -----------------------
+    Content Text Blocks */
+
+.blocks {
+  padding:0 0 40px 0;
+}
+
+.blocks h3 {
+  color:#666666;
+  font-size:16px;
+  font-weight:bold;
+  line-height:20px;
+  text-decoration: none;  
+}
+
+.blocks .description {
+  padding:0;
+}
+
+.blocks .description p {
+  padding-bottom:0;
+}
+
+/* -----------------------
+    Content Internal Links */
+
+.internalLinks {
+  padding:0 0 40px 0;
+}
+
+.internalLinks .item {
+
+}
+
+.internalLinks .item .icon {
+  float:left;
+  padding:0 5px 0 0;
+}
+
+.internalLinks .item .text {
+  float:left;
+}
+
+/* -----------------------
+    Content Gallery */
+
+.gallery {
+  padding:0 0 20px 0; 
+}
+
+.gallery .item {
+  float: left;
+  width: 140px;
+  height: 140px;
+  overflow: hidden;
+}
+
+.gallery .item img {
+  
+}
+
+.gallery #showAll {
+  float: left;
+  padding-top: 117px;
+}
+
+/* -----------------------
+    Content Documents */
+
+.documents {
+  padding:0 0 30px 0;
+}
+
+.documents .item {
+  padding:0 0 10px 0;
+}
+
+.documents .item .icon {
+  float:left;
+  width:14px;
+  padding:2px 5px 0 0;
+}
+
+.documents .item .text {
+  float: left;
+  width: 400px;
+}
+
+.documents .item .text span {
+  font-size:11px; 
+}
+
+/* -----------------------
+    Contacts Definition */
+
+.contact {
   padding:0 0 20px 0;
 }
 
-.divContactPerson .divContactName {
-
+.contact .item { 
+  padding:0 0 20px 0;
 }
-	
-.divContactPerson .divContactFunc {
+
+.contact .item .icon {
+  float:left;
+  width:80px;  
+}
+
+.contact .item .name {
+  
+}
+
+.contact .item .position {
   font-size:12px;
-  line-height:1.3em;
+  color:#666;
+  padding:0 0 5px 0;  
 }
 
-.divContactPerson .divContactDetail {
-  padding:5px 0 0 0;
-}
-
-.divContactDetail .divContactImg {
-  float:left;
-  width:40px;
-  padding:0 10px 0 0;
-}
-
-.divContactDetail .divContactInfos {
+.contact .item .address {
   font-size:12px;
-  line-height:1.3em;
-  float:left;
 }
 
-
-/* ----------------
-Content Startpage */
-
-.col2 {
-  width:460px;
-  float:left;
+.contact .item .numbers {
+  font-size:12px;
 }
 
-.col3 {
-  width:300px;
-  float:left;
+.contact .item .mail {
+  font-size:12px;
 }
 
-.divTopPost {
+.contact .item .mail a,
+.contact .item .mail a:hover {
+  font-size:12px;
+}
+
+/* -----------------------
+    Movies Definition */
+
+.movies {
+  padding: 0 0 20px 0;
+}
+
+.movies .item {
+  padding: 0 0 20px 0;
+}
+
+/* -----------------------
+    Forms Definitions */
+
+.formContainer {
   padding:0 0 20px 0;
 }
 
-.start .divImgLeft {
-  padding:0 10px 5px 0;
+.formContainer .success {
+  padding:15px 0 0 10px;
+  background-color:#ccff99;
+  border-top:2px solid #99CC00;
+  border-bottom:2px solid #99CC00;
+  color:#000;
 }
 
-.start .divImgRight {
-  padding:0 0 5px 10px;
-}
-
-.divListContainer {
- 
-}
-	
-.start .divListItemImg {
-  padding:0 0 20px 0;
-}
-
-.start .divListItemImg .divListItemImgLeft {
+.formContainer .fieldLeft {
   float:left;
-  width:40px;
-  padding:0 10px 0 0;
+  width: 280px; 
+  padding: 0 20px 10px 0;
 }
 
-.start .divListItemImg .divListItemImgRight {
+.formContainer .fieldRight {
   float:left;
-  width:250px;
+  width: 280px;
+  padding: 0 0 10px 0;
 }
 
-/* ----------------
-Image Definitions */
+.formContainer .fieldLeft input,
+.formContainer .fieldRight input {
+  padding:2px;
+  width:96%;
+  margin:2px 0 0 0;
+}
 
-.divImgLeft {
+.formContainer .fieldLeft select,
+.formContainer .fieldRight select {
+  width:99%;
+  margin:2px 0 0 0;
+}
+
+.formContainer .fieldLeft textarea,
+.formContainer .fieldRight textarea {
+  font-family: Arial, Sans-Serif;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 20px;
+  width:98%;
+}
+
+.formContainer .fieldLeft .bttnSend,
+.formContainer .fieldRight .bttnSend {
+  width:auto;
+}
+
+.formContainer .required {
+  padding-top:5px;
+}
+
+.formContainer .required span {
+  font-size:11px;
+}
+
+.formContainer .legalNotes {
+  
+}
+
+.formContainer .legalNotes input {
+  margin:0 5px 0 0;
+}
+
+.formContainer .missing {
+  color:#ff0000;
+}
+
+.buttonBox .left {
+  float:left;
+  background:url(/website/themes/default/images/bttn_left.gif) no-repeat 0 0;
+  width:9px;
+  height:38px;
+}
+
+.buttonBox .center {
+  float:left;
+  background:url(/website/themes/default/images/bttn_center.gif) repeat-x 0 0;
+  padding: 7px 30px 0 30px;
+  height:31px;
+  text-align:center;
+  color: #FFF;
+  line-height:25px;
+  cursor:pointer;
+}
+
+.buttonBox .right {
+  float:left;
+  background:url(/website/themes/default/images/bttn_right.gif) no-repeat 0 0;
+  width:9px;
+  height:38px;
+}
+
+/* -----------------------
+    Image Definitions */
+
+.imgLeft {
+  float:left;
+  padding:0 20px 0 0;
+}
+
+.imgLeft img {
+  padding:0 0 10px 0;
+}
+
+.imgRight {
+  float:right;
+  padding:0 0 0 20px;
+}
+
+.imgRight img {
+  padding:0 0 10px 0;
+}
+
+/* -----------------------
+    Login */
+    
+.login {
+  width: 206px;
+}
+
+.login .missing{
+  color: #cc0000;
+  font-size: 12px;  
+}
+
+.login .element {
+  margin: 0 0 10px 0;
+}
+
+.login .element input {
+  width: 200px;
+  border: 1px solid #000;
+  padding: 2px;
+}
+
+.login .submit {
+  margin: 10px 0 0 0;
+}
+
+.login .submit input {
+  border: 1px solid #000;
+  background-color: #ebebeb;
+  padding: 2px;
+}
+
+.login .button {
+  float: right;
+}
+
+/* -----------------------
+    Floats */
+
+.left {
   float:left;
 }
 
-.divImgRight {
+.right {
   float:right;
 }
 
-/* ----------------
-Footer */
-
-.footer .inner {
-  padding:8px 0 0 0;
-  font-size:12px;
-  line-height:1.3em;
-}
-
-.divFooterLeft {
-  float:left;
-}
-
-.divFooterRight {
-  float:right;
-}
-
-.divFooterRight ul {
-
-}
-
-.divFooterRight li {
-  display:inline;
-  padding-left:1em;
-}
-
-/* ----------------
-Font Weight */
+/* -----------------------
+    Font Weight */
 
 .bold {
   font-weight:bold;
@@ -512,8 +810,8 @@ Font Weight */
   font-weight:bolder;
 }
 
-/* ----------------
-Colors */
+/* -----------------------
+    Colors */
 
 .black {
   color:#000;
@@ -523,89 +821,101 @@ Colors */
   color:#fff;
 }
 
-/* ----------------
-Paddings */
+/* -----------------------
+    Paddings */
 
-.ptop10 {
+.pTop10 {
   padding-top:10px;
 }
-
-.ptop20 {
+.pTop20 {
   padding-top:20px;
 }
-
-.pbottom10 {
+.pBottom10 {
   padding-bottom:10px;
 }
-
-.pbottom20 {
+.pBottom20 {
   padding-bottom:20px;
 }
-
-.pleft10 {
+.pBottom40 {
+  padding-bottom:40px;
+}
+.pLeft10 {
   padding-left:10px;
 }
-
-.pleft20 {
+.pLeft20 {
   padding-left:20px;
 }
-
-.pright10 {
+.pLeft40 {
+  padding-left:40px;
+}
+.pRight10 {
   padding-right:10px;
 }
-
-.pright20 {
+.pRight20 {
   padding-right:20px;
 }
+.pRight40 {
+  padding-right:40px;
+}
+.pRight60 {
+  padding-right:60px;
+}
+.pRight80 {
+  padding-right:80px;
+}
+.pRight100 {
+  padding-right:100px;
+}
 
-/* ----------------
-Margins */
+/* -----------------------
+    Margins */
 
-.mtop10 {
+.mTop10 {
   margin-top:10px;
 }
-
-.mtop20 {
+.mTop20 {
   margin-top:20px;
 }
-
-.mbottom10 {
-  margin-bottom:10px;
+.mTop40 {
+  margin-top: 40px;
 }
-
-.mbottom20 {
-  margin-bottom:20px;
+.mTop60 {
+  margin-top: 60px;
 }
-
-.mleft10 {
+.mBottom10 {
+  margin-bottom: 10px;
+}
+.mBottom20 {
+  margin-bottom: 20px;
+}
+.mBottom40 {
+  margin-bottom: 40px;
+}
+.mBottom60 {
+  margin-bottom: 60px;
+}
+.mLeft10 {
   margin-left:10px;
 }
-
-.mleft20 {
+.mLeft20 {
   margin-left:20px;
 }
-
-.mright10 {
+.mRight10 {
   margin-right:10px;
 }
-
-.mright20 {
+.mRight20 {
   margin-right:20px;
 }
-
-/* ----------------
-Floats */
-
-.left {
-  float:left;
+.mRight60 {
+  margin-right: 60px;
 }
 
-.right {
-  float:right;
-}
+/* -----------------------
+    Grid */
 
-/* ----------------
-Grid */
+.gridContainer {
+  display: none; /* to display the grid: display: block; */
+}
 
 #divGrid12 {
   position:absolute;
@@ -623,7 +933,6 @@ Grid */
   top:0;
   background:url(/website/themes/default/images/tmp/grid.png) 0 0;
   bottom:0;
-  width:60px;
+  width:40px;
   height:100%;
 }
-

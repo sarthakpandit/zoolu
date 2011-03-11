@@ -32,6 +32,8 @@ Massiveart.Folder = Class.create({
     new Ajax.Updater(myForm.updateOverlayContainer, '/zoolu/core/folder/foldertree', { 
       parameters: { 
         portalId: myNavigation.rootLevelId, 
+        rootLevelId: myNavigation.rootLevelId,
+        rootLevelLanguageId: ($('rootLevelLanguageId'+myNavigation.rootLevelId)) ? $F('rootLevelLanguageId'+myNavigation.rootLevelId) : '',
         folderId: this.folderId,
         key: strActionKey },
       evalScripts: true,
@@ -111,20 +113,25 @@ Massiveart.Folder = Class.create({
    * getFolderContentList
    */
   getFolderContentList: function(){
-    $(myForm.updateContainer).innerHTML = '';
-    $(myForm.updateContainer).show();
-    myCore.addBusyClass(myForm.updateContainer);
+    $(myForm.updateTableListContainer).innerHTML = '';
+    $(myForm.updateTableListContainer).show();
+    myCore.addBusyClass(myForm.updateTableListContainer);
       
     this.folderId = myNavigation.folderId;
-
-    new Ajax.Updater(myForm.updateContainer, '/zoolu/core/folder/folderlist', { 
+    
+    myList.resetSearch();
+    myList.sortColumn = '';
+    myList.sortOrder = '';
+    
+    new Ajax.Updater(myForm.updateTableListContainer, myNavigation.constBasePath + '/' + myNavigation.rootLevelType + '/list', { 
       parameters: { 
         portalId: myNavigation.rootLevelId, 
+        rootLevelId: myNavigation.rootLevelId,
         folderId: this.folderId 
       },
       evalScripts: true,
       onComplete: function(){
-        myCore.removeBusyClass(myForm.updateContainer);
+        myCore.removeBusyClass(myForm.updateTableListContainer);
       } 
     });
   },
