@@ -53,37 +53,37 @@ class Page {
   /**
    * @var Model_Pages|Model_Global
    */
-  private $objModel;
+  protected $objModel;
 
   /**
    * @var Model_Pages 
    */
-  private $objModelPages;
+  protected $objModelPages;
   
   /**
    * @var Model_Global
    */
-  private $objModelGlobals;
+  protected $objModelGlobals;
   
   /**
    * @var Model_Folders
    */
-  private $objModelFolders;
+  protected $objModelFolders;
 
   /**
    * @var Model_Contacts
    */
-  private $objModelContacts;
+  protected $objModelContacts;
   
   /**
    * @var Model_Locations 
    */
-  private $objModelLocations;
+  protected $objModelLocations;
 
   /**
    * @var Model_Categories
    */
-  private $objModelCategories;
+  protected $objModelCategories;
 
   /**
    * @var Model_Files
@@ -98,12 +98,20 @@ class Page {
   /**
    * @var Model_Urls
    */
-  private $objModelUrls;
+  protected $objModelUrls;
   
   /**
    * @var GenericData
    */
   protected $objGenericData;
+  
+/**
+   * property of the generic data object
+   * @return GenericData $objGenericData
+   */
+  public function GenericData(){
+    return $this->objGenericData;
+  }
   
   /**
    * @var Page
@@ -213,6 +221,7 @@ class Page {
   protected $intTypeId;
   protected $blnIsStartPage;
   protected $blnShowInNavigation;
+  protected $intStatus;
   protected $intParentId;
   protected $intParentTypeId;
   protected $intNavParentId;
@@ -260,6 +269,7 @@ class Page {
         if(isset($objPage->linkId)) $this->setElementLinkId($objPage->linkId);
         $this->setIsStartElement($objPage->isStartElement);
         $this->setShowInNavigation($objPage->showInNavigation);
+        $this->setStatus($objPage->idStatus);
         $this->setParentId($objPage->idParent);
         $this->setParentTypeId($objPage->idParentTypes);
         
@@ -294,6 +304,10 @@ class Page {
           $this->setLanguageId($this->objGenericData->Setup()->getLanguageFallbackId());
           $this->loadPage();
         }else{  
+          if($this->objFallbackPage instanceof Page){
+            $this->objGenericData->Setup()->setLanguageFallbackId($this->objFallbackPage->getLanguageId());
+          }
+          
           /**
            * page type based fallbacks
            */
@@ -405,8 +419,13 @@ class Page {
     try{
       if($this->objGenericData instanceof GenericData){
         
-        $objGlobalPageParents = $this->getModelPages()->loadGlobalParentPages($this->intTypeId);
-        
+        $this->getModelPages();
+        if($this->objFallbackPage instanceof Page){
+          $this->objModelPages->setLanguageId($this->objFallbackPage->getLanguageId());
+          $this->objGenericData->Setup()->getField(GenericSetup::FIELD_TYPE_URL)->setValue($this->objFallbackPage->GenericData()->Setup()->getField(GenericSetup::FIELD_TYPE_URL)->getValue());
+        }
+        $objGlobalPageParents = $this->objModelPages->loadGlobalParentPages($this->intTypeId);
+                
         if(count($objGlobalPageParents) > 0){
           $this->arrContainer = array();
           $this->arrGenForms = array();
@@ -440,10 +459,12 @@ class Page {
           }
           
           $arrParentFolderIds = array();
+          $arrParentFolderStrIds = array();
           $objGlobaParentFolders = $this->getModelGlobals()->loadParentFolders(($this->intElementLinkId > 0 ? $this->intElementLinkId : $this->intElementId));
           if(count($objGlobaParentFolders) > 0){
             foreach($objGlobaParentFolders as $objGlobaParentFolder){
               $arrParentFolderIds[] = $objGlobaParentFolder->id;
+              $arrParentFolderStrIds[] = $objGlobaParentFolder->folderId;
             }
           }
 
@@ -471,9 +492,11 @@ class Page {
           }
           
           if(count($objContainer->getEntries()) > 0){
-            $this->objGenericData->indexData(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $this->strPageId, $this->arrContainer);    
+            $this->objGenericData->indexData(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $this->strPageId, $this->arrContainer, $arrParentFolderStrIds);
           }
-        }        
+        }     
+
+        if($this->objFallbackPage instanceof Page) $this->objModelPages->setLanguageId($this->intLanguageId);
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
@@ -487,7 +510,7 @@ class Page {
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadInstanceGlobalFilterData($strKey, $arrGenFormPageIds){
+  protected function loadInstanceGlobalFilterData($strKey, $arrGenFormPageIds){
     
     $objPageRowset = $this->getModelPages()->loadItemInstanceGlobalFilterDataByIds($strKey, $arrGenFormPageIds);
         
@@ -622,7 +645,7 @@ class Page {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function getFileFilterFieldValue($objFilters){
+  public function getFileFilterFieldValue($objFilters, $intFilterLanguageId = null){
     try{
       if($objFilters instanceof stdClass){
 
@@ -642,11 +665,13 @@ class Page {
         }
 
         $this->getModelFiles();
-        $this->objModelFiles->setAlternativLanguageId($this->core->sysConfig->languages->default->id);
-        if($intRootLevelId > 0 || count($arrFolderIds) > 0){
-          $objFiles = $this->objModelFiles->loadFilesByFilter($intRootLevelId, $arrTagIds, $arrFolderIds);
-        }
-        return $objFiles;
+        $this->objModelFiles->setAlternativLanguageId((($intFilterLanguageId != null) ? $this->intLanguageId : $this->core->sysConfig->languages->default->id));
+        if($intRootLevelId > 0 || count($arrFolderIds) > 0){          
+          $objFiles = $this->objModelFiles->loadFilesByFilter($intRootLevelId, $arrTagIds, $arrFolderIds, $intFilterLanguageId);
+          return $objFiles;
+        }else{
+          return '';
+        }        
       }else{
         return '';
       }
@@ -822,6 +847,12 @@ class Page {
               foreach($objEntries as $objEntryData){
                 $objEntry = new PageEntry();
                 $objEntry->destinationId = (isset($objEntryData->idDestination)) ? $objEntryData->idDestination : 0;
+                $objEntry->relationId = isset($objEntryData->relationId) ? $objEntryData->relationId : false;
+                $objEntry->parentId = isset($objEntryData->plParentId) ? $objEntryData->plParentId : false;
+                $objEntry->plId = isset($objEntryData->plId) ? $objEntryData->plId : false;
+                $objEntry->pageTypeId = isset($objEntryData->idPageTypes) ? $objEntryData->idPageTypes : false;
+                $objEntry->target = isset($objEntryData->target) ? $objEntryData->target : false; 
+                
                 if(isset($objEntryData->idPageTypes) &&  $objEntryData->idPageTypes == $this->core->sysConfig->page_types->link->id){
                   $objEntry->setEntryId($objEntryData->plId);
                   $objEntry->title = $objEntryData->title;
@@ -1080,10 +1111,16 @@ class Page {
                 $objEntry->created = $objEntryData->pageCreated;
                 $objEntry->published = $objEntryData->pagePublished;
                 $objEntry->destinationId = $objEntryData->idDestination;
+                $objEntry->pageTypeId = $objEntryData->idPageTypes;
+                $objEntry->target = isset($objEntryData->target) ? $objEntryData->target : false;
 
                 $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
                 if(isset($this->arrPageEntries[$objEntryData->idPage])){
-                  $this->arrPageEntries[$objEntryData->idPage] = (is_array($this->arrPageEntries[$objEntryData->idPage])) ? array_push($this->arrPageEntries[$objEntryData->idPage], $counter) : array($this->arrPageEntries[$objEntryData->idPage], $counter);
+                  if(is_array($this->arrPageEntries[$objEntryData->idPage])){
+                    array_push($this->arrPageEntries[$objEntryData->idPage], $counter);
+                  }else{
+                    $this->arrPageEntries[$objEntryData->idPage] = array($this->arrPageEntries[$objEntryData->idPage], $counter);
+                  }
                 }else{
                   $this->arrPageEntries[$objEntryData->idPage] = $counter;
                 }
@@ -1107,10 +1144,16 @@ class Page {
                 $objEntry->created = $objEntryData->pageCreated;
                 $objEntry->rootTitle = $objEntryData->rootTitle;
                 $objEntry->destinationId = $objEntryData->idDestination;
+                $objEntry->pageTypeId = $objEntryData->idPageTypes;
+                $objEntry->target = isset($objEntryData->target) ? $objEntryData->target : false;
 
                 $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->version][] = $objEntryData->idPage;
                 if(isset($this->arrPageEntries[$objEntryData->idPage])){
-                  $this->arrPageEntries[$objEntryData->idPage] = (is_array($this->arrPageEntries[$objEntryData->idPage])) ? array_push($this->arrPageEntries[$objEntryData->idPage], $counter) : array($this->arrPageEntries[$objEntryData->idPage], $counter);
+                  if(is_array($this->arrPageEntries[$objEntryData->idPage])){
+                    array_push($this->arrPageEntries[$objEntryData->idPage], $counter);
+                  }else{
+                    $this->arrPageEntries[$objEntryData->idPage] = array($this->arrPageEntries[$objEntryData->idPage], $counter);
+                  }
                 }else{
                   $this->arrPageEntries[$objEntryData->idPage] = $counter;
                 }
@@ -1139,8 +1182,38 @@ class Page {
   }
   
   /**
+   * getFilesForDownloadCenter
+   * @return DownloadCenter
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function getFilesForDownloadCenter(){
+    try{
+      
+      $objDownloadCenter = new DownloadCenter();
+      $objDownloadCenter->setTitle($this->getField('entry_title')->getValue());
+      $objDownloadCenter->setFolderId($this->getField('entry_point')->getValue());
+      $objDownloadCenter->setFilterTagId($this->getField('entry_file_tag')->getValue());
+      
+      
+      if($objDownloadCenter->getFolderId() > 0){
+        $arrTagFilter = ($objDownloadCenter->getFilterTagId() > 0) ? array($objDownloadCenter->getFilterTagId()) : array();
+        $objFiles = $this->getModelFiles()->loadFilesByFilter(-1, $arrTagFilter, array($objDownloadCenter->getFolderId()));
+        
+        if(count($objFiles) > 0){
+          foreach($objFiles as $objFile){
+            $objDownloadCenter->add($objFile);
+          }
+        }
+      }
+      
+      return $objDownloadCenter;      
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
    * getGlobalContainer
-   * @param string $strBaseUrl
    * @return PageContainer $objContainer
    * @author Thomas Schedler <tsh@massiveart.com>
    */
@@ -1228,6 +1301,113 @@ class Page {
     }
   }
   
+  /**
+   * getGlobalContainers
+   * @return PageContainer $objContainer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function getGlobalContainers($intRootLevelGroupId){
+    try{
+      $this->arrContainer = array();
+      $this->arrGenForms = array();
+      $this->arrFallbackGenForms = array();
+      $this->arrPageEntries = array();
+      $counter = 0;
+      
+      $objMyMultiRegion = $this->getRegion(84);
+
+      if($objMyMultiRegion instanceof GenericElementRegion){
+        foreach($objMyMultiRegion->RegionInstanceIds() as $intRegionInstanceId){
+          
+          $objContainer = new PageContainer();
+          $objContainer->setContainerKey($objMyMultiRegion->getField('global_entry_point')->getInstanceValue($intRegionInstanceId));
+          $objContainer->setContainerTitle($objMyMultiRegion->getField('global_entry_title')->getInstanceValue($intRegionInstanceId));
+          $objContainer->setEntryNumber($objMyMultiRegion->getField('global_entry_number')->getInstanceValue($intRegionInstanceId));
+                    
+          $arrFilterOptions = array('CategoryId' => $objMyMultiRegion->getField('global_entry_category')->getInstanceValue($intRegionInstanceId),
+                                    'LabelId'    => $objMyMultiRegion->getField('global_entry_label')->getInstanceValue($intRegionInstanceId),
+                                    'Number'     => $objContainer->getEntryNumber(),
+                                    'SortType'   => $objMyMultiRegion->getField('global_entry_sorttype')->getInstanceValue($intRegionInstanceId),
+                                    'SortOrder'  => $objMyMultiRegion->getField('global_entry_sortorder')->getInstanceValue($intRegionInstanceId));
+                         
+          $objEntries = $this->getModelFolders()->loadWebsiteGlobalTree($objContainer->getContainerKey(), $arrFilterOptions, $intRootLevelGroupId);
+          
+          $strBaseUrl = '';
+          $intGlobaEntyPointId = $objMyMultiRegion->getField('global_entry_nav_point')->getInstanceValue($intRegionInstanceId);
+          if((int) $intGlobaEntyPointId > 0){
+            $objGlobaEntyPointData = $this->getModel()->load($intGlobaEntyPointId);
+            if(count($objGlobaEntyPointData) == 1){
+              $objGlobaEntyPoint = $objGlobaEntyPointData->current();
+              $objUrlData = $this->getModelUrls()->loadUrl($objGlobaEntyPoint->relationId, $objGlobaEntyPoint->version, $this->core->sysConfig->url_types->page);
+              if(count($objUrlData) > 0){
+                $objUrl = $objUrlData->current();
+                $strBaseUrl = '/'.strtolower($objUrl->languageCode).'/'.$objUrl->url;
+              }
+            }
+          }
+            
+          if(count($objEntries) > 0){
+            foreach($objEntries as $objEntryData){
+              $objEntry = new PageEntry();
+              $objEntry->setEntryId($objEntryData->id);
+              $objEntry->title = $objEntryData->globalTitle;
+              
+              if($strBaseUrl != ''){
+                $objEntry->url = $strBaseUrl.$objEntryData->url;  
+              }else{
+                $objEntry->url = '/'.strtolower($objEntryData->languageCode).'/'.$objEntryData->url;  
+              }
+          
+              if(isset($objEntryData->idLanguageFallbacks) && $objEntryData->idLanguageFallbacks > 0){
+                $this->arrFallbackGenForms[$objEntryData->fallbackGenericFormId.'-'.$objEntryData->fallbackGenericFormVersion][$objEntryData->idLanguageFallbacks][] = $objEntryData->id;
+                if(isset($objEntryData->fallbackTitle) && $objEntryData->fallbackTitle != '')  $objEntry->title = $objEntryData->fallbackTitle;
+              }else{
+                $this->arrGenForms[$objEntryData->genericFormId.'-'.$objEntryData->genericFormVersion][] = $objEntryData->id;  
+              }          
+                        
+              if(isset($this->arrPageEntries[$objEntryData->id])){
+                if(is_array($this->arrPageEntries[$objEntryData->id])){
+                  array_push($this->arrPageEntries[$objEntryData->id], $counter);
+                }else{
+                  $this->arrPageEntries[$objEntryData->id] = array($this->arrPageEntries[$objEntryData->id], $counter);
+                }
+              }else{
+                $this->arrPageEntries[$objEntryData->id] = $counter;
+              }
+              
+              $objContainer->addPageEntry($objEntry, 'entry_'.$objEntryData->id);
+            }
+            
+            $this->arrContainer[$counter] = $objContainer;
+            $counter++;
+          }
+        }
+        
+        $this->objModel = $this->getModelGlobals();
+        
+        /**
+         * get data of instance tables
+         */
+        if(count($this->arrGenForms) > 0){
+          $this->loadInstanceData('174,5,55');
+        }      
+        
+        /**
+         * get fallback data of instance tables
+         */
+        if(count($this->arrFallbackGenForms) > 0){
+          $this->loadFallbackInstanceData('174,5,55');        
+        } 
+        
+        $this->getModel(true);
+      }     
+      
+      return $this->arrContainer;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+    
   /**
    * getSubPageContainer
    * @param string $strBaseUrl
@@ -1358,16 +1538,35 @@ class Page {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function getLocationsByCountry($strCountry){
+  public function getLocationsByCountry($strCountry, $strProvince = ''){
     try{
       $this->getModelLocations();  
       
       $intUnitId = $this->objGenericData->Setup()->getField('entry_location')->getValue();
       $intTypeId = $this->objGenericData->Setup()->getField('entry_type')->getValue();
       
-      $objLocations = $this->objModelLocations->loadLocationsByCountry($strCountry, $intUnitId, $intTypeId);
+      $objLocations = $this->objModelLocations->loadLocationsByCountry($strCountry, $intUnitId, $intTypeId, $strProvince);
       
       return $objLocations;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * getProvincesByCountry
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function getProvincesByCountry($strCountry){
+    try{
+      $this->getModelLocations();  
+      
+      $intUnitId = $this->objGenericData->Setup()->getField('entry_location')->getValue();
+      $intTypeId = $this->objGenericData->Setup()->getField('entry_type')->getValue();
+      
+      $objProvinces = $this->objModelLocations->loadProvincesByCountry($strCountry, $intUnitId, $intTypeId);
+      
+      return $objProvinces;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
@@ -1451,10 +1650,26 @@ class Page {
   }
   
   /**
+   * getPageFilesDataById
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getPageFilesDataById($intPageId, $strGenForm){
+    try{
+      $this->getModelPages();
+
+      $objPageRowset = $this->objModelPages->loadPageFilesById($intPageId, $strGenForm);
+      return $objPageRowset;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
    * loadInstanceData
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadInstanceData($strImgFieldIds = '5,55'){
+  protected function loadInstanceData($strImgFieldIds = '5,55'){
     foreach($this->arrGenForms as $key => $arrPageIds){
       $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
       $this->loadInstanceDataNow($key, $arrGenFormPageIds, $strImgFieldIds);      
@@ -1465,7 +1680,7 @@ class Page {
    * loadFallbackInstanceData
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadFallbackInstanceData($strImgFieldIds = '5,55'){
+  protected function loadFallbackInstanceData($strImgFieldIds = '5,55'){
     foreach($this->arrFallbackGenForms as $key => $arrLanguageIds){
       foreach($arrLanguageIds as $intLanguageId => $arrPageIds){
         $arrGenFormPageIds = self::getGenFormPageIds($arrPageIds);
@@ -1483,7 +1698,7 @@ class Page {
    * @return array
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private static function getGenFormPageIds($arrPageIds){
+  protected static function getGenFormPageIds($arrPageIds){
     $arrGenFormPageIds = array();
     if(count($arrPageIds) > 0){
       foreach($arrPageIds as $value){
@@ -1500,7 +1715,7 @@ class Page {
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function loadInstanceDataNow($strKey, $arrGenFormPageIds, $strImgFieldIds = '5,55'){
+  protected function loadInstanceDataNow($strKey, $arrGenFormPageIds, $strImgFieldIds = '5,55'){
     
     $intImgFilterTag = ($this->objParentPage instanceof Page && $this->objParentPage->getField('entry_pic_tag') !== null && (int) $this->objParentPage->getFieldValue('entry_pic_tag') > 0) ? $this->objParentPage->getFieldValue('entry_pic_tag') : 0;
     $objPageRowset = $this->objModel->loadItemInstanceDataByIds($strKey, $arrGenFormPageIds, $intImgFilterTag, $strImgFieldIds);
@@ -1977,7 +2192,7 @@ class Page {
 
   /**
    * getTemplateFile
-   * @param string $strTemplateFile
+   * @return string $strTemplateFile
    */
   public function getTemplateFile(){
     return $this->strTemplateFile;
@@ -2174,7 +2389,7 @@ class Page {
       $this->blnShowInNavigation = $blnShowInNavigation;
     }
   }
-
+  
   /**
    * getShowInNavigation
    * @return boolean $blnShowInNavigation
@@ -2189,6 +2404,22 @@ class Page {
     }else{
       return $this->blnShowInNavigation;
     }
+  }
+  
+  /**
+   * setStatus
+   * @param integer $intStatus
+   */
+  public function setStatus($intStatus){
+    $this->intStatus = $intStatus;
+  }
+
+  /**
+   * setStatus
+   * @param integer $intStatus
+   */
+  public function getStatus(){
+    return $this->intStatus;
   }
 
   /**

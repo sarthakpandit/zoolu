@@ -67,6 +67,15 @@ class GenericElementRegion extends GenericElementAbstract {
   public function RegionInstanceIds(){
     return $this->arrRegionInstanceIds;
   }
+  
+  protected $arrFieldNames = array();
+  /**
+   * property of the field name array
+   * @return Array $arrFieldNames
+   */
+  public function FieldNames(){
+    return $this->arrFieldNames;
+  }
   	
 	protected $arrFileFieldNames = array();
   /**
@@ -154,6 +163,26 @@ class GenericElementRegion extends GenericElementAbstract {
    */
   public function addRegionInstanceId($intRegionInstanceId){
     $this->arrRegionInstanceIds[] = $intRegionInstanceId;    
+  }
+  
+  /**
+   * resetRegionInstances
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function resetRegionInstances(){
+    $this->arrRegionInstanceIds = array();
+  }
+  
+  /**
+   * addFieldName
+   * @param string $strFieldName
+   * @param integer $intFieldType
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function addFieldName($strFieldName, $intFieldType){
+    $this->arrFieldNames[$strFieldName] = $intFieldType;    
   }
   
   /**

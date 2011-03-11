@@ -24,72 +24,55 @@
  * or contact us at zoolu@getzoolu.org
  *
  * @category   ZOOLU
- * @package    library.massiveart.controllers
+ * @package    library.massiveart.website
  * @copyright  Copyright (c) 2008-2009 HID GmbH (http://www.hid.ag)
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License, Version 3
  * @version    $Id: version.php
  */
 
 /**
- * AuthControllerAction
+ * Website
  *
- * Check authentification before starting controller actions
  *
  * Version history (please keep backward compatible):
- * 1.0, 2008-10-10: Cornelius Hansjakob
+ * 1.0, 2010-09-10: Thomas Schedler
  *
- * @author Cornelius Hansjakob <cha@massiveart.com>
+ * @author Thomas Schedler <tsh@massiveart.com>
  * @version 1.0
+ * @package massiveart.website
+ * @subpackage Website
  */
 
-class AuthControllerAction extends Zend_Controller_Action {
+class Website {
 
   /**
    * @var Core
    */
   protected $core;
-
+  
   /**
-   * Init
-   * @author Cornelius Hansjakob <cha@massiveart.com>
-   * @version 1.0
+   * Constructor
    */
-  public function init(){
+  public function __construct(){
     $this->core = Zend_Registry::get('Core');
   }
-
-	/**
-   * ensure that no other actions are accessible if you are not logged in
+  
+  /**
+   * expireCache
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com> 
    */
-  public function preDispatch(){
-
-  	/**
-  	 * set default encoding to view
-  	 */
-  	$this->view->setEncoding($this->core->sysConfig->encoding->default);
-
-  	/**
-  	 * set translate obj
-  	 */
-    $this->view->translate = $this->core->translate;
-
-  	/**
-     * check if user is authenticated, else redirect to login form
-     */
-    $objAuth = Zend_Auth::getInstance();
-    
-    if(!$objAuth->hasIdentity() || !isset($_SESSION['sesZooluLogin']) || $_SESSION['sesZooluLogin'] == false){
-      if($this->getRequest()->isXmlHttpRequest()){
-        echo '<script type="text/javascript">
-              //<![CDATA[
-                window.location.reload();
-              //]]>
-              </script>';
-        exit();
-      }else{
-        $this->_redirect('/zoolu/users/user/login');
+  public function expireCache(){
+    if(is_dir(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->tmp)){
+      foreach(glob(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->tmp.'*') as $strCacheFile) {
+        unlink($strCacheFile);
       }
     }
+    
+    if(is_dir(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->pages)){
+      foreach(glob(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->cache->pages.'*') as $strCacheFile) {
+        unlink($strCacheFile);
+      }
+    }    
   }
 }
-?>

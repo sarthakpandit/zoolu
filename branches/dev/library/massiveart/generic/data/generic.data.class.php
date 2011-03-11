@@ -139,12 +139,16 @@ class GenericData {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function indexData($strIndexPath, $strKey, $arrParentPageContainer = array()){
+  public function indexData($strIndexPath, $strKey, $arrParentPageContainer = array(), $arrParentFolderIds = array()){
     $this->core->logger->debug('massiveart->generic->data->GenericData->indexData('.$strIndexPath.', '.$strKey.')');
     if($this->objDataType instanceof GenericDataTypeAbstract){
       if(count($arrParentPageContainer) > 0){
         foreach($arrParentPageContainer as $intRootLevelId => $objParentPageContainer){
-          $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId().'_r'.$intRootLevelId, $objParentPageContainer);
+          if($this->setup->getLanguageFallbackId() > 0 && $this->setup->getLanguageFallbackId() != $this->setup->getLanguageId()){
+            $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageFallbackId().'_r'.$intRootLevelId, $objParentPageContainer, $arrParentFolderIds);
+          }else{
+            $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId().'_r'.$intRootLevelId, $objParentPageContainer, $arrParentFolderIds);  
+          }          
         }
       }else{
         $this->objDataType->updateIndex($strIndexPath, $strKey.'_'.$this->setup->getLanguageId());  

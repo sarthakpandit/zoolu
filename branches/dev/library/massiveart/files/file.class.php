@@ -344,9 +344,11 @@ class File {
           	$strFileTitle = $this->arrFileDatas['FileTitle'.$intUploadedFileId];
           	$strFileDescription = $this->arrFileDatas['FileDescription'.$intUploadedFileId];
           	$intFileIsLanguageSpecific = (int) (isset($this->arrFileDatas['FileIsLanguageSpecific'.$intUploadedFileId])) ? $this->arrFileDatas['FileIsLanguageSpecific'.$intUploadedFileId] : 0;
+          	$intFileDestinationId = (int) (isset($this->arrFileDatas['FileDestinationId'.$intUploadedFileId])) ? $this->arrFileDatas['FileDestinationId'.$intUploadedFileId] : 0;
+          	$intFileGroupId = (int) (isset($this->arrFileDatas['FileGroupId'.$intUploadedFileId])) ? $this->arrFileDatas['FileGroupId'.$intUploadedFileId] : 0;
 
             $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('id = ?', $intUploadedFileId);
-            $this->objModelFile->getFileTable()->update(array('isLanguageSpecific' => $intFileIsLanguageSpecific), $strWhere);
+            $this->objModelFile->getFileTable()->update(array('isLanguageSpecific' => $intFileIsLanguageSpecific, 'idDestination' => $intFileDestinationId, 'idGroup' => $intFileGroupId), $strWhere);
 
           	$arrInsertData = array('idFiles'       => $intUploadedFileId,
 			                             'idLanguages'   => $this->intLanguageId,
@@ -423,10 +425,16 @@ class File {
                 /**
                  * update is language specific file
                  */
+                $intFilePreviewId = 0;
+                if(array_key_exists('documentpic', $this->arrFileDatas)){
+                  $intFilePreviewId = trim($this->arrFileDatas['documentpic'], '[]');//str_replace('[', '', str_replace(']', '', $this->arrFileDatas['documentpic'])); //FIXME: Make a single-select media-field    
+                }              	
                 $intFileIsLanguageSpecific = (int) (isset($this->arrFileDatas['FileIsLanguageSpecific'.$intEditFileId])) ? $this->arrFileDatas['FileIsLanguageSpecific'.$intEditFileId] : 0;
+                $intFileDestinationId = (int) (isset($this->arrFileDatas['FileDestinationId'.$intEditFileId])) ? $this->arrFileDatas['FileDestinationId'.$intEditFileId] : 0;
+                $intFileGroupId = (int) (isset($this->arrFileDatas['FileGroupId'.$intEditFileId])) ? $this->arrFileDatas['FileGroupId'.$intEditFileId] : 0;
 
                 $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('id = ?', $intEditFileId);
-                $this->objModelFile->getFileTable()->update(array('isLanguageSpecific' => $intFileIsLanguageSpecific), $strWhere);
+                $this->objModelFile->getFileTable()->update(array('isLanguageSpecific' => $intFileIsLanguageSpecific, 'idDestination' => $intFileDestinationId, 'idGroup' => $intFileGroupId, 'idFiles' => (($intFilePreviewId > 0) ? $intFilePreviewId : 'NULL')), $strWhere);
                             
                 /**
                  * save tags (quick&dirty solution)
@@ -437,7 +445,7 @@ class File {
                 $this->validateTags();
                 
                 $this->objModelTags->deletTypeTags('file', $intEditFileId, 1); // TODO : version
-                $this->objModelTags->addTypeTags('file', $this->arrNewTagIds, $intEditFileId, 1); // TODO : version
+                $this->objModelTags->addTypeTags('file', $this->arrNewTagIds, $intEditFileId, 1); // TODO : version                
               }
             }else{
               $strWhere = $this->objModelFile->getFileTitleTable()->getAdapter()->quoteInto('idFiles = ?', $intEditFileId);

@@ -169,7 +169,7 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
       
       //cache expiring
       if($this->Setup()->getField('url')){
-        $strUrl = $this->Setup()->getField('url')->getValue();
+        $strUrl = $this->Setup()->getField('url')->url;
         $strUrlLanguageCode = $this->Setup()->getField('url')->languageCode;
         
         $arrFrontendOptions = array(
@@ -187,7 +187,7 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
                                         $arrFrontendOptions,
                                         $arrBackendOptions);
 
-        $strCacheId = 'page_'.$this->Setup()->getRootLevelId().'_'.$strUrlLanguageCode.'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
+        $strCacheId = 'page_'.$this->Setup()->getRootLevelId().'_'.strtolower(str_replace('-', '_', $strUrlLanguageCode)).'_'.preg_replace('/[^a-zA-Z0-9_]/', '_', $strUrl);
 
         $objCache->remove($strCacheId);
 
@@ -208,10 +208,13 @@ class GenericDataTypeGlobal extends GenericDataTypeAbstract {
         }else{
           $strIndexGlobalFilePath = GLOBAL_ROOT_PATH.'cli/IndexGlobal.php';
           //run global index in background
-          exec("php $strIndexGlobalFilePath --globalId='".$objGlobal->globalId."' --linkId='".$this->setup->getElementLinkId()."' --version=".$objGlobal->version." --languageId=".$this->setup->getLanguageId()." --rootLevelId=".$this->setup->getRootLevelId()." > /dev/null &#038;");
+          exec("php ".$strIndexGlobalFilePath." --globalId='".$objGlobal->globalId."' --linkId='".$this->setup->getElementLinkId()."' --version=".$objGlobal->version." --languageId=".$this->setup->getLanguageId()." --rootLevelId=".$this->setup->getRootLevelId()." > /dev/null &#038;");
         }
       }else{
-        $this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId.'_'.$this->setup->getLanguageId().'_r*');
+        //$this->removeFromIndex(GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global, $objGlobal->globalId.'_'.$this->setup->getLanguageId().'_r*');
+        $strIndexGlobalFilePath = GLOBAL_ROOT_PATH.'cli/IndexRemoveGlobal.php';
+        //run remove global from index in background
+        exec("php ".$strIndexGlobalFilePath." --key='".$objGlobal->globalId."_".$this->setup->getLanguageId()."_r*' > /dev/null &#038;");
       }
       
       return $this->setup->getElementId();

@@ -183,6 +183,31 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * removeUrlHistory()
+   * @param integer $intElementId
+   * @param string $strType
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function removeUrlHistory($intElementId, $strType){
+    try{
+      $this->strType = $strType;
+      
+      $this->getModel();
+      $this->getModelUrls();
+      
+      $objItemData = $this->objModel->load($intElementId);
+      if(count($objItemData) > 0){
+        $objItem = $objItemData->current();        
+        $this->getModelUrls()->removeUrlHistory($objItem->relationId, $objItem->version, $this->core->sysConfig->url_types->$strType);
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
 
   /**
    * load()
@@ -285,7 +310,7 @@ class GenericDataHelper_Url extends GenericDataHelperAbstract  {
       return $strNewUrl;
     }
   }
-  
+    
   /**
    * setType
    * @param string $strType   

@@ -122,10 +122,40 @@ class Index {
       $objPage->loadPage();
       
       $objPage->indexGlobal();      
+      
+      $objPage = null;
       unset($objPage);
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
+  }
+  
+  /**
+   * indexRemoveGlobal
+   * @return void
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function indexRemoveGlobal($strKey){
+    try {
+      $strIndexPath = GLOBAL_ROOT_PATH.$this->core->sysConfig->path->search_index->global;
+      $objIndex = Zend_Search_Lucene::open($strIndexPath);
+
+      $objTerm = new Zend_Search_Lucene_Index_Term($strKey, 'key');
+      $objQuery = (strpos($strKey, '*') !== false) ? new Zend_Search_Lucene_Search_Query_Wildcard($objTerm) : new Zend_Search_Lucene_Search_Query_Term($objTerm);
+    
+      $objHits = $objIndex->find($objQuery);
+      foreach($objHits as $objHit){
+        $objIndex->delete($objHit->id);
+      }
+    
+      $objIndex->commit();
+    
+      $objIndex->optimize();
+      
+    }catch(Exception $exc){
+      $this->core->logger->err($exc);  
+    }  
   }
   
   /**
@@ -149,17 +179,28 @@ class Index {
   
   /**
    * indexAllPublicGlobals
+   * @param integer $intRootLevelId
+   * @param integer $intLanguageId
    * @return void
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function indexAllPublicGlobals(){
+  public function indexAllPublicGlobals($intRootLevelId = null, $intLanguageId = null){
     try{
       $this->getModelGlobals();
       
-      $objGlobalsData = $this->objModelGlobals->loadAllPublicGlobals();
+      $strIndexGlobalFilePath = GLOBAL_ROOT_PATH.'cli/IndexGlobal.php';
+      
+      $objGlobalsData = $this->objModelGlobals->loadAllPublicGlobals($intRootLevelId, $intLanguageId);
+      
+      $intTotal = count($objGlobalsData);
+      $intCounter = 0;
+            
       foreach($objGlobalsData as $objGlobalData){
-        $this->indexGlobal($objGlobalData->globalId, $objGlobalData->idLink, $objGlobalData->version, $objGlobalData->idLanguages, ((int) $objGlobalData->idRootLevels > 0) ? $objGlobalData->idRootLevels : $objGlobalData->idParent);
+        $intCounter++;
+        echo $intCounter."/".$intTotal." - mem usage is: ".memory_get_usage()."\n";
+        //$this->indexGlobal($objGlobalData->globalId, $objGlobalData->idLink, $objGlobalData->version, $objGlobalData->idLanguages, ((int) $objGlobalData->idRootLevels > 0) ? $objGlobalData->idRootLevels : $objGlobalData->idParent);
+        exec("php $strIndexGlobalFilePath --globalId='".$objGlobalData->globalId."' --linkId='".$objGlobalData->idLink."' --version=".$objGlobalData->version." --languageId=".$objGlobalData->idLanguages." --rootLevelId=".(((int) $objGlobalData->idRootLevels > 0) ? $objGlobalData->idRootLevels : $objGlobalData->idParent));        
       }
     }catch (Exception $exc) {
       $this->core->logger->err($exc);

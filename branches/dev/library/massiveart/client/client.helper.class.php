@@ -149,7 +149,7 @@ class ClientHelper {
   private static function getPluginLoader(){
     if(null === self::$objPluginLoader){
       self::$objPluginLoader = new Zend_Loader_PluginLoader(array(
-          'Client' => GLOBAL_ROOT_PATH.'/client/plugins/',
+          'Client' => GLOBAL_ROOT_PATH.'client/plugins/',
       ));
     }
     return self::$objPluginLoader;

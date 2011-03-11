@@ -44,7 +44,7 @@
  */
 
 class Navigation {
-  
+
   /**
    * @var Core
    */
@@ -65,7 +65,7 @@ class Navigation {
   public function Page(){
     return $this->objPage;
   }
-  
+
   /**
    * @var Zend_Db_Table_Row_Abstract
    */
@@ -92,16 +92,19 @@ class Navigation {
    */
   protected $objParentFolders;
   public function ParentFolders(){
+    if($this->objParentFolders === null && $this->objPage->getParentTypeId() == $this->core->sysConfig->parent_types->folder){
+      $this->objParentFolders = $this->getModelFolders()->loadParentFolders($this->objPage->getParentId());
+    }
     return $this->objParentFolders;
   }
-  
+
   /**
    * @var Zend_Db_Table_Rowset_Abstract
    */
   protected $objGlobalParentFolders;
   public function GlobalParentFolders(){
     return $this->objGlobalParentFolders;
-  }  
+  }
 
   protected $intRootLevelId;
   protected $intRootFolderId = 0;
@@ -154,34 +157,55 @@ class Navigation {
         $intTreeId = 0;
         foreach($objNavigationData as $objNavigationItem){
 
-	        if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0 && $objNavigationItem->idFolder > 0){
+          if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0 && $objNavigationItem->idFolder > 0){
 
-	         /**
-            * add to parent tree
-            */
+            /**
+             * add to parent tree
+             */
             if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
               $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
             }
 
-	        	$objTree = new NavigationTree();
+            $objTree = new NavigationTree();
             $objTree->setTitle(($objNavigationItem->folderTitle != '' ? $objNavigationItem->folderTitle : $objNavigationItem->title));
             $objTree->setId($objNavigationItem->idFolder);
             $objTree->setParentId(0);
+            $objTree->setTypeId($objNavigationItem->idPageTypes);
             $objTree->setItemId($objNavigationItem->folderId);
             $objTree->setOrder($objNavigationItem->folderOrder);
             $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+            $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
 
-	          $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
+            $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
             if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
-              $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);              
+              
+              $arrFilter = array();
+              if($this->objPage->getElementId() == $objNavigationItem->idPage) {
+                $arrFilter = array(
+                      'CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+                      'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+                      'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'),
+                      'ParentId'    => $this->objPage->getFieldValue('entry_point'),
+                );
+              } elseif($blnLoadFilter == true) {
+                $arrFilter = array(
+                      'CategoryId'  => $objNavigationItem->entry_category,
+                      'LabelId'     => $objNavigationItem->entry_label,
+                      'SorttypeId'  => $objNavigationItem->entry_sorttype,
+                      'ParentId'    => $objNavigationItem->entry_point,
+                );
+              }
+              if(count($arrFilter) > 0) {
+                $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes, $arrFilter, $intDepth);
+              }
             }
-            
+
             $intTreeId = $objNavigationItem->idFolder;
 
-	        }else{
-	        	if($intTreeId != $objNavigationItem->idFolder){
+          }else{
+            if($intTreeId != $objNavigationItem->idFolder){
 
-	        	  /**
+              /**
                * add to parent tree
                */
               if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
@@ -195,34 +219,58 @@ class Navigation {
               $objTree->setItemId($objNavigationItem->folderId);
               $objTree->setOrder($objNavigationItem->folderOrder);
               $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+              $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
 
-	        	  $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);              
+              $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
               if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
-                $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);
-              }
-              
-              $intTreeId = $objNavigationItem->idFolder;
-	        	}
 
-	          if($objNavigationItem->pageId != null){
+                $arrFilter = array();
+                if($this->objPage->getElementId() == $objNavigationItem->idPage) {
+                  $arrFilter = array(
+	                      'CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+	                      'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+	                      'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'),
+	                      'ParentId'    => $this->objPage->getFieldValue('entry_point'),
+                  );
+                } elseif($blnLoadFilter == true) {
+                  $arrFilter = array(
+	                      'CategoryId'  => $objNavigationItem->entry_category,
+	                      'LabelId'     => $objNavigationItem->entry_label,
+	                      'SorttypeId'  => $objNavigationItem->entry_sorttype,
+	                      'ParentId'    => $objNavigationItem->entry_point,
+                  );
+                }
+                if(count($arrFilter) > 0) {
+                  $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes, $arrFilter, $intDepth);
+                }
+
+              }
+
+              $intTreeId = $objNavigationItem->idFolder;
+            }
+
+            if($objNavigationItem->pageId != null){
               if($objNavigationItem->isStartPage == 1 && isset($objTree)){
                 $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
               }else{
                 $objItem = new NavigationItem();
                 $objItem->setTitle($objNavigationItem->title);
                 $objItem->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objItem->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
                 $objItem->setId($objNavigationItem->idPage);
+                $objItem->setTypeId($objNavigationItem->idPageTypes);
                 $objItem->setParentId($objNavigationItem->idFolder);
                 $objItem->setItemId($objNavigationItem->pageId);
                 $objItem->setOrder($objNavigationItem->pageOrder);
                 if(isset($objTree)){
-                  $objTree->addItem($objItem, 'item_'.$objItem->getId());                
+                  $objTree->addItem($objItem, 'item_'.$objItem->getId());
                 }else{
                   $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
-                }                
+                }
               }
             }
-	        }
+          }
         }
       }
 
@@ -238,7 +286,7 @@ class Navigation {
       $this->core->logger->err($exc);
     }
   }
-  
+
   /**
    * loadNavigationByDisplayOption
    * @param integer $intDisplayOptionId
@@ -247,9 +295,9 @@ class Navigation {
    * @return NavigationTree
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  public function loadNavigationByDisplayOption($intDisplayOptionId, $intDepth = 99, $blnSetMainNavigation = true){
+  public function loadNavigationByDisplayOption($intDisplayOptionId, $intDepth = 99, $blnSetMainNavigation = true, $blnLoadFilter = false){
     try{
-      
+
       $this->getModelFolders();
 
       $this->evaluateRootFolderId();
@@ -258,17 +306,17 @@ class Navigation {
       $objNavigationTree->setId(0);
 
       if($this->intRootLevelId > 0){
-        
-        $objNavigationData = $this->objModelFolders->loadWebsiteRootLevelChilds($this->intRootLevelId, $intDepth, $intDisplayOptionId);
-        
+
+        $objNavigationData = $this->objModelFolders->loadWebsiteRootLevelChilds($this->intRootLevelId, $intDepth, $intDisplayOptionId, $blnLoadFilter);
+
         $intTreeId = 0;
         foreach($objNavigationData as $objNavigationItem){
 
           if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0){
-            
-           /**
-            * add to parent tree
-            */
+
+            /**
+             * add to parent tree
+             */
             if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
               $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
             }
@@ -279,18 +327,37 @@ class Navigation {
             $objTree->setParentId(0);
             $objTree->setTypeId($objNavigationItem->idPageTypes);
             $objTree->setItemId($objNavigationItem->folderId);
-            $objTree->setOrder($objNavigationItem->folderOrder);            
+            $objTree->setOrder($objNavigationItem->folderOrder);
             $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+            $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
 
             $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
-            if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
-              $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);              
+            if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page){
+              $arrFilter = array();
+              if($this->objPage->getElementId() == $objNavigationItem->idPage) {
+                $arrFilter = array(
+                      'CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+                      'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+                      'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'),
+                      'ParentId'    => $this->objPage->getFieldValue('entry_point'),
+                );
+              } elseif($blnLoadFilter == true) {
+                $arrFilter = array(
+                      'CategoryId'  => $objNavigationItem->entry_category,
+                      'LabelId'     => $objNavigationItem->entry_label,
+                      'SorttypeId'  => $objNavigationItem->entry_sorttype,
+                      'ParentId'    => $objNavigationItem->entry_point,
+                );
+              }
+              if(count($arrFilter) > 0) {
+                if(count($arrFilter) > 0) $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes, $arrFilter, $intDepth);
+              }
             }
-              
+
             $intTreeId = $objNavigationItem->idFolder;
 
           }else{
-            
+
             if($intTreeId != $objNavigationItem->idFolder){
 
               /**
@@ -308,29 +375,50 @@ class Navigation {
               $objTree->setItemId($objNavigationItem->folderId);
               $objTree->setOrder($objNavigationItem->folderOrder);
               $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
-
-              $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);              
-              if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage){
-                $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes);
+              $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
+              
+              $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
+              if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes) && $this->objPage instanceof Page){
+                $arrFilter = array();
+                if($this->objPage->getElementId() == $objNavigationItem->idPage) {
+                  $arrFilter = array(
+                      'CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+                      'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+                      'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'),
+                      'ParentId'    => $this->objPage->getFieldValue('entry_point'),
+                  );
+                } elseif($blnLoadFilter == true) {
+                  $arrFilter = array(
+                      'CategoryId'  => $objNavigationItem->entry_category,
+                      'LabelId'     => $objNavigationItem->entry_label,
+                      'SorttypeId'  => $objNavigationItem->entry_sorttype,
+                      'ParentId'    => $objNavigationItem->entry_point,
+                  );
+                }
+                if(count($arrFilter) > 0) {
+                  $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes, $arrFilter, $intDepth);
+                }
               }
-            
+
               $intTreeId = $objNavigationItem->idFolder;
             }
 
             if($objNavigationItem->pageId != null){
               if($objNavigationItem->isStartPage == 1 && isset($objTree)){
                 $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
               }else{
                 $objItem = new NavigationItem();
                 $objItem->setTitle($objNavigationItem->title);
                 $objItem->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objItem->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
                 $objItem->setId($objNavigationItem->idPage);
                 $objItem->setTypeId($objNavigationItem->idPageTypes);
                 $objItem->setParentId($objNavigationItem->idFolder);
                 $objItem->setItemId($objNavigationItem->pageId);
                 $objItem->setOrder($objNavigationItem->pageOrder);
                 if(isset($objTree)){
-                  $objTree->addItem($objItem, 'item_'.$objItem->getId());                
+                  $objTree->addItem($objItem, 'item_'.$objItem->getId());
                 }else{
                   $objNavigationTree->addItem($objItem, 'item_'.$objItem->getId());
                 }
@@ -348,95 +436,90 @@ class Navigation {
       }
 
       if($blnSetMainNavigation) $this->objMainNavigation = $objNavigationTree;
-      
-      return $objNavigationTree;            
+
+      return $objNavigationTree;
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
-    } 
+    }
   }
-  
+
   /**
    * addGlobalTree
    * @param NavigationTree $objNavigationTree
    * @author Thomas Schedler <tsh@massiveart.com>
    */
-  private function addGlobalTree(NavigationTree &$objNavigationTree, $intPageTypeId){
-    try{
-      if($this->objPage instanceof Page){
-                
-        $intParentId = $this->objPage->getFieldValue('entry_point');
-        $arrFilterOptions = array('CategoryId'  => $this->objPage->getFieldValue('entry_category'),
-                                  'LabelId'     => $this->objPage->getFieldValue('entry_label'),
-                                  'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'));
-        
-        $arrPageTypeRootLevelGroupIds = array($this->core->sysConfig->page_types->product_tree->id => $this->core->sysConfig->root_level_groups->product, $this->core->sysConfig->page_types->press_area->id => $this->core->sysConfig->root_level_groups->press, $this->core->sysConfig->page_types->courses->id => $this->core->sysConfig->root_level_groups->course, $this->core->sysConfig->page_types->events->id => $this->core->sysConfig->root_level_groups->event);
-        $objNavigationData = $this->getModelFolders()->loadWebsiteGlobalTree($intParentId, $arrFilterOptions, $arrPageTypeRootLevelGroupIds[$intPageTypeId]);
-        
-        if(count($objNavigationData) > 0){
-          $intSortTypeId = $this->objPage->getFieldValue('entry_sorttype');
-          $intTreeId = 0;
-          
-          foreach($objNavigationData as $objNavigationItem){
-            
-            if($intTreeId != $objNavigationItem->idFolder){
+  private function addGlobalTree(NavigationTree &$objNavigationTree, $intPageTypeId, $arrFilter, $intDepth = 99){
+    try{         
+      $arrPageTypeRootLevelGroupIds = array($this->core->sysConfig->page_types->product_tree->id => $this->core->sysConfig->root_level_groups->product, $this->core->sysConfig->page_types->press_area->id => $this->core->sysConfig->root_level_groups->press, $this->core->sysConfig->page_types->courses->id => $this->core->sysConfig->root_level_groups->course, $this->core->sysConfig->page_types->events->id => $this->core->sysConfig->root_level_groups->event);
 
-              /**
-               * add to parent tree
-               */
-              if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
-                $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
-              }
+      $objNavigationData = $this->getModelFolders()->loadWebsiteGlobalTree($arrFilter['ParentId'], $arrFilter, $arrPageTypeRootLevelGroupIds[$intPageTypeId], $intDepth);
 
-              $objTree = new NavigationTree();
-              $objTree->setTitle($objNavigationItem->folderTitle);
-              $objTree->setId($objNavigationItem->idFolder);
-              $objTree->setTypeId($objNavigationItem->idGlobalTypes);
-              $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
-              $objTree->setItemId($objNavigationItem->folderId);
-              if($intSortTypeId == $this->core->sysConfig->sort->types->alpha->id){
-                $objTree->setOrder($objNavigationItem->folderTitle);
-              }else{
-                $objTree->setOrder($objNavigationItem->folderOrder);
-              }
+      if(count($objNavigationData) > 0){
+        $intSortTypeId = ($this->objPage instanceof Page) ? $this->objPage->getFieldValue('entry_sorttype') : 0;
+        $intTreeId = 0;
+
+        foreach($objNavigationData as $objNavigationItem){
+
+          if($intTreeId != $objNavigationItem->idFolder){
+
+            /**
+             * add to parent tree
+             */
+            if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+              $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+            }
+
+            $objTree = new NavigationTree();
+            $objTree->setTitle($objNavigationItem->folderTitle);
+            $objTree->setId($objNavigationItem->idFolder);
+            $objTree->setTypeId($objNavigationItem->idGlobalTypes);
+            $objTree->setParentId(($objNavigationItem->parentId == $arrFilter['ParentId']) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
+            $objTree->setItemId($objNavigationItem->folderId);
+            $objTree->setChanged($objNavigationItem->changed);            
+            if($intSortTypeId == $this->core->sysConfig->sort->types->alpha->id){
+              $objTree->setOrder($objNavigationItem->folderTitle);
+            }else{
+              $objTree->setOrder($objNavigationItem->folderOrder);
+            }
+            $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
+             
+            $intTreeId = $objNavigationItem->idFolder;
+          }
+
+          if($objNavigationItem->globalId != null){
+            if($objNavigationItem->isStartGlobal == 1){
               $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
-                           
-              $intTreeId = $objNavigationItem->idFolder;
-            }
-            
-            if($objNavigationItem->globalId != null){
-              if($objNavigationItem->isStartGlobal == 1){
-                $objTree->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
+            }else{
+              $objItem = new NavigationItem();
+              $objItem->setTitle($objNavigationItem->globalTitle);
+              $objItem->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
+              $objItem->setId($objNavigationItem->idGlobal);
+              $objTree->setTypeId($objNavigationItem->idGlobalTypes);
+              $objTree->setParentId(($objNavigationItem->parentId == $arrFilter['ParentId']) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
+              $objItem->setItemId($objNavigationItem->globalId);
+              $objItem->setChanged($objNavigationItem->changed);
+              if($intSortTypeId == $this->core->sysConfig->sort->types->alpha->id){
+                $objItem->setOrder($objNavigationItem->globalTitle);
               }else{
-                $objItem = new NavigationItem();
-                $objItem->setTitle($objNavigationItem->globalTitle);
-                $objItem->setUrl($objNavigationTree->getUrl().$objNavigationItem->url);
-                $objItem->setId($objNavigationItem->idGlobal);
-                $objTree->setTypeId($objNavigationItem->idGlobalTypes);
-                $objTree->setParentId(($objNavigationItem->parentId == $intParentId) ? $objNavigationTree->getId() : $objNavigationItem->parentId);
-                $objItem->setItemId($objNavigationItem->globalId);
-                if($intSortTypeId == $this->core->sysConfig->sort->types->alpha->id){
-                  $objItem->setOrder($objNavigationItem->globalTitle);
-                }else{
-                  $objItem->setOrder($objNavigationItem->globalOrder);
-                }
-                $objTree->addItem($objItem, 'item_'.$objItem->getId());
+                $objItem->setOrder($objNavigationItem->globalOrder);
               }
+              $objTree->addItem($objItem, 'item_'.$objItem->getId());
             }
-          } 
-
-          /**
-           * add to parent tree
-           */
-          if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
-            $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
           }
         }
+
+        /**
+         * add to parent tree
+         */
+        if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+          $objNavigationTree->addToParentTree($objTree, 'tree_'.$objTree->getId());
+        }
       }
-            
+
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
-    }     
-  }  
+    }
+  }
 
   /**
    * loadStaticSubNavigation
@@ -452,7 +535,7 @@ class Navigation {
 
       $objNavigationTree = new NavigationTree();
       $objNavigationTree->setId($this->intRootFolderId);
-
+      
       if($this->intRootFolderId > 0){
         $objSubNavigationData = $this->objModelFolders->loadWebsiteStaticSubNavigation($this->intRootFolderId, $intDepth);
 
@@ -525,6 +608,161 @@ class Navigation {
       $this->core->logger->err($exc);
     }
   }
+  
+  /**
+   * loadSitemap
+   * @retrun NavigationTree
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadSitemap(){
+    try{
+      $this->getModelFolders();
+
+      $this->evaluateRootFolderId();
+
+      $objSitemap = new NavigationTree();
+      $objSitemap->setId(0);
+
+      if($this->intRootLevelId > 0){
+
+        $objNavigationData = $this->objModelFolders->loadWebsiteRootLevelChilds($this->intRootLevelId, 99, -1, true);
+
+        $intTreeId = 0;
+        foreach($objNavigationData as $objNavigationItem){
+          if($objNavigationItem->title != ''){
+            if($objNavigationItem->isStartPage == 1 && $objNavigationItem->depth == 0){
+  
+              /**
+               * add to parent tree
+               */
+              if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+                $objSitemap->addToParentTree($objTree, 'tree_'.$objTree->getId());
+              }
+  
+              $objTree = new NavigationTree();
+              $objTree->setTitle(($objNavigationItem->folderTitle != '' ? $objNavigationItem->folderTitle : $objNavigationItem->title));
+              $objTree->setId($objNavigationItem->idFolder);
+              $objTree->setParentId(0);
+              $objTree->setTypeId($objNavigationItem->idPageTypes);
+              $objTree->setItemId($objNavigationItem->folderId);
+              $objTree->setOrder($objNavigationItem->folderOrder);
+              $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+              $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
+              $objTree->setChanged($objNavigationItem->changed);
+  
+              $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
+              if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes)){
+                $arrFilter = array();
+                if($this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage) {
+                  $arrFilter = array(
+                        'CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+                        'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+                        'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'),
+                        'ParentId'    => $this->objPage->getFieldValue('entry_point'),
+                  );
+                }else{
+                  $arrFilter = array(
+                      'CategoryId'  => $objNavigationItem->entry_category,
+                      'LabelId'     => $objNavigationItem->entry_label,
+                      'SorttypeId'  => $objNavigationItem->entry_sorttype,
+                      'ParentId'    => $objNavigationItem->entry_point,
+                  );
+                }
+                if(count($arrFilter) > 0) {                  
+                  $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes, $arrFilter, 999);
+                }
+              }
+  
+              $intTreeId = $objNavigationItem->idFolder;
+  
+            }else{
+  
+              if($intTreeId != $objNavigationItem->idFolder){
+  
+                /**
+                 * add to parent tree
+                 */
+                if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+                  $objSitemap->addToParentTree($objTree, 'tree_'.$objTree->getId());
+                }
+  
+                $objTree = new NavigationTree();
+                $objTree->setTitle($objNavigationItem->folderTitle);
+                $objTree->setId($objNavigationItem->idFolder);
+                $objTree->setTypeId($objNavigationItem->idPageTypes);
+                $objTree->setParentId($objNavigationItem->parentId);
+                $objTree->setItemId($objNavigationItem->folderId);
+                $objTree->setOrder($objNavigationItem->folderOrder);
+                $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
+                $objTree->setChanged($objNavigationItem->changed);
+                
+                $arrPageGlobaLinkTypes = array($this->core->sysConfig->page_types->product_tree->id, $this->core->sysConfig->page_types->press_area->id, $this->core->sysConfig->page_types->courses->id, $this->core->sysConfig->page_types->events->id);
+                if(in_array($objNavigationItem->idPageTypes, $arrPageGlobaLinkTypes)){
+                  $arrFilter = array();
+                  if($this->objPage instanceof Page && $this->objPage->getElementId() == $objNavigationItem->idPage) {
+                    $arrFilter = array(
+                        'CategoryId'  => $this->objPage->getFieldValue('entry_category'),
+                        'LabelId'     => $this->objPage->getFieldValue('entry_label'),
+                        'SorttypeId'  => $this->objPage->getFieldValue('entry_sorttype'),
+                        'ParentId'    => $this->objPage->getFieldValue('entry_point'),
+                    );
+                  }else{
+                    $arrFilter = array(
+                        'CategoryId'  => $objNavigationItem->entry_category,
+                        'LabelId'     => $objNavigationItem->entry_label,
+                        'SorttypeId'  => $objNavigationItem->entry_sorttype,
+                        'ParentId'    => $objNavigationItem->entry_point,
+                    );
+                  }
+                  if(count($arrFilter) > 0) {
+                    $this->addGlobalTree($objTree, $objNavigationItem->idPageTypes, $arrFilter, 999);
+                  }
+                }
+  
+                $intTreeId = $objNavigationItem->idFolder;
+              }
+  
+              if($objNavigationItem->pageId != null){
+                if($objNavigationItem->isStartPage == 1 && isset($objTree)){
+                  $objTree->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                  $objTree->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
+                }else{
+                  $objItem = new NavigationItem();
+                  $objItem->setTitle($objNavigationItem->title);
+                  $objItem->setUrl(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->external : '/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url);
+                  $objItem->setTarget(($objNavigationItem->idPageTypes == $this->core->sysConfig->page_types->external->id) ? $objNavigationItem->target : '');
+                  $objItem->setId($objNavigationItem->idPage);
+                  $objItem->setTypeId($objNavigationItem->idPageTypes);
+                  $objItem->setParentId($objNavigationItem->idFolder);
+                  $objItem->setItemId($objNavigationItem->pageId);
+                  $objItem->setOrder($objNavigationItem->pageOrder);
+                  $objItem->setChanged($objNavigationItem->changed);
+                  if(isset($objTree)){
+                    $objTree->addItem($objItem, 'item_'.$objItem->getId());
+                  }else{
+                    $objSitemap->addItem($objItem, 'item_'.$objItem->getId());
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      /**
+       * add to parent tree
+       */
+      if(isset($objTree) && is_object($objTree) && $objTree instanceof NavigationTree){
+        $objSitemap->addToParentTree($objTree, 'tree_'.$objTree->getId());        
+      }
+
+      return $objSitemap;
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
 
   /**
    * evaluateRootFolderId
@@ -534,7 +772,7 @@ class Navigation {
   public function evaluateRootFolderId(){
     if(isset($this->objPage) && is_object($this->objPage) && $this->intRootFolderId == 0){
       if($this->objPage->getParentTypeId() == $this->core->sysConfig->parent_types->folder){
-        $this->objParentFolders = $this->getModelFolders()->loadParentFolders($this->objPage->getNavParentId());
+        $this->objParentFolders = $this->ParentFolders();
 
         if(count($this->objParentFolders) > 0){
           $this->intRootFolderId = $this->objParentFolders[count($this->objParentFolders) - 1]->id;
@@ -552,16 +790,17 @@ class Navigation {
    */
   public function getParentFolderIds(){
     $arrParentFolderIds = array();
+
     if(count($this->objParentFolders) > 0){
       foreach($this->objParentFolders as $objParentFolder){
-        $arrParentFolderIds[] = $objParentFolder->folderId;  
-        
+        $arrParentFolderIds[] = $objParentFolder->folderId;
+
       }
     }
-    
+
     return $arrParentFolderIds;
   }
-  
+
   /**
    * getGlobalParentFolderIds
    * @return array $arrGlobalParentFolderIds
@@ -573,14 +812,56 @@ class Navigation {
     if($this->objGlobalParentFolders === null && $this->objPage instanceof Page && $this->objPage->ChildPage() !== null){
       $this->objGlobalParentFolders = $this->getModelFolders()->loadGlobalParentFolders(($this->objPage->ChildPage()->getNavParentId() > 0 ? $this->objPage->ChildPage()->getNavParentId() : $this->objPage->ChildPage()->getParentId()), $this->objPage->ChildPage()->getRootLevelGroupId());
     }
-    
+
     if(count($this->objGlobalParentFolders) > 0){
       foreach($this->objGlobalParentFolders as $objGlobalParentFolder){
-        $arrGlobalParentFolderIds[] = $objGlobalParentFolder->folderId; 
+        $arrGlobalParentFolderIds[] = $objGlobalParentFolder->folderId;
       }
     }
-    
+
     return $arrGlobalParentFolderIds;
+  }
+
+  /**
+   * secuirtyZoneCheck
+   * @return boolean
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function secuirtyZoneCheck(){
+    $blnSecureZoneCheck = false;
+
+    if(count($this->ParentFolders()) > 0){
+      foreach($this->ParentFolders() as $objParentFolderData){
+        if($objParentFolderData->isSecure == 1){
+          $blnSecureZoneCheck = true;
+          break;
+        }
+      }
+    }
+    return $blnSecureZoneCheck;
+  }
+
+  /**
+   * checkZonePrivileges
+   * @return boolean
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function checkZonePrivileges(){
+    $blnAuthorized = true;
+
+    Security::get()->addFoldersToAcl($this->getModelFolders(), Security::ZONE_WEBSITE);
+
+    if(count($this->ParentFolders()) > 0){
+      foreach($this->ParentFolders() as $objParentFolderData){
+        if($objParentFolderData->isSecure == 1 && !Security::get()->isAllowed(Security::RESOURCE_FOLDER_PREFIX.$objParentFolderData->id, Security::PRIVILEGE_VIEW, true, false, Security::ZONE_WEBSITE) && !Security::get()->isAllowed(Security::RESOURCE_FOLDER_PREFIX.$objParentFolderData->id.'_'.$this->intLanguageId, Security::PRIVILEGE_VIEW, true, false, Security::ZONE_WEBSITE)){
+          $blnAuthorized = false;
+          break;
+        }
+      }
+    }
+    return $blnAuthorized;
   }
 
   /**
@@ -611,7 +892,7 @@ class Navigation {
   public function setPage(Page &$objPage){
     $this->objPage = $objPage;
   }
-  
+
   /**
    * setBaseUrl
    * @param $objBaseUrl

@@ -56,23 +56,25 @@ class HtmlOutput {
 	 * @param string $strSQL SQL statment
 	 * @param string $strSelectedValue
 	 * @return string $strHtmlOutput
+	 * @return array $arrSecurityCheck
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
 	 */
-	public static function getOptionsOfSQL(Core &$core, $strSQL, $strSelectedValue = ''){
+	public static function getOptionsOfSQL(Core &$core, $strSQL, $strSelectedValue = '', $arrSecurityCheck = array()){
     $core->logger->debug('massiveart->utilities->HtmlOutput->getOptionsOfSQL: '.$strSQL);
     $strHtmlOutput = '';
 
     try {
 
     	foreach($core->dbh->query($strSQL)->fetchAll() as $arrSQLRow) {
-
-      	if($arrSQLRow['VALUE'] == $strSelectedValue){
-          $strSelected = ' selected';
-        }else{
-          $strSelected = '';
+    	  if(count($arrSecurityCheck) == 0 || Security::get()->isAllowed(sprintf($arrSecurityCheck['ResourceKey'], $arrSQLRow['VALUE']), $arrSecurityCheck['Privilege'], $arrSecurityCheck['CheckForAllLanguages'], $arrSecurityCheck['IfResourceNotExists'])){
+      	  if($arrSQLRow['VALUE'] == $strSelectedValue){
+            $strSelected = ' selected';
+          }else{
+            $strSelected = '';
+          }
+          $strHtmlOutput .= '<option value="'.$arrSQLRow['VALUE'].'"'.$strSelected.'>'.htmlentities($arrSQLRow['DISPLAY'], ENT_COMPAT, $core->sysConfig->encoding->default).'</option>'.chr(13);    	    
         }
-        $strHtmlOutput .= '<option value="'.$arrSQLRow['VALUE'].'"'.$strSelected.'>'.htmlentities($arrSQLRow['DISPLAY'], ENT_COMPAT, $core->sysConfig->encoding->default).'</option>'.chr(13);
       }
 
     } catch (Exception $exc) {
