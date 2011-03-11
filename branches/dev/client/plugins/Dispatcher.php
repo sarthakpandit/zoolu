@@ -12,8 +12,6 @@
  * @subpackage Client_Dispatcher
  */
 
-require_once(GLOBAL_ROOT_PATH.'/library/IP2Location/ip2location.class.php');
-
 class Client_Dispatcher implements ClientHelperInterface  {
 
   /**
@@ -35,8 +33,9 @@ class Client_Dispatcher implements ClientHelperInterface  {
    * @return void
    */
   public function preDispatch($objController){
+    $objWebSession = new Zend_Session_Namespace('Website');
     
-  }
+  }  
   
   /**
    * postDispatch
@@ -44,6 +43,6 @@ class Client_Dispatcher implements ClientHelperInterface  {
    * @return void
    */
   public function postDispatch($objController){ 
-        
+    $objWebSession = new Zend_Session_Namespace('Website');
   }
 }
