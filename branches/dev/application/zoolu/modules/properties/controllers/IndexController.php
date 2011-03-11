@@ -43,6 +43,16 @@
 class Properties_IndexController extends AuthControllerAction {
 
   /**
+   * init
+   */
+  public function init(){
+    parent::init();
+    if(!Security::get()->isAllowed('settings', Security::PRIVILEGE_VIEW)){
+      $this->_redirect('/zoolu');
+    }
+  }
+  
+  /**
    * The default action - show the home page
    */
   public function indexAction(){

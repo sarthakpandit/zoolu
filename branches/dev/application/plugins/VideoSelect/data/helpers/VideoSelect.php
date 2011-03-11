@@ -94,7 +94,6 @@ class Plugin_DataHelper_VideoSelect extends GenericDataHelperAbstract  {
 
       $elementId = $this->strType.'Id';
       $objVideoSelectData = $this->objModel->loadVideo($intElementId);
-
       
       if(count($objVideoSelectData) > 0){
         $objVideoSelect = $objVideoSelectData->current();

@@ -24,7 +24,7 @@
         <div id="divNaviLeftInner">
           <!-- main navigatin -->
           <div id="divNaviLeftMain">
-            <?php echo $objHelper->getPortals($this->portals); ?>
+            <?php echo $objHelper->getMainNavigation($this->rootLevelNavigation, $this->rootLevelMaintenances); ?>
           </div>
         </div>
       </div>
@@ -61,6 +61,23 @@
                 <div id="divFolderChangeParent">
                   <div class="icon_list"></div>
                   <div><a href="#" onclick="myFolder.getFolderContentList(); return false;"><?php echo $this->translate->_('Load_content_as_list'); ?></a></div>
+                </div>
+                <div class="clear"></div>
+              </div>
+            </div>
+            <div class="box230bottom"><img width="230" height="4" src="/zoolu-statics/images/main/bg_box_230_bottom.png"/></div>
+          </div>
+          <div id="divPageRapper" style="display: none;">
+            <img width="68" height="68" src="/zoolu-statics/images/icons/icon_page_large.png"/>
+            <div class="spacer1"></div>
+            <div class="box230top"><img width="230" height="4" src="/zoolu-statics/images/main/bg_box_230_top.png"/></div>
+            <div id="divPageInfo">
+              <div id="divPageTitle" class="big bold"></div>
+              <div class="linegray"></div>
+              <div id="divPageActions">
+                <div id="divPageChangeParent">
+                  <div class="icon_folder"></div>
+                  <div><a href="#" onclick="myFolder.getCurrentFolderParentChooser('MOVE_PAGE'); return false;"><?php echo $this->translate->_('Change_parent_folder'); ?></a></div>                  
                 </div>
                 <div class="clear"></div>
               </div>

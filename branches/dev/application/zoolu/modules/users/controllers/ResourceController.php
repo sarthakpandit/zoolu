@@ -45,9 +45,19 @@
 class Users_ResourceController extends AuthControllerAction {
 
   /**
+   * init
+   */
+  public function init(){
+    parent::init();
+    if(!Security::get()->isAllowed('user_administration', Security::PRIVILEGE_VIEW)){
+      $this->_redirect('/zoolu');
+    }
+  }
+  
+  /**
    * @var Zend_Form
    */
-  var $objForm;
+  protected $objForm;
 
   /**
    * @var Model_Users
@@ -88,7 +98,7 @@ class Users_ResourceController extends AuthControllerAction {
     $objSelect = $this->getModelUsers()->getResourceTable()->select();
     $objSelect->setIntegrityCheck(false);
     $objSelect->from($this->getModelUsers()->getResourceTable(), array('id', 'title', 'key'));
-    $objSelect->joinInner('users', 'users.id = resources.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'resources.changed'));
+    $objSelect->joinLeft('users', 'users.id = resources.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'resources.changed'));
     if($strSearchValue != ''){
       $objSelect->where('resources.title LIKE ?', '%'.$strSearchValue.'%');
       $objSelect->orWhere('resources.key LIKE ?', '%'.$strSearchValue.'%');  
@@ -97,7 +107,7 @@ class Users_ResourceController extends AuthControllerAction {
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objResourcesPaginator = new Zend_Paginator($objAdapter);
-    $objResourcesPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', 20));
+    $objResourcesPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
     $objResourcesPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
     $objResourcesPaginator->setView($this->view);
 
@@ -246,6 +256,7 @@ class Users_ResourceController extends AuthControllerAction {
             unset($arrFormData['groups']);
           }
 
+          unset($arrFormData['_']);
           $this->getModelUsers()->editResource($intResourceId, $arrFormData);
 
           $this->getModelUsers()->updateResourceGroups($intResourceId, $arrResourceGroups);

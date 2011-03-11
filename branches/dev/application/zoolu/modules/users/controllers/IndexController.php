@@ -43,6 +43,16 @@
 class Users_IndexController extends AuthControllerAction {
 
   /**
+   * init
+   */
+  public function init(){
+    parent::init();
+    if(!Security::get()->isAllowed('user_administration', Security::PRIVILEGE_VIEW)){
+      $this->_redirect('/zoolu');
+    }
+  }
+  
+  /**
    * The default action - show the home page
    */
   public function indexAction(){

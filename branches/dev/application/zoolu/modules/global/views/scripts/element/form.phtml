@@ -1,8 +1,15 @@
-        <?php if($this->globalurl != '') : ?>
+        <?php if($this->globalurl != ''): ?>
         <div class="pagepreviewcontainer">
           <div class="pagepreviewleft"></div>
           <div class="pagepreviewcenter white small"><a href="<?php echo $this->globalurl; ?>" target="_blank"><img src="/zoolu-statics/images/icons/icon_page_preview.png"/><?php echo $this->translate->_('Test_page'); ?></a></div>
           <div class="pagepreviewright"></div>
+          <?php if(is_array($this->addonurls)): ?>
+          <?php foreach($this->addonurls as $addonUrl): ?>
+          <div class="pagepreviewleft"></div>
+          <div class="pagepreviewcenter white small"><a href="<?php echo $addonUrl['url']; ?>" target="_blank"><img src="/zoolu-statics/images/icons/icon_page_preview.png"/><?php echo $addonUrl['title']; ?></a></div>
+          <div class="pagepreviewright"></div>
+          <?php endforeach; ?>
+          <?php endif; ?>  
           <div class="clear"></div>
         </div>
         <?php endif; ?>
@@ -42,7 +49,7 @@
               <td><label for="showinnavigation"><?php echo $this->translate->_('show_in_navigation'); ?></label></td>
             </tr>
             <tr>
-              <td class="tdNormal"><input type="checkbox" name="languagefallback" id="languagefallback"<?php ($this->languagefallback > 0) ? print(' checked="checked"') : ''; ?> onclick="myForm.toggleLanguageFallbackOptions();"/></td>
+              <td class="tdNormal"><input type="checkbox" name="languagefallback" id="languagefallback"<?php ($this->languagefallback > 0) ? print(' checked="checked"') : ''; ?> onclick="myForm.toggleLanguageFallbackOptions(this);"/></td>
               <td>
                 <label for="languagefallback"><?php echo $this->translate->_('enable_language_fallback'); ?></label>
                 <div id="divLanguageFallbackOptions"<?php echo ($this->languagefallback == 0) ? ' style="display:none;"' : ''; ?>>
@@ -144,7 +151,9 @@
         <script type="text/javascript">//<![CDATA[
           myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
           myForm.selectNavigationItemNow = <?php echo (($this->selectNavigationItemNow && $this->selectNavigationItemNow == true) ? 'true' : 'false') ?>;
+          myForm.isAuthorizedToDelete(<?php echo (($this->authorizedDelete && $this->authorizedDelete == true) ? 'true' : 'false') ?>);
+          myForm.isAuthorizedToUpdate(<?php echo (($this->authorizedUpdate && $this->authorizedUpdate == true) ? 'true' : 'false') ?>);
           <?php if($this->itemId): ?>myNavigation.itemId = '<?php echo $this->itemId ?>';<?php endif; ?>
-          myGlobal.isStartGlobal = <?php echo (($this->blnIsStartGlobal == true) ? 'true' : 'false') ?>;
+          myGlobal.isStartGlobal = <?php echo (($this->blnIsStartGlobal == true) ? 'true' : 'false') ?>;          
           //]]>
         </script>

@@ -44,6 +44,11 @@ class Cms_OverlayController extends AuthControllerAction {
 
 	private $intRootLevelId;
   private $intFolderId;
+  
+  /**
+   * @var integer
+   */
+  protected $intItemLanguageId;
 
   private $arrFileIds = array();
 
@@ -61,6 +66,11 @@ class Cms_OverlayController extends AuthControllerAction {
    * @var Model_Contacts
    */
   protected $objModelContacts;
+  
+  /**
+   * @var Model_RootLevels
+   */
+  protected $objModelRootLevels;
 
 	/**
    * indexAction
@@ -268,6 +278,45 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->view->assign('elements', $objChildUnits);
     $this->view->assign('unitId', $intUnitId);
   }
+  
+  /**
+   * maintenanceAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function maintenanceAction(){
+    $this->core->logger->debug('cms->controllers->OverlayController->maintenanceAction()');
+
+    $objRequest = $this->getRequest();
+    $this->intRootLevelId = $objRequest->getParam('rootLevelId');
+    $strAction = $objRequest->getParam('operation'); 
+    
+    $this->getModelRootLevels(); 
+    
+    if($strAction == 'save'){
+      /**
+       * no rendering
+       */
+      $this->_helper->viewRenderer->setNoRender();
+      
+      /**
+       * save maintenance properties
+       */
+      $arrFormData = $objRequest->getPost();
+      $this->objModelRootLevels->saveMaintenance($this->intRootLevelId, $arrFormData);
+      
+      /**
+       * check if maintenance is active or not
+       */
+      $blnIsMaintenance = $this->objModelRootLevels->loadMaintenance($this->intRootLevelId, true);
+      
+      $arrReturn = array('active' => $blnIsMaintenance);
+      $this->_response->setBody(json_encode($arrReturn));
+    }else{
+      $objReturn = $this->objModelRootLevels->loadMaintenance($this->intRootLevelId); 
+      $this->view->assign('return', $objReturn); 
+    }
+  }
 
   /**
    * loadRootNavigation
@@ -321,10 +370,46 @@ class Cms_OverlayController extends AuthControllerAction {
     $this->core->logger->debug('cms->controllers->OverlayController->loadPageTreeForPortal('.$intPortalId.')');
 
     $this->getModelFolders();
+    $intPortalLanguageId = $this->getRequest()->getParam('portalLanguageId');
+    if((int) $intPortalLanguageId > 0){
+      $this->objModelFolders->setLanguageId($intPortalLanguageId);   
+    }
+    
     $objPageTree = $this->objModelFolders->loadRootLevelChilds($intPortalId);
 
     $this->view->assign('elements', $objPageTree);
     $this->view->assign('portalId', $intPortalId);
+  }
+  
+  /**
+   * getItemLanguageId
+   * @param integer $intActionType
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0 
+   */
+  protected function getItemLanguageId($intActionType = null){
+    if($this->intItemLanguageId == null){
+      if(!$this->getRequest()->getParam("languageId")){
+        $this->intItemLanguageId = $this->getRequest()->getParam("rootLevelLanguageId") != '' ? $this->getRequest()->getParam("rootLevelLanguageId") : $this->core->intZooluLanguageId;
+        
+        $intRootLevelId = $this->getRequest()->getParam("rootLevelId");
+        $PRIVILEGE = ($intActionType == $this->core->sysConfig->generic->actions->add) ? Security::PRIVILEGE_ADD : Security::PRIVILEGE_UPDATE;
+        
+        $arrLanguages = $this->core->config->languages->language->toArray();      
+        foreach($arrLanguages as $arrLanguage){
+          if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId.'_'.$arrLanguage['id'], $PRIVILEGE, false, false)){
+            $this->intItemLanguageId = $arrLanguage['id']; 
+            break;
+          }          
+        }
+        
+      }else{
+        $this->intItemLanguageId = $this->getRequest()->getParam("languageId");
+      }
+    }
+    
+    return $this->intItemLanguageId;
   }
 
   /**
@@ -341,7 +426,7 @@ class Cms_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $this->objModelFolders->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFolders;
@@ -361,7 +446,7 @@ class Cms_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId($this->getRequest()->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelFiles->setLanguageId($this->getItemLanguageId());
       $this->objModelFiles->setAlternativLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
     }
 
@@ -382,10 +467,30 @@ class Cms_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
-      $this->objModelContacts->setLanguageId(Zend_Auth::getInstance()->getIdentity()->languageId);
+      $this->objModelContacts->setLanguageId($this->core->intZooluLanguageId);
     }
 
     return $this->objModelContacts;
+  }
+  
+  /**
+   * getModelRootLevels
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelRootLevels(){
+    if (null === $this->objModelRootLevels) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/RootLevels.php';
+      $this->objModelRootLevels = new Model_RootLevels();
+      $this->objModelRootLevels->setLanguageId($this->core->intZooluLanguageId);
+    }
+
+    return $this->objModelRootLevels;
   }
 
   /**

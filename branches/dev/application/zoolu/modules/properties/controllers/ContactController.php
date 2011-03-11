@@ -45,17 +45,17 @@ class Properties_ContactController extends AuthControllerAction {
 	/**
    * @var GenericForm
    */
-  var $objForm;
+  protected $objForm;
 
   /**
    * @var Model_Contacts
    */
-  var $objModelContacts;
+  public $objModelContacts;
 
   /**
    * @var Model_Units
    */
-  var $objModelUnits;
+  public $objModelUnits;
 
   /**
    * The default action - show the home page

@@ -10,8 +10,8 @@
         <script type="text/javascript">//<![CDATA[
           if(typeof(myForm) != 'undefined' && typeof(myCore) != 'undefined'){
             myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
-            myCore.deleteAlertMultiMessage = 'Wollen Sie diese %i Standorte l&ouml;schen?';
-            myCore.deleteAlertSingleMessage = 'Wollen Sie diesen Standort l&ouml;schen?';
+            myCore.deleteAlertMultiMessage = '<?php echo $this->translate->_('Delete_locations'); ?>';
+            myCore.deleteAlertSingleMessage = '<?php echo $this->translate->_('Delete_location'); ?>';
           }
         //]]>
         </script>

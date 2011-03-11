@@ -66,35 +66,44 @@ class NavigationHelper {
     $strOutput = '';
     
     $strRootLevelIconCss = '';
+    $strViewType = 'list';
     foreach ($objRowset as $objRow) {      
-      
-    	switch($objRow->idRootLevelTypes){    		
-    		case $this->core->sysConfig->root_level_types->images: 
-    		  $strRootLevelIconCss = 'imageicon';
-    		  break;
-    		
-    		case $this->core->sysConfig->root_level_types->documents: 
-          $strRootLevelIconCss = 'documenticon';
-          break;
-          
-        case $this->core->sysConfig->root_level_types->videos: 
-          $strRootLevelIconCss = 'videoicon';
-          break;
-    	}
-    	
-      /**
-       * get values of the row and create output
-       */ 
-      $strOutput .= '<div class="portalcontainer">
-        <div id="portal'.$objRow->id.'top" class="portaltop"><img src="/zoolu-statics/images/main/bg_box_230_top.png" width="230" height="4"/></div>
-        <div id="portal'.$objRow->id.'" class="portal" onclick="myNavigation.selectMediaType('.$objRow->id.'); return false;">
-          <div class="'.$strRootLevelIconCss.'"></div>
-          <div id="divRootLevelTitle_'.$objRow->id.'" class="portaltitle">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+      if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$objRow->id, Security::PRIVILEGE_VIEW)){
+      	switch($objRow->idRootLevelTypes){    		
+      		case $this->core->sysConfig->root_level_types->images: 
+      		  $strRootLevelIconCss = 'imageicon';
+      		  $strViewType = 'thumb';
+            $strRootLevelType = 'image';
+      		  break;
+      		
+      		case $this->core->sysConfig->root_level_types->documents: 
+            $strRootLevelIconCss = 'documenticon';
+            $strViewType = 'list';
+            $strRootLevelType = 'document';
+            break;
+            
+          case $this->core->sysConfig->root_level_types->videos: 
+            $strRootLevelIconCss = 'videoicon';
+            $strViewType = 'list';
+            $strRootLevelType = 'video';
+            break;
+      	}
+    
+        /**
+         * get values of the row and create output
+         */ 
+        $strOutput .= '<div class="portalcontainer">
+          <div id="portal'.$objRow->id.'top" class="portaltop"><img src="/zoolu-statics/images/main/bg_box_230_top.png" width="230" height="4"/></div>
+          <div id="portal'.$objRow->id.'" class="portal" onclick="myNavigation.selectMediaType('.$objRow->id.', \''.$strViewType.'\'); return false;">
+            <div class="'.$strRootLevelIconCss.'"></div>
+            <div id="divRootLevelTitle_'.$objRow->id.'" class="portaltitle">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+            <input type="hidden" value="'.$strRootLevelType.'" id="rootLevelType'.$objRow->id.'"/>
+            <div class="clear"></div>
+          </div>
+          <div id="portal'.$objRow->id.'bottom" class="portalbottom"><img src="/zoolu-statics/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
           <div class="clear"></div>
-        </div>
-        <div id="portal'.$objRow->id.'bottom" class="portalbottom"><img src="/zoolu-statics/images/main/bg_box_230_bottom.png" width="230" height="4"/></div>
-        <div class="clear"></div>
-      </div>';
+        </div>';
+      }
     }
        
     return $strOutput;
@@ -112,14 +121,27 @@ class NavigationHelper {
     
     if(count($objRowset) > 0){
       foreach ($objRowset as $strField => $objRow){
-                
-        /**
-         * get values of the row and create default output
-         */
-        $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
-          <div id="divNavigationEdit_'.$objRow->id.'" class="icon img_'.$objRow->type.'_on" ondblclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.'); return false;"></div>
-          <div id="divNavigationTitle_'.$objRow->type.$objRow->id.'" class="title" onclick="myNavigation.selectNavigationItem('.$currLevel.', \''.$objRow->type.'\','.$objRow->id.'); myMedia.getMediaFolderContent('.$objRow->id.'); return false;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
-        </div>';
+        if(Security::get()->isAllowed(Security::RESOURCE_FOLDER_PREFIX.$objRow->id, Security::PRIVILEGE_VIEW)){      
+          
+          $strFolderTitle = $objRow->title;
+          
+          // gui fallback title
+          if($strFolderTitle == '' && $objRow->elementType == 'folder'){
+            $strFolderTitle = $objRow->guiTitle;
+            $objRow->type = 'folder';
+            $objRow->genericFormId = $this->core->sysConfig->form->ids->folders->default;
+            $objRow->version = 'null';
+            $objRow->templateId = -1;
+          }
+        
+          /**
+           * get values of the row and create default output
+           */
+          $strOutput .= '<div id="'.$objRow->type.$objRow->id.'" class="'.$objRow->type.'">
+            <div id="divNavigationEdit_'.$objRow->id.'" class="icon img_'.$objRow->type.'_on" ondblclick="myNavigation.getEditForm('.$objRow->id.',\''.$objRow->type.'\',\''.$objRow->genericFormId.'\','.$objRow->version.'); return false;"></div>
+            <div id="divNavigationTitle_'.$objRow->type.$objRow->id.'" class="title" onclick="myNavigation.selectNavigationItem('.$currLevel.', \''.$objRow->type.'\','.$objRow->id.'); myMedia.getMediaFolderContent('.$objRow->id.'); return false;">'.htmlentities($strFolderTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+          </div>';
+        }
       }
     }
      

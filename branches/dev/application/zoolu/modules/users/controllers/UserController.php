@@ -47,7 +47,7 @@ class Users_UserController extends Zend_Controller_Action {
   /**
    * @var Zend_Form
    */
-  var $objForm;
+  protected $objForm;
 
   /**
    * @var Core
@@ -77,6 +77,14 @@ class Users_UserController extends Zend_Controller_Action {
   public function init(){
     $this->core = Zend_Registry::get('Core');
     $this->initView();
+    
+    if($this->getRequest()->getActionName() != 'login' && $this->getRequest()->getActionName() != 'logout'){
+      $objAuth = Zend_Auth::getInstance();
+
+      if(!$objAuth->hasIdentity() || !isset($_SESSION['sesZooluLogin']) || $_SESSION['sesZooluLogin'] == false){
+        $this->_redirect('/zoolu/users/user/login');
+      }
+    }
   }
 
   /**
@@ -102,15 +110,8 @@ class Users_UserController extends Zend_Controller_Action {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function indexAction(){
-
-    $objAuth = Zend_Auth::getInstance();
-
-    if(!$objAuth->hasIdentity()){
-      $this->_redirect('/zoolu/users/user/login');
-    } else {
-      $this->_redirect('/zoolu/cms');
-    }
+  public function indexAction(){ 
+    $this->_redirect('/zoolu/users/');    
   }
 
   /**
@@ -137,7 +138,7 @@ class Users_UserController extends Zend_Controller_Action {
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objUsersPaginator = new Zend_Paginator($objAdapter);
-    $objUsersPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', 20));
+    $objUsersPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
     $objUsersPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
     $objUsersPaginator->setView($this->view);
 
@@ -481,7 +482,7 @@ class Users_UserController extends Zend_Controller_Action {
     $objAuth = Zend_Auth::getInstance();
     //$objAuth->setStorage(new Zend_Auth_Storage_Session('UserAuth'));
 
-    if($objAuth->hasIdentity()){
+    if($objAuth->hasIdentity() && isset($_SESSION['sesZooluLogin']) && $_SESSION['sesZooluLogin'] == true){
       $this->_redirect('/zoolu/cms');
     }
 
@@ -489,7 +490,7 @@ class Users_UserController extends Zend_Controller_Action {
     $this->view->strErrUsername = '';
     $this->view->strErrPassword = '';
 
-    if ($this->_request->isPost()) {
+    if($this->_request->isPost()){
 
       /**
        * data from the user
@@ -578,6 +579,7 @@ class Users_UserController extends Zend_Controller_Action {
             $objAuth->getStorage()->write($objUsersData);
 
             $_SESSION['sesTestMode'] = true;
+            $_SESSION['sesZooluLogin'] = true;
             $this->_redirect('/zoolu/cms');
             break;
 
@@ -601,6 +603,7 @@ class Users_UserController extends Zend_Controller_Action {
     $auth = Zend_Auth::getInstance();
     $auth->clearIdentity();
     unset($_SESSION['sesTestMode']);
+    unset($_SESSION['sesZooluLogin']);
     $this->_redirect('/zoolu');
   }
 

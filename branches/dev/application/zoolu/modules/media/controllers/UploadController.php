@@ -90,7 +90,7 @@ class Media_UploadController extends AuthControllerAction  {
   	    if($this->intParentId > 0 && $this->intParentId != ''){
   	      if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'image/') !== false) {
   	        $this->handleImageUpload();
-  	      }else if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'video/') !== false) {
+  	      }else if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'video/') !== false || $this->objUpload->getMimeType(self::UPLOAD_FIELD) == 'application/x-shockwave-flash') {
             $this->handleVideoUpload();
           }else{
   	        $this->handleFileUpload();
@@ -123,7 +123,7 @@ class Media_UploadController extends AuthControllerAction  {
         if($this->intFileId > 0 && $this->intFileId != ''){
           if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'image/') !== false) {
             $this->handleImageVersionUpload();
-          }else if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'video/') !== false) {
+          }else if (strpos($this->objUpload->getMimeType(self::UPLOAD_FIELD), 'video/') !== false || $this->objUpload->getMimeType(self::UPLOAD_FIELD) == 'application/x-shockwave-flash') {
             $this->handleVideoVersionUpload();
           }else{
             $this->handleFileVersionUpload();

@@ -40,7 +40,8 @@
   $core->translate->_('global');
   $core->translate->_('user_administration');
   $core->translate->_('settings');
-
+  $core->translate->_('contacts');
+  
   /**
    * user list
    */
@@ -59,6 +60,13 @@
    * resources list
    */
   $core->translate->_('key');
+  
+  /**
+   * member list
+   */
+  $core->translate->_('status');
+  $core->translate->_('company');
+  $core->translate->_('username');
   
   /**
    * navigation mehtods

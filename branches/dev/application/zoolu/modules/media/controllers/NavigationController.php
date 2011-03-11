@@ -56,6 +56,18 @@ class Media_NavigationController extends AuthControllerAction {
   protected $objModelFolders;
   
   /**
+   * init
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   * @return void
+   */
+  public function init(){
+    parent::init();
+    Security::get()->addFoldersToAcl($this->getModelFolders());
+    Security::get()->addRootLevelsToAcl($this->getModelFolders(), $this->core->sysConfig->modules->media);
+  }
+  
+  /**
    * indexAction
    */
   public function indexAction(){
@@ -63,7 +75,7 @@ class Media_NavigationController extends AuthControllerAction {
     
     $this->view->assign('mediaTypes', $objMediaRootLevels);
     $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
-    $this->view->assign('fileDefaultDescription', $this->core->translate->_('Add_description_'));
+    $this->view->assign('fileDefaultDescription', $this->core->translate->_('Add_description_', false));
     $this->view->assign('currLevel', 1);
   }
   

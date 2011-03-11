@@ -90,11 +90,11 @@ class EventHelper {
 	          }
 	          
 		        $strEventStatus = '';
-	          if($objEventEntry->event_status == $this->core->webConfig->eventstatus->full->id){
+	          if($objEventEntry->event_status == $this->core->config->eventstatus->full->id){
 	            $strEventStatus = '
 	                    <div class="divEventCalItemShortInfo smaller">Leider keine Pl&auml;tze mehr verf&uuml;gbar.</div>
 	            ';  
-	          }else if($objEventEntry->event_status == $this->core->webConfig->eventstatus->rest->id){
+	          }else if($objEventEntry->event_status == $this->core->config->eventstatus->rest->id){
 	            $strEventStatus = '
 	                    <div class="divEventCalItemShortInfo smaller">Achtung: Nur noch wenige Restpl&auml;tze verf&uuml;gbar.</div>
 	                    <a href="'.$objEventEntry->url.'" class="red smaller">Jetzt Anmelden!</a>'; 

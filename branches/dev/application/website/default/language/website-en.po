@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZOOLU Website\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-17 10:32+0100\n"
+"POT-Creation-Date: 2010-08-30 14:14+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Thomas Schedler <tsh@massiveart.com>\n"
+"Last-Translator: Thomas Schedler <thomas.schedler@massiveart.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,7 +19,7 @@ msgstr ""
 #: application/website/default/views/helpers/SearchHelper.php:41
 #, php-format
 msgid "Search_Result_Text"
-msgstr "<strong>%s</strong> %s for <strong>\"%s\"</strong>"
+msgstr "<strong>%1$s</strong> %2$s for <strong>\"%3$s\"</strong>"
 
 #: application/website/default/views/helpers/SearchHelper.php:41
 msgid "Searchresult"
@@ -29,14 +29,98 @@ msgstr "Search Result"
 msgid "Searchresults"
 msgstr "Search Results"
 
+#: application/website/default/helpers/PageHelper.php:316
+msgid "Image_gallery"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:343
+msgid "Show_all_images"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:417
+msgid "Video"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:508
+msgid "Brochures"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:664
+#: application/website/default/helpers/PageHelper.php:688
+msgid "Internal_links"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:1090
+msgid "Similar_pages"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:1100
+msgid "Created_at"
+msgstr ""
+
+#: application/website/default/helpers/PageHelper.php:1266
+#: application/website/default/helpers/PageHelper.php:1300
+#: application/website/default/helpers/PageHelper.php:1334
+#: application/website/default/helpers/PageHelper.php:1380
+msgid "more_information"
+msgstr "More information"
+
+#: application/website/default/helpers/PageHelper.php:1624
+#: application/website/default/helpers/PageHelper.php:1633
+#: application/website/default/helpers/PageHelper.php:1640
+msgid "Please_choose"
+msgstr "Please choose"
+
+#: application/website/default/helpers/PageHelper.php:1625
+msgid "Mr."
+msgstr "Mr."
+
+#: application/website/default/helpers/PageHelper.php:1626
+msgid "Ms."
+msgstr "Ms."
+
+#: application/website/default/helpers/PageHelper.php:1676
+msgid "Fields_with_*_are_mandatory"
+msgstr "Fields with * are mandatory."
+
+#: application/website/default/helpers/PageHelper.php:1681
+msgid "Send"
+msgstr "Send"
+
+#: application/website/default/helpers/PageHelper.php:1687
+msgid "LegalNotes"
+msgstr "I agree that the above personal data are stored, processed and used by Ivoclar Vivadent AG and the companies of the Ivoclar Vivadent Group to provide me with information about products, services, or activities of the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can revoke my consent completely or partially with immediate effect by sending a corresponding notification to info@ivoclarvivadent.com."
+
+#: application/website/default/helpers/PageHelper.php:1735
+msgid "Contact"
+msgstr "Contact"
+
+#: application/website/default/helpers/PageHelper.php:1747
+msgid "Tel"
+msgstr "Tel"
+
+#: application/website/default/helpers/PageHelper.php:1748
+#: application/website/default/language/addon-language-keys.php:45
+#: application/website/default/controllers/SweepstakeController.php:291
+#: application/website/default/controllers/DatareceiverController.php:123
+msgid "Fax"
+msgstr "Fax"
+
+#: application/website/default/helpers/PageHelper.php:1751
+#: application/website/default/language/addon-language-keys.php:43
+#: application/website/default/controllers/SweepstakeController.php:289
+#: application/website/default/controllers/DatareceiverController.php:121
+msgid "Email"
+msgstr "E-mail"
+
 #: application/website/default/language/addon-language-keys.php:38
-#: application/website/default/controllers/SweepstakeController.php:276
+#: application/website/default/controllers/SweepstakeController.php:284
 #: application/website/default/controllers/DatareceiverController.php:116
 msgid "Salutation"
 msgstr "Salutation"
 
 #: application/website/default/language/addon-language-keys.php:39
-#: application/website/default/controllers/SweepstakeController.php:277
+#: application/website/default/controllers/SweepstakeController.php:285
 #: application/website/default/controllers/DatareceiverController.php:117
 msgid "Title"
 msgstr "Title"
@@ -52,31 +136,19 @@ msgid "Sname"
 msgstr "Last name"
 
 #: application/website/default/language/addon-language-keys.php:42
-#: application/website/default/controllers/SweepstakeController.php:280
+#: application/website/default/controllers/SweepstakeController.php:288
 #: application/website/default/controllers/DatareceiverController.php:120
 msgid "Company"
 msgstr "Company"
 
-#: application/website/default/language/addon-language-keys.php:43
-#: application/website/default/controllers/SweepstakeController.php:281
-#: application/website/default/controllers/DatareceiverController.php:121
-msgid "Email"
-msgstr "E-mail"
-
 #: application/website/default/language/addon-language-keys.php:44
-#: application/website/default/controllers/SweepstakeController.php:282
+#: application/website/default/controllers/SweepstakeController.php:290
 #: application/website/default/controllers/DatareceiverController.php:122
 msgid "Phone"
 msgstr "Phone"
 
-#: application/website/default/language/addon-language-keys.php:45
-#: application/website/default/controllers/SweepstakeController.php:283
-#: application/website/default/controllers/DatareceiverController.php:123
-msgid "Fax"
-msgstr "Fax"
-
 #: application/website/default/language/addon-language-keys.php:46
-#: application/website/default/controllers/SweepstakeController.php:284
+#: application/website/default/controllers/SweepstakeController.php:292
 #: application/website/default/controllers/DatareceiverController.php:124
 msgid "Function"
 msgstr "Function"
@@ -87,7 +159,7 @@ msgid "Type"
 msgstr "Company type"
 
 #: application/website/default/language/addon-language-keys.php:48
-#: application/website/default/controllers/SweepstakeController.php:286
+#: application/website/default/controllers/SweepstakeController.php:294
 #: application/website/default/controllers/DatareceiverController.php:126
 msgid "Street"
 msgstr "Street"
@@ -98,19 +170,19 @@ msgid "Zip"
 msgstr "ZIP"
 
 #: application/website/default/language/addon-language-keys.php:50
-#: application/website/default/controllers/SweepstakeController.php:288
+#: application/website/default/controllers/SweepstakeController.php:296
 #: application/website/default/controllers/DatareceiverController.php:128
 msgid "City"
 msgstr "City"
 
 #: application/website/default/language/addon-language-keys.php:51
-#: application/website/default/controllers/SweepstakeController.php:289
+#: application/website/default/controllers/SweepstakeController.php:297
 #: application/website/default/controllers/DatareceiverController.php:129
 msgid "State"
 msgstr "State/Province"
 
 #: application/website/default/language/addon-language-keys.php:52
-#: application/website/default/controllers/SweepstakeController.php:290
+#: application/website/default/controllers/SweepstakeController.php:298
 #: application/website/default/controllers/DatareceiverController.php:130
 msgid "Country"
 msgstr "Country"
@@ -125,26 +197,62 @@ msgstr "What can we do for you?"
 msgid "Attachment"
 msgstr "CV/Resume"
 
-#: application/website/default/controllers/SweepstakeController.php:278
+#: application/website/default/controllers/SweepstakeController.php:286
 msgid "Firstname"
 msgstr "First name"
 
-#: application/website/default/controllers/SweepstakeController.php:279
+#: application/website/default/controllers/SweepstakeController.php:287
 msgid "Surname"
 msgstr "Last name"
 
-#: application/website/default/controllers/SweepstakeController.php:285
+#: application/website/default/controllers/SweepstakeController.php:293
 msgid "Type_of_company"
 msgstr "Company type"
 
-#: application/website/default/controllers/SweepstakeController.php:287
+#: application/website/default/controllers/SweepstakeController.php:295
 msgid "ZipCode"
 msgstr "ZIP"
 
-#: application/website/default/controllers/SweepstakeController.php:291
+#: application/website/default/controllers/SweepstakeController.php:299
 #: application/website/default/controllers/DatareceiverController.php:133
 msgid "Check_Legalnotes"
 msgstr "Legal notes"
+
+#: application/website/default/controllers/IndexController.php:487
+msgid "Please_enter_username"
+msgstr ""
+
+#: application/website/default/controllers/IndexController.php:521
+msgid "Username_not_found"
+msgstr ""
+
+#: application/website/default/controllers/IndexController.php:528
+msgid "Wrong_password"
+msgstr ""
+
+#: application/website/default/controllers/IndexController.php:580
+msgid "Login_failed"
+msgstr ""
+
+#: public/website/themes/default/login.php:45
+msgid "Username"
+msgstr "Username"
+
+#: public/website/themes/default/login.php:54
+msgid "Password"
+msgstr "Password"
+
+#: public/website/themes/default/login.php:63
+msgid "Login"
+msgstr "Login"
+
+#: public/website/themes/ivoclarvivadent/master.php:99
+msgid "lightbox_image"
+msgstr "Image"
+
+#: public/website/themes/ivoclarvivadent/master.php:99
+msgid "lightbox_of"
+msgstr "of"
 
 #: public/website/themes/ivoclarvivadent/search.php:70
 msgid "Search"
@@ -154,103 +262,70 @@ msgstr "Search"
 msgid "Year"
 msgstr "Year"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:552
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:993
 msgid "IconInfo_All_Ceramics"
 msgstr "This product forms part of our “All-Ceramics” field of competence. All the products of this field are optimally coordinated with each other."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:556
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:997
 msgid "IconInfo_Implant_Esthetics"
 msgstr "This product forms part of our “Implant Esthetics” field of competence. All the products of this field are optimally coordinated with each other."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:560
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1001
 msgid "IconInfo_Composites"
 msgstr "This product forms part of our “Composites” field of competence. All the products of this field are optimally coordinated with each other."
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:731
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:852
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1184
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1308
 msgid "More_information"
 msgstr "More information"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:768
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1221
 msgid "Date_and_Location"
 msgstr "Date and Location"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:774
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1227
 msgid "Fees"
 msgstr "Fees"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:777
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1230
 msgid "Language"
 msgstr "Language"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:977
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1266
+msgid "Similar_Courses"
+msgstr "Similar Courses"
+
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1435
 msgid "More"
 msgstr "More"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1154
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1163
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1176
-#: public/website/themes/ivoclarvivadent/templates/template_location.php:29
-#: public/website/themes/ivoclarvivadent/templates/template_location.php:36
-msgid "Please_choose"
-msgstr "Please choose"
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1155
-msgid "Mr."
-msgstr "Mr."
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1156
-msgid "Ms."
-msgstr "Ms."
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1164
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1722
 msgid "Dental_office"
 msgstr "Dental office"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1165
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1723
 msgid "Dental_office_laboratory"
 msgstr "Dental office/laboratory"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1166
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1724
 msgid "Laboratory"
 msgstr "Laboratory"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1167
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1725
 msgid "School"
 msgstr "School"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1168
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1726
 msgid "Student"
 msgstr "Student"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1169
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1727
 msgid "Private_person"
 msgstr "Private person"
 
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1212
-msgid "Fields_with_*_are_mandatory"
-msgstr "Fields with * are mandatory."
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1217
-msgid "Send"
-msgstr "Send"
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1223
-msgid "LegalNotes"
-msgstr "I agree that the above personal data are stored, processed and used by Ivoclar Vivadent AG and the companies of the Ivoclar Vivadent Group to provide me with information about products, services, or activities of the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can revoke my consent completely or partially with immediate effect by sending a corresponding notification to info@ivoclarvivadent.com."
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1263
+#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1821
 msgid "Press_Contact"
 msgstr "Media Contact"
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1272
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1307
-msgid "Tel"
-msgstr "Tel"
-
-#: public/website/themes/ivoclarvivadent/helpers/PageHelper.php:1298
-msgid "Contact"
-msgstr "Contact"
 
 #: public/website/themes/ivoclarvivadent/templates/template_job.php:60
 msgid "Apply"
@@ -282,7 +357,11 @@ msgstr "Competence in Implant Esthetics"
 
 #: public/website/themes/ivoclarvivadent/templates/template_startpage.php:42
 msgid "Competence_in_Implant_Esthetics_Info"
-msgstr "Well prepared, well performed: The basis for exacting implant-retained restorations."
+msgstr ""
+"The comprehensive approach\n"
+" to prescribing and fabricating\n"
+" implant-retained and implant-\n"
+" supported prosthetics."
 
 #: public/website/themes/ivoclarvivadent/templates/template_press_overview.php:56
 msgid "Archive"
@@ -413,7 +492,7 @@ msgstr "Three towels of Tetric EvoFlow"
 msgid "evoFlow_maldives_Question"
 msgstr "How many shades of Tetric EvoFlow are available?"
 
-#: public/website/themes/ivoclarvivadent/includes/header.inc.php:55
+#: public/website/themes/ivoclarvivadent/includes/header.inc.php:52
 msgid "Font_Size"
 msgstr "Font size"
 
@@ -423,8 +502,10 @@ msgstr "Advanced Search"
 
 #~ msgid "Read_article_online"
 #~ msgstr "Read article online"
+
 #~ msgid "Attachmet"
 #~ msgstr "Anhang/Beilage"
+
 #~ msgid "evoFlow_lisbon_form_LegalNotes"
 #~ msgstr ""
 #~ "I agree that the above personal data are stored, processed and used by "
@@ -433,8 +514,9 @@ msgstr "Advanced Search"
 #~ "the Ivoclar Vivadent Group in writing, by fax, phone, or e-mail. I can "
 #~ "revoke my consent completely or partially with immediate effect by "
 #~ "sending a corresponding notification to info@ivoclarvivadent.com."
+
 #~ msgid "Comments"
 #~ msgstr "What can we do for you?"
+
 #~ msgid "Areacode_Prefix_Phone"
 #~ msgstr "Int. area code/code/phone no."
-

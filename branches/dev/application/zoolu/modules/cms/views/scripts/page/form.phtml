@@ -38,7 +38,7 @@
             </tr>
             <?php if(!$this->blnIsStartPage) : ?>
             <tr>
-              <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation > 0) ? print(' checked="checked"') : ''; ?> onclick="if($('divShowInNavigationOptions')) { myForm.toggleNavigationOptions(); } else { $('showInNavigation').value = (this.checked) ? '1' : '0'; }"/></td>
+              <td class="tdNormal"><input type="checkbox" name="showinnavigation" id="showinnavigation"<?php ($this->showinnavigation > 0) ? print(' checked="checked"') : ''; ?> onclick="if($('divShowInNavigationOptions')) { myForm.toggleNavigationOptions(this); } else { $('showInNavigation').value = (this.checked) ? '1' : '0'; }"/></td>
               <td>
                 <label for="showinnavigation"><?php echo $this->translate->_('show_in_navigation'); ?></label>
                 <?php if($this->blnIsRootLevelChild): ?>
@@ -53,7 +53,7 @@
               </td>
             </tr>
             <tr>
-              <td class="tdNormal"><input type="checkbox" name="shownonlyfordestination" id="shownonlyfordestination"<?php ($this->destinationId > 0) ? print(' checked="checked"') : ''; ?> onclick="myForm.toggleDestinationOptions();"/></td>
+              <td class="tdNormal"><input type="checkbox" name="shownonlyfordestination" id="shownonlyfordestination"<?php ($this->destinationId > 0) ? print(' checked="checked"') : ''; ?> onclick="myForm.toggleDestinationOptions(this);"/></td>
               <td>
                 <label for="shownonlyfordestination"><?php echo $this->translate->_('show_only_for_region'); ?></label>
                 <div id="divShownOnlyForDestinationOptions"<?php echo ($this->destinationId == 0) ? ' style="display:none;"' : ''; ?>>
@@ -155,6 +155,8 @@
         <script type="text/javascript">//<![CDATA[
           myForm.blnShowFormAlert = <?php echo (($this->blnShowFormAlert == true) ? 'true' : 'false') ?>;
           myForm.selectNavigationItemNow = <?php echo (($this->selectNavigationItemNow && $this->selectNavigationItemNow == true) ? 'true' : 'false') ?>;
+          myForm.isAuthorizedToDelete(<?php echo (($this->authorizedDelete && $this->authorizedDelete == true) ? 'true' : 'false') ?>);
+          myForm.isAuthorizedToUpdate(<?php echo (($this->authorizedUpdate && $this->authorizedUpdate == true) ? 'true' : 'false') ?>);
           <?php if($this->itemId): ?>myNavigation.itemId = '<?php echo $this->itemId ?>';<?php endif; ?>
           myPage.isStartPage = <?php echo (($this->blnIsStartPage == true) ? 'true' : 'false') ?>;          
           //]]>

@@ -132,8 +132,8 @@ class Model_Locations {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadLocationsByCountry($strCountry, $intUnitId = 0, $intTypeId = 0){
-    $this->core->logger->debug('core->models->Locations->loadLocationsByCountry('.$strCountry.', '.$intUnitId.', '.$intTypeId.')'); 
+  public function loadLocationsByCountry($strCountry, $intUnitId = 0, $intTypeId = 0, $strProvince = ''){
+    $this->core->logger->debug('core->models->Locations->loadLocationsByCountry('.$strCountry.', '.$intUnitId.', '.$intTypeId.','.$strProvince.')'); 
     
     $objSelect = $this->getLocationsTable()->select();   
     $objSelect->setIntegrityCheck(false);
@@ -145,14 +145,46 @@ class Model_Locations {
      *  locations.type = ?
      */ 
     $objSelect->from('locations');
-    $objSelect->where('locations.country = (SELECT categoryCodes.idCategories FROM categoryCodes INNER JOIN categories ON categories.id = categoryCodes.idCategories AND categories.idRootCategory = 268 WHERE categoryCodes.code = \''.$strCountry.'\' AND categoryCodes.idLanguages = '.$this->intLanguageId.')');
+    $objSelect->joinLeft('categoryTitles', 'categoryTitles.idCategories = locations.position AND categoryTitles.idLanguages = '.$this->intLanguageId, array('positionTitle' => 'title'));
+    $objSelect->where('locations.country = (SELECT categoryCodes.idCategories FROM categoryCodes INNER JOIN categories ON categories.id = categoryCodes.idCategories AND categories.idRootCategory = 268 WHERE categoryCodes.code = ? AND categoryCodes.idLanguages = '.$this->intLanguageId.')', $strCountry);
     if($intUnitId > 0){
       $objSelect->where('locations.idUnits = ?', $intUnitId); 
     }
     if($intTypeId > 0){
       $objSelect->where('locations.type = ?', $intTypeId); 
     }
+    if($strProvince != ''){
+      $objSelect->where('locations.state = ?', $strProvince);
+    }
     $objSelect->order('locations.name ASC');
+        
+    return $this->getLocationsTable()->fetchAll($objSelect);
+  }
+  
+  /**
+   * loadProvincesByCountry
+   * @param string $strCountry
+   * @param integer $intUnitId
+   * @param integer $intTypeId
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function loadProvincesByCountry($strCountry, $intUnitId = 0, $intTypeId = 0){
+    $this->core->logger->debug('core->models->Locations->loadProvincesByCountry('.$strCountry.', '.$intUnitId.', '.$intTypeId.')'); 
+    
+    $objSelect = $this->getLocationsTable()->select();   
+     
+    $objSelect->from('locations', array('state'));
+    
+    $objSelect->where('locations.country = (SELECT categoryCodes.idCategories FROM categoryCodes INNER JOIN categories ON categories.id = categoryCodes.idCategories AND categories.idRootCategory = 268 WHERE categoryCodes.code = '.$this->core->dbh->quote($strCountry).' AND categoryCodes.idLanguages = '.$this->intLanguageId.')');
+    if($intUnitId > 0){
+      $objSelect->where('locations.idUnits = ?', $intUnitId); 
+    }
+    if($intTypeId > 0){
+      $objSelect->where('locations.type = ?', $intTypeId); 
+    }
+    $objSelect->order('state ASC');
+    $objSelect->group('state');
         
     return $this->getLocationsTable()->fetchAll($objSelect);
   }
@@ -297,6 +329,35 @@ class Model_Locations {
     $strWhere = $this->objLocationsTable->getAdapter()->quoteInto('id = ?', $intElementId);  
     
     return $this->objLocationsTable->delete($strWhere);
+  }
+  
+  /**
+   * deleteLocations
+   * @param array $arrLocationIds
+   * @return integer the number of rows deleted
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function deleteLocations($arrLocationIds){
+    try{  
+      $strWhere = '';
+      $intCounter = 0;
+      if(count($arrLocationIds) > 0){
+        foreach($arrLocationIds as $intLocationId){
+          if($intLocationId != ''){
+            if($intCounter == 0){
+              $strWhere .= $this->getLocationsTable()->getAdapter()->quoteInto('id = ?', $intLocationId);
+            }else{
+              $strWhere .= $this->getLocationsTable()->getAdapter()->quoteInto(' OR id = ?', $intLocationId);
+            }
+            $intCounter++;
+          }
+        }
+      }   
+      return $this->objLocationsTable->delete($strWhere);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
   }
   
   /**

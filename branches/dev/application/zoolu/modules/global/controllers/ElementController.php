@@ -45,7 +45,12 @@ class Global_ElementController extends AuthControllerAction {
   /**
    * @var GenericForm
    */
-  var $objForm;
+  protected $objForm;
+  
+  /**
+   * @var inter
+   */
+  protected $intItemLanguageId;
 
   /**
    * request object instance
@@ -91,6 +96,9 @@ class Global_ElementController extends AuthControllerAction {
    */
   public function init(){
     parent::init();
+    if(!Security::get()->isAllowed('global', Security::PRIVILEGE_VIEW)){
+      $this->_redirect('/zoolu');
+    }
     $this->objRequest = $this->getRequest();
   }
 
@@ -116,7 +124,7 @@ class Global_ElementController extends AuthControllerAction {
     $objSelect->from($this->getModelGlobals()->getGlobalTable(), array('id'))
               ->joinInner('globalProperties', 'globalProperties.globalId = globals.globalId AND globalProperties.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote(Zend_Auth::getInstance()->getIdentity()->languageId, Zend_Db::INT_TYPE), array())
               ->joinInner('globalTitles', 'globalTitles.globalId = globals.globalId AND globalTitles.version = globals.version AND globalProperties.idLanguages = '.$this->core->dbh->quote(Zend_Auth::getInstance()->getIdentity()->languageId, Zend_Db::INT_TYPE), array('title'))
-              ->joinInner(array('editor' => 'users'), 'editor.id = globalProperties.idUsers', array('editor' => 'CONCAT(`editor`.`fname`, \' \', `editor`.`sname`)', 'globalProperties.changed'))
+              ->joinLeft(array('editor' => 'users'), 'editor.id = globalProperties.idUsers', array('editor' => 'CONCAT(`editor`.`fname`, \' \', `editor`.`sname`)', 'globalProperties.changed'))
               ->where('idParent = ?', $this->getRequest()->getParam('rootLevelId'))
               ->where('idParentTypes = ?', $this->core->sysConfig->parent_types->rootlevel)
               ->where('isStartGlobal = 0')
@@ -128,7 +136,7 @@ class Global_ElementController extends AuthControllerAction {
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objGlobalsPaginator = new Zend_Paginator($objAdapter);
-    $objGlobalsPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', 20));
+    $objGlobalsPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
     $objGlobalsPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
     $objGlobalsPaginator->setView($this->view);
 
@@ -288,6 +296,8 @@ class Global_ElementController extends AuthControllerAction {
     $this->core->logger->debug('global->controllers->ElementController->geteditformAction()');
 
     try{
+      $this->validateItemProperties();
+              
 	    $this->getForm($this->core->sysConfig->generic->actions->edit);
 
 	    /**
@@ -421,9 +431,36 @@ class Global_ElementController extends AuthControllerAction {
 
       $this->view->blnIsStartGlobal = $this->objForm->Setup()->getIsStartElement(false);
 
-      if($this->objForm->Setup()->getField('url')) $this->view->globalurl = $this->objForm->Setup()->getField('url')->getValue();
-
-      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      if($this->objForm->Setup()->getField('url')){
+        $this->view->globalurl = $this->objForm->Setup()->getField('url')->getValue();
+        
+        //add shop preview url
+        if($this->objForm->Setup()->getRootLevelGroupId() == $this->core->sysConfig->root_level_groups->product && $this->core->config->shop->root_level_id){
+          $this->view->addonurls = array(
+            array(
+              'url'   => $this->getModelFolders()->getRootLevelMainUrl($this->core->config->shop->root_level_id).$this->objForm->Setup()->getField('url')->getValue(),
+              'title' => $this->core->translate->_('Shop')
+            )
+          );
+        }
+        
+      }
+      
+      $arrSecurityCheck = array();
+      if(!Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_VIEW, false, false)){
+        $arrSecurityCheck = array('ResourceKey'           => Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_%d', 
+                                  'Privilege'             => Security::PRIVILEGE_VIEW, 
+                                  'CheckForAllLanguages'  => false,
+                                  'IfResourceNotExists'   => false);  
+      }
+      
+      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId(), $arrSecurityCheck);
+      
+      $blnGeneralDeleteAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_DELETE, false, false);
+      $blnGeneralUpdateAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_UPDATE, false, false);
+      
+      $this->view->authorizedDelete = ($this->objForm->Setup()->getIsStartElement(false) == true || $this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->add) ? false : (($blnGeneralDeleteAuthorization == true) ? $blnGeneralDeleteAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_'.$this->objForm->Setup()->getLanguageId(), Security::PRIVILEGE_DELETE, false, false));
+      $this->view->authorizedUpdate = ($blnGeneralUpdateAuthorization == true) ? $blnGeneralUpdateAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_'.$this->objForm->Setup()->getLanguageId(), Security::PRIVILEGE_UPDATE, false, false);
       
       $this->view->languageFallbackOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages WHERE isFallback = 1 AND id != '. $this->objForm->Setup()->getLanguageId().' ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageFallbackId());
     }
@@ -494,15 +531,20 @@ class Global_ElementController extends AuthControllerAction {
     try{
 	    $this->getModelGlobals();
 
-	    if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
-		    if(intval($this->objRequest->getParam('linkId', -1)) > 0){
-          $this->objModelGlobals->delete($this->objRequest->getParam("linkId"));
-        }else{
-          $this->objModelGlobals->delete($this->objRequest->getParam("id"));
-        }
-
-		    $this->view->blnShowFormAlert = true;
-	    }
+	    $blnGeneralDeleteAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objRequest->getParam("rootLevelId"), Security::PRIVILEGE_DELETE, false, false);
+      $blnDeleteAuthorization = ($blnGeneralDeleteAuthorization == true) ? $blnGeneralDeleteAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objRequest->getParam("rootLevelId").'_'.$this->objRequest->getParam("languageId"), Security::PRIVILEGE_DELETE, false, false);
+      
+      if($blnDeleteAuthorization == true){      
+  	    if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+  		    if(intval($this->objRequest->getParam('linkId', -1)) > 0){
+            $this->objModelGlobals->delete($this->objRequest->getParam("linkId"));
+          }else{
+            $this->objModelGlobals->delete($this->objRequest->getParam("id"));
+          }
+  
+  		    $this->view->blnShowFormAlert = true;
+  	    }
+      }
 
 	    $this->renderScript('element/form.phtml');
     }catch (Exception $exc) {
@@ -561,7 +603,7 @@ class Global_ElementController extends AuthControllerAction {
       $objGenericData->Setup()->setRootLevelGroupId($this->objRequest->getParam("rootLevelGroupId"));
       $objGenericData->Setup()->setParentId($this->objRequest->getParam("parentFolderId"));
       $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
-      $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objGenericData->Setup()->setLanguageId($this->getItemLanguageId());
       $objGenericData->Setup()->setFormLanguageId($this->core->intZooluLanguageId);
       $objGenericData->Setup()->setModelSubPath('global/models/');
 
@@ -784,11 +826,12 @@ class Global_ElementController extends AuthControllerAction {
 
       $strFormId = $this->objRequest->getParam("formId");
       $intTemplateId = $this->objRequest->getParam("templateId");
-
+      
       /**
        * if there is now formId, try to load form template
        */
       if($strFormId == ''){
+                
         if($intTemplateId != ''){
           /**
            * get files
@@ -819,7 +862,7 @@ class Global_ElementController extends AuthControllerAction {
       $objFormHandler->setTemplateId($intTemplateId);
       $objFormHandler->setFormVersion($intFormVersion);
       $objFormHandler->setActionType($intActionType);
-      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objFormHandler->setLanguageId($this->getItemLanguageId($intActionType));
       $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
       $objFormHandler->setElementId($intElementId);
 
@@ -887,6 +930,55 @@ class Global_ElementController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'linkId', array('value' => $this->objForm->Setup()->getElementLinkId(), 'decorators' => array('Hidden')));
     }
   }
+  
+  /**
+   * validateItemProperties
+   * @return void
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0 
+   */
+  protected function validateItemProperties(){
+    if($this->objRequest->getParam('formId', '') == '' && $this->objRequest->getParam('formVersion', '') == '' && (int) $this->objRequest->getParam('id') > 0){
+      $objData = $this->getModelGlobals()->loadProperties($this->objRequest->getParam('id'));
+      if(count($objData) > 0){
+        $objGlobalProperties = $objData->current();
+        $this->objRequest->setParam('formId', $objGlobalProperties->genericFormId);
+        $this->objRequest->setParam('formVersion', $objGlobalProperties->genericFormVersion);
+        $this->objRequest->setParam('templateId', $objGlobalProperties->templateId);
+      }  
+    }
+  }  
+  
+  /**
+   * getItemLanguageId
+   * @param integer $intActionType
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0 
+   */
+  protected function getItemLanguageId($intActionType = null){
+    if($this->intItemLanguageId == null){
+      if(!$this->objRequest->getParam("languageId")){
+        $this->intItemLanguageId = $this->objRequest->getParam("rootLevelLanguageId") != '' ? $this->objRequest->getParam("rootLevelLanguageId") : $this->core->intZooluLanguageId;
+        
+        $intRootLevelId = $this->objRequest->getParam("rootLevelId");
+        $PRIVILEGE = ($intActionType == $this->core->sysConfig->generic->actions->add) ? Security::PRIVILEGE_ADD : Security::PRIVILEGE_UPDATE;
+        
+        $arrLanguages = $this->core->config->languages->language->toArray();      
+        foreach($arrLanguages as $arrLanguage){
+          if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId.'_'.$arrLanguage['id'], $PRIVILEGE, false, false)){
+            $this->intItemLanguageId = $arrLanguage['id']; 
+            break;
+          }          
+        }
+        
+      }else{
+        $this->intItemLanguageId = $this->objRequest->getParam("languageId");
+      }
+    }
+    
+    return $this->intItemLanguageId;
+  }
 
   /**
    * getModelGlobals
@@ -903,7 +995,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'global/models/Globals.php';
       $this->objModelGlobals = new Model_Globals();
-      $this->objModelGlobals->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelGlobals->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelGlobals;
@@ -923,7 +1015,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelFolders->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFolders;
@@ -943,7 +1035,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelFiles->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFiles;
@@ -963,7 +1055,7 @@ class Global_ElementController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
-      $this->objModelContacts->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelContacts->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelContacts;

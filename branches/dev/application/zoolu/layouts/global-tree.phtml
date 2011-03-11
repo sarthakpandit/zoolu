@@ -25,7 +25,7 @@
           </a>
         </div>
         <div class="topright">
-          <div class="faqtitle"><a href="http://code.google.com/p/zoolu/issues/list" target="_blank"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
+          <div class="faqtitle"><a href="http://code.google.com/p/zoolu/issues/list" target="_blank"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="http://documentation.getzoolu.org/"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
           <div class="faqicon"><img src="/zoolu-statics/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
@@ -58,6 +58,9 @@
 
       <!-- content edit -->
       <div id="genFormContainer" class="contentedit" style="display:none;">
+      </div>
+      
+      <div id="genTableListContainer">
       </div>
 
       <!-- content function widget -->
@@ -175,11 +178,12 @@
     <script type="text/javascript" src="/min/g=zJs&v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/min/g=zGlobalTreeJs&v=<?php echo $this->jsVersion; ?>"></script>
     <script type="text/javascript" src="/zoolu-statics/tinymce/jscripts/tiny_mce/tiny_mce.js?v=<?php echo $this->jsVersion; ?>"></script>
+    <script type="text/javascript" src="/zoolu-statics/js_incs/list.js"></script>
 
     <?php echo $this->jsPlugins; ?>
     
     <script type="text/javascript">//<![CDATA[
-      var myCore, myNavigation,  myForm,  myGlobal, myFolder, myOverlay;
+      var myCore, myNavigation,  myForm,  myGlobal, myFolder, myOverlay, myList;
 
       //document.observe('dom:loaded', function() {
       Event.observe(window, 'load', function() {
@@ -191,7 +195,13 @@
           Save: '<?php echo $this->translate->_('Save'); ?>', 
           Cancel: '<?php echo $this->translate->_('Cancel'); ?>', 
           Apply: '<?php echo $this->translate->_('Apply'); ?>', 
-          Edit: '<?php echo $this->translate->_('Edit'); ?>'
+          Edit: '<?php echo $this->translate->_('Edit'); ?>',
+          Delete_: '<?php echo $this->translate->_('Delete_'); ?>',
+          Delete_folder: '<?php echo $this->translate->_('Delete_folder'); ?>',
+          Delete_product: '<?php echo $this->translate->_('Delete_product'); ?>',
+          Delete_press: '<?php echo $this->translate->_('Delete_press'); ?>',
+          Delete_course: '<?php echo $this->translate->_('Delete_course'); ?>',
+          Delete_event: '<?php echo $this->translate->_('Delete_event'); ?>'
         };
         
         myNavigation = new Massiveart.Navigation.Global();
@@ -199,6 +209,8 @@
         myGlobal = new Massiveart.Global();
         myFolder = new Massiveart.Folder();
         myOverlay = new Massiveart.Overlay();
+        myList = new Massiveart.List();
+        myList.ItemsPerPage = <?php echo Zend_Registry::get('Core')->sysConfig->list->default->itemsPerPage; ?>;
 
         myNavigation.constRequestRootNav = '/zoolu/global/navigation/rootnavigation';
         myNavigation.constRequestChildNav = '/zoolu/global/navigation/childnavigation';

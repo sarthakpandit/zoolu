@@ -6,3 +6,9 @@
   echo $objHelper->getThumbView($this->objFiles, $this->sliderValue);
 
 ?> 
+  <script type="text/javascript">//<![CDATA[
+    myMedia.isAuthorizedToAdd(<?php echo (($this->authorizedAdd && $this->authorizedAdd == true) ? 'true' : 'false') ?>);
+    myMedia.isAuthorizedToDelete(<?php echo (($this->authorizedDelete && $this->authorizedDelete == true) ? 'true' : 'false') ?>);
+    myMedia.isAuthorizedToUpdate(<?php echo (($this->authorizedUpdate && $this->authorizedUpdate == true) ? 'true' : 'false') ?>);
+  //]]>
+  </script>

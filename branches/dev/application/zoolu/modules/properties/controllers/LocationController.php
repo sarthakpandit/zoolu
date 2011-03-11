@@ -45,17 +45,17 @@ class Properties_LocationController extends AuthControllerAction {
 	/**
    * @var GenericForm
    */
-  var $objForm;
+  protected $objForm;
 
   /**
    * @var Model_Locations
    */
-  var $objModelLocations;
+  public $objModelLocations;
 
   /**
    * @var Model_Units
    */
-  var $objModelUnits;
+  public $objModelUnits;
 
   /**
    * The default action
@@ -72,7 +72,7 @@ class Properties_LocationController extends AuthControllerAction {
   public function listAction(){
     $this->core->logger->debug('properties->controllers->LocationController->listAction()');
     
-    $intUnitId = $this->getRequest()->getParam('itemId', 0);
+    $intUnitId = $this->getRequest()->getParam('folderId', 0);
     $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : 'name');
     $strSortOrder = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : 'asc');
     $strSearchValue = (($this->getRequest()->getParam('search') != '') ? $this->getRequest()->getParam('search') : '');
@@ -81,16 +81,16 @@ class Properties_LocationController extends AuthControllerAction {
     $objSelect->setIntegrityCheck(false);
     $objSelect->from($this->getModelLocations()->getLocationsTable(), array('id', 'name', 'type' => new Zend_Db_Expr("'location'")));
     $objSelect->joinInner('genericForms', 'genericForms.id = locations.idGenericForms', array('genericForms.genericFormId', 'genericForms.version'));
-    $objSelect->joinInner('users', 'users.id = locations.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'locations.changed'));    
+    $objSelect->joinLeft('users', 'users.id = locations.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'locations.changed')); 
     $objSelect->where('locations.idUnits = ?', $intUnitId);
     if($strSearchValue != ''){
       $objSelect->where('locations.name LIKE ?', '%'.$strSearchValue.'%');  
     }
     $objSelect->order($strOrderColumn.' '.strtoupper($strSortOrder));
-
+    
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objGroupsPaginator = new Zend_Paginator($objAdapter);
-    $objGroupsPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', 20));
+    $objGroupsPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
     $objGroupsPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
     $objGroupsPaginator->setView($this->view);
 
@@ -282,6 +282,36 @@ class Properties_LocationController extends AuthControllerAction {
     }
 
     $this->renderScript('location/form.phtml');
+  }
+  
+  /**
+   * listdeleteAction
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function listdeleteAction(){
+    $this->core->logger->debug('properties->controllers->LocationController->listdeleteAction()');
+
+    try{
+
+      if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
+        $strTmpUserIds = trim($this->getRequest()->getParam('values'), '[]');
+        $arrUserIds = array();
+        $arrUserIds = split('\]\[', $strTmpUserIds);
+        
+        if(count($arrUserIds) > 1){         
+          $this->getModelLocations()->deleteLocations($arrUserIds); 
+        }else{
+          $this->getModelLocations()->deleteLocation($arrUserIds[0]); 
+        }
+        
+      }
+
+      $this->_forward('list', 'location', 'properties');
+
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
   }
 
   /**

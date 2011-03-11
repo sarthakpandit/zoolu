@@ -183,6 +183,7 @@ class Model_Templates {
     $objSelect->join('types', 'types.id = templateTypes.idTypes', array());
     $objSelect->joinLeft('templateTitles', 'templateTitles.idTemplates = templates.id AND templateTitles.idLanguages = '.$this->intLanguageId, array('title'));
     $objSelect->where('templates.active = ?', 1);
+    $objSelect->order('templateTitles.title');
     
     switch ($intFormTypeId){
       case $this->core->sysConfig->form->types->page:
@@ -214,6 +215,12 @@ class Model_Templates {
           case $this->core->sysConfig->page_types->events->id:
             $objSelect->where('types.id = ?', $this->core->sysConfig->types->events);
             break;
+          case $this->core->sysConfig->page_types->download_center->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->download_center);
+            break; 
+          case $this->core->sysConfig->page_types->sitemap->id:
+            $objSelect->where('types.id = ?', $this->core->sysConfig->types->sitemap);
+            break;           
         }
         break;
       case $this->core->sysConfig->form->types->global:

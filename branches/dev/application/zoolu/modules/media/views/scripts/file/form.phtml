@@ -23,6 +23,7 @@
   </div>
   <div class="clear"></div>
   <div class="buttoncancel" onclick="myOverlay.close(); return false;"><?php echo $this->translate->_('Cancel'); ?></div>  
+  <?php if($this->authorizedUpdate == true): ?>
   <div onclick="myMedia.editFiles();" id="buttoneditsave">
     <div class="button25leftOn"></div>
     <div class="button25centerOn">
@@ -32,5 +33,6 @@
     <div class="button25rightOn"></div>
     <div class="clear"></div>
   </div>
+  <?php endif; ?>
   <div class="clear"></div>
 </form>

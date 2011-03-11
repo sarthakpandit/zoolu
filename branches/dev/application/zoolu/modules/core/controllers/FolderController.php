@@ -45,7 +45,12 @@ class Core_FolderController extends AuthControllerAction {
 	/**
 	 * @var GenericForm
 	 */
-	var $objForm;
+	protected $objForm;
+	
+	/**
+   * @var inter
+   */
+  protected $intItemLanguageId;
 
 	/**
    * request object instance
@@ -366,10 +371,45 @@ class Core_FolderController extends AuthControllerAction {
 
       $this->view->blnIsRootLevelChild = ($this->objForm->Setup()->getParentId() == 0) ? true : false;
       $this->view->navigationOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, (SELECT navigationOptionTitles.title FROM navigationOptionTitles WHERE navigationOptionTitles.idNavigationOptions = navigationOptions.id AND navigationOptionTitles.idLanguages = '.$this->objForm->Setup()->getFormLanguageId().') AS DISPLAY FROM navigationOptions WHERE active = 1', $this->objForm->Setup()->getShowInNavigation());
+       
+      $arrSecurityCheck = array();
+      if(!Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_VIEW, false, false)){
+          $arrSecurityCheck = array('ResourceKey'           => Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_%d', 
+                                    'Privilege'             => Security::PRIVILEGE_VIEW, 
+                                    'CheckForAllLanguages'  => false,
+                                    'IfResourceNotExists'   => false);  
+      }
       
-      // && $this->objRequest->getParam('zoolu_module') != 2
-      //if($this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->edit) 
-      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      if($this->objRequest->getParam('zoolu_module') == 1) { //portals
+        
+        if(Security::get()->isAllowed('portals', Security::PRIVILEGE_VIEW, false, false)){
+          $arrSecurityCheck = array();
+        }
+      
+        $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT languages.id AS VALUE, languages.languageCode AS DISPLAY FROM languages INNER JOIN rootLevelLanguages ON rootLevelLanguages.idLanguages = languages.id AND rootLevelLanguages.idRootLevels = '.$this->objForm->Setup()->getRootLevelId().' ORDER BY languages.sortOrder, languages.languageCode', $this->objForm->Setup()->getLanguageId(), $arrSecurityCheck);
+        $blnGeneralDeleteAuthorization = ($this->objForm->Setup()->getIsStartElement(false) == true) ? false : Security::get()->isAllowed('portals', Security::PRIVILEGE_DELETE, false, false);
+        $blnGeneralUpdateAuthorization = Security::get()->isAllowed('portals', Security::PRIVILEGE_UPDATE, false, false);
+        $blnGeneralSecurityAuthorization = Security::get()->isAllowed('portals', Security::PRIVILEGE_SECURITY, false, false);
+      }else if($this->objRequest->getParam('zoolu_module') == 2) { //media
+        $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId(), $arrSecurityCheck);
+        $blnGeneralDeleteAuthorization = Security::get()->isAllowed('media', Security::PRIVILEGE_DELETE, false, false);
+        $blnGeneralUpdateAuthorization = Security::get()->isAllowed('media', Security::PRIVILEGE_UPDATE, false, false);
+        $blnGeneralSecurityAuthorization = Security::get()->isAllowed('media', Security::PRIVILEGE_SECURITY, false, false);
+      }else if($this->objRequest->getParam('zoolu_module') == 5) { //global
+        $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId(), $arrSecurityCheck);
+        $blnGeneralDeleteAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_DELETE, false, false);
+        $blnGeneralUpdateAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_UPDATE, false, false);
+        $blnGeneralSecurityAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId(), Security::PRIVILEGE_SECURITY, false, false);
+      }else{
+        $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+        $blnGeneralDeleteAuthorization = true;
+        $blnGeneralUpdateAuthorization = true;
+        $blnGeneralSecurityAuthorization = false;
+      }
+            
+      $this->view->authorizedDelete = ($this->objForm->Setup()->getIsStartElement(false) == true || $this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->add) ? false : (($blnGeneralDeleteAuthorization == true) ? $blnGeneralDeleteAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_'.$this->objForm->Setup()->getLanguageId(), Security::PRIVILEGE_DELETE, false, false));
+      $this->view->authorizedUpdate = ($blnGeneralUpdateAuthorization == true) ? $blnGeneralUpdateAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_'.$this->objForm->Setup()->getLanguageId(), Security::PRIVILEGE_UPDATE, false, false);
+      $this->view->authorizedSecurityManager = ($blnGeneralSecurityAuthorization == true) ? $blnGeneralSecurityAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->objForm->Setup()->getRootLevelId().'_'.$this->objForm->Setup()->getLanguageId(), Security::PRIVILEGE_SECURITY, false, false);
     }
   }
 
@@ -419,10 +459,10 @@ class Core_FolderController extends AuthControllerAction {
       $intFolderId = $this->objRequest->getParam('folderId');
 
       $arrZooluSecurity = $this->objRequest->getParam('ZooluSecurity', array());
-      $this->getModelFolders()->updateFolderSecurity($intFolderId, $arrZooluSecurity, $this->core->sysConfig->environment->zoolu);
+      $this->getModelFolders()->updateFolderSecurity($intFolderId, $arrZooluSecurity, $this->core->sysConfig->zone->zoolu);
 
       $arrWebsiteSecurity = $this->objRequest->getParam('WebsiteSecurity', array());
-      $this->getModelFolders()->updateFolderSecurity($intFolderId, $arrWebsiteSecurity, $this->core->sysConfig->environment->website);
+      $this->getModelFolders()->updateFolderSecurity($intFolderId, $arrWebsiteSecurity, $this->core->sysConfig->zone->website);
 
       $this->_forward('security');
     }catch (Exception $exc) {
@@ -448,22 +488,35 @@ class Core_FolderController extends AuthControllerAction {
   }
 
   /**
-   * folderlistAction
+   * listAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function folderlistAction(){
-    $this->core->logger->debug('core->controllers->FolderController->folderlistAction()');
+  public function listAction(){
+    $this->core->logger->debug('core->controllers->FolderController->listAction()');
+    
+    $strSearchValue = $this->getRequest()->getParam('search');
+    $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : '');
+    $strOrderSort = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : '');
 
     $intPortalId = $this->objRequest->getParam('portalId');
     $intFolderId = $this->objRequest->getParam('folderId');
 
     $this->getModelFolders();
-    $objFolderContent = $this->objModelFolders->loadFolderContentById($intFolderId);
+    $objFolderSelect = $this->objModelFolders->loadFolderContentById($intFolderId, $strSearchValue, $strOrderColumn, $strOrderSort);
+    
+    $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objFolderSelect);
+    $objFolderPaginator = new Zend_Paginator($objAdapter);
+    $objFolderPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
+    $objFolderPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
+    $objFolderPaginator->setView($this->view);
 
-    $this->view->assign('objFolderContent', $objFolderContent);
+    $this->view->assign('folderPaginator', $objFolderPaginator);
     $this->view->assign('intFolderId', $intFolderId);
-    $this->view->assign('listTitle', $objFolderContent[0]->folderTitle);
+    $this->view->assign('strOrderColumn', $strOrderColumn);
+    $this->view->assign('strOrderSort', $strOrderSort);
+    $this->view->assign('strSearchValue', $strSearchValue);
+    //$this->view->assign('listTitle', $objFolderContent[0]->folderTitle);
   }
 
   /**
@@ -541,7 +594,7 @@ class Core_FolderController extends AuthControllerAction {
     $this->core->logger->debug('core->controllers->FolderController->loadFolderTreeForPortal('.$intPortalId.','.$intFolderId.')');
 
     $this->getModelFolders();
-    $objFolderTree = $this->objModelFolders->loadRootLevelFolders($intPortalId);
+    $objFolderTree = $this->objModelFolders->loadRootLevelFolders($intPortalId, $this->core->intZooluLanguageId);
 
     $this->view->assign('elements', $objFolderTree);
     $this->view->assign('portalId', $intPortalId);
@@ -568,7 +621,7 @@ class Core_FolderController extends AuthControllerAction {
     $objFormHandler->setFormId($strFormId);
     $objFormHandler->setFormVersion($intFormVersion);
     $objFormHandler->setActionType($intActionType);
-    $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+    $objFormHandler->setLanguageId($this->getItemLanguageId());
     $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
     $objFormHandler->setElementId($intElementId);
 
@@ -623,6 +676,37 @@ class Core_FolderController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'showInNavigation', array('value' => $this->objForm->Setup()->getShowInNavigation(), 'decorators' => array('Hidden'), 'ignore' => true));
     }
   }
+  
+  /**
+   * getItemLanguageId
+   * @param integer $intActionType
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0 
+   */
+  protected function getItemLanguageId($intActionType = null){
+    if($this->intItemLanguageId == null){
+      if(!$this->objRequest->getParam("languageId")){
+        $this->intItemLanguageId = $this->objRequest->getParam("rootLevelLanguageId") != '' ? $this->objRequest->getParam("rootLevelLanguageId") : $this->core->intZooluLanguageId;
+        
+        $intRootLevelId = $this->objRequest->getParam("rootLevelId");
+        $PRIVILEGE = ($intActionType == $this->core->sysConfig->generic->actions->add) ? Security::PRIVILEGE_ADD : Security::PRIVILEGE_UPDATE;
+        
+        $arrLanguages = $this->core->config->languages->language->toArray();      
+        foreach($arrLanguages as $arrLanguage){
+          if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId.'_'.$arrLanguage['id'], $PRIVILEGE, false, false)){
+            $this->intItemLanguageId = $arrLanguage['id']; 
+            break;
+          }          
+        }
+                
+      }else{
+        $this->intItemLanguageId = $this->objRequest->getParam("languageId");
+      }
+    }
+    
+    return $this->intItemLanguageId;
+  }
 
   /**
    * getModelFolders
@@ -639,7 +723,7 @@ class Core_FolderController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelFolders->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFolders;

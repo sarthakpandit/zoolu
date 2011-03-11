@@ -54,6 +54,11 @@ class Cms_NavigationController extends AuthControllerAction {
    * @var Model_Folders
    */
   protected $objModelFolders;
+  
+  /**
+   * @var Model_RootLevels
+   */
+  protected $objModelRootLevels;
 
   /**
    * init
@@ -64,6 +69,7 @@ class Cms_NavigationController extends AuthControllerAction {
   public function init(){
     parent::init();
     Security::get()->addFoldersToAcl($this->getModelFolders());
+    Security::get()->addRootLevelsToAcl($this->getModelFolders(), $this->core->sysConfig->modules->cms);
   }
 
   /**
@@ -74,9 +80,43 @@ class Cms_NavigationController extends AuthControllerAction {
   public function indexAction(){
 
   	$this->getModelFolders();
-    $objPortals = $this->objModelFolders->loadAllRootLevels($this->core->sysConfig->modules->cms);
+    $objRootLevels = $this->objModelFolders->loadAllRootLevels($this->core->sysConfig->modules->cms);
 
-    $this->view->assign('portals', $objPortals);
+    $objRootLevelNavigation = new NavigationTree();    
+    if(count($objRootLevels) > 0){
+      $intOrder = 0;
+      foreach($objRootLevels as $objRootLevel){
+        $intOrder++;
+        
+        if(!$objRootLevelNavigation->hasSubTree('order_'.$objRootLevel->order)){
+          $objNavGroup = new NavigationTree();
+          $objNavGroup->setId($objRootLevel->order);
+          $objNavGroup->setItemId($objRootLevel->id);
+          $objNavGroup->setTypeId($objRootLevel->idRootLevelTypes);
+          $objNavGroup->setTitle($objRootLevel->title);
+          $objNavGroup->setUrl($objRootLevel->href);
+          $objNavGroup->setLanguageId(((int) $objRootLevel->rootLevelGuiLanguageId > 0 ? $objRootLevel->rootLevelGuiLanguageId : $objRootLevel->rootLevelLanguageId));
+          
+          $objRootLevelNavigation->addTree($objNavGroup, 'order_'.$objRootLevel->order);
+        }
+                  
+        $objNavItem = new NavigationItem();
+        $objNavItem->setId($objRootLevel->id);
+        $objNavItem->setItemId($objRootLevel->id);
+        $objNavItem->setTypeId($objRootLevel->idRootLevelTypes);
+        $objNavItem->setTitle($objRootLevel->title);
+        $objNavItem->setUrl($objRootLevel->href);
+        $objNavItem->setOrder($intOrder);
+        $objNavItem->setParentId($objRootLevel->order);
+        $objNavItem->setLanguageId(((int) $objRootLevel->rootLevelGuiLanguageId > 0 ? $objRootLevel->rootLevelGuiLanguageId : $objRootLevel->rootLevelLanguageId));
+        
+        $objRootLevelNavigation->addToParentTree($objNavItem, 'rootLevelId_'.$objRootLevel->id);
+      }
+    }
+    
+    $this->view->assign('rootLevelNavigation', $objRootLevelNavigation);
+    $this->view->assign('rootLevelMaintenances', $this->loadActiveMaintenances());
+    
   	$this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
   	$this->view->assign('folderBlogFormDefaultId', $this->core->sysConfig->form->ids->folders->blog);
   	$this->view->assign('pageFormDefaultId', $this->core->sysConfig->page_types->page->default_formId);
@@ -96,15 +136,19 @@ class Cms_NavigationController extends AuthControllerAction {
     $intCurrLevel = $objRequest->getParam("currLevel");
     $this->setPortalId($objRequest->getParam("rootLevelId"));
 
-    /**
-     * get navigation
-     */
-    $this->getModelFolders();
-    $objRootelements = $this->objModelFolders->loadRootNavigation($this->intPortalId);
-
-    $this->view->assign('rootelements', $objRootelements);
-    $this->view->assign('currLevel', $intCurrLevel);
-
+    if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->intPortalId, Security::PRIVILEGE_VIEW)){
+      /**
+       * get navigation
+       */
+      $this->getModelFolders();
+      $objRootelements = $this->objModelFolders->loadRootNavigation($this->intPortalId);
+  
+      $this->view->assign('rootelements', $objRootelements);
+      $this->view->assign('currLevel', $intCurrLevel);
+      $this->view->assign('return', true);
+    }else{
+      $this->view->assign('return', false);
+    }
   }
 
   /**
@@ -179,6 +223,37 @@ class Cms_NavigationController extends AuthControllerAction {
      */
     $this->_helper->viewRenderer->setNoRender();
   }
+  
+  /**
+   * loadActiveMaintenances
+   * @return void
+   */
+  protected function loadActiveMaintenances(){    
+    $arrMaintenances = array();
+    
+    $objActiveMaintenanceData = $this->getModelRootLevels()->loadActiveMaintenances();
+    
+    if(count($objActiveMaintenanceData) > 0){
+      foreach($objActiveMaintenanceData as $objActiveMaintenance){
+        if($objActiveMaintenance->maintenance_startdate != '' && $objActiveMaintenance->maintenance_enddate != ''){          
+          if(time() >= strtotime($objActiveMaintenance->maintenance_startdate) && time() <= strtotime($objActiveMaintenance->maintenance_enddate)){
+            $arrMaintenances[] = $objActiveMaintenance->idRootLevels;  
+          }
+        }else if($objActiveMaintenance->maintenance_startdate != '' && $objActiveMaintenance->maintenance_enddate == ''){            
+          if(time() >= strtotime($objActiveMaintenance->maintenance_startdate)){
+            $arrMaintenances[] = $objActiveMaintenance->idRootLevels; 
+          }
+        }else if($objActiveMaintenance->maintenance_startdate == '' && $objActiveMaintenance->maintenance_enddate != ''){            
+          if(time() <= strtotime($objActiveMaintenance->maintenance_enddate)){
+            $arrMaintenances[] = $objActiveMaintenance->idRootLevels;  
+          }  
+        }else{
+          $arrMaintenances[] = $objActiveMaintenance->idRootLevels;
+        }  
+      }
+    }    
+    return $arrMaintenances;
+  }
 
   /**
    * getModelFolders
@@ -194,10 +269,29 @@ class Cms_NavigationController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->core->intZooluLanguageId);
+      $this->objModelFolders->setLanguageId($this->getRequest()->getParam("languageId", (($this->getRequest()->getParam("rootLevelLanguageId") != '') ? $this->getRequest()->getParam("rootLevelLanguageId") : $this->core->intZooluLanguageId)));
     }
 
     return $this->objModelFolders;
+  }
+  
+  /**
+   * getModelRootLevels
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function getModelRootLevels(){
+    if (null === $this->objModelRootLevels) {
+      /**
+       * autoload only handles "library" compoennts.
+       * Since this is an application model, we need to require it
+       * from its modules path location.
+       */
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/RootLevels.php';
+      $this->objModelRootLevels = new Model_RootLevels();
+    }
+
+    return $this->objModelRootLevels;
   }
 
   /**
