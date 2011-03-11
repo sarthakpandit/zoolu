@@ -180,6 +180,69 @@ class ViewHelper {
   }
   
   /**
+   * getListHead
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function getListHead($strOrderColumn, $strOrderSort) {
+  	$this->core->logger->debug('media->views->helpers->ViewHelper->getListHead()');
+  	
+  	$strOutput = '<tr>
+          <th class="topcornerleft"></th>
+          <th class="topcheckbox"><input id="listSelectAll" type="checkbox" name="listSelectAll" /></th>
+          <th class="topicon"></th>
+          <th class="toptitle'.(('alternativTitle' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'alternativTitle\''.(('alternativTitle' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+            <div'.(('alternativTitle' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('title').'</div>
+          </th>
+          <th class="toplanguages'.(('languages' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'languages\''.(('languages' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+            <div'.(('languages' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('Languages').'</div>
+          </th>
+          <th class="toplanguagespecific'.(('isLanguageSpecific' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'isLanguageSpecific\''.(('isLanguageSpecific' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+            <div'.(('isLanguageSpecific' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('Language_specific').'</div>
+          </th>
+          <th class="topauthor'.(('creator' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'creator\''.(('creator' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+            <div'.(('creator' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('Author').'</div>
+          </th>
+          <th class="topcreated'.(('created' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'created\''.(('created' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+            <div'.(('created' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('uploaded').'</div>
+          </th>
+          <th class="topcornerright"></th>
+        </tr>';
+  	return $strOutput;
+  }
+  
+  /**
+   * getListTitle
+   * @param string $strSearchValue
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function getListTitle($objPaginator, $strSearchValue = '') {
+  	$strOutput = '';
+  	if($strSearchValue != '') {
+  	  if(count($objPaginator) > 0){
+        $strOutput = '
+            <div class="formsubtitle searchtitle">'.sprintf($this->core->translate->_('Search_for_'), $strSearchValue).'</div>'; 
+      }else{
+        $strOutput = '
+            <div class="formsubtitle searchtitle">'.sprintf($this->core->translate->_('No_search_results_for_'), $strSearchValue).'</div>';   
+      }
+      $strOutput .= '
+            <div class="bttnSearchReset" onclick="myList.resetSearch();">
+              <div class="button17leftOff"></div>
+              <div class="button17centerOff">
+                <div>'.$this->core->translate->_('Reset').'</div>
+                <div class="clear"></div>
+              </div>
+              <div class="button17rightOff"></div>
+              <div class="clear"></div>
+            </div>
+            <div class="clear"></div>';
+  	}
+  	return $strOutput;
+  }
+  
+  /**
    * getListView
    * @param object $rowset  
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -208,7 +271,9 @@ class ViewHelper {
 	      $strOutput .= '<tr id="Row'.$objRow->id.'" class="listrow" fileid="'.$objRow->id.'">
 	                      <td colspan="2" class="rowcheckbox"><input type="checkbox" id="listSelect'.$objRow->id.'" name="listSelect'.$objRow->id.'" value="'.$objRow->id.'" class="listSelectRow"/></td>
 	                      <td class="rowicon"><img width="32" height="32" src="'.$strFileIconSrc.'" alt="'.htmlentities($objRow->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.','.$intDisplayLanuage.');"/></td>
-	                      <td class="rowtitle">'.htmlentities((($objRow->title == '' && isset($objRow->alternativTitle)) ? $objRow->alternativTitle : $objRow->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>
+	                      <td class="rowtitle">'.htmlentities((($objRow->title == '' && (isset($objRow->alternativTitle) || isset($objRow->fallbackTitle))) ? ((isset($objRow->alternativTitle) && $objRow->alternativTitle != '') ? $objRow->alternativTitle : $objRow->fallbackTitle) : $objRow->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>
+	                      <td class="rowlanguages">'.$objRow->languages.'</td>
+	                      <td class="rowlanguagespecific">'.($objRow->isLanguageSpecific ? $this->core->translate->_('yes') : $this->core->translate->_('no')).'</td>
 	                      <td class="rowauthor">'.$objRow->creator.'</td>
 	                      <td colspan="2" class="rowcreated">'.$created->format('d.m.y, H:i').'</td>
 	                    </tr>';
@@ -241,7 +306,7 @@ class ViewHelper {
 	                      <tr class="listrow" id="Row'.$objRow->id.'">
 	                        <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->id.'" name="listSelect'.$objRow->id.'" id="listSelect'.$objRow->id.'"/></td>
 	                        <td class="rowicon"><img width="32" height="32" src="'.$strFileIconSrc.'" alt="'.htmlentities($objRow->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'" ondblclick="myMedia.getSingleFileEditForm('.$objRow->id.');"/></td>
-	                        <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree('.$objRow->idParent.', \'folder\'); return false;">'.htmlentities((($objRow->title == '' && isset($objRow->alternativTitle)) ? $objRow->alternativTitle : $objRow->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>
+	                        <td class="rowtitle"><a href="#" onclick="myNavigation.loadNavigationTree('.$objRow->idParent.', \'folder\'); return false;">'.htmlentities((($objRow->title == '' && (isset($objRow->alternativTitle) || isset($objRow->fallbackTitle))) ? ((isset($objRow->alternativTitle) && $objRow->alternativTitle != '') ? $objRow->alternativTitle : $objRow->fallbackTitle) : $objRow->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></td>
 	                        <td class="rowauthor">'.$objRow->creator.'</td>
 	                        <td class="rowcreated" colspan="2">'.$created->format('d.m.y, H:i').'</td>
 	                      </tr>'; 
@@ -337,7 +402,7 @@ class ViewHelper {
    * @param array $arrImagesSizes 
    * @author Thomas Schedler <tsh@massiveart.com>   
    */
-  public function getSingleEditForm(Zend_Db_Table_Rowset_Abstract $objFileData, $arrImagesSizes, $objFileVersions = null){
+  public function getSingleEditForm(Zend_Db_Table_Rowset_Abstract $objFileData, $arrImagesSizes, $strDestinationOptions, $strGroupOptions, $objFileVersions = null, $blnAuthorizedToUpdate = true){
     $this->core->logger->debug('media->views->helpers->ViewHelper->getSingleEditForm()');
     
     $strOutput = '';
@@ -349,17 +414,17 @@ class ViewHelper {
         $blnIsImage = true;
         $strFileIconSrc = sprintf($this->core->sysConfig->media->paths->thumb, $objFile->path).$objFile->filename.'?v='.$objFile->version;
         $strDownloadLink = '/zoolu-website/media/image/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title)); 
-        $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->imgbase.$objFile->path;
+        $strBasePath = (($this->core->config->domains->static->components != '') ? $this->core->config->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->imgbase.$objFile->path;
       }else if (strpos($objFile->mimeType, 'video/') !== false) {
         $blnIsImage = false;        
         $strFileIconSrc = $this->getDocIcon($objFile->extension, 128);
         $strDownloadLink = '/zoolu-website/media/video/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title));
-        $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->vidbase.$objFile->path;  
+        $strBasePath = (($this->core->config->domains->static->components != '') ? $this->core->config->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->vidbase.$objFile->path;  
       }else{
         $blnIsImage = false;        
         $strFileIconSrc = $this->getDocIcon($objFile->extension, 128); 
         $strDownloadLink = '/zoolu-website/media/document/'.$objFile->id.'/'.urlencode(str_replace('.', '-', $objFile->title));
-        $strBasePath = (($this->core->webConfig->domains->static->components != '') ? $this->core->webConfig->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->docbase.$objFile->path;
+        $strBasePath = (($this->core->config->domains->static->components != '') ? $this->core->config->domains->static->components : 'http://'.$_SERVER['HTTP_HOST']).$this->core->sysConfig->media->paths->docbase.$objFile->path;
       }
 
       if($objFile->description != ''){
@@ -387,6 +452,8 @@ class ViewHelper {
       }
       
       $strLanguageSpecificChecked = ($objFile->isLanguageSpecific == 1) ? ' checked="checked"' : '';
+      $strDestinationeSpecificChecked = ($objFile->idDestination > 0) ? ' checked="checked"' : '';
+      $strGroupSpecificChecked = ($objFile->idGroup > 0) ? ' checked="checked"' : '';
        
       $strOutput .= '<div class="mediacontainer">
                        <div class="mediaicon">
@@ -398,7 +465,33 @@ class ViewHelper {
       $strOutput .= '
                          <div class="field">
                            <label for="FileIsLanguageSpecific'.$objFile->id.'"><input type="checkbox"'.$strLanguageSpecificChecked.' class="multiCheckbox" value="1" id="FileIsLanguageSpecific'.$objFile->id.'" name="FileIsLanguageSpecific'.$objFile->id.'"> '.$this->core->translate->_('Language_specific').'</label>                            
-                         </div>
+                         </div>';
+      
+      if($blnIsImage == false){
+        $strOutput .= '
+                         <div class="field">
+                           <label for="FileIsDestinationSpecific'.$objFile->id.'"><input type="checkbox"'.$strDestinationeSpecificChecked.' onclick="myMedia.toggleDestinationOptions(this, \''.$objFile->id.'\');" class="multiCheckbox" value="1" id="FileIsDestinationSpecific'.$objFile->id.'" name="FileIsDestinationSpecific'.$objFile->id.'"> '.$this->core->translate->_('Region_specific').'</label>
+                           <div id="shownDestinationOptions'.$objFile->id.'"'.(($objFile->idDestination == 0) ? ' style="display:none;"' : '').'>
+                             <input type="hidden" value="'.$objFile->idDestination.'" name="FileDestinationId'.$objFile->id.'" id="FileDestinationId'.$objFile->id.'"/>
+                             <select name="selectFileDestinationId'.$objFile->id.'" id="selectFileDestinationId'.$objFile->id.'" onchange="$(\'FileDestinationId'.$objFile->id.'\').value = this.value;">
+                               '.$strDestinationOptions.'
+                             </select>                          
+                           </div>
+                         </div>';
+        
+        $strOutput .= '
+                         <div class="field">
+                           <label for="FileIsGroupSpecific'.$objFile->id.'"><input type="checkbox"'.$strGroupSpecificChecked.' onclick="myMedia.toggleGroupOptions(this, \''.$objFile->id.'\');" class="multiCheckbox" value="1" id="FileIsGroupSpecific'.$objFile->id.'" name="FileIsGroupSpecific'.$objFile->id.'"> '.$this->core->translate->_('Group_specific').'</label>
+                           <div id="shownGroupOptions'.$objFile->id.'"'.(($objFile->idGroup == 0) ? ' style="display:none;"' : '').'>
+                             <input type="hidden" value="'.$objFile->idGroup.'" name="FileGroupId'.$objFile->id.'" id="FileGroupId'.$objFile->id.'"/>
+                             <select name="selectFileGroupId'.$objFile->id.'" id="selectFileGroupId'.$objFile->id.'" onchange="$(\'FileGroupId'.$objFile->id.'\').value = this.value;">
+                               '.$strGroupOptions.'
+                             </select>                          
+                           </div>
+                         </div>';
+      }
+      
+      $strOutput .= '    
                        </div>
                        <div class="mediainfos">
                          <div class="mediainfotitle"><label for="FileTitle'.$objFile->id.'" class="gray666 bold">'.$this->core->translate->_('Title').'</label><br/><input type="text" value="'.$objFile->title.'" id="FileTitle'.$objFile->id.'" name="FileTitle'.$objFile->id.'"/></div>
@@ -422,15 +515,29 @@ class ViewHelper {
                              //]]>
                            </script>                           
                          </div>                         
-                         <div class="clear"></div>  
+                         <div class="clear"></div>';
+      if($blnIsImage == false) {
+        $strOutput .= '
+                         <div class="mediafield">
+                           <div class="mediatop">
+                             '.$this->core->translate->_('Add_medias').': <img src="/zoolu-statics/images/icons/icon_addmedia.png" width="16" height="16" onclick="myMedia.getAddMediaOverlay(\'divMediaContainer_documentpic\')" />
+                           </div>
+                           <div id="divMediaContainer_documentpic" class="media">
+                           </div>
+                           <input type="hidden" name="documentpic" id="documentpic" value="'.(($objFile->idFiles != null && $objFile->idFiles > 0) ? '['.$objFile->idFiles.']' : '').'" /> 
+                         </div>'; //FIXME: use syntax for applying one file
+      }
+      if($blnIsImage == true){
+        $strOutput .= '
                        </div>
                        <div class="clear"></div>
-                       <div class="spacer1"></div>
-                       <div class="mediasizes">';
-            
+                       <div class="spacer1"></div>';
+      }
+                  
       $strMediaUrl = '';
       if($blnIsImage == true){
         $strOutput .= '
+                       <div class="mediasizes">
                          <select id="mediaSizes" onchange="$(\'singleMediaUrl\').value = $F(\'singleFileBasePath\') + this.value + $F(\'singleFileName\')">';
         foreach($arrImagesSizes as $arrImageSize){
           if(isset($arrImageSize['display']) && isset($arrImageSize['display']['single_edit'])){
@@ -440,16 +547,15 @@ class ViewHelper {
           }
         }
         $strOutput .= '
-                         </select>';
+                         </select>
+                       </div>';
       }else{
-        $strOutput .= '&nbsp;';
         $strMediaUrl = 'http://'.$_SERVER['HTTP_HOST'].$strDownloadLink;
       }
       
       $strOutput .= '
-                       </div>
                        <div class="medialink">
-                         <input type="text" id="singleMediaUrl" readonly="readonly" value="'.$strMediaUrl.'" onclick="this.select()"/>
+                         <input type="text" id="singleMediaUrl" readonly="readonly" value="'.$strMediaUrl.'" onclick="this.select()"/><br/>
                          <div id="d_clip_container" style="float:right; margin:0 10px 0 0; position:relative;">
                            <div id="d_clip_button">[copy to clipboard]</div>
                          </div>
@@ -458,14 +564,23 @@ class ViewHelper {
                          <input type="hidden" id="singleFileBasePath" value="'.$strBasePath.'"/>
                        </div>                       
                        <div class="clear"></div>
+                       
                        <div class="spacer1"></div>
-                       <div class="mediasingleupload">
+                       <div class="mediasingleupload">';
+      if($blnAuthorizedToUpdate == true){
+        $strOutput .= '
                          <label for="txtFileName" class="gray666 bold">'.$this->core->translate->_('New_version').'</label><br/>
                          <div>
                            <input type="text" id="txtFileName" disabled="true" />
                            <span id="spanButtonPlaceholder"></span>
                          </div>
                          <div id="fsUploadProgress"></div>';
+      }
+      
+      if($blnIsImage == false){
+        $strOutput .= '
+                       </div>';
+      }
       
       if($objFileVersions != null && $objFileVersions instanceof Zend_Db_Table_Rowset_Abstract){
         $objCreated = DateTimeHelper::getDateObject();
@@ -476,10 +591,12 @@ class ViewHelper {
                          <label for="txtFileName" class="gray666 bold">'.$this->core->translate->_('Version_list').'</label><br/>
                          <div class="mediaversions">';
         foreach($objFileVersions as $objFileVersion){
-          $objCreated->set($objFileVersion->created);
-          $objArchived->set($objFileVersion->archived);
-          $strOutput .= '
-                           <div class="version"><a href="/zoolu-website/media/download/'.$objFileVersion->idFiles.'/'.urlencode(str_replace('.', '-', $objFileVersion->title)).'?v='.$objFileVersion->version.'" target="_blank">'.$this->core->translate->_('Version').' '.$objFileVersion->version.'</a> ('.$objCreated->get(Zend_Date::DATETIME_MEDIUM).' - '.$objArchived->get(Zend_Date::DATETIME_MEDIUM).')</div>';  
+          if($objFileVersion->created != null && $objFileVersion->archived != null){
+            $objCreated->set($objFileVersion->created);
+            $objArchived->set($objFileVersion->archived);
+            $strOutput .= '
+                           <div class="version"><a href="/zoolu-website/media/download/'.$objFileVersion->idFiles.'/'.urlencode(str_replace('.', '-', $objFileVersion->title)).'?v='.$objFileVersion->version.'" target="_blank">'.$this->core->translate->_('Version').' '.$objFileVersion->version.'</a> ('.$objCreated->get(Zend_Date::DATETIME_MEDIUM).' - '.$objArchived->get(Zend_Date::DATETIME_MEDIUM).')</div>';
+          }  
         }
 
         $strOutput .= '

@@ -49,7 +49,7 @@ class Media_FileController extends AuthControllerAction  {
   protected $objRequest;
   
 	/**
-   * @var Model_Folders
+   * @var Model_Files
    */
   protected $objModelFiles;
   
@@ -100,6 +100,7 @@ class Media_FileController extends AuthControllerAction  {
       $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
     }
 
+    $this->assignSecurityOptions();
     $this->renderScript('file/form.phtml');
   }
   
@@ -125,6 +126,7 @@ class Media_FileController extends AuthControllerAction  {
       $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
     }
 
+    $this->assignSecurityOptions();
     $this->renderScript('file/addform.phtml');
   }
   
@@ -153,10 +155,13 @@ class Media_FileController extends AuthControllerAction  {
       }
       
       $this->view->assign('imagesSizes', $this->core->sysConfig->upload->images->default_sizes->default_size->toArray());
+      $this->view->assign('destinationOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT categories.id AS VALUE, categoryTitles.title  AS DISPLAY FROM categories INNER JOIN categoryTitles ON categoryTitles.idCategories = categories.id AND categoryTitles.idLanguages = '.$this->core->intZooluLanguageId.' WHERE categories.idParentCategory = 466 ORDER BY categoryTitles.title', $objFile->current()->idDestination));
+      $this->view->assign('groupOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT groups.id AS VALUE, groups.title  AS DISPLAY FROM groups LEFT JOIN groupGroupTypes ON groupGroupTypes.idGroups = groups.id WHERE groupGroupTypes.idGroupTypes = '.$this->core->sysConfig->group_types->frontend.' ORDER BY groups.title', $objFile->current()->idGroup));
       $this->view->assign('languageOptions', HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->intLanguageId));
     }
 
-    $this->renderScript('file/singleform.phtml');
+    $this->assignSecurityOptions();
+    $this->renderScript('file/singleform.phtml');    
   }
 
   /**
@@ -190,8 +195,19 @@ class Media_FileController extends AuthControllerAction  {
        */
       $this->_helper->viewRenderer->setNoRender();
     }
-  }  
-
+  }
+  
+  /**
+   * assignSecurityOptions
+   * @author Thomas Schedler <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function assignSecurityOptions(){
+    $intRootLevelId = (int) $this->getRequest()->getParam('rootLevelId', 0);
+    $blnGeneralUpdateAuthorization = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId, Security::PRIVILEGE_UPDATE, false, false);
+    $this->view->authorizedUpdate = ($blnGeneralUpdateAuthorization == true) ? $blnGeneralUpdateAuthorization : Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId.'_'.$this->intLanguageId, Security::PRIVILEGE_UPDATE, false, false);
+  }
+  
   /**
    * deleteAction
    * @author Cornelius Hansjakob <cha@massiveart.com>
@@ -204,12 +220,17 @@ class Media_FileController extends AuthControllerAction  {
 
     if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()){
 
-    	$this->getModelFiles();
+      $intRootLevelId = (int) $this->getRequest()->getParam('rootLevelId', 0);
+      $blnAuthorizedToDelete = ($intRootLevelId != 0) ? Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId, Security::PRIVILEGE_DELETE, true, false) : Security::get()->isAllowed('media', Security::PRIVILEGE_DELETE, false, false);
+    	
+      if($blnAuthorizedToDelete == true){
+        $this->getModelFiles();
 
-      $objRequest = $this->getRequest();
-      $strFileIds = $objRequest->getParam('fileIds');
+        $objRequest = $this->getRequest();
+        $strFileIds = $objRequest->getParam('fileIds');
 
-      $this->objModelFiles->deleteFiles($strFileIds);
+        $this->objModelFiles->deleteFiles($strFileIds);
+      }
     }
   }
   

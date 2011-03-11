@@ -61,14 +61,16 @@ class SearchHelper {
           $strUrl = $objHit->url;
           $arrUrls = array($objHit->url);
           if(array_search('parentPages', $arrDocFields)){
-            $arrParentPages = unserialize($objHit->parentPages);
-            $arrUrls = array();
-            $blnFirst = true;
-            foreach($arrParentPages as $objEntry){
-              $arrUrls[$objEntry->getEntryId()] = $objEntry->url.substr($objHit->url, strpos($objHit->url, '/', 1) + 1);
-              if($blnFirst == true || ($objEntry->entry_category == 0 && $objEntry->entry_label == 0)){
-                $strUrl = $arrUrls[$objEntry->getEntryId()];
-                $blnFirst = false;
+            $arrParentPages = @unserialize($objHit->parentPages); //FIXME!!!
+            if(is_array($arrParentPages)){
+              $arrUrls = array();
+              $blnFirst = true;
+              foreach($arrParentPages as $objEntry){
+                $arrUrls[$objEntry->getEntryId()] = $objEntry->url.substr($objHit->url, strpos($objHit->url, '/', 1) + 1);
+                if($blnFirst == true || ($objEntry->entry_category == 0 && $objEntry->entry_label == 0)){
+                  $strUrl = $arrUrls[$objEntry->getEntryId()];
+                  $blnFirst = false;
+                }
               }
             }
           }
@@ -130,12 +132,14 @@ class SearchHelper {
                     
           $strUrl = $objHit->url;
           if(array_search('parentPages', $arrDocFields)){
-            $arrParentPages = unserialize($objHit->parentPages);
-            $blnFirst = true;
-            foreach($arrParentPages as $objEntry){
-              if($blnFirst == true || ($objEntry->entry_category == 0 && $objEntry->entry_label == 0)){
-                $strUrl = $objEntry->url.substr($objHit->url, strpos($objHit->url, '/', 1) + 1);
-                $blnFirst = false;
+            $arrParentPages = @unserialize($objHit->parentPages); //FIXME!!!
+            if(is_array($arrParentPages)){
+              $blnFirst = true;
+              foreach($arrParentPages as $objEntry){
+                if($blnFirst == true || ($objEntry->entry_category == 0 && $objEntry->entry_label == 0)){
+                  $strUrl = $objEntry->url.substr($objHit->url, strpos($objHit->url, '/', 1) + 1);
+                  $blnFirst = false;
+                }
               }
             }
           }

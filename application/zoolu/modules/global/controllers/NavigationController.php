@@ -64,6 +64,7 @@ class Global_NavigationController extends AuthControllerAction {
   public function init(){
     parent::init();
     Security::get()->addFoldersToAcl($this->getModelFolders());
+    Security::get()->addRootLevelsToAcl($this->getModelFolders(), $this->core->sysConfig->modules->global);
   }
 
   /**
@@ -88,6 +89,7 @@ class Global_NavigationController extends AuthControllerAction {
           $objNavGroup->setTypeId($objRootLevel->idRootLevelGroups);
           $objNavGroup->setTitle($objRootLevel->rootLevelGroupTitle);
           $objNavGroup->setUrl($objRootLevel->href);
+          $objNavGroup->setLanguageId(((int) $objRootLevel->rootLevelGuiLanguageId > 0 ? $objRootLevel->rootLevelGuiLanguageId : $objRootLevel->rootLevelLanguageId));
           
           $objRootLevelNavigation->addTree($objNavGroup, $objRootLevel->name);
         }
@@ -100,7 +102,8 @@ class Global_NavigationController extends AuthControllerAction {
         $objNavItem->setUrl($objRootLevel->href);
         $objNavItem->setOrder($intOrder);
         $objNavItem->setParentId($objRootLevel->idRootLevelGroups);
-    
+        $objNavItem->setLanguageId(((int) $objRootLevel->rootLevelGuiLanguageId > 0 ? $objRootLevel->rootLevelGuiLanguageId : $objRootLevel->rootLevelLanguageId));
+        
         $objRootLevelNavigation->addToParentTree($objNavItem, $objRootLevel->name.'_'.$objRootLevel->id);        
       }
     }
@@ -130,23 +133,28 @@ class Global_NavigationController extends AuthControllerAction {
     $intRootLevelGroupId = $objRequest->getParam('rootLevelGroupId');
     $strRootLevelGroupKey = $objRequest->getParam('rootLevelGroupKey', 'content');
     
-    /**
-     * get navigation
-     */
-    $this->getModelFolders();
-    $objRootelements = $this->objModelFolders->loadGlobalRootNavigation($this->intRootLevelId, $intRootLevelGroupId);
-
-    $this->view->assign('rootelements', $objRootelements);
-    $this->view->assign('currLevel', $intCurrLevel);
-        
-    $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
-    $this->view->assign('elementFormDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->default_formId);
-    $this->view->assign('elementTemplateDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->default_templateId);
-    $this->view->assign('elementTypeDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->id);
-    
-    $this->view->assign('rootLevelId', $this->intRootLevelId);
-    $this->view->assign('rootLevelGroupId', $intRootLevelGroupId);
-    $this->view->assign('rootLevelGroupKey', $strRootLevelGroupKey);
+    if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$this->intRootLevelId, Security::PRIVILEGE_VIEW, true, false)){
+      /**
+       * get navigation
+       */
+      $this->getModelFolders();
+      $objRootelements = $this->objModelFolders->loadGlobalRootNavigation($this->intRootLevelId, $intRootLevelGroupId);
+  
+      $this->view->assign('rootelements', $objRootelements);
+      $this->view->assign('currLevel', $intCurrLevel);
+          
+      $this->view->assign('folderFormDefaultId', $this->core->sysConfig->form->ids->folders->default);
+      $this->view->assign('elementFormDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->default_formId);
+      $this->view->assign('elementTemplateDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->default_templateId);
+      $this->view->assign('elementTypeDefaultId', $this->core->sysConfig->global_types->$strRootLevelGroupKey->id);
+      
+      $this->view->assign('rootLevelId', $this->intRootLevelId);
+      $this->view->assign('rootLevelGroupId', $intRootLevelGroupId);
+      $this->view->assign('rootLevelGroupKey', $strRootLevelGroupKey);
+      $this->view->assign('return', true);
+    }else{
+      $this->view->assign('return', false);
+    }
   }
 
   /**

@@ -43,6 +43,16 @@
 class Global_IndexController extends AuthControllerAction {
 
   /**
+   * init
+   */
+  public function init(){
+    parent::init();
+    if(!Security::get()->isAllowed('global', Security::PRIVILEGE_VIEW)){
+      $this->_redirect('/zoolu');
+    }
+  }
+  
+  /**
    * The default action - show the home page
    */
   public function indexAction(){
@@ -75,7 +85,7 @@ class Global_IndexController extends AuthControllerAction {
   }
 
   /**
-   * childnavigationAction
+   * treeAction
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */

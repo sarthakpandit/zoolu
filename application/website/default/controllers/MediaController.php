@@ -139,6 +139,14 @@ class MediaController extends Zend_Controller_Action {
           if(isset($objFileData->mimeType) && $objFileData->mimeType != ''){
             $this->objModelFiles->increaseDownloadCounter($objFileData->id);
             
+            if($objFileData->title != ''){
+              $strFileName = urlencode(str_replace('.', '-', $objFileData->title)).'.'.$objFileData->extension;
+            }else if($objFileData->fallbackTitle != ''){
+              $strFileName = urlencode(str_replace('.', '-', $objFileData->fallbackTitle)).'.'.$objFileData->extension;
+            }else{
+              $strFileName = $objFileData->filename;
+            }
+            
           	// fix for IE catching or PHP bug issue
             header("Pragma: public");
             header("Expires: 0"); // set expiration time
@@ -146,7 +154,7 @@ class MediaController extends Zend_Controller_Action {
             // browser must download file from server instead of cache
             
             // Passenden Dateinamen im Download-Requester vorgeben,
-            header("Content-Disposition: attachment; filename=\"".$objFileData->filename."\"");
+            header("Content-Disposition: attachment; filename=\"".$strFileName."\"");
                       	
           	header('Content-Type: '.$objFileData->mimeType);
           	header("Content-Length: ".$objFileData->size);
@@ -239,6 +247,22 @@ class MediaController extends Zend_Controller_Action {
         if(file_exists($strFilePath)){
         	$this->objModelFiles->increaseDownloadCounter($objFileData->id);
         	
+        	if($intMediaVersion > 0 && $objFileData->version != $objFileData->archiveVersion){
+          	if($objFileData->title != ''){
+              $strFileName = urlencode(str_replace('.', '-', $objFileData->title)).'.v'.$objFileData->archiveVersion.'.'.$objFileData->archiveExtension;
+            }else if($objFileData->fallbackTitle != ''){
+              $strFileName = urlencode(str_replace('.', '-', $objFileData->fallbackTitle)).'.v'.$objFileData->archiveVersion.'.'.$objFileData->archiveExtension;
+            }else{
+              $strFileName = $objFileData->fileId.'.v'.$objFileData->archiveVersion.'.'.$objFileData->archiveExtension;
+            }
+        	}else if($objFileData->title != ''){
+            $strFileName = urlencode(str_replace('.', '-', $objFileData->title)).'.'.$objFileData->extension;
+          }else if($objFileData->fallbackTitle != ''){
+            $strFileName = urlencode(str_replace('.', '-', $objFileData->fallbackTitle)).'.'.$objFileData->extension;
+          }else{
+            $strFileName = $objFileData->filename;
+          }
+          
         	// fix for IE catching or PHP bug issue
 			    header("Pragma: public");
 			    header("Expires: 0"); // set expiration time

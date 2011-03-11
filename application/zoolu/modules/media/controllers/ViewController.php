@@ -73,7 +73,8 @@ class Media_ViewController extends AuthControllerAction  {
     $objFiles = $this->objModelFiles->loadFiles($intFolderId, -1, false);
     
     $this->view->assign('objFiles', $objFiles);
-    $this->view->assign('sliderValue', $intSliderValue);    	
+    $this->view->assign('sliderValue', $intSliderValue);  
+    $this->assignSecurityOptions();  	
   }
   
   /**
@@ -83,6 +84,10 @@ class Media_ViewController extends AuthControllerAction  {
    */
   public function listAction(){
     $this->core->logger->debug('media->controllers->ViewController->listAction()');
+    
+    $strSearchValue = $this->getRequest()->getParam('search');
+    $strOrderColumn = (($this->getRequest()->getParam('order') != '') ? $this->getRequest()->getParam('order') : '');
+    $strOrderSort = (($this->getRequest()->getParam('sort') != '') ? $this->getRequest()->getParam('sort') : '');
 
     $objRequest = $this->getRequest();
     $intFolderId = $objRequest->getParam('folderId');    
@@ -91,9 +96,20 @@ class Media_ViewController extends AuthControllerAction  {
      * get files
      */
     $this->getModelFiles();
-    $objFiles = $this->objModelFiles->loadFiles($intFolderId, -1, false);
+    $objFilesSelect = $this->objModelFiles->loadFiles($intFolderId, -1, false, true, $strSearchValue, $strOrderColumn, $strOrderSort);
     
-    $this->view->assign('objFiles', $objFiles);    
+    $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objFilesSelect);
+    $objFilePaginator = new Zend_Paginator($objAdapter);
+    $objFilePaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
+    $objFilePaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
+    $objFilePaginator->setView($this->view);
+    
+    $this->view->assign('filePaginator', $objFilePaginator);
+    $this->view->assign('intFolderId', $intFolderId);
+    $this->view->assign('strOrderColumn', $strOrderColumn);
+    $this->view->assign('strOrderSort', $strOrderSort);
+    $this->view->assign('strSearchValue', $strSearchValue);
+    $this->assignSecurityOptions();
   }
   
   /**
@@ -119,6 +135,24 @@ class Media_ViewController extends AuthControllerAction  {
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
       exit();
+    }
+  }
+  
+  /**
+   * assignSecurityOptions
+   * @author Thomas Schedler <cha@massiveart.com>
+   * @version 1.0
+   */
+  protected function assignSecurityOptions(){
+    $intRootLevelId = (int) $this->getRequest()->getParam('rootLevelId', 0);
+    if($intRootLevelId != 0){
+      $this->view->authorizedAdd = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId, Security::PRIVILEGE_ADD, true, false);
+      $this->view->authorizedDelete = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId, Security::PRIVILEGE_DELETE, true, false);
+      $this->view->authorizedUpdate = Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId, Security::PRIVILEGE_UPDATE, true, false);
+    }else{
+      $this->view->authorizedAdd = Security::get()->isAllowed('media', Security::PRIVILEGE_ADD, false, false);
+      $this->view->authorizedDelete = Security::get()->isAllowed('media', Security::PRIVILEGE_DELETE, false, false);
+      $this->view->authorizedUpdate = Security::get()->isAllowed('media', Security::PRIVILEGE_UPDATE, false, false);
     }
   }
   

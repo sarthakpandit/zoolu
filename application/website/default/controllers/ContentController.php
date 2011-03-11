@@ -96,7 +96,7 @@ class ContentController extends Zend_Controller_Action {
       $arrDestinationSpecifics = $this->core->TmpCache()->load($strTmpCacheId);      
       $arrDesinationCountryCodes = array();
       if($strCountryCode == ''){
-        $strCountryCode = $this->getCountryShortByIP();  
+        $strCountryCode = $this->getCountryShortByIP($this->_getParam('ip'));  
       }
       foreach($arrDestinationSpecifics as $objPageEntry){
         if(!array_key_exists($objPageEntry->destinationId, $arrDesinationCountryCodes)){
@@ -117,7 +117,7 @@ class ContentController extends Zend_Controller_Action {
    */
   private function getDesinationCountryCodes($intDestinationId){
     $arrCountryCodes = array();
-    $objCategories = $this->getModelCategories()->loadCategoryTree($intDestinationId);
+    $objCategories = $this->getModelCategories()->loadCategoryTree($intDestinationId, true);
     if(count($objCategories) > 0){
       foreach($objCategories as $objCategory){
         $arrCountryCodes[] = $objCategory->code;
@@ -144,6 +144,31 @@ class ContentController extends Zend_Controller_Action {
       $countryShort = $ip->getCountryShort($ipAddress);
       
       return $countryShort;
+    }
+  }
+  
+  /**
+   * reloaded content 
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function reloadedAction(){    
+    $this->view->setScriptPath(GLOBAL_ROOT_PATH.'public/website/themes/'.$this->getRequest()->getParam('theme', 'default').'/reloaded/');
+    $this->renderScript($this->getRequest()->getParam('key', 'empty').'.php');
+  }
+  
+  /**
+   * reloaded content 
+   * @author Thomas Schedler <tsh@massiveart.com>
+   */
+  public function expireCacheAction(){
+    $this->core->logger->debug('website->controllers->ContentController->expireCacheAction()');
+    $this->_helper->viewRenderer->setNoRender();
+    
+    $objAuth = Zend_Auth::getInstance();
+    
+    if($objAuth->hasIdentity()){
+      $objWebsite = new Website();
+      $objWebsite->expireCache();
     }
   }
   

@@ -25,7 +25,7 @@
           </a>
         </div>
         <div class="topright">
-          <div class="faqtitle"><a href="http://code.google.com/p/zoolu/issues/list" target="_blank"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="#"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
+          <div class="faqtitle"><a href="http://code.google.com/p/zoolu/issues/list" target="_blank"><?php echo $this->translate->_('Report_bugs'); ?></a> | <a href="http://documentation.getzoolu.org/"><?php echo $this->translate->_('Help_and_FAQ'); ?></a></div>
           <div class="faqicon"><img src="/zoolu-statics/images/icons/icon_help.png" width="16" height="16"/></div>
           <div class="clear"></div>
         </div>
@@ -150,7 +150,7 @@
 
       <div id="genFormContainer" class="contentedit2" style="display:none;"></div>
 
-      <div id="genListContainer" class="contentedit2" style="display:none;"></div>
+      <div id="genTableListContainer" class="contentedit2" style="display:none;"></div>
 
       <div id="genTmpContainer" style="display:none;"></div>
     </div>
@@ -234,15 +234,19 @@
         
         myCore.languageId = <?php echo Zend_Registry::get('Core')->intZooluLanguageId; ?>;
         myCore.languageCode = '<?php echo Zend_Registry::get('Core')->strZooluLanguageCode; ?>';
-        myCore.translate = {
-          Save: '<?php echo $this->translate->_('Save'); ?>', 
-          Cancel: '<?php echo $this->translate->_('Cancel'); ?>', 
-          Apply: '<?php echo $this->translate->_('Apply'); ?>', 
-          Edit: '<?php echo $this->translate->_('Edit'); ?>'
+         myCore.translate = {
+          Save: '<?php echo $this->translate->_('Save'); ?>',
+          Cancel: '<?php echo $this->translate->_('Cancel'); ?>',
+          Apply: '<?php echo $this->translate->_('Apply'); ?>',
+          Edit: '<?php echo $this->translate->_('Edit'); ?>',
+          Delete_: '<?php echo $this->translate->_('Delete_'); ?>',
+          Delete_folder: '<?php echo $this->translate->_('Delete_folder'); ?>',
+          Delete_product: '<?php echo $this->translate->_('Delete_product'); ?>'
         };
         
         myNavigation = new Massiveart.Navigation.Global();
         myList = new Massiveart.List();
+        myList.ItemsPerPage = <?php echo Zend_Registry::get('Core')->sysConfig->list->default->itemsPerPage; ?>;
         myGlobal = new Massiveart.Global();
         myForm = new Massiveart.Form();
 

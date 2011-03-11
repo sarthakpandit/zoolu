@@ -61,8 +61,15 @@ class NavigationHelper {
    * constructor
    * @author Thomas Schedler <tsh@massiveart.com>   
    */
-  public function __construct(){
+  public function __construct($blnRequireFrunctionWrapper = true){
     $this->core = Zend_Registry::get('Core');
+    
+    /**
+     * function call wrapper for NavigationHelper
+     */
+    if($blnRequireFrunctionWrapper == true){
+      require_once(dirname(__FILE__).'/navigation.inc.php');
+    }
   }
   
   /**
@@ -117,21 +124,129 @@ class NavigationHelper {
         
         if($objNavigationItem->isStartPage == 1 && $blnWithHomeLink == true){
           if($blnImageNavigation){
-            $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="'.$this->core->webConfig->domains->static->components.'/website/themes/default/images/navigation/home_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
+            $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.(($objNavigationItem->target!= '') ? ' target="'.$objNavigationItem->target.'"' : '').$strSelectedItem.'><img src="'.$this->core->config->domains->static->components.'/website/themes/default/images/navigation/home_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
           }else{
-            $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></'.$strElement.'>';
+            $strHomeLink = '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.(($objNavigationItem->target != '') ? ' target="'.$objNavigationItem->target.'"' : '').$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></'.$strElement.'>';
           }
         }else{
           if($blnImageNavigation){
-            $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'><img src="'.$this->core->webConfig->domains->static->components.'/website/themes/default/images/navigation/'.$strImgFileTitle.'_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
+            $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.(($objNavigationItem->target != '') ? ' target="'.$objNavigationItem->target.'"' : '').$strSelectedItem.'><img src="'.$this->core->config->domains->static->components.'/website/themes/default/images/navigation/'.$strImgFileTitle.'_'.$strSelectedImg.'.gif" alt="'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></a></'.$strElement.'>';
           }else{
-            $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></'.$strElement.'>';
+            $strMainNavigation  .= '<'.$strElement.$strElementProperties.$strSelectedItem.'><a href="/'.strtolower($objNavigationItem->languageCode).'/'.$objNavigationItem->url.'"'.(($objNavigationItem->target != '') ? ' target="'.$objNavigationItem->target.'"' : '').$strSelectedItem.'>'.htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></'.$strElement.'>';
           }
         }
       }
     }
       
     return $strHomeLink.$strMainNavigation;
+  }
+  
+  /**
+   * getMainNavigationTitle
+   * @return string $strReturn
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getMainNavigationTitle(){
+    $strReturn = '';
+    
+    $this->objNavigation->loadMainNavigation();
+    
+    $strPageId = '';  
+    if(is_object($this->objNavigation->Page())){
+      $strPageId = $this->objNavigation->Page()->getPageId();
+    }   
+    $strFolderId = $this->objNavigation->getRootFolderId();
+    
+    if(count($this->objNavigation->MainNavigation()) > 0){    
+      foreach($this->objNavigation->MainNavigation() as $objNavigationItem){
+        
+        $blnIsSelected = false;
+        if($strPageId == $objNavigationItem->pageId){
+          $blnIsSelected = true;
+        }else if($strFolderId == $objNavigationItem->folderId){
+          $blnIsSelected = true;
+        }
+              
+        if($blnIsSelected){
+          $strReturn .= htmlentities($objNavigationItem->title, ENT_COMPAT, $this->core->sysConfig->encoding->default);
+        }
+      }
+    }    
+    return $strReturn;
+  }
+  
+  /**
+   * getSubNavigation
+   * @return string $strSubNavigation
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function getSubNavigation($strElement, $mixedElementProperties, $strSelectedClass){
+    $strSubNavigation = '';
+      
+    $this->objNavigation->loadStaticSubNavigation(2);
+    
+    $strPageId = '';  
+    if(is_object($this->objNavigation->Page())){
+      $strPageId = $this->objNavigation->Page()->getPageId();
+    } 
+    
+    $arrFolderIds = $this->objNavigation->getParentFolderIds();
+      
+    $strElementProperties = '';
+    $arrElementProperies = array();
+    if(is_array($mixedElementProperties)){
+      $arrElementProperies = $mixedElementProperties;
+    }else{
+      $arrElementProperies['class'] = $mixedElementProperties;
+    }
+    
+    if(count($this->objNavigation->SubNavigation()) > 0){
+      foreach($this->objNavigation->SubNavigation() as $objNavi){
+        if($objNavi instanceof NavigationTree){
+          $strSubNavigation  .= '
+                <'.$strElement.'>
+                  <a href="'.$objNavi->getUrl().'"'.(($objNavi->getTarget() != '') ? ' target="'.$objNavi->getTarget().'"' : '').'>'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>';
+          if(count($objNavi) > 0){
+            $strSubNavigation  .= '<ul>';
+            foreach($objNavi as $objSubNavi){           
+              $strSubNavigation  .= '
+                  <'.$strElement.'>
+                    <a href="'.$objSubNavi->getUrl().'"'.(($objSubNavi->getTarget() != '') ? ' target="'.$objSubNavi->getTarget().'"' : '').'>'.htmlentities($objSubNavi->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                  </'.$strElement.'>'; 
+            } 
+            $strSubNavigation  .= '</ul>';  
+          }else{
+            $strSubNavigation  .= '&nbsp;';     
+          }
+          $strSubNavigation  .= '
+               </'.$strElement.'>';      
+        }else{         
+          $strSubNavigation  .= '
+                <'.$strElement.'>              
+                  <a href="'.$objNavi->getUrl().'"'.(($objNavi->getTarget() != '') ? ' target="'.$objNavi->getTarget().'"' : '').'>'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                </'.$strElement.'>';
+        }
+      }    
+    }
+    
+    echo $strSubNavigation;
+  }
+  
+  /**
+   * hasSubNavigation
+   * @return boolean
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return string
+   */
+  public function hasSubNavigation(){
+    $this->objNavigation->evaluateRootFolderId();
+    if($this->objNavigation->getRootFolderId() != ''){
+      return true;
+    }else{
+      return false;
+    }
   }
   
   /**
@@ -144,12 +259,27 @@ class NavigationHelper {
   }
   
   /**
-   * getFotterNavigation
+   * getFooterNavigation
    * @author Thomas Schedler <tsh@massiveart.com>
    * @return string
    */
-  public function getFotterNavigation(){
-    //TODO default side navigation
+  public function getFooterNavigation($strCssClass = ''){
+    $strOutput = '';
+    
+    $objNavigationTree = $this->objNavigation->loadNavigationByDisplayOption($this->core->sysConfig->navigation_options->bottom, 1, false);
+
+    $intCounter = 0;
+    $intTotal = count($objNavigationTree);
+    if($intTotal > 0){
+      $strOutput .= '<ul'. ($strCssClass ? ' class="' . $strCssClass . '"' : '') .'>';
+      foreach($objNavigationTree as $objNavi){
+        $intCounter++;
+        $strOutput .= '<li><a href="'.$objNavi->getUrl().'"'.(($objNavi->getTarget() != '') ? ' target="'.$objNavi->getTarget().'"' : '').'>'.htmlentities($objNavi->getTitle(), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a></li>';
+      }
+      $strOutput .= '</ul>';
+    } 
+    
+    return $strOutput;
   }
   
   /**
@@ -159,7 +289,6 @@ class NavigationHelper {
    */
   public function getBreadcrumb($blnHomeLink = false, $strHomeUrl = ''){
     $strBreadcrumb = '';
-    
     if(count($this->objNavigation->ParentFolders()) > 0){
       $arrParentFolders = array_reverse($this->objNavigation->ParentFolders());
   
@@ -189,6 +318,26 @@ class NavigationHelper {
   
     return $strBreadcrumb;  
   }  
+  
+  /**
+   * returnHtmlAttributes
+   * @param array $arrAttributes
+   * @return string $strXhtml 
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0
+   */
+  public function returnHtmlAttributes($arrAttributes){
+    $strXhtml = '';
+    
+    foreach((array) $arrAttributes as $key => $val){
+      if (strpos($val, '"') !== false) {
+        $strXhtml .= " $key='$val'";
+      } else {
+        $strXhtml .= " $key=\"$val\"";
+      }
+    }
+    return $strXhtml;
+  }
 
   /**
    * getSubNavigationByLevel
@@ -211,6 +360,15 @@ class NavigationHelper {
   }
   
   /**
+   * getSitemap
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @return string
+   */
+  public function getSitemap(){
+    //TODO default sitemap
+  }
+  
+  /**
    * setNavigation    
    * @param Navigation $objNavigation   
    * @author Thomas Schedler <tsh@massiveart.com>
@@ -228,10 +386,3 @@ class NavigationHelper {
     $this->objTranslate = $objTranslate;
   }
 }
-
-/**
- * function call wrapper for NavigationHelper
- */
-require_once(dirname(__FILE__).'/navigation.inc.php');
-
-?>

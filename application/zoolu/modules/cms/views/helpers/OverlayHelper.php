@@ -117,7 +117,8 @@ class OverlayHelper {
 
     if(count($rowset) > 0){
       foreach ($rowset as $row){
-        $strOutput .= '<div id="olnavitem'.$row->id.'" class="olnavchilditem">
+        $intFolderDepth = $row->depth + 1;
+        $strOutput .= '<div id="olnavitem'.$row->id.'" class="olnavchilditem" style="padding-left:'.(22*$intFolderDepth).'px">
                          <div onclick="myOverlay.getContactNavItem('.$row->id.'); return false;" style="position:relative;">
                            <div class="icon img_folder_off"></div>'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'
                          </div>
@@ -287,7 +288,7 @@ class OverlayHelper {
                 <div class="olfileleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
                 <div class="olfileitemicon"><img '.$strMediaSize.' id="File'.$row->id.'" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" alt="'.$row->description.'"/></div>
-                <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+                <div class="olfileitemtitle">'.htmlentities((($row->title == '' && (isset($row->alternativTitle) || isset($row->fallbackTitle))) ? ((isset($row->alternativTitle) && $row->alternativTitle != '') ? $row->alternativTitle : $row->fallbackTitle) : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                 <div class="olfileright"></div>
                 <div class="clear"></div>
               </div>';
@@ -297,7 +298,7 @@ class OverlayHelper {
                 <div class="olfileleft"></div>
                 <div style="display:none;" id="Remove'.$row->id.'" class="itemremovelist"></div>
                 <div class="olfileitemicon"><img width="32" height="32" id="File'.$row->id.'" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" alt="'.$row->description.'"/></div>
-                <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+                <div class="olfileitemtitle">'.htmlentities((($row->title == '' && (isset($row->alternativTitle) || isset($row->fallbackTitle))) ? ((isset($row->alternativTitle) && $row->alternativTitle != '') ? $row->alternativTitle : $row->fallbackTitle) : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
                 <div class="olfileright"></div>
                 <div class="clear"></div>
               </div>';

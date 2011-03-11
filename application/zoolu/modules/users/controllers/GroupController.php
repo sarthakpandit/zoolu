@@ -47,7 +47,7 @@ class Users_GroupController extends AuthControllerAction {
   /**
    * @var Zend_Form
    */
-  var $objForm;
+  protected $objForm;
 
   /**
    * @var Model_Users
@@ -63,6 +63,11 @@ class Users_GroupController extends AuthControllerAction {
    * @var array
    */
   protected $arrPermissions = array();
+  
+  /**
+   * @var array
+   */
+  protected $arrGroupTypes = array();
 
   /**
    * indexAction
@@ -88,7 +93,7 @@ class Users_GroupController extends AuthControllerAction {
     $objSelect = $this->getModelUsers()->getGroupTable()->select();
     $objSelect->setIntegrityCheck(false);
     $objSelect->from($this->getModelUsers()->getGroupTable(), array('id', 'title', 'key'));
-    $objSelect->joinInner('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'groups.changed'));
+    $objSelect->joinLeft('users', 'users.id = groups.idUsers', array('CONCAT(`users`.`fname`, \' \', `users`.`sname`) AS editor', 'groups.changed'));
     if($strSearchValue != ''){
       $objSelect->where('groups.title LIKE ?', '%'.$strSearchValue.'%');
       $objSelect->orWhere('groups.key LIKE ?', '%'.$strSearchValue.'%');  
@@ -97,7 +102,7 @@ class Users_GroupController extends AuthControllerAction {
 
     $objAdapter = new Zend_Paginator_Adapter_DbTableSelect($objSelect);
     $objGroupsPaginator = new Zend_Paginator($objAdapter);
-    $objGroupsPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', 20));
+    $objGroupsPaginator->setItemCountPerPage((int) $this->getRequest()->getParam('itemsPerPage', $this->core->sysConfig->list->default->itemsPerPage));
     $objGroupsPaginator->setCurrentPageNumber($this->getRequest()->getParam('page'));
     $objGroupsPaginator->setView($this->view);
 
@@ -118,6 +123,7 @@ class Users_GroupController extends AuthControllerAction {
     try{
 
       $this->arrPermissions = array(array('language' => '', 'permissions' => ''));
+      $this->arrGroupTypes = array();
 
       $this->initForm();
       $this->objForm->setAction('/zoolu/users/group/add');
@@ -152,14 +158,25 @@ class Users_GroupController extends AuthControllerAction {
            * set action
            */
           $this->objForm->setAction('/zoolu/users/group/edit');
-
+          
+          /**
+           * add group data
+           */
           $arrGroupData['title'] = $this->getRequest()->getParam('title');
           $arrGroupData['key'] = $this->getRequest()->getParam('key');
           $arrGroupData['description'] = $this->getRequest()->getParam('description');
           $intGroupId = $this->getModelUsers()->addGroup($arrGroupData);
-
+          
+          /**
+           * add groupGroupTypes 
+           */
+          $this->getModelUsers()->updateGroupGroupTypes($intGroupId, $this->getRequest()->getParam('groupTypes')); 
+          
+          /**
+           * add groupPermissions
+           */
           $this->getModelUsers()->updateGroupPermissions($intGroupId, $this->arrPermissions);
-
+          
           $this->_forward('list', 'group', 'users');
           $this->view->assign('blnShowFormAlert', true);
         }else{
@@ -189,7 +206,10 @@ class Users_GroupController extends AuthControllerAction {
     $this->core->logger->debug('users->controllers->GroupController->editformAction()');
 
     try{
-
+      
+      /**
+       * get permissions
+       */
       $arrPermissions = $this->getModelUsers()->getGroupPermissions($this->getRequest()->getParam('id'));
       if(count($arrPermissions) > 0){
         $this->arrPermissions = array();
@@ -202,6 +222,19 @@ class Users_GroupController extends AuthControllerAction {
         }
       }else{
         $this->arrPermissions = array(array('language' => '', 'permissions' => ''));
+      }
+      
+      /**
+       * get groupType
+       */
+      $arrGroupTypes = $this->getModelUsers()->getGroupGroupTypes($this->getRequest()->getParam('id'));
+      if(count($arrGroupTypes) > 0){
+        $this->arrGroupTypes = array();
+        foreach($arrGroupTypes as $objGroupType){
+          $this->arrGroupTypes[] = $objGroupType->idGroupTypes;  
+        }  
+      }else{
+        $this->arrGroupTypes = array();  
       }
 
       $this->initForm();
@@ -252,8 +285,9 @@ class Users_GroupController extends AuthControllerAction {
           $arrGroupData['title'] = $this->getRequest()->getParam('title');
           $arrGroupData['key'] = $this->getRequest()->getParam('key');
           $arrGroupData['description'] = $this->getRequest()->getParam('description');
-          $intGroupId = $this->getModelUsers()->editGroup($intGroupId, $arrGroupData);
-
+          $this->getModelUsers()->editGroup($intGroupId, $arrGroupData);          
+          
+          $this->getModelUsers()->updateGroupGroupTypes($intGroupId, $this->getRequest()->getParam('groupTypes'));
           $this->getModelUsers()->updateGroupPermissions($intGroupId, $this->arrPermissions);
 
           $this->_forward('list', 'group', 'users');
@@ -306,9 +340,13 @@ class Users_GroupController extends AuthControllerAction {
   protected function prepareData(){
     try{
       $this->arrPermission = array();
+      
       if($this->getRequest()->isPost() && $this->getRequest()->isXmlHttpRequest()) {
         $arrFormData = $this->getRequest()->getPost();
-
+        
+        /**
+         * permissions
+         */
         if(isset($arrFormData['Region_Permission_Instances'])){
           $strRegionInstanceIds = trim($arrFormData['Region_Permission_Instances'], '[]');
           $arrRegionInstanceIds = array();
@@ -377,6 +415,12 @@ class Users_GroupController extends AuthControllerAction {
      * regions prefixes
      */
     $this->objForm->addDisplayGroupPrefixPath('Form_Decorator', GLOBAL_ROOT_PATH.'library/massiveart/generic/forms/decorators/');
+    
+    $arrGroupTypeOptions = array();
+    $sqlStmt = $this->core->dbh->query("SELECT `id`, `title` FROM `groupTypes`")->fetchAll();
+    foreach($sqlStmt as $arrSql){
+      $arrGroupTypeOptions[$arrSql['id']] = ucfirst($arrSql['title']);
+    }
 
     $this->objForm->setAttrib('id', 'genForm');
     $this->objForm->setAttrib('onsubmit', 'return false;');
@@ -386,8 +430,14 @@ class Users_GroupController extends AuthControllerAction {
     $this->objForm->addElement('text', 'key', array('label' => $this->core->translate->_('key', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text', 'required' => true));
 
     $this->objForm->addElement('textarea', 'description', array('label' => $this->core->translate->_('description', false), 'decorators' => array('Input'), 'columns' => 12, 'class' => 'text'));
-
-    $this->objForm->addDisplayGroup(array('title', 'key', 'description'), 'main-group', array('columns' => 9));
+    
+    $this->objForm->addElement('multiCheckbox', 'groupTypes', array('label' => $this->core->translate->_('groupTypes', false),
+                                                                    'value' => $this->arrGroupTypes,
+                                                                    'decorators' => array('Input'),
+                                                                    'columns' => 6, 'class' => 'multiCheckbox',
+                                                                    'MultiOptions' => $arrGroupTypeOptions));
+    
+    $this->objForm->addDisplayGroup(array('title', 'key', 'description', 'groupTypes'), 'main-group', array('columns' => 9));
     $this->objForm->getDisplayGroup('main-group')->setLegend($this->core->translate->_('General_information', false));
     $this->objForm->getDisplayGroup('main-group')->setDecorators(array('FormElements', 'Region'));
 

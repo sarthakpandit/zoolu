@@ -6,7 +6,7 @@
 ?>
 
             <div id="level<?php echo $this->currLevel; ?>" class="navlevelinner" onmouseover="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'show');return false;" onmouseout="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'hide');return false;">
-              <?php echo $objHelper->getNavigationElements($this->childelements, $this->currLevel); ?>
+              <?php echo $objHelper->getNavigationElements($this->childelements, $this->currLevel, $this->rootLevelGroupKey); ?>
               <div>&nbsp;</div>
             </div>
 

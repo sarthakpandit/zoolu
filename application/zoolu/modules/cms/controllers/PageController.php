@@ -45,7 +45,12 @@ class Cms_PageController extends AuthControllerAction {
   /**
    * @var GenericForm
    */
-  var $objForm;
+  protected $objForm;
+  
+  /**
+   * @var integer
+   */
+  protected $intItemLanguageId;
 
   /**
    * request object instance
@@ -91,6 +96,13 @@ class Cms_PageController extends AuthControllerAction {
    */
   public function init(){
     parent::init();
+    
+    if(!Security::get()->isAllowed('portals', Security::PRIVILEGE_VIEW)){
+      $blnCrossSidePrivilege = ($this->getRequest()->isXmlHttpRequest() && Security::get()->isAllowed('global', Security::PRIVILEGE_VIEW) && strpos($this->getRequest()->getActionName(), 'get') === 0) ? true : false;
+      if(!$blnCrossSidePrivilege){
+        $this->_redirect('/zoolu');  
+      }
+    }
     $this->objRequest = $this->getRequest();
   }
 
@@ -357,9 +369,18 @@ class Cms_PageController extends AuthControllerAction {
 
       $this->view->blnIsStartPage = $this->objForm->Setup()->getIsStartElement(false);
 
-      if($this->objForm->Setup()->getField('url')) $this->view->pageurl = $this->objForm->Setup()->getField('url')->getValue();
-
-      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT id AS VALUE, languageCode AS DISPLAY FROM languages ORDER BY sortOrder, languageCode', $this->objForm->Setup()->getLanguageId());
+      if($this->objForm->Setup()->getField('url')){
+        $strBaseUrl = $this->getModelFolders()->getRootLevelMainUrl($this->objForm->Setup()->getRootLevelId());  
+        if(substr_count($strBaseUrl, '.') <= 1){
+          $strBaseUrl = str_replace('http://', 'http://www.', $strBaseUrl); 
+        }
+        $this->view->pageurl = $strBaseUrl.$this->objForm->Setup()->getField('url')->getValue();
+      }
+     
+      $this->view->languageOptions = HtmlOutput::getOptionsOfSQL($this->core, 'SELECT languages.id AS VALUE, languages.languageCode AS DISPLAY FROM languages INNER JOIN rootLevelLanguages ON rootLevelLanguages.idLanguages = languages.id AND rootLevelLanguages.idRootLevels = '.$this->objForm->Setup()->getRootLevelId().' ORDER BY languages.sortOrder, languages.languageCode', $this->objForm->Setup()->getLanguageId());
+            
+      $this->view->authorizedDelete = ($this->objForm->Setup()->getIsStartElement(false) == true || $this->objForm->Setup()->getActionType() == $this->core->sysConfig->generic->actions->add) ? false : Security::get()->isAllowed('portals', Security::PRIVILEGE_DELETE, false, false);
+      $this->view->authorizedUpdate = Security::get()->isAllowed('portals', Security::PRIVILEGE_UPDATE, false, false);      
     }
   }
 
@@ -462,11 +483,12 @@ class Cms_PageController extends AuthControllerAction {
 
     try{
 	    $this->getModelPages();
-
-	    if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
-		    $this->objModelPages->deletePage($this->objRequest->getParam("id"));
-
-		    $this->view->blnShowFormAlert = true;
+	    
+	    if(Security::get()->isAllowed('portals', Security::PRIVILEGE_DELETE, false, false)){
+        if($this->objRequest->isPost() && $this->objRequest->isXmlHttpRequest()) {
+		      $this->objModelPages->deletePage($this->objRequest->getParam("id"));
+		      $this->view->blnShowFormAlert = true;
+        }
 	    }
 
 	    $this->renderScript('page/form.phtml');
@@ -526,7 +548,7 @@ class Cms_PageController extends AuthControllerAction {
       $objGenericData->Setup()->setParentId((($this->objRequest->getParam("parentFolderId") != '') ? $this->objRequest->getParam("parentFolderId") : null));
       $objGenericData->Setup()->setElementId($this->objRequest->getParam("id"));
       $objGenericData->Setup()->setActionType($this->core->sysConfig->generic->actions->edit);
-      $objGenericData->Setup()->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objGenericData->Setup()->setLanguageId($this->getItemLanguageId());
       $objGenericData->Setup()->setFormLanguageId($this->core->intZooluLanguageId);
       $objGenericData->Setup()->setModelSubPath('cms/models/');
 
@@ -666,7 +688,15 @@ class Cms_PageController extends AuthControllerAction {
           case $this->core->sysConfig->page_types->iframe->id :
             $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->iframe->default_formId);
             $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->iframe->default_templateId);
-            break;          
+            break;
+          case $this->core->sysConfig->page_types->download_center->id :
+            $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->download_center->default_formId);
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->download_center->default_templateId);
+            break;
+          case $this->core->sysConfig->page_types->sitemap->id :
+            $this->objRequest->setParam('formId', $this->core->sysConfig->page_types->sitemap->default_formId);
+            $this->objRequest->setParam('templateId', $this->core->sysConfig->page_types->sitemap->default_templateId);
+            break;
         }
       }
 
@@ -755,7 +785,7 @@ class Cms_PageController extends AuthControllerAction {
       $objField->isMultiply = $objFieldRegionData->isMultiply;
 
       $objGenericSetup = new GenericSetup();
-      $objGenericSetup->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objGenericSetup->setLanguageId($this->getItemLanguageId());
 
       $objField->setGenericSetup($objGenericSetup);
       $objField->loadLinkPage($intPageId);
@@ -792,6 +822,42 @@ class Cms_PageController extends AuthControllerAction {
       echo $objDecorator->buildInput();
     }
 
+    $this->_helper->viewRenderer->setNoRender();
+  }
+  
+  /**
+   * changeparentfolderAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function changeparentfolderAction(){
+    $this->core->logger->debug('cms->controllers->PageController->changeparentfolderAction()');
+
+    $intPageId = $this->objRequest->getParam('pageId');
+    $intParentFolderId = $this->objRequest->getParam('parentFolderId');
+
+    if($intPageId > 0 && $intParentFolderId > 0){
+      $this->getModelPages();
+      $this->objModelPages->changeParentFolderId($intPageId, $intParentFolderId);
+    }
+    $this->_helper->viewRenderer->setNoRender();
+  }
+  
+  /**
+   * changeparentrootfolderAction
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function changeparentrootfolderAction(){
+    $this->core->logger->debug('cms->controllers->PageController->changeparentrootfolderAction()');
+
+    $intPageId = $this->objRequest->getParam('pageId');
+    $intRootFolderId = $this->objRequest->getParam('rootFolderId');
+
+    if($intPageId > 0 && $intRootFolderId > 0){
+      $this->getModelPages();
+      $this->objModelPages->changeParentRootFolderId($intPageId, $intRootFolderId);
+    }
     $this->_helper->viewRenderer->setNoRender();
   }
 
@@ -842,7 +908,7 @@ class Cms_PageController extends AuthControllerAction {
       $objFormHandler->setTemplateId($intTemplateId);
       $objFormHandler->setFormVersion($intFormVersion);
       $objFormHandler->setActionType($intActionType);
-      $objFormHandler->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $objFormHandler->setLanguageId($this->getItemLanguageId($intActionType));
       $objFormHandler->setFormLanguageId($this->core->intZooluLanguageId);
       $objFormHandler->setElementId($intElementId);
 
@@ -902,6 +968,37 @@ class Cms_PageController extends AuthControllerAction {
       $this->objForm->addElement('hidden', 'parentTypeId', array('value' => $this->objForm->Setup()->getParentTypeId(), 'decorators' => array('Hidden')));
     }
   }
+  
+  /**
+   * getItemLanguageId
+   * @param integer $intActionType
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0 
+   */
+  protected function getItemLanguageId($intActionType = null){
+    if($this->intItemLanguageId == null){
+      if(!$this->objRequest->getParam("languageId")){
+        $this->intItemLanguageId = $this->objRequest->getParam("rootLevelLanguageId") != '' ? $this->objRequest->getParam("rootLevelLanguageId") : $this->core->intZooluLanguageId;
+        
+        $intRootLevelId = $this->objRequest->getParam("rootLevelId", $this->objRequest->getParam("portalId"));
+        $PRIVILEGE = ($intActionType == $this->core->sysConfig->generic->actions->add) ? Security::PRIVILEGE_ADD : Security::PRIVILEGE_UPDATE;
+        
+        $arrLanguages = $this->core->config->languages->language->toArray();      
+        foreach($arrLanguages as $arrLanguage){
+          if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId.'_'.$arrLanguage['id'], $PRIVILEGE, false, false)){
+            $this->intItemLanguageId = $arrLanguage['id']; 
+            break;
+          }          
+        }
+        
+      }else{
+        $this->intItemLanguageId = $this->objRequest->getParam("languageId");
+      }
+    }
+    
+    return $this->intItemLanguageId;
+  }
 
   /**
    * getModelPages
@@ -917,7 +1014,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'cms/models/Pages.php';
       $this->objModelPages = new Model_Pages();
-      $this->objModelPages->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelPages->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelPages;
@@ -937,7 +1034,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelFolders->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFolders;
@@ -957,7 +1054,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Files.php';
       $this->objModelFiles = new Model_Files();
-      $this->objModelFiles->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelFiles->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFiles;
@@ -977,7 +1074,7 @@ class Cms_PageController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Contacts.php';
       $this->objModelContacts = new Model_Contacts();
-      $this->objModelContacts->setLanguageId($this->objRequest->getParam("languageId", $this->core->intZooluLanguageId));
+      $this->objModelContacts->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelContacts;

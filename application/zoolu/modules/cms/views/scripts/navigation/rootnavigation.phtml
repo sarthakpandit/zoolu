@@ -2,9 +2,9 @@
 
   require_once (dirname(__FILE__).'/../../helpers/NavigationHelper.php');
   $objHelper = new NavigationHelper();
-
+  
 ?>  
-     
+    <?php if($this->return == true): ?>
             <div id="level<?php echo $this->currLevel; ?>" class="navlevelinner" onmouseover="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'show');return false;" onmouseout="myNavigation.toggleAddMenuIcon(<?php echo $this->currLevel; ?>,'hide'); return false;">
               <?php echo $objHelper->getNavigationElements($this->rootelements, $this->currLevel); ?>
             </div>
@@ -35,6 +35,4 @@
                 </div> 
               </div>              
             </div>
-              
-              
-          
+    <?php endif; ?>

@@ -45,7 +45,7 @@ class Properties_CategoryController extends AuthControllerAction {
 	/**
    * @var GenericForm
    */
-  var $objForm;
+  protected $objForm;
 
   /**
    * request object instance
@@ -56,7 +56,7 @@ class Properties_CategoryController extends AuthControllerAction {
   /**
    * @var Model_Categories
    */
-  var $objModelCategories;
+  public $objModelCategories;
 
   /**
    * init

@@ -75,6 +75,10 @@ class FolderHelper {
           $strJsRootAction = 'return false;';
           $blnShowRootFolder = false;
           break;
+        case 'MOVE_PAGE' :
+          $strJsRootAction = 'myPage.selectParentRootFolder('.$objRowset[0]->idRootLevels.'); return false;';
+          $blnShowRootFolder = true;
+          break;
         default :
           $strJsRootAction = 'myFolder.selectParentRootFolder('.$objRowset[0]->idRootLevels.'); return false;';
           $blnShowRootFolder = true;
@@ -105,6 +109,15 @@ class FolderHelper {
                                </div>
                              </div>';
               break;
+            case 'MOVE_PAGE' :
+              $intFolderDepth = $objRow->depth + 1;
+              $blnFolderChilds = false; 
+              $strOutput .= '<div id="olnavitem'.$objRow->id.'" class="olnavrootitem">
+                               <div style="position:relative; padding-left:'.(20*$intFolderDepth).'px">
+                                 <div class="icon img_folder_'.(($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off').'"></div><span style="background-color:#FFD300;">'.htmlentities($objRow->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</span>
+                               </div>
+                             </div>';
+              break;
             default :
               $blnFolderChilds = true;
               break;
@@ -115,6 +128,9 @@ class FolderHelper {
           switch($strActionKey){
             case 'MOVE_MEDIA' :
               $strJsAction = 'myMedia.selectParentFolder('.$objRow->id.'); return false;';
+              break;
+            case 'MOVE_PAGE' :
+              $strJsAction = 'myPage.selectParentFolder('.$objRow->id.'); return false;';
               break;
             default :
               $strJsAction = 'myFolder.selectParentFolder('.$objRow->id.'); return false;';
@@ -176,7 +192,7 @@ class FolderHelper {
      */
     return $strOutput;
   }
-
+  
   /**
    * getFolderContentList
    * @param object $objRowset
@@ -184,43 +200,129 @@ class FolderHelper {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function getFolderContentList($objRowset, $intFolderId){
+  public function getFolderContentList($objPaginator, $intFolderId, $strOrderColumn = '', $strOrderSort = ''){
     $this->core->logger->debug('core->views->helpers->FolderHelper->getFolderContentList()');
 
-    $strOutput = '';
+    $strTbody = '';
+    $strThead = '';
 
-    if(count($objRowset) > 0){
-      foreach($objRowset as $objRow){
+    /**
+     * Tbody
+     */
+    $strTbody .= '<tbody>';
+    
+    if(count($objPaginator) > 0){
+      foreach($objPaginator as $objRow){
 
-      	$strStatus = ($objRow->pageStatus == $this->core->sysConfig->status->live) ? 'on' : 'off' ;
-
-        if($objRow->isStartPage){
-          $strOutput .= '
-                      <tr class="listrow" id="Row'.$objRow->idPage.'">
-                        <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->idPage.'" name="listSelect'.$objRow->idPage.'" id="listSelect'.$objRow->idPage.'"/></td>
-                        <td class="rowicon"><div class="img_startpage_'.$strStatus.'"></div></td>
-                        <td class="rowtitle">'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).' (Startseite)</td>
-                        <td class="rowauthor" colspan="2"></td>
-                      </tr>';
-        }else{
-          $strOutput .= '
-                      <tr class="listrow" id="Row'.$objRow->idPage.'">
-                        <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->idPage.'" name="listSelect'.$objRow->idPage.'" id="listSelect'.$objRow->idPage.'"/></td>
-                        <td class="rowicon"><div class="img_page_'.$strStatus.'"></div></td>
-                        <td class="rowtitle">'.htmlentities($objRow->pageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</td>
-                        <td class="rowauthor" colspan="2"></td>
-                      </tr>';
-        }
+      	$strStatus = ($objRow->idStatus == $this->core->sysConfig->status->live) ? 'on' : 'off' ;
+      	$strPageTitle = $objRow->title;
+      	
+      	if($strPageTitle == '') {
+      		$strPageTitle = $objRow->guiTitle;
+      	}
+      	
+      	if($objRow->idTemplates == NULL) {
+      		$objRow->idTemplates = '1';
+      	}
+      	
+      	if($objRow->isStartPage == '-1')
+      	{
+      		$strTbody .= '
+                        <tr class="listrow" id="Row'.$objRow->id.'">
+                          <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->id.'" name="listSelect'.$objRow->id.'" id="listSelect'.$objRow->id.'"/></td>
+                          <td class="rowicon"><div class="img_folder_'.$strStatus.'"></div></td>
+                          <td class="rowtitle">
+                            <a onclick="myNavigation.getEditForm('.$objRow->id.', \''.$objRow->elementType.'\', \''.$objRow->genericFormId.'\', '.$objRow->version.', '.$objRow->idTemplates.'); return false;" href="#">'.htmlentities($strPageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                          </td>
+                          <td class="rowauthor">'.$objRow->author.'</td>
+                          <td class="rowchanged" colspan="2">'.$objRow->changed.'</td>
+                        </tr>';
+      	} elseif($objRow->isStartPage){
+	          $strTbody .= '
+	                      <tr class="listrow" id="Row'.$objRow->id.'">
+	                        <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->id.'" name="listSelect'.$objRow->id.'" id="listSelect'.$objRow->id.'"/></td>
+	                        <td class="rowicon"><div class="img_startpage_'.$strStatus.'"></div></td>
+                          <td class="rowtitle">
+                            <a onclick="myNavigation.getEditForm('.$objRow->id.', \''.$objRow->elementType.'\', \''.$objRow->genericFormId.'\', '.$objRow->version.', '.$objRow->idTemplates.'); return false;" href="#">'.htmlentities($strPageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                          </td>
+	                        <td class="rowauthor">'.$objRow->author.'</td>
+	                        <td class="rowchanged" colspan="2">'.$objRow->changed.'</td>
+	                      </tr>';
+	      }else{
+	        $strTbody .= '
+	                    <tr class="listrow" id="Row'.$objRow->id.'">
+	                      <td class="rowcheckbox" colspan="2"><input type="checkbox" class="listSelectRow" value="'.$objRow->id.'" name="listSelect'.$objRow->id.'" id="listSelect'.$objRow->id.'"/></td>
+	                      <td class="rowicon"><div class="img_page_'.$strStatus.'"></div></td>
+                        <td class="rowtitle">
+                          <a onclick="myNavigation.getEditForm('.$objRow->id.', \''.$objRow->elementType.'\', \''.$objRow->genericFormId.'\', '.$objRow->version.', '.$objRow->idTemplates.'); return false;" href="#">'.htmlentities($strPageTitle, ENT_COMPAT, $this->core->sysConfig->encoding->default).'</a>
+                        </td>
+	                      <td class="rowauthor">'.$objRow->author.'</td>
+	                      <td class="rowchanged" colspan="2">'.$objRow->changed.'</td>
+	                    </tr>';
+      	}
 
       }
     }
+    $strTbody .= '</tbody>';
+
+    /**
+     * Thead
+     */
+    $strThead .= '<thead>
+                     <tr>
+                       <th class="topcornerleft"></th>
+                       <th class="topcheckbox"></th>
+                       <th class="topicon"></th>
+                       <th class="toptitle'.(('title' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'title\''.(('title' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+                         <div'.(('title' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('title').'</div>
+                      </th>
+                       <th class="topauthor'.(('author' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'author\''.(('author' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+                         <div'.(('author' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('Author').'</div>
+                       </th>
+                       <th class="topchanged'.(('changed' == $strOrderColumn) ? ' sort' : '').'" onclick="myList.sort(\'changed\''.(('changed' == $strOrderColumn && $strOrderSort == 'asc') ? ', \'desc\'' : ', \'asc\'').')">
+                         <div'.(('changed' == $strOrderColumn) ? ' class="'.$strOrderSort.'"' : '').'>'.$this->core->translate->_('changed').'</div>
+                       </th>
+                       <th class="topcornerright"></th>
+                     </tr>
+                   </thead>';
 
     /**
      * return html output
      */
+    $strOutput = $strThead.$strTbody;
     return $strOutput;
   }
 
+  /**
+   * getListTitle
+   * @param string $strSearchValue
+   * @author Daniel Rotter <daniel.rotter@massiveart.com>
+   * @version 1.0
+   */
+  public function getFolderContentListTitle($objPaginator, $strSearchValue = '') {
+    $strOutput = '';
+    if($strSearchValue != '') {
+      if(count($objPaginator) > 0){
+        $strOutput = '
+            <div class="formsubtitle searchtitle">'.sprintf($this->core->translate->_('Search_for_'), $strSearchValue).'</div>'; 
+      }else{
+        $strOutput = '
+            <div class="formsubtitle searchtitle">'.sprintf($this->core->translate->_('No_search_results_for_'), $strSearchValue).'</div>';   
+      }
+      $strOutput .= '
+            <div class="bttnSearchReset" onclick="myList.resetSearch();">
+              <div class="button17leftOff"></div>
+              <div class="button17centerOff">
+                <div>'.$this->core->translate->_('Reset').'</div>
+                <div class="clear"></div>
+              </div>
+              <div class="button17rightOff"></div>
+              <div class="clear"></div>
+            </div>
+            <div class="clear"></div>';
+    }
+    return $strOutput;
+  }
 
   /**
    * getFolderSecurity
@@ -236,9 +338,9 @@ class FolderHelper {
     $arrZooluSecurity = array();
     $arrWebsiteSecurity = array();
     foreach($objRowset as $objRow){
-      if($this->core->sysConfig->environment->zoolu == $objRow->environment){
+      if($this->core->sysConfig->zone->zoolu == $objRow->zone){
         $arrZooluSecurity[] = $objRow->id;
-      }else if($this->core->sysConfig->environment->website == $objRow->environment){
+      }else if($this->core->sysConfig->zone->website == $objRow->zone){
         $arrWebsiteSecurity[] = $objRow->id;
       }
     }

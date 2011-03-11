@@ -77,25 +77,24 @@ class Model_Contacts {
    * @version 1.0
    */
   public function loadNavigation($intRootLevelId, $intItemId = null, $blnOnlyUnits = false){
-    $this->core->logger->debug('core->models->Contacts->loadNavigation('.$intRootLevelId.','.$intItemId.')');	
+    $this->core->logger->debug('core->models->Contacts->loadNavigation('.$intRootLevelId.','.$intItemId.')'); 
     
-  	$objSelect1 = $this->getContactsTable()->select();
+    $objSelect1 = $this->getContactsTable()->select();
     $objSelect1->setIntegrityCheck(false);
     
-    $objSelect1->from('units', array('id', 'title' => 'unitTitles.title', 'type' => new Zend_Db_Expr("'unit'")))
+    $objSelect1->from('units', array('id', 'title' => 'unitTitles.title', 'type' => new Zend_Db_Expr("'unit'"), 'depth', 'idParentUnit', 'idRootUnit', 'lft'))              
               ->join('genericForms', 'genericForms.id = units.idGenericForms', array('genericFormId', 'version'))
               ->joinLeft('unitTitles', 'unitTitles.idUnits = units.id AND unitTitles.idLanguages = '.$this->intLanguageId, array())
               ->where('units.idRootLevels = ?', $intRootLevelId);
     if($intItemId !== null){
       $objSelect1->where('units.idParentUnit = ?', $intItemId);
-    }      
-    
+    }
       
     if($blnOnlyUnits == false){
       $objSelect2 = $this->getContactsTable()->select();
       $objSelect2->setIntegrityCheck(false);
       
-      $objSelect2->from('contacts', array('id', 'title' => new Zend_Db_Expr("CONCAT(contacts.fname, ' ', contacts.sname)"), 'type' => new Zend_Db_Expr("'contact'")))
+      $objSelect2->from('contacts', array('id', 'title' => new Zend_Db_Expr("CONCAT(contacts.fname, ' ', contacts.sname)"), 'type' => new Zend_Db_Expr("'contact'"), 'units.depth', 'units.idParentUnit', 'units.idRootUnit', 'units.lft'))
                  ->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'))
                  ->join('units', 'units.id = contacts.idUnits AND units.idRootLevels = '.$intRootLevelId, array())
                  ->joinLeft('unitTitles', 'unitTitles.idUnits = units.id AND unitTitles.idLanguages = '.$this->intLanguageId, array());
@@ -111,7 +110,10 @@ class Model_Contacts {
       $objSelect = $objSelect1;
     }
     
-    $objSelect->order('title');      
+    $objSelect->order('idRootUnit');
+    $objSelect->order('lft');
+    $objSelect->order('title');  
+    
     return $this->objContactsTable->fetchAll($objSelect);    
   }
       
@@ -191,11 +193,12 @@ class Model_Contacts {
         //FIXME Subselect of `contact-DEFAULT_CONTACT-1-InstanceFiles` for contactPics should be changed!
         $objSelect->from('contacts', array('id', 'title AS acTitle', 'CONCAT(fname, \' \', sname) AS title', 'position', 'phone', 'mobile', 'fax', 'email', 'website', 'street', 'city', 'state', 'zip', 'country'));
         $objSelect->joinLeft(array('pics' => 'files'), 'pics.id = (SELECT contactPics.idFiles FROM `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactPics WHERE contactPics.idContacts = contacts.id AND contactPics.idFields = 84 LIMIT 1)', array('filename',  'filepath' => 'path', 'fileversion' => 'version'));
-        $objSelect->joinLeft(array('docs' => 'files'), 'docs.id = (SELECT contactDocs.idFiles FROM `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactDocs WHERE contactDocs.idContacts = contacts.id AND contactDocs.idFields = 175 LIMIT 1)', array('docid' => 'id', 'docfilename' => 'filename', 'docfilepath' => 'path', 'docfileversion' => 'version'));
+        $objSelect->joinLeft(array('docs' => 'files'), 'docs.id = (SELECT contactDocs.idFiles FROM `contact-DEFAULT_CONTACT-1-InstanceFiles` AS contactDocs INNER JOIN fileTitles ON fileTitles.idFiles = contactDocs.idFiles AND fileTitles.idLanguages = '.$this->intLanguageId.' WHERE contactDocs.idContacts = contacts.id AND contactDocs.idFields = 175 LIMIT 1)', array('docid' => 'id', 'docfilename' => 'filename', 'docfilepath' => 'path', 'docfileversion' => 'version'));
         $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = docs.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('doctitle' => 'title'));
         $objSelect->join('genericForms', 'genericForms.id = contacts.idGenericForms', array('genericFormId', 'version'));
         $objSelect->joinLeft('categoryTitles', 'categoryTitles.idCategories = contacts.country AND categoryTitles.idLanguages = '.$this->intLanguageId, array('countryTitle' => 'title'));   
-        $objSelect->where('contacts.id IN ('.trim($strIds, ',').')');      
+        $objSelect->where('contacts.id IN ('.trim($strIds, ',').')');   
+        $objSelect->order('FIND_IN_SET(contacts.id,\''.trim($strIds, ',').'\')');   
         
         return $this->objContactsTable->fetchAll($objSelect);
       }

@@ -101,7 +101,7 @@ class PageHelper {
 						               <div class="olfileleft"></div>
 	      	                 <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_fileitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
 						               <div class="olfileitemicon"><img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->path).$row->filename.'?v='.$row->version.'" id="File'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
-						               <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
+						               <div class="olfileitemtitle">'.htmlentities((($row->title == '' && (isset($row->alternativTitle) || isset($row->fallbackTitle))) ? ((isset($row->alternativTitle) && $row->alternativTitle != '') ? $row->alternativTitle : $row->fallbackTitle) : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>
 						               <div class="clear"></div>
 						             </div>';
       	}else{
@@ -109,7 +109,7 @@ class PageHelper {
                            <div class="olfileleft"></div>
       	                   <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_fileitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
                            <div class="olfileitemicon"><img width="32" height="32" src="'.$this->objViewHelper->getDocIcon($row->extension, 32).'" id="File'.$row->id.'" alt="'.htmlentities($row->description, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/></div>
-                           <div class="olfileitemtitle">'.htmlentities((($row->title == '' && isset($row->alternativTitle)) ? $row->alternativTitle : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
+                           <div class="olfileitemtitle">'.htmlentities((($row->title == '' && (isset($row->alternativTitle) || isset($row->fallbackTitle))) ? ((isset($row->alternativTitle) && $row->alternativTitle != '') ? $row->alternativTitle : $row->fallbackTitle) : $row->title), ENT_COMPAT, $this->core->sysConfig->encoding->default).'</div>              
                            <div class="clear"></div>
                          </div>';		
       	}
@@ -128,10 +128,10 @@ class PageHelper {
   
     $strOutput = '';
     foreach ($rowset as $row){ 
-      $strOutput .= '<div class="contactitem" fileid="'.$row->id.'" id="'.$strFieldName.'_contactitem'.$row->id.'">
+      $strOutput .= '<div class="contactitem" fileid="'.$row->id.'" id="'.$strFieldName.'_contactitem_'.$row->id.'">
                        <div class="olcontactleft"></div>
-                       <div class="itemremovelist" id="'.$strFieldName.'_remove'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_contactitem'.$row->id.'\', '.$row->id.'); return false;"></div>  
-                       <div class="oldcontactitemicon">';
+                       <div class="itemremovelist" id="'.$strFieldName.'_remove_'.$row->id.'" onclick="myForm.removeItem(\''.$strFieldName.'\', \''.$strFieldName.'_contactitem_'.$row->id.'\', '.$row->id.'); return false;"></div>  
+                       <div class="olcontactitemicon">';
       if($row->filename != ''){
         $strOutput .= '<img width="32" height="32" src="'.sprintf($this->core->sysConfig->media->paths->icon32, $row->filepath).$row->filename.'?v='.$row->fileversion.'" id="Contact'.$row->id.'" alt="'.htmlentities($row->title, ENT_COMPAT, $this->core->sysConfig->encoding->default).'"/>';
       }
@@ -140,6 +140,14 @@ class PageHelper {
                        <div class="clear"></div>
                      </div>';
     }    
+    
+    /**
+     * add the scriptaculous sortable funcionality
+     */
+     $strOutput .= '<script type="text/javascript" language="javascript">/* <![CDATA[ */
+     myForm.initSortable(\''.$strFieldName.'\', \'divContactContainer_'.$strFieldName.'\', \'contactitem\', \'div\', \'itemid\', \'vertical\');
+     /* ]]> */</script>';
+     
     return $strOutput.'<div id="divClear_'.$strFieldName.'" class="clear"></div>';
   }
 

@@ -18,24 +18,24 @@
     <!-- mailer -->
     <mail>
       <from>        
-        <name>ZOOLU</name>
-        <address>info@getzoolu.org</address>
+        <name></name>
+        <address></address>
       </from>
       <recipient>        
-        <name>Cornelius Hansjakob</name>
-        <address>cha@massiveart.com</address>
+        <name></name>
+        <address></address>
       </recipient>
       <params>
-        <host>mailer.com</host>
-        <username>zoolu@mailer.com</username>
-        <password>zoolu</password>
+        <host></host>
+        <username></username>
+        <password></password>
       </params>
       <actions>
         <sendmail>
-          <client>true</client>
+          <client>false</client>
           <confirmation>false</confirmation>
         </sendmail>
-        <database>true</database>
+        <database>false</database>
       </actions>
       <database>pageRegistrations</database>
     </mail>
@@ -50,102 +50,6 @@
         <id>2</id>
         <code>en</code>
       </language>
-      <language>
-        <id>3</id>
-        <code>es</code>
-      </language>
-      <language>
-        <id>4</id>
-        <code>de-de</code>
-      </language>
-      <language>
-        <id>5</id>
-        <code>it</code>
-      </language>
-      <language>
-        <id>6</id>
-        <code>fr</code>
-      </language>
-      <language>
-        <id>7</id>
-        <code>pl</code>
-      </language>
-      <language>
-        <id>8</id>
-        <code>ru</code>
-      </language>
-      <language>
-        <id>9</id>
-        <code>sv</code>
-      </language>
-      <language>
-        <id>10</id>
-        <code>en-us</code>
-      </language>
-      <language>
-        <id>11</id>
-        <code>en-nz</code>
-      </language>
-      <language>
-        <id>12</id>
-        <code>en-au</code>
-      </language>
-      <language>
-        <id>13</id>
-        <code>jp</code>
-      </language>
-      <language>
-        <id>14</id>
-        <code>es-co</code>
-      </language>
-      <language>
-        <id>15</id>
-        <code>es-mx</code>
-      </language>
-      <language>
-        <id>16</id>
-        <code>en-as</code>
-      </language>
-      <language>
-        <id>17</id>
-        <code>en-me</code>
-      </language>
-      <language>
-        <id>18</id>
-        <code>pt-br</code>
-      </language>
-      <language>
-        <id>19</id>
-        <code>cn</code>
-      </language>
-      <language>
-        <id>20</id>
-        <code>ko</code>
-      </language>
-      <language>
-        <id>21</id>
-        <code>en-in</code>
-      </language>
-      <language>
-        <id>22</id>
-        <code>sl</code>
-      </language>
-      <language>
-        <id>23</id>
-        <code>el</code>
-      </language>
-      <language>
-        <id>24</id>
-        <code>tr</code>
-      </language>
-      <language>
-        <id>25</id>
-        <code>en-uk</code>
-      </language>
-      <language>
-        <id>26</id>
-        <code>hr</code>
-      </language>      
     </languages>
     
     <!-- table: categories / idRootCategory=27, idCategoryTypes=2 -->
@@ -207,14 +111,14 @@
     
     <!-- encrypt/decrypt -->
     <crypt>
-      <key>y8d4dp2RBcFFS4YpRKtlDyaFjE2FEd3k</key>
+      <key></key>
     </crypt>
 
   </production>
   
   <!--
   ***********************************************************
-  * config for developement evnironment                     *
+  * config for staging evnironment                          *
   ***********************************************************
   -->
   <staging extends="production">
@@ -229,8 +133,8 @@
     <!-- mailer -->
     <mail>
       <recipient>        
-        <name>Cornelius Hansjakob</name>
-        <address>cha@massiveart.com</address>
+        <name></name>
+        <address></address>
       </recipient>
     </mail>
     
@@ -238,10 +142,19 @@
   
   <!--
   ***********************************************************
-  * config for development evnironment                     *
+  * config for testing evnironment                          *
   ***********************************************************
   -->
-  <development extends="staging">
+  <testing extends="staging">
+    
+  </testing>
+  
+  <!--
+  ***********************************************************
+  * config for development evnironment                      *
+  ***********************************************************
+  -->
+  <development extends="testing">
   
   </development>
   

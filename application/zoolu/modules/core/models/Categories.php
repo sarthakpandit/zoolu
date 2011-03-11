@@ -133,7 +133,7 @@ class Model_Categories {
    * @param integer $intElementId
    * @version 1.0
    */
-  public function loadCategoryTree($intElementId){
+  public function loadCategoryTree($intElementId, $blnFallbackCodes = false){
     $this->core->logger->debug('core->models->Folders->loadCategory('.$intElementId.')');
     
     $objSelect = $this->getCategoriesTable()->select();   
@@ -141,8 +141,8 @@ class Model_Categories {
     
     $objSelect->from('categories');
     $objSelect->join(array('rootCat' => 'categories'), 'rootCat.id = '.$intElementId, array());
-    $objSelect->join('categoryTitles', 'categoryTitles.idCategories = categories.id AND categoryTitles.idLanguages = '.$this->intLanguageId, array('title'));
-    $objSelect->joinLeft('categoryCodes', 'categoryCodes.idCategories = categories.id AND categoryCodes.idLanguages = '.$this->intLanguageId, array('code'));
+    $objSelect->join('categoryTitles', 'categoryTitles.idCategories = categories.id AND categoryTitles.idLanguages = '.(($blnFallbackCodes == true) ? 1 : $this->intLanguageId), array('title'));
+    $objSelect->joinLeft('categoryCodes', 'categoryCodes.idCategories = categories.id AND categoryCodes.idLanguages = '.(($blnFallbackCodes == true) ? 1 : $this->intLanguageId), array('code'));
     $objSelect->where('categories.idRootCategory = rootCat.idRootCategory');
     $objSelect->where('categories.lft BETWEEN (rootCat.lft + 1) AND rootCat.rgt');
         

@@ -86,8 +86,8 @@ class Model_Files {
    * @author Cornelius Hansjakob <cha@massiveart.com>
    * @version 1.0
    */
-  public function loadFiles($intFolderId, $intLimitNumber = -1, $blnAddLanguageSpecificFilter = true){
-    $this->core->logger->debug('core->models->Model_Files->loadFiles('.$intFolderId.','.$intLimitNumber.')');
+  public function loadFiles($intFolderId, $intLimitNumber = -1, $blnAddLanguageSpecificFilter = true, $blnReturnSelect = false, $strSearchValue = '', $strOrderColumn = 'alternativTitle', $strOrderSort = 'asc'){
+    $this->core->logger->debug('core->models->Model_Files->loadFiles('.$intFolderId.','.$intLimitNumber.','.$blnAddLanguageSpecificFilter.','.$blnReturnSelect.','.$strSearchValue.','.$strOrderColumn.','.$strOrderSort.')');
     
     try{
 	    $this->getFileTable();
@@ -104,9 +104,11 @@ class Model_Files {
 	     * INNER JOIN users ON users.id = files.creator  
 	     * WHERE files.idParent = ?
 	     */
-	    $objSelect->from('files', array('id', 'fileId', 'version', 'idParent', 'idParentTypes', 'filename', 'isImage', 'created', 'path', 'extension', 'mimeType'));
+	    $objSelect->from('files', array('id', 'fileId', 'version', 'idParent', 'idParentTypes', 'filename', 'isImage', 'created', 'path', 'extension', 'mimeType', 'isLanguageSpecific'));
 	    $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	    $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+	    $objSelect->joinLeft(array('fileTitleLanguages' => 'fileTitles'), 'fileTitleLanguages.idFiles = files.id', array());
+	    $objSelect->joinLeft('languages', 'fileTitleLanguages.idLanguages = languages.id', array('languages' => new Zend_Db_Expr('GROUP_CONCAT(languages.languageCode SEPARATOR \', \')')));
 	    
       if($blnAddLanguageSpecificFilter == false){
         $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.isDisplayTitle = 1', array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
@@ -114,19 +116,30 @@ class Model_Files {
         $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
       }
       
-	    $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
+      $objSelect->joinLeft('fileTitles AS fallbackFileTitles', 'fallbackFileTitles.idFiles = files.id AND fallbackFileTitles.idLanguages = (SELECT fT.idLanguages FROM fileTitles AS fT WHERE fT.idFiles = files.id LIMIT 1)', array('fallbackTitle' => 'title', 'fallbackDescription' => 'description', 'fallbackLanguageId' => 'idLanguages'));
+      
+	    $objSelect->joinLeft('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
 	    if($intFolderId != ''){
-	      $objSelect->where('idParent = ?', $intFolderId);	
+	      $objSelect->where('idParent = ?', $intFolderId);
+	    }
+	    if($strSearchValue != '') {
+	    	$objSelect->where('fileTitles.title LIKE ? OR alternativFileTitles.title LIKE ? OR fallbackFileTitles.title LIKE ?', '%'.$strSearchValue.'%');
+	    }
+	    if($strOrderColumn != '') {
+	    	$objSelect->order($strOrderColumn.' '.$strOrderSort);
 	    }
 	    if($intLimitNumber != -1 && $intLimitNumber != ''){
-	      $objSelect->order('files.created DESC');
-	      $objSelect->order('files.id DESC');
 	    	$objSelect->limit($intLimitNumber);	
 	    }
 	    
 	    if($blnAddLanguageSpecificFilter == true) $objSelect->where('(files.isLanguageSpecific = 0) OR (files.isLanguageSpecific = 1 AND fileTitles.idLanguages IS NOT NULL)');
-
-	    return $this->objFileTable->fetchAll($objSelect); 
+	    $objSelect->group('files.id');
+	    $this->core->logger->debug(strval($objSelect));
+	    if($blnReturnSelect) {
+	    	return $objSelect;
+	    } else {
+	     return $this->objFileTable->fetchAll($objSelect);
+	    } 
 	  }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }  	
@@ -166,7 +179,7 @@ class Model_Files {
 	        $strIds .= $intFileId.',';
 	      }
 	    	
-	    	$objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isLanguageSpecific', 'isImage', 'created', 'path', 'extension', 'mimeType', 'size'));
+	    	$objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isLanguageSpecific', 'idDestination', 'isImage', 'created', 'path', 'extension', 'mimeType', 'size'));
 	      $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
 	      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
   	      
@@ -174,7 +187,9 @@ class Model_Files {
           $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
         }
       
-	      $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));  	
+        $objSelect->joinLeft('fileTitles AS fallbackFileTitles', 'fallbackFileTitles.idFiles = files.id AND fallbackFileTitles.idLanguages = (SELECT fT.idLanguages FROM fileTitles AS fT WHERE fT.idFiles = files.id LIMIT 1)', array('fallbackTitle' => 'title', 'fallbackDescription' => 'description', 'fallbackLanguageId' => 'idLanguages'));
+        
+	      $objSelect->joinLeft('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));  	
 	      $objSelect->where('files.id IN ('.trim($strIds, ',').')');
 	      $objSelect->order('FIND_IN_SET(files.id,\''.trim($strIds, ',').'\')');
 	    
@@ -194,7 +209,7 @@ class Model_Files {
    * @author Thomas Schedler <tsh@massiveart.com>
    * @version 1.0
    */
-  public function loadFilesByFilter($intRootLevelId = -1, $arrTagIds = array(), $arrFolderIds = array()){
+  public function loadFilesByFilter($intRootLevelId = -1, $arrTagIds = array(), $arrFolderIds = array(), $intFilterLanguageId = null){
     $this->core->logger->debug('core->models->Model_Files->loadFilesByFilter('.$intRootLevelId.')');
     try{
 
@@ -209,18 +224,22 @@ class Model_Files {
       $strFolderIds = '';
       foreach($arrFolderIds as $intFolderId){
         $strFolderIds .= $intFolderId.',';
-      }      
+      }
+      
+      $intFilterLanguageId = ($intFilterLanguageId == null) ? $this->intLanguageId : $intFilterLanguageId;
 
       $objSelect->distinct();
-      $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size'));
+      $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'idDestination', 'created', 'path', 'extension', 'mimeType', 'size'));
       $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
-      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+      $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$intFilterLanguageId, array('title', 'description', 'idLanguages'));
       
       if($this->intAlternativLanguageId > 0){
         $objSelect->joinLeft('fileTitles AS alternativFileTitles', 'alternativFileTitles.idFiles = files.id AND alternativFileTitles.idLanguages = '.$this->intAlternativLanguageId, array('alternativTitle' => 'title', 'alternativDescription' => 'description', 'alternativLanguageId' => 'idLanguages'));
       }
       
-      $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
+      $objSelect->joinLeft('fileTitles AS fallbackFileTitles', 'fallbackFileTitles.idFiles = files.id AND fallbackFileTitles.idLanguages = (SELECT fT.idLanguages FROM fileTitles AS fT WHERE fT.idFiles = files.id LIMIT 1)', array('fallbackTitle' => 'title', 'fallbackDescription' => 'description', 'fallbackLanguageId' => 'idLanguages'));
+      
+      $objSelect->joinLeft('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));
 
       if(trim($strTagIds, ',') != ''){
         $objSelect->join('tagFiles', 'tagFiles.fileId = files.id AND tagFiles.idTags IN ('.trim($strTagIds, ',').')', array());
@@ -259,15 +278,16 @@ class Model_Files {
       	$objSelect = $this->objFileTable->select();   
         $objSelect->setIntegrityCheck(false);
       
-        $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter'));
+        $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'idDestination', 'idGroup', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter', 'idFiles'));
         $objSelect->joinLeft('fileAttributes', 'fileAttributes.idFiles = files.id', array('xDim', 'yDim'));
         $objSelect->joinLeft('fileTitles', 'fileTitles.idFiles = files.id AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'));
+        $objSelect->joinLeft('fileTitles AS fallbackFileTitles', 'fallbackFileTitles.idFiles = files.id AND fallbackFileTitles.idLanguages = (SELECT fT.idLanguages FROM fileTitles AS fT WHERE fT.idFiles = files.id LIMIT 1)', array('fallbackTitle' => 'title', 'fallbackDescription' => 'description', 'fallbackLanguageId' => 'idLanguages'));
         
         if($intVersion > 0){
           $objSelect->join('fileVersions', 'fileVersions.idFiles = files.id AND fileVersions.version = '.$intVersion, array('archiveVersion' => 'version', 'archiveExtension' => 'extension', 'archiveSize' => 'size', 'archived'));          
         }
         
-        $objSelect->join('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));   
+        $objSelect->joinLeft('users', 'users.id = files.creator', array('CONCAT(users.fname, \' \', users.sname) AS creator'));   
         $objSelect->where('files.id = ?', $intFileId);
         
         return $this->objFileTable->fetchAll($objSelect);
@@ -292,8 +312,8 @@ class Model_Files {
       $objSelect = $this->objFileVersionTable->select();   
       $objSelect->setIntegrityCheck(false);
     
-      $objSelect->from($this->objFileVersionTable, array('id', 'idFiles', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter', 'archiver', 'archived'))
-                ->join('users', 'users.id = fileVersions.archiver', array('CONCAT(users.fname, \' \', users.sname) AS archiver'))   
+      $objSelect->from($this->objFileVersionTable, array('id', 'idFiles', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'idDestination', 'created', 'path', 'extension', 'mimeType', 'size', 'downloadCounter', 'archiver', 'archived'))
+                ->joinLeft('users', 'users.id = fileVersions.archiver', array('CONCAT(users.fname, \' \', users.sname) AS archiver'))   
                 ->joinLeft('fileTitles', 'fileTitles.idFiles = fileVersions.idFiles AND fileTitles.idLanguages = '.$this->intLanguageId, array('title', 'description', 'idLanguages'))
                 ->where('fileVersions.idFiles = ?', $intFileId)
                 ->order('archived DESC');
@@ -339,7 +359,7 @@ class Model_Files {
         $objSelect = $this->objFileTable->select();   
         $objSelect->setIntegrityCheck(false);
       
-        $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'created', 'path', 'extension', 'mimeType', 'size'));           
+        $objSelect->from('files', array('id', 'fileId', 'version', 'filename', 'isImage', 'isLanguageSpecific', 'idDestination', 'created', 'path', 'extension', 'mimeType', 'size'));           
         $objSelect->where('files.fileId = ?', $strFileId);
         
         return $this->objFileTable->fetchAll($objSelect);

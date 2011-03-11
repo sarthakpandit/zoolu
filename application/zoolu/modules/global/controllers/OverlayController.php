@@ -44,6 +44,11 @@ class Global_OverlayController extends AuthControllerAction {
 
 	private $intRootLevelId;
   private $intFolderId;
+  
+  /**
+   * @var integer
+   */
+  protected $intItemLanguageId;
 
 	/**
    * @var Model_Folders
@@ -99,6 +104,37 @@ class Global_OverlayController extends AuthControllerAction {
     $this->view->assign('elements', $objElementTree);
     $this->view->assign('rootLevelId', $intRootLevelId);
   }
+  
+  /**
+   * getItemLanguageId
+   * @param integer $intActionType
+   * @return integer
+   * @author Thomas Schedler <tsh@massiveart.com>
+   * @version 1.0 
+   */
+  protected function getItemLanguageId($intActionType = null){
+    if($this->intItemLanguageId == null){
+      if(!$this->getRequest()->getParam("languageId")){
+        $this->intItemLanguageId = $this->getRequest()->getParam("rootLevelLanguageId") != '' ? $this->getRequest()->getParam("rootLevelLanguageId") : $this->core->intZooluLanguageId;
+        
+        $intRootLevelId = $this->getRequest()->getParam("rootLevelId");
+        $PRIVILEGE = ($intActionType == $this->core->sysConfig->generic->actions->add) ? Security::PRIVILEGE_ADD : Security::PRIVILEGE_UPDATE;
+        
+        $arrLanguages = $this->core->config->languages->language->toArray();      
+        foreach($arrLanguages as $arrLanguage){
+          if(Security::get()->isAllowed(Security::RESOURCE_ROOT_LEVEL_PREFIX.$intRootLevelId.'_'.$arrLanguage['id'], $PRIVILEGE, false, false)){
+            $this->intItemLanguageId = $arrLanguage['id']; 
+            break;
+          }          
+        }
+        
+      }else{
+        $this->intItemLanguageId = $this->getRequest()->getParam("languageId");
+      }
+    }
+    
+    return $this->intItemLanguageId;
+  }
 
   /**
    * getModelFolders
@@ -114,7 +150,7 @@ class Global_OverlayController extends AuthControllerAction {
        */
       require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'core/models/Folders.php';
       $this->objModelFolders = new Model_Folders();
-      $this->objModelFolders->setLanguageId(1); // TODO : get language id
+      $this->objModelFolders->setLanguageId($this->getItemLanguageId());
     }
 
     return $this->objModelFolders;

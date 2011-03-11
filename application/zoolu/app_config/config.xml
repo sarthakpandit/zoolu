@@ -26,7 +26,7 @@
   
   <!--
   ***********************************************************
-  * config for staging evnironment                     *
+  * config for staging evnironment                          *
   ***********************************************************
   -->
   <staging extends="production">
@@ -35,10 +35,19 @@
   
   <!--
   ***********************************************************
-  * config for development evnironment                     *
+  * config for testing evnironment                          *
   ***********************************************************
   -->
-  <development extends="staging">
+  <testing extends="staging">
+  
+  </testing>
+  
+  <!--
+  ***********************************************************
+  * config for development evnironment                      *
+  ***********************************************************
+  -->
+  <development extends="testing">
   
   </development>
 </configdata>

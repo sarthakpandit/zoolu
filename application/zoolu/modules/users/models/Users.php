@@ -61,6 +61,11 @@ class Model_Users {
    * @var Model_Table_GroupPermissions
    */
   protected $objGroupPermissionTable;
+  
+  /**
+   * @var Model_Table_GroupGroupTypes
+   */
+  protected $objGroupGroupTypeTable;
 
   /**
    * @var Model_Table_Resources
@@ -333,7 +338,7 @@ class Model_Users {
       if(count($arrPermissions) > 0){
         foreach($arrPermissions as $arrPermissionData){
 
-          if(count($arrPermissionData['permissions']) > 0){
+          if(isset($arrPermissionData['permissions']) && is_array($arrPermissionData['permissions'])){
             $intLanguageId = $arrPermissionData['language'];
             foreach($arrPermissionData['permissions'] as $intPermissionId){
               $arrData = array('idGroups'       => $intGroupId,
@@ -342,6 +347,39 @@ class Model_Users {
 
               $this->objGroupPermissionTable->insert($arrData);
             }
+          }
+        }
+      }
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }
+  }
+  
+  /**
+   * updateGroupGroupTypes
+   * @param integer $intGroupId
+   * @param array $arrGroupTypes
+   * @return void
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function updateGroupGroupTypes($intGroupId, $arrGroupTypes){
+    try{
+      $this->getGroupGroupTypeTable();
+
+      /**
+       * delete data
+       */
+      $strWhere = $this->objGroupGroupTypeTable->getAdapter()->quoteInto('idGroups = ?', $intGroupId);
+      $this->objGroupGroupTypeTable->delete($strWhere);
+
+      if(count($arrGroupTypes) > 0){
+        if(is_array($arrGroupTypes)){
+          foreach($arrGroupTypes as $intGroupTypeId){
+            $arrData = array('idGroups'      => $intGroupId,
+                             'idGroupTypes'  => $intGroupTypeId);
+
+            $this->objGroupGroupTypeTable->insert($arrData);
           }
         }
       }
@@ -401,6 +439,22 @@ class Model_Users {
     }catch (Exception $exc) {
       $this->core->logger->err($exc);
     }
+  }
+  
+  /**
+   * getGroupGroupTypes
+   * @param integer $intGroupId
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @return Zend_Db_Table_Rowset_Abstract
+   * @version 1.0
+   */
+  public function getGroupGroupTypes($intGroupId){
+    try{
+      $objSelect = $this->getGroupGroupTypeTable()->select()->where('idGroups = ?', $intGroupId);
+      return $this->objGroupGroupTypeTable->fetchAll($objSelect);
+    }catch (Exception $exc) {
+      $this->core->logger->err($exc);
+    }  
   }
 
   /**
@@ -611,6 +665,22 @@ class Model_Users {
     }
 
     return $this->objGroupPermissionTable;
+  }
+  
+  /**
+   * getGroupGroupTypeTable
+   * @return Zend_Db_Table_Abstract
+   * @author Cornelius Hansjakob <cha@massiveart.com>
+   * @version 1.0
+   */
+  public function getGroupGroupTypeTable(){
+
+    if($this->objGroupGroupTypeTable === null) {
+      require_once GLOBAL_ROOT_PATH.$this->core->sysConfig->path->zoolu_modules.'users/models/tables/GroupGroupTypes.php';
+      $this->objGroupGroupTypeTable = new Model_Table_GroupGroupTypes();
+    }
+
+    return $this->objGroupGroupTypeTable;
   }
 
   /**
